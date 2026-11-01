@@ -1,0 +1,59 @@
+# InvoiceLineItems
+
+Editable invoice line rows (item and description, qty, unit price, discount, tax code, amount) with a margin dot, a total and estimated-profit footer, and Add item, Browse library and Add line actions.
+
+```tsx
+import { InvoiceLineItems } from "@cynco-labs/ui";
+```
+
+## Usage
+
+```tsx
+import { useState } from "react";
+import { InvoiceLineItems } from "@cynco-labs/ui";
+
+export default function InvoiceLineItemsDemo() {
+	const [s, setS] = useState([
+		{
+			name: "Website maintenance retainer",
+			description: "October 2026 · 20 hours",
+			quantity: 1,
+			price: 3500,
+			discount: 0,
+			taxCode: "sst8",
+			margin: "healthy",
+		},
+		{
+			name: "A4 brochure printing",
+			description: "Art card 157gsm, full colour",
+			quantity: 500,
+			price: 1.2,
+			discount: 10,
+			taxCode: "sst8",
+			margin: "below_target",
+		},
+	]);
+	return (
+		<InvoiceLineItems
+			items={s}
+			onChange={setS}
+			currency="MYR"
+			estimatedProfit={{ amount: 1265.4, percent: 28, health: "healthy" }}
+		/>
+	);
+}
+```
+
+## Use
+
+Step 2 of the invoice and quotation builders, and read-only on a stored document (readOnly).
+
+## Props
+
+items (name, description, quantity, price, discount, discountType, taxCode, margin), onChange, currency, taxCodes (value, label, rate; defaults to SST 8%/6%, Sales 10% and Exempt), readOnly, estimatedProfit, onAddItem, onBrowseLibrary; className and native div props.
+
+## Notes
+
+The footer sits on the tray, below the rows.
+
+Category: Accounting · Sales. Source: `packages/ui/src/accounting/sales.tsx`.

@@ -1,0 +1,42 @@
+import {
+	Context,
+	ContextCacheUsage,
+	ContextContent,
+	ContextContentBody,
+	ContextContentFooter,
+	ContextContentHeader,
+	ContextInputUsage,
+	ContextOutputUsage,
+	ContextReasoningUsage,
+	ContextTrigger,
+} from "@cynco-labs/ui/ai";
+
+export default function ContextDemo() {
+	return (
+		<Context
+			defaultOpen
+			usedTokens={48200}
+			maxTokens={200000}
+			usage={{
+				inputTokens: 40000,
+				outputTokens: 6200,
+				reasoningTokens: 2000,
+				cachedInputTokens: 12000,
+				totalTokens: 48200,
+			}}
+			modelId="anthropic:claude-sonnet-4"
+		>
+			<ContextTrigger />
+			<ContextContent align="start">
+				<ContextContentHeader />
+				<ContextContentBody>
+					<ContextInputUsage />
+					<ContextOutputUsage />
+					<ContextReasoningUsage />
+					<ContextCacheUsage />
+				</ContextContentBody>
+				<ContextContentFooter />
+			</ContextContent>
+		</Context>
+	);
+}

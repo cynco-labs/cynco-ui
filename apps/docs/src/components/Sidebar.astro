@@ -1,0 +1,144 @@
+---
+import { COMPONENT_NAV, GUIDES } from "../lib/nav";
+
+interface Props {
+	current: string;
+}
+const { current } = Astro.props;
+const isCurrent = (href: string) => (href === current ? "page" : undefined);
+---
+
+<aside
+	id="sidebar"
+	class="fixed inset-y-0 left-0 z-40 w-[17rem] border-r border-border bg-background pt-14 lg:sticky lg:top-14 lg:z-0 lg:h-[calc(100dvh-3.5rem)] lg:w-64 lg:shrink-0 lg:border-r-0 lg:bg-transparent lg:pt-0"
+	aria-label="Documentation"
+>
+	<div class="flex h-full flex-col">
+		<div class="px-4 pb-2 pt-4 lg:pl-0 lg:pr-4 lg:pt-8">
+			<label class="relative block">
+				<span class="sr-only">Filter pages</span>
+				<svg class="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-placeholder" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M229.66 218.34l-50.07-50.06a88.11 88.11 0 1 0-11.31 11.31l50.06 50.07a8 8 0 0 0 11.32-11.32ZM40 112a72 72 0 1 1 72 72 72.08 72.08 0 0 1-72-72Z"></path></svg>
+				<input
+					id="nav-filter"
+					type="search"
+					placeholder="Search"
+					autocomplete="off"
+					spellcheck="false"
+					class="h-8 w-full rounded-lg border border-border bg-interactive-secondary pl-8 pr-10 text-[13px] text-foreground outline-none placeholder:text-placeholder focus:border-input-border-focus focus-visible:outline-none focus:shadow-[var(--input-shadow-focus)] [&::-webkit-search-cancel-button]:appearance-none"
+				/>
+				<kbd class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 rounded border border-border px-1 font-mono text-[10.5px] text-subtle">/</kbd>
+			</label>
+		</div>
+		<nav id="nav-list" class="scrollbar-quiet flex-1 overflow-y-auto px-4 pb-16 lg:pl-0 lg:pr-4">
+			{
+				GUIDES.map((g) => (
+					<div class="nav-section mt-5 first:mt-3">
+						<p class="mb-1.5 px-2.5 text-[12px] font-semibold text-foreground">{g.section}</p>
+						<ul>
+							{g.items.map((item) => (
+								<li class="nav-item" data-label={item.label.toLowerCase()}>
+									<a class="nav-link" href={item.href} aria-current={isCurrent(item.href)}>
+										{item.label}
+									</a>
+								</li>
+							))}
+						</ul>
+					</div>
+				))
+			}
+			<div class="nav-section mt-5">
+				<p class="mb-1.5 px-2.5 text-[12px] font-semibold text-foreground">Components</p>
+				<ul>
+					<li class="nav-item" data-label="all components overview">
+						<a class="nav-link" href="/components" aria-current={isCurrent("/components")}>Overview</a>
+					</li>
+				</ul>
+			</div>
+			{
+				COMPONENT_NAV.map((cat) => {
+					const open = cat.groups.some((g) => g.items.some((c) => `/components/${c.slug}` === current));
+					const count = cat.groups.reduce((n, g) => n + g.items.length, 0);
+					return (
+						<details class="nav-section nav-cat group/cat mt-1" open={open} data-open={open ? "" : undefined}>
+							<summary class="flex cursor-pointer select-none list-none items-center justify-between rounded-md px-2.5 py-1.5 text-[13.5px] font-medium text-muted-foreground hover:bg-muted hover:text-foreground [&::-webkit-details-marker]:hidden">
+								<span>{cat.section}</span>
+								<span class="flex items-center gap-2">
+									<span class="text-[11.5px] font-normal tabular-nums text-subtle">{count}</span>
+									<svg class="size-3 text-subtle transition-transform group-open/cat:rotate-90" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M181.66 133.66l-80 80a8 8 0 0 1-11.32-11.32L164.69 128 90.34 53.66a8 8 0 0 1 11.32-11.32l80 80a8 8 0 0 1 0 11.32Z"></path></svg>
+								</span>
+							</summary>
+							<div class="mb-2 ml-2.5 border-l border-border pl-2">
+								{cat.groups.map((g) => (
+									<div class="nav-group">
+										{cat.grouped && <p class="nav-group-title mb-0.5 mt-3 px-2.5 text-[11.5px] font-medium text-subtle">{g.group}</p>}
+										<ul>
+											{g.items.map((c) => (
+												<li class="nav-item" data-label={`${c.name} ${c.group}`.toLowerCase()}>
+													<a class="nav-link" href={`/components/${c.slug}`} aria-current={isCurrent(`/components/${c.slug}`)}>
+														{c.name}
+													</a>
+												</li>
+											))}
+										</ul>
+									</div>
+								))}
+							</div>
+						</details>
+					);
+				})
+			}
+			<p id="nav-empty" class="hidden px-2.5 pt-6 text-[13px] text-subtle">No pages match.</p>
+		</nav>
+	</div>
+</aside>
+<div id="nav-scrim" class="fixed inset-0 z-30 hidden bg-black/30 lg:hidden"></div>
+
+<script>
+	const input = document.getElementById("nav-filter") as HTMLInputElement;
+	const list = document.getElementById("nav-list")!;
+	const empty = document.getElementById("nav-empty")!;
+	const cats = [...list.querySelectorAll<HTMLDetailsElement>("details.nav-cat")];
+
+	function filter() {
+		const q = input.value.trim().toLowerCase();
+		const words = q.split(/\s+/).filter(Boolean);
+		let any = false;
+		for (const item of list.querySelectorAll<HTMLElement>(".nav-item")) {
+			const hit = words.every((w) => (item.dataset.label ?? "").includes(w));
+			item.hidden = !hit;
+			any ||= hit;
+		}
+		for (const g of list.querySelectorAll<HTMLElement>(".nav-group, .nav-section")) {
+			g.hidden = q !== "" && !g.querySelector(".nav-item:not([hidden])");
+		}
+		for (const d of cats) d.open = q ? true : d.dataset.open !== undefined;
+		empty.classList.toggle("hidden", any);
+	}
+	input.addEventListener("input", filter);
+	input.addEventListener("keydown", (e) => {
+		if (e.key === "Enter") {
+			const first = list.querySelector<HTMLAnchorElement>(".nav-item:not([hidden]) a");
+			if (first) location.href = first.href;
+		}
+		if (e.key === "Escape") {
+			input.value = "";
+			filter();
+			input.blur();
+		}
+	});
+	document.addEventListener("keydown", (e) => {
+		const t = e.target as HTMLElement;
+		if (e.key === "/" && !/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName) && !t.isContentEditable) {
+			e.preventDefault();
+			if (window.matchMedia("(max-width: 1023px)").matches) document.documentElement.setAttribute("data-nav-open", "");
+			input.focus();
+		}
+	});
+	// keep the current page in view
+	const active = list.querySelector<HTMLElement>('[aria-current="page"]');
+	if (active) {
+		const top = active.getBoundingClientRect().top - list.getBoundingClientRect().top;
+		if (top > list.clientHeight - 40) list.scrollTop = top - list.clientHeight / 2;
+	}
+	document.getElementById("nav-scrim")?.addEventListener("click", () => document.documentElement.removeAttribute("data-nav-open"));
+</script>

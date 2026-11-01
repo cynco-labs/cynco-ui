@@ -1,0 +1,5 @@
+# Cloudflare Pages: `pnpm build` at the repo root, then deploy apps/docs/dist
+#   npx wrangler pages deploy apps/docs/dist --project-name cynco-ui
+name = "cynco-ui"
+pages_build_output_dir = "./dist"
+compatibility_date = "2026-10-01"

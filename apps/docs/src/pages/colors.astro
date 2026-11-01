@@ -1,0 +1,68 @@
+---
+import Docs from "../layouts/Docs.astro";
+import { THEMES, colorTokens } from "../lib/tokens";
+import { inlineMd } from "../lib/inline-md";
+
+const groups = colorTokens();
+const headings = groups.map((g) => ({ depth: 2, slug: g.id, text: g.title }));
+const themeAttr = (id: string) => (id === "light" ? "light" : id);
+const count = groups.reduce((n, g) => n + g.items.length, 0);
+---
+
+<Docs title="Colors" description="Every colour token in Cynco UI, per theme, with what it is for." current="/colors" mdHref="/colors.md" headings={headings}>
+	<article>
+		<div class="prose">
+			<h1>Colors</h1>
+			<p class="!mt-3 text-[16px] text-tertiary-foreground">Every colour token, per theme, with what it is for.</p>
+			<p>
+				Cynco UI is neutral by design: grey surfaces and four steps of text, with one blue (<code>primary</code>, #0077e6) doing the pointing. Reach for colour only when it carries meaning, and never let hue alone carry it.
+			</p>
+			<p>
+				Each token is a CSS variable and a Tailwind colour: <code>var(--card)</code> is <code>bg-card</code>. Swatches are rendered live with each theme's variables; switch themes with <code>class="dark"</code> or <code>data-theme</code> on any element. {count} tokens.
+			</p>
+		</div>
+
+		<div class="sticky top-14 z-10 -mx-1 mt-8 hidden bg-background/90 px-1 py-2 backdrop-blur sm:block">
+			<div class="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-4 border-b border-border pb-2">
+				<span class="text-[12px] font-medium text-subtle">Token</span>
+				<div class="grid grid-cols-4 gap-2">
+					{THEMES.map((t) => <span class="w-16 text-center text-[12px] font-medium text-subtle">{t.label}</span>)}
+				</div>
+			</div>
+		</div>
+
+		{
+			groups.map((g) => (
+				<section class="mt-12 first-of-type:mt-6">
+					<h2 id={g.id} class="text-[20px] font-semibold tracking-[-0.01em] text-foreground">
+						{g.title}
+					</h2>
+					<div class="mt-1.5 text-[14.5px] text-tertiary-foreground [&_code]:font-mono [&_code]:text-[0.88em] [&_code]:text-foreground" set:html={inlineMd(g.intro)} />
+					<ul class="mt-4 divide-y divide-border border-y border-border">
+						{g.items.map((t) => (
+							<li class="grid gap-3 py-3.5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:gap-4">
+								<div class="min-w-0">
+									<code class="font-mono text-[12.5px] font-medium text-foreground">{t.name}</code>
+									{t.usage && (
+										<div class="mt-1 text-[13.5px] leading-relaxed text-tertiary-foreground [&_code]:font-mono [&_code]:text-[0.9em] [&_code]:text-muted-foreground" set:html={inlineMd(t.usage)} />
+									)}
+								</div>
+								<div class="grid grid-cols-4 gap-2">
+									{THEMES.map((th) => (
+										<div class="flex w-16 flex-col items-center gap-1">
+											<span data-theme="light" class="block rounded-md"><span data-theme={themeAttr(th.id)} class="block h-9 w-16 rounded-md" style={`background:var(--${t.name});box-shadow:inset 0 0 0 1px ${th.id.endsWith("dark") ? "rgb(255 255 255/0.1)" : "rgb(0 0 0/0.08)"}`} title={`${th.label}: ${t.values[th.id]}`} /></span>
+											<span class="w-16 truncate text-center font-mono text-[10.5px] text-subtle">
+												{t.values[th.id].startsWith("#") ? t.values[th.id] : t.values[th.id].replace(/\s+/g, " ").slice(0, 18)}
+											</span>
+											<span class="text-[10px] text-placeholder sm:hidden">{th.label}</span>
+										</div>
+									))}
+								</div>
+							</li>
+						))}
+					</ul>
+				</section>
+			))
+		}
+	</article>
+</Docs>

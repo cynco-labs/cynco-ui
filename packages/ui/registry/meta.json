@@ -1,0 +1,2342 @@
+[
+	{
+		"name": "DataList",
+		"category": "Layout",
+		"group": "Primitives",
+		"height": 700,
+		"summary": "The one way to show rows of records: Cynco UI's tray table on wide containers, one stacked card per row on narrow ones.",
+		"use": "Any list of documents, accounts, transactions or lines. Don't hand-build <table> markup in a screen; declare columns and let DataList handle layout, selection, totals and the narrow-width card view.",
+		"provide": "columns (key, header, cell, align, className, mobile: title | value | badge | meta | hidden | table | stacked, stackedAs, stackedCell, stackedLabel), rows, getKey; optional stackBelow (sm…3xl or never, default xl = 36rem of container width), column nowrap (keep IDs and dates on one line in the table), onRowClick (rows become keyboard-focusable; Enter/Space activates), isRowSelected, rowClassName, leading / leadingHeader (checkbox), trailing (row menu), totals ({label, [columnKey]: node} — a column-aligned tfoot in the table, a bold summary card when stacked), footer, empty, caption, dense / density (compact | default | comfortable; defaults from DensityProvider), stickyHeader + maxHeight (rows scroll, headers and totals stay put), className and any div props.",
+		"notes": "Responds to its own container (CSS container queries), so the same list works in a page, a side sheet and on a phone. Leading/trailing cells stop click propagation so a checkbox or menu doesn't open the row."
+	},
+	{
+		"name": "StatTile",
+		"category": "Layout",
+		"group": "Primitives",
+		"height": 370,
+		"summary": "One KPI (label, value, optional unit, sub line, badge and status dot) and StatGrid, the auto-fitting grid that holds them.",
+		"use": "Rows of headline figures above a list or report. Put tiles in a StatGrid so they go 4-up on a page, 2-up in a sheet and 1-up on a phone.",
+		"provide": "StatTile: label, value, optional unit, sub, badge, tone (green | blue | red | orange | amber | yellow | purple | pink | fuchsia | neutral), dot (any CSS colour; prefer tone), negative, className, div props, children (e.g. a sparkline). StatGrid: min (sm 9rem | md 11rem | lg 14rem tile width), mode (fit — default, tiles stretch to fill the row; fill — keep empty tracks to align with other grids), className, div props.",
+		"notes": "The value wraps only between words (after \"RM\"), never mid-number, and never truncates; it steps up a size once the tile is 13rem wide."
+	},
+	{
+		"name": "SectionPanel",
+		"category": "Layout",
+		"group": "Primitives",
+		"height": 500,
+		"summary": "A titled card whose header actions wrap under the title when the container is narrow.",
+		"use": "Grouping a chart, a detail list or a small table under a heading with actions. Use flush for content that runs edge to edge (tables).",
+		"provide": "title, description, actions, flush, className, children and any section props.",
+		"notes": "Named SectionPanel so it never collides with the AI kit's flow-canvas Panel."
+	},
+	{
+		"name": "KeyValueList",
+		"category": "Layout",
+		"group": "Primitives",
+		"height": 270,
+		"summary": "A label/value list: side by side when there's room, label above value below 16rem.",
+		"use": "Totals blocks, document detail rails, payment summaries.",
+		"provide": "items ({label, value, negative, strong}), className.",
+		"notes": "Values are tabular-nums and right-aligned; negative uses text-error-text, strong makes a total row."
+	},
+	{
+		"name": "ActionBar",
+		"category": "Layout",
+		"group": "Primitives",
+		"height": 100,
+		"summary": "ActionBar is a row of controls that wraps instead of overflowing; ScrollRow is a single row that scrolls sideways (tabs, steppers, chips).",
+		"use": "ActionBar for page and card toolbars. ScrollRow when the items must stay on one line in order, like status tabs or a stepper.",
+		"provide": "className, children and any div props (both).",
+		"notes": "ScrollRow hides its scrollbar; give it a role (tablist, list) and labels when it carries navigation."
+	},
+	{
+		"name": "ToneDot",
+		"category": "Layout",
+		"group": "Primitives",
+		"height": 80,
+		"summary": "A 6px dot (or square) in one of Cynco UI's status tones; toneBg exposes the same background classes for bars and legend keys.",
+		"use": "A small colour cue next to text that already says the state (account type, autosave, aging bucket).",
+		"provide": "tone, square, className and any span props (title for a hover hint).",
+		"notes": "Decorative (aria-hidden): the meaning must also be in nearby text."
+	},
+	{
+		"name": "Button",
+		"category": "Components",
+		"group": "Actions",
+		"height": 150,
+		"summary": "Cynco's one button: six variants on Base UI's Button, 28px tall by default.",
+		"use": "Use `primary` for the single main action of a view or sheet, `secondary` for everything else, `muted` and `skeleton` for quiet toolbar actions, `destructive` only for irreversible deletes, `dotted` for \"add another\" slots.",
+		"provide": "Children (label, optional Phosphor icon at 14px). Optional `isLoading` (shows `SmallSpinner`, keeps width), `disabled`, `size` (`default` 28px · `sm`/`mini`/`icon` 24px), `render`/`asChild` to render as a link.",
+		"notes": "Primary = `primary` fill with `primary-foreground` text, a 135° sheen and `shadow-sm`; secondary = `interactive-secondary` with `input` border and `btn-secondary-shadow`. Radius `rounded-lg` (= `radius`). One primary per surface."
+	},
+	{
+		"name": "ButtonGroup",
+		"category": "Components",
+		"group": "Actions",
+		"height": 72,
+		"summary": "Joins adjacent buttons, inputs or selects into one segmented control.",
+		"use": "Segmented choices that act as one unit (date ranges, split buttons).",
+		"provide": "Buttons/inputs as children; `orientation` horizontal (default) or vertical. `ButtonGroupText` and `ButtonGroupSeparator` for labels and dividers.",
+		"notes": "Inner radii and duplicate borders are removed automatically."
+	},
+	{
+		"name": "IconButton",
+		"category": "Components",
+		"group": "Actions",
+		"height": 72,
+		"summary": "A Button with a leading or trailing icon slot, sized for Cynco's 14px Phosphor icons.",
+		"use": "Any action whose icon helps scanning: \"New invoice\", \"Filter\". Icon-only for compact toolbars (pair with a tooltip).",
+		"provide": "All Button props plus `icon`, `rightIcon` and `iconOrientation` (`left` · `center` · `right`).",
+		"notes": "Use `skeleton` for icon-only actions inside rows."
+	},
+	{
+		"name": "IconTooltipButton",
+		"category": "Components",
+		"group": "Actions",
+		"height": 72,
+		"summary": "An icon-only button that always carries a tooltip label.",
+		"use": "Compact toolbars and row actions where the icon alone is not self-explanatory.",
+		"provide": "`tooltip` text, `icon`, `onClick`, optional `disabled`.",
+		"notes": "Every icon-only action should use this (or IconButton + Tooltip) so it has an accessible label."
+	},
+	{
+		"name": "ShortcutButton",
+		"category": "Components",
+		"group": "Actions",
+		"height": 72,
+		"summary": "A primary or secondary Button that shows and binds a keyboard shortcut.",
+		"use": "Sheet and dialog submit actions (`metaShortcut=\"enter\"` → ⌘/Ctrl ↵) and page-level \"new\" actions (`singleShortcut=\"n\"`).",
+		"provide": "`children`, `metaShortcut` or `singleShortcut`, `variant` (`primary` · `secondary`), `onClick`, `isLoading`.",
+		"notes": "The shortcut is registered while mounted; the keycap renders inside the button."
+	},
+	{
+		"name": "ToolbarButton",
+		"category": "Components",
+		"group": "Actions",
+		"height": 120,
+		"summary": "The 20px vertical-ellipsis button that opens a table row's actions menu.",
+		"use": "Last cell of a table row, as the trigger of a DropdownMenu.",
+		"provide": "Button props (usually via `DropdownMenuTrigger render`). Clicks stop propagation so the row click does not fire.",
+		"notes": "Always `skeleton`, icon-only; give it an `aria-label`."
+	},
+	{
+		"name": "CopyButton",
+		"category": "Components",
+		"group": "Actions",
+		"height": 96,
+		"summary": "Copy-to-clipboard buttons for IDs and keys, with a \"Copied!\" tooltip.",
+		"use": "`CopyButton` for an ID shown as a chip, `CopyIconButton` for an icon-only copy next to text, `MiniCopyButton` for inline mono IDs in tables (icon reveals on hover).",
+		"provide": "`text` to copy; `displayText` (Mini) to shorten what is shown; `side` for the tooltip.",
+		"notes": "IDs render in the mono family."
+	},
+	{
+		"name": "CopyTextButton",
+		"category": "Components",
+		"group": "Actions",
+		"height": 64,
+		"summary": "A bordered mono chip that copies its text, with a copy icon.",
+		"use": "Showing a document number or ID the user is expected to copy.",
+		"provide": "`text`, optional `children` (display), `copySize`, `icon`.",
+		"notes": ""
+	},
+	{
+		"name": "InlineAction",
+		"category": "Components",
+		"group": "Actions",
+		"height": 64,
+		"summary": "A text-link-style action with an optional small icon.",
+		"use": "\"Add line\", \"Edit\" links inside forms and sheets where a full button is too heavy.",
+		"provide": "Button attributes plus `icon`; children is the label.",
+		"notes": "Text in `tertiary-foreground`, `primary` on hover."
+	},
+	{
+		"name": "PanelButton",
+		"category": "Components",
+		"group": "Actions",
+		"height": 110,
+		"summary": "A large, tactile tile button with screws and seams, selected state glowing in the primary colour.",
+		"use": "Picking one of a few big options in onboarding (business type, tax registration).",
+		"provide": "`isSelected`, `onClick`, `icon` (Phosphor duotone, 20px).",
+		"notes": "Selected tile uses the `panel-shadow` glow (primary-tinted); unselected tiles are neutral. Styled for the light theme."
+	},
+	{
+		"name": "GroupedTabButton",
+		"category": "Components",
+		"group": "Actions",
+		"height": 64,
+		"summary": "A segmented tab control: equal-width options in a single pill track.",
+		"use": "Switching a small set of mutually exclusive modes (period, chart range).",
+		"provide": "`value`, `onValueChange`, `options` [{value, label?, icon?, disabled?}].",
+		"notes": "Fills its container width; constrain the parent."
+	},
+	{
+		"name": "Input",
+		"category": "Components",
+		"group": "Inputs",
+		"height": 120,
+		"summary": "The single-line text input: 28px, `interactive-secondary` fill, `input` border.",
+		"use": "Every text field. Use `variant=\"destructive\"` for validation errors, `headless` inside composite fields.",
+		"provide": "Native input props, `variant`.",
+		"notes": "Built on the form layers: `input-base` + `input-shadow-default` + `input-state-focus` (see Forms). Focus darkens the border and adds a soft 3px ring, never a coloured outline."
+	},
+	{
+		"name": "InputGroup",
+		"category": "Components",
+		"group": "Inputs",
+		"height": 72,
+		"summary": "An input with addons — icons, text, buttons — inside one bordered field.",
+		"use": "Search fields, inputs with units or prefixes, inline submit buttons.",
+		"provide": "`InputGroupAddon` (`align` inline-start · inline-end · block-start · block-end) holding `InputGroupText` or `InputGroupButton`, plus `InputGroupInput` or `InputGroupTextarea`.",
+		"notes": "Uses `input-state-focus-within`."
+	},
+	{
+		"name": "InputOTP",
+		"category": "Components",
+		"group": "Inputs",
+		"height": 80,
+		"summary": "One-time-code input built on input-otp: grouped slots with an optional separator.",
+		"use": "Sign-in OTP entry.",
+		"provide": "`maxLength`, `value`, `onChange`; children `InputOTPGroup` of `InputOTPSlot index`, `InputOTPSeparator`.",
+		"notes": ""
+	},
+	{
+		"name": "Textarea",
+		"category": "Components",
+		"group": "Inputs",
+		"height": 120,
+		"summary": "Multi-line text input with the input styling.",
+		"use": "Descriptions and notes.",
+		"provide": "Native textarea props.",
+		"notes": ""
+	},
+	{
+		"name": "LongInput",
+		"category": "Components",
+		"group": "Inputs",
+		"height": 110,
+		"summary": "A monospace-friendly textarea on `input-background` for JSON and long values.",
+		"use": "Metadata editors and pasted config.",
+		"provide": "Native textarea props.",
+		"notes": ""
+	},
+	{
+		"name": "LabelInput",
+		"category": "Components",
+		"group": "Inputs",
+		"height": 100,
+		"summary": "A labelled Input with an optional description line above it.",
+		"use": "Most form fields in sheets: name, IDs, URLs.",
+		"provide": "`label`, `placeholder` (required), optional `description`, input props.",
+		"notes": "Label uses `text-form-label`; description `text-body-secondary`."
+	},
+	{
+		"name": "TagInput",
+		"category": "Components",
+		"group": "Inputs",
+		"height": 80,
+		"summary": "A free-text input that turns entries into removable tags.",
+		"use": "Lists of IDs or emails typed by the user.",
+		"provide": "`value` string[], `onChange`, optional controlled `inputValue`.",
+		"notes": "Enter or comma adds a tag; Backspace on empty removes the last."
+	},
+	{
+		"name": "TagSelect",
+		"category": "Components",
+		"group": "Inputs",
+		"height": 80,
+		"summary": "A multi-select shown as tags inside a select-style trigger.",
+		"use": "Choosing several known options (tags, branches, tax codes).",
+		"provide": "`value`, `onChange`, `options` [{value,label}], `placeholder`, optional `formatTag`, `renderContent`.",
+		"notes": ""
+	},
+	{
+		"name": "DateInputUnix",
+		"category": "Components",
+		"group": "Inputs",
+		"height": 72,
+		"summary": "A date (and optional time) picker whose value is a Unix timestamp in milliseconds.",
+		"use": "Due dates, schedule dates, backdating.",
+		"provide": "`unixDate` (ms or null), `setUnixDate`; optional `withTime`, `use24Hour`, `disablePastDates`, `minUnixDate`/`maxUnixDate`, `placeholder`.",
+		"notes": "Opens a Calendar in a Popover."
+	},
+	{
+		"name": "TimePickerInput",
+		"category": "Components",
+		"group": "Inputs",
+		"height": 72,
+		"summary": "A two-digit time segment input (hours, minutes, 12-hour) with arrow-key stepping.",
+		"use": "Composing a time picker; used inside DateInputUnix.",
+		"provide": "`picker`, `date`, `setDate`, optional `period`, focus hand-off callbacks.",
+		"notes": "Adapted from openstatusHQ/time-picker (MIT)."
+	},
+	{
+		"name": "Calendar",
+		"category": "Components",
+		"group": "Inputs",
+		"height": 350,
+		"summary": "Month calendar on react-day-picker 8, selected day filled with `primary`.",
+		"use": "Inside date popovers; inline when a date is the main input.",
+		"provide": "react-day-picker props: `mode`, `selected`, `onSelect`, `defaultMonth`, `disabled`.",
+		"notes": "Outside days shown by default."
+	},
+	{
+		"name": "Select",
+		"category": "Components",
+		"group": "Inputs",
+		"height": 240,
+		"summary": "Base UI select with a 28px trigger and an `overlay` popup with check indicators.",
+		"use": "Choosing one of a short, known list (payment terms, currencies). Use SearchableSelect past ~8 options.",
+		"provide": "`value`/`defaultValue`, `onValueChange`, `items` (labels for the value display); children `SelectTrigger` › `SelectValue`, `SelectContent` › `SelectItem`.",
+		"notes": "Trigger uses `input-state-open`. `SelectItem indicator={false}` drops the checkmark."
+	},
+	{
+		"name": "SearchableSelect",
+		"category": "Components",
+		"group": "Inputs",
+		"height": 280,
+		"summary": "A generic select with a search box, built on Popover + Command.",
+		"use": "Choosing an account, item or customer from a long or remote list.",
+		"provide": "`value`, `onValueChange`, `options`, `getOptionValue`, `getOptionLabel`; optional `renderOption`, `renderValue`, `onSearchChange` (server search), `header`/`footer`, `trigger`.",
+		"notes": "`emptyText={null}` hides the empty state."
+	},
+	{
+		"name": "Checkbox",
+		"category": "Components",
+		"group": "Selection",
+		"height": 64,
+		"summary": "Square checkbox in three sizes, `primary` when checked.",
+		"use": "Boolean options in lists and tables; use Switch for settings that apply immediately.",
+		"provide": "`checked`/`defaultChecked`, `onCheckedChange`, `size` (`sm` · `md` · `lg`), `disabled`.",
+		"notes": ""
+	},
+	{
+		"name": "TextCheckbox",
+		"category": "Components",
+		"group": "Selection",
+		"height": 64,
+		"summary": "A Checkbox with a clickable text label.",
+		"use": "Single options in forms.",
+		"provide": "Checkbox props and the label as children.",
+		"notes": "Label uses `text-checkbox-label`; disabled uses `text-checkbox-disabled`."
+	},
+	{
+		"name": "AreaCheckbox",
+		"category": "Components",
+		"group": "Selection",
+		"height": 120,
+		"summary": "A checkbox with a title and description, optionally revealing children when checked.",
+		"use": "Opt-in settings that need explanation (rounding, auto-numbering).",
+		"provide": "`title`, `checked`, `onCheckedChange`; optional `description`, `disabled` + `disabledReason` (tooltip), `children` (shown when checked).",
+		"notes": ""
+	},
+	{
+		"name": "IconCheckbox",
+		"category": "Components",
+		"group": "Selection",
+		"height": 64,
+		"summary": "A toggle that looks like a small secondary button with an icon; checked shows the `primary` border.",
+		"use": "Toggling views and options in toolbars and attach/cancel forms.",
+		"provide": "Button props plus `checked`, `onCheckedChange`, `icon`, `iconOrientation` (`left` with a label, `center` icon-only).",
+		"notes": "Default size `sm`."
+	},
+	{
+		"name": "RadioGroup",
+		"category": "Components",
+		"group": "Selection",
+		"height": 110,
+		"summary": "Base UI radio group; items are small circles filled with `primary`.",
+		"use": "Choosing one of 2–5 visible options.",
+		"provide": "`value`/`defaultValue`, `onValueChange`; `RadioGroupItem value` children, each wrapped in a label.",
+		"notes": "For options with descriptions use AreaRadioGroupItem."
+	},
+	{
+		"name": "AreaRadioGroupItem",
+		"category": "Components",
+		"group": "Selection",
+		"height": 170,
+		"summary": "A radio option with a label and description line.",
+		"use": "Tax treatment and behaviour choices in sheets.",
+		"provide": "Inside RadioGroup: `value`, `label`, optional `description`, `disabled` + `disabledReason`.",
+		"notes": ""
+	},
+	{
+		"name": "Switch",
+		"category": "Components",
+		"group": "Selection",
+		"height": 64,
+		"summary": "On/off switch, 36×20 (or 28×16 inside `SwitchSizeProvider size=\"sm\"`).",
+		"use": "Settings that take effect immediately.",
+		"provide": "`checked`/`defaultChecked`, `onCheckedChange`, `disabled`.",
+		"notes": "Thumb uses `switch-thumb-on` when on."
+	},
+	{
+		"name": "Dialog",
+		"category": "Components",
+		"group": "Overlays",
+		"height": 300,
+		"summary": "Centered modal on `overlay-dialog` with `overlay-dialog-shadow`.",
+		"use": "Confirmations and short, blocking decisions. Longer forms go in a Sheet.",
+		"provide": "`open`/`onOpenChange`; `DialogContent` (`showCloseButton`), `DialogHeader` › `DialogTitle` + `DialogDescription`, `DialogFooter` with secondary then primary/destructive buttons.",
+		"notes": ""
+	},
+	{
+		"name": "Sheet",
+		"category": "Components",
+		"group": "Overlays",
+		"height": 340,
+		"summary": "A side panel for create/edit flows, sliding in from any edge.",
+		"use": "Most create and edit forms in Cynco (new customer, new item).",
+		"provide": "`open`/`onOpenChange`; `SheetContent side`, `SheetHeader` › `SheetTitle` + `SheetDescription`, body, `SheetFooter`.",
+		"notes": "Submit with a ShortcutButton (`metaShortcut=\"enter\"`)."
+	},
+	{
+		"name": "Popover",
+		"category": "Components",
+		"group": "Overlays",
+		"height": 220,
+		"summary": "A floating panel on `overlay` anchored to a trigger.",
+		"use": "Inline details, small forms and pickers.",
+		"provide": "`PopoverTrigger` (use `render` to supply your Button), `PopoverContent` with `align`, `side`, `sideOffset`.",
+		"notes": ""
+	},
+	{
+		"name": "Tooltip",
+		"category": "Components",
+		"group": "Overlays",
+		"height": 110,
+		"summary": "Short label shown on hover/focus; delay 0 by default.",
+		"use": "Naming icon-only controls and clarifying terms.",
+		"provide": "`TooltipTrigger` (with `render`) and `TooltipContent` (`side`, `align`). `Tooltip` brings its own provider.",
+		"notes": "Keep it to one line."
+	},
+	{
+		"name": "HoverCard",
+		"category": "Components",
+		"group": "Overlays",
+		"height": 200,
+		"summary": "A richer hover preview (Base UI PreviewCard).",
+		"use": "Previewing a customer or invoice from a link.",
+		"provide": "`HoverCardTrigger`, `HoverCardContent` with `align`/`side`.",
+		"notes": ""
+	},
+	{
+		"name": "DropdownMenu",
+		"category": "Components",
+		"group": "Overlays",
+		"height": 260,
+		"summary": "Base UI menu: items with icons, shortcuts, checkbox/radio items, submenus and a destructive variant.",
+		"use": "Row actions and overflow menus.",
+		"provide": "`DropdownMenuTrigger` (with `render`), `DropdownMenuContent`, `DropdownMenuItem` (`variant`, `shortcut`, `isLoading`), `DropdownMenuGroup` › `DropdownMenuLabel`, `DropdownMenuSeparator`, `DropdownMenuSub`.",
+		"notes": "A `DropdownMenuLabel` must sit inside a `DropdownMenuGroup`. Destructive items go last, after a separator."
+	},
+	{
+		"name": "Command",
+		"category": "Components",
+		"group": "Overlays",
+		"height": 260,
+		"summary": "cmdk command palette: search input, grouped items, shortcuts, footer hints.",
+		"use": "The ⌘K palette (`CommandDialog`, sizes `default` · `compact`) and searchable lists inside popovers.",
+		"provide": "`CommandInput`, `CommandList` › `CommandEmpty`, `CommandGroup heading`, `CommandItem`, `CommandShortcut`, `CommandSeparator`, `CommandFooter`/`CommandHint`/`CommandKbd`.",
+		"notes": ""
+	},
+	{
+		"name": "InfoTooltip",
+		"category": "Components",
+		"group": "Overlays",
+		"height": 64,
+		"summary": "A small info icon that shows an explanatory tooltip.",
+		"use": "Next to labels whose meaning is not obvious.",
+		"provide": "Tooltip content as children; optional `side`, `align`.",
+		"notes": ""
+	},
+	{
+		"name": "ConditionalTooltip",
+		"category": "Components",
+		"group": "Overlays",
+		"height": 64,
+		"summary": "Wraps an element in a tooltip only when `enabled`.",
+		"use": "Explaining why a control is disabled.",
+		"provide": "`enabled`, `content`, one element child.",
+		"notes": ""
+	},
+	{
+		"name": "SheetCloseButton",
+		"category": "Components",
+		"group": "Overlays",
+		"height": 64,
+		"summary": "The ✕ button positioned in a sheet's top-right corner.",
+		"use": "Custom inline sheets that do not use SheetContent's built-in close.",
+		"provide": "`onClose`.",
+		"notes": "Positions itself absolutely; the parent must be `relative`."
+	},
+	{
+		"name": "SheetBackdrop",
+		"category": "Components",
+		"group": "Overlays",
+		"height": 140,
+		"summary": "Full-viewport dimming backdrop for inline sheets, portaled to the body.",
+		"use": "Behind floating inline sheet panels.",
+		"provide": "`isOpen`, `onClose`, optional `zIndex`.",
+		"notes": "Click closes."
+	},
+	{
+		"name": "Tabs",
+		"category": "Components",
+		"group": "Navigation",
+		"height": 120,
+		"summary": "Base UI tabs with `default` (pill) and `underline` list variants.",
+		"use": "Switching sections of a page (`underline`) or modes inside a panel (`default`).",
+		"provide": "`Tabs value/defaultValue`, `TabsList variant`, `TabsTrigger value variant`, `TabsContent value`.",
+		"notes": "Pass the same `variant` to the list and its triggers."
+	},
+	{
+		"name": "Breadcrumb",
+		"category": "Components",
+		"group": "Navigation",
+		"height": 64,
+		"summary": "Breadcrumb trail with chevron separators.",
+		"use": "Detail pages (Customers › Acme › Invoices).",
+		"provide": "`BreadcrumbList` › `BreadcrumbItem` › `BreadcrumbLink` / `BreadcrumbPage`, `BreadcrumbSeparator`, `BreadcrumbEllipsis`.",
+		"notes": "Links in `muted-foreground`, current page in `foreground`."
+	},
+	{
+		"name": "Pagination",
+		"category": "Components",
+		"group": "Navigation",
+		"height": 64,
+		"summary": "Minimal pagination containers (nav › list › item).",
+		"use": "Wrapping your own previous/next Buttons. Tables use the DataTable pagination parts.",
+		"provide": "Children; `PaginationContent`, `PaginationItem`.",
+		"notes": ""
+	},
+	{
+		"name": "Accordion",
+		"category": "Components",
+		"group": "Navigation",
+		"height": 200,
+		"summary": "Base UI accordion with a chevron that rotates open.",
+		"use": "FAQs and stacked optional sections.",
+		"provide": "`defaultValue`/`value` (array), `type=\"multiple\"`; `AccordionItem value` › `AccordionTrigger` + `AccordionContent`.",
+		"notes": ""
+	},
+	{
+		"name": "SheetAccordion",
+		"category": "Components",
+		"group": "Navigation",
+		"height": 200,
+		"summary": "Accordion sections styled for sheets: title, description, optional separators.",
+		"use": "Grouping long create/edit sheets into collapsible sections.",
+		"provide": "`type`, `defaultValue`, `withSeparator`; `SheetAccordionItem value title description`.",
+		"notes": ""
+	},
+	{
+		"name": "Collapsible",
+		"category": "Components",
+		"group": "Navigation",
+		"height": 120,
+		"summary": "Show/hide a region with a trigger.",
+		"use": "\"Advanced settings\" and similar disclosures.",
+		"provide": "`open`/`defaultOpen`, `CollapsibleTrigger` (with `render`), `CollapsibleContent`.",
+		"notes": ""
+	},
+	{
+		"name": "Carousel",
+		"category": "Components",
+		"group": "Navigation",
+		"height": 160,
+		"summary": "Embla carousel with previous/next buttons.",
+		"use": "Document template and onboarding galleries.",
+		"provide": "`Carousel opts orientation setApi` › `CarouselContent` › `CarouselItem`, `CarouselPrevious`, `CarouselNext`.",
+		"notes": "Leave horizontal room for the arrow buttons."
+	},
+	{
+		"name": "Badge",
+		"category": "Components",
+		"group": "Data display",
+		"height": 64,
+		"summary": "A small rounded label in three variants.",
+		"use": "Counts and neutral labels. Use StatusChip for states.",
+		"provide": "`variant` (`default` · `muted` · `secondary`), `size` (`default` · `sm`), children.",
+		"notes": "Prefer `muted`; `default` is the zinc pill."
+	},
+	{
+		"name": "BetaBadge",
+		"category": "Components",
+		"group": "Data display",
+		"height": 64,
+		"summary": "A tiny \"BETA\" tag.",
+		"use": "Next to the title of a feature in beta.",
+		"provide": "Optional `className`.",
+		"notes": ""
+	},
+	{
+		"name": "IconBadge",
+		"category": "Components",
+		"group": "Data display",
+		"height": 64,
+		"summary": "A badge with a leading or trailing icon.",
+		"use": "Metadata like currency, branch, external links.",
+		"provide": "`icon`/`rightIcon`, `variant` (`default` · `muted`), `position`.",
+		"notes": ""
+	},
+	{
+		"name": "StatusChip",
+		"category": "Components",
+		"group": "Data display",
+		"height": 110,
+		"summary": "A neutral chip whose only colour is a small status square with a glyph.",
+		"use": "Invoice, payment and filing states in tables and headers.",
+		"provide": "`tone` (green · blue · red · orange · amber · yellow · purple · pink · fuchsia · neutral), `glyph` (check, clock, alert, x, pause, play, calendar, coins, …), `dashed` for drafts, label as children. `StatusChipIcon` is the square alone; `StatusRing` is a progress ring (`fraction` 0–1).",
+		"notes": "Never colour the label — the square carries the state, and every state has a glyph and a word, so it never relies on hue. Tone hexes are fixed in the component (e.g. green #30a46c, blue #3e8bd9, red #e5484d, amber #e5a21f), not tokens."
+	},
+	{
+		"name": "StepBadge",
+		"category": "Components",
+		"group": "Data display",
+		"height": 64,
+		"summary": "A small numbered square for step lists.",
+		"use": "Onboarding steps.",
+		"provide": "The step number as children.",
+		"notes": ""
+	},
+	{
+		"name": "SectionTag",
+		"category": "Components",
+		"group": "Data display",
+		"height": 64,
+		"summary": "A muted uppercase-free tag that labels a section.",
+		"use": "Section headings inside sheets and editors.",
+		"provide": "Children.",
+		"notes": ""
+	},
+	{
+		"name": "FilterChip",
+		"category": "Components",
+		"group": "Data display",
+		"height": 64,
+		"summary": "An active filter shown as `label value ×`.",
+		"use": "Inside search bars and toolbars to show applied filters.",
+		"provide": "`label`, `value`, `onRemove`.",
+		"notes": ""
+	},
+	{
+		"name": "InfoRow",
+		"category": "Components",
+		"group": "Data display",
+		"height": 110,
+		"summary": "A label/value row with an optional icon.",
+		"use": "Detail panels (customer, invoice).",
+		"provide": "`label`, `value`, optional `icon`, `mono` for IDs.",
+		"notes": ""
+	},
+	{
+		"name": "Card",
+		"category": "Components",
+		"group": "Data display",
+		"height": 170,
+		"summary": "A `card` surface with header, title, description, action, content and footer slots.",
+		"use": "Grouping related content on a page.",
+		"provide": "`CardHeader` › `CardTitle`, `CardDescription`, `CardAction`; `CardContent`; `CardFooter`.",
+		"notes": "Radius `rounded-xl`, 1px `border`, `shadow-sm`."
+	},
+	{
+		"name": "Alert",
+		"category": "Components",
+		"group": "Feedback",
+		"height": 340,
+		"summary": "Inline notice in five tones: default, note, success, warning, destructive.",
+		"use": "Page- or section-level messages that stay visible.",
+		"provide": "`variant`; an optional leading 16px icon, `AlertTitle`, `AlertDescription`, `AlertAction`.",
+		"notes": "Tinted at 4% fill and 15% border; text stays `foreground` at 80%. Tone hues come from Tailwind (sky, emerald, amber, red), not tokens."
+	},
+	{
+		"name": "Table",
+		"category": "Components",
+		"group": "Data display",
+		"height": 190,
+		"summary": "Plain table primitives (table, header, row, head, cell, footer, caption).",
+		"use": "Small static tables. For data lists use DataTable.",
+		"provide": "Native table element props; `flexibleTableColumns` on `Table`.",
+		"notes": ""
+	},
+	{
+		"name": "DataTable",
+		"category": "Components",
+		"group": "Data display",
+		"height": 280,
+		"summary": "Cynco's data-table kit on TanStack Table: toolbar, heading, tray, header, body, virtualisation, pagination and column visibility.",
+		"use": "Every list page (invoices, customers, items).",
+		"provide": "A TanStack `table` instance (`useReactTable` + `getCoreRowModel` from `@tanstack/react-table`) passed via `DataTable.Provider config={{table, numberOfColumns, isLoading}}`; compose `Toolbar` › `Heading` + `Actions`, then `Container` › `Content` › `Header` + `Body`. Optional `onRowClick`, `getRowHref` + `linkComponent`, `enableSelection`, `virtualization`.",
+		"notes": "Exported as `DataTable` so it does not clash with the `Table` primitive. Surfaces use the `table-*` tokens."
+	},
+	{
+		"name": "ChartContainer",
+		"category": "Components",
+		"group": "Data display",
+		"height": 230,
+		"summary": "shadcn chart wrapper for Recharts: maps a config to `--color-<key>` variables and supplies tooltip and legend content.",
+		"use": "Revenue, expense and cash charts.",
+		"provide": "`config` {key: {label, color | theme}} and one Recharts chart as child (import it from `recharts`); `ChartTooltip` + `ChartTooltipContent`, `ChartLegend` + `ChartLegendContent`.",
+		"notes": "Colour series with `chart-series-1…8` in order; grid lines `chart-grid-stroke`."
+	},
+	{
+		"name": "Progress",
+		"category": "Components",
+		"group": "Feedback",
+		"height": 64,
+		"summary": "A thin progress bar, `primary` on a muted track.",
+		"use": "Progress against a target, setup progress, import progress.",
+		"provide": "`value` 0–100; optional `ProgressLabel`, `ProgressValue` children.",
+		"notes": ""
+	},
+	{
+		"name": "Skeleton",
+		"category": "Components",
+		"group": "Feedback",
+		"height": 90,
+		"summary": "A pulsing `muted` placeholder block.",
+		"use": "Loading states shaped like the content.",
+		"provide": "Sizing classes.",
+		"notes": ""
+	},
+	{
+		"name": "SmallSpinner",
+		"category": "Components",
+		"group": "Feedback",
+		"height": 64,
+		"summary": "A small circular spinner.",
+		"use": "Inline loading (buttons use it automatically when `isLoading`).",
+		"provide": "`size` in px.",
+		"notes": ""
+	},
+	{
+		"name": "LoadingShimmerText",
+		"category": "Components",
+		"group": "Feedback",
+		"height": 64,
+		"summary": "A line of text with a moving shimmer and spinner.",
+		"use": "Long-running background work (\"Syncing bank feed…\").",
+		"provide": "`text`.",
+		"notes": "Uses the `.shimmer` gradient from the stylesheet."
+	},
+	{
+		"name": "CopyablePre",
+		"category": "Components",
+		"group": "Data display",
+		"height": 110,
+		"summary": "A code block (or inline span) with a copy button.",
+		"use": "Install commands and API keys in onboarding.",
+		"provide": "`text`; `CopyableSpan` for inline.",
+		"notes": ""
+	},
+	{
+		"name": "Label",
+		"category": "Components",
+		"group": "Forms",
+		"height": 64,
+		"summary": "A plain form label.",
+		"use": "Labelling custom controls.",
+		"provide": "Children.",
+		"notes": ""
+	},
+	{
+		"name": "FormLabel",
+		"category": "Components",
+		"group": "Forms",
+		"height": 64,
+		"summary": "The standard field label in `text-form-label`, dimmed when disabled.",
+		"use": "Above inputs in sheets.",
+		"provide": "Children, `disabled`.",
+		"notes": ""
+	},
+	{
+		"name": "FieldLabel",
+		"category": "Components",
+		"group": "Forms",
+		"height": 110,
+		"summary": "A field label with optional description and info tooltip.",
+		"use": "Fields that need a hint.",
+		"provide": "Children, optional `description`, `tooltip`, `empty`.",
+		"notes": ""
+	},
+	{
+		"name": "PageHeader",
+		"category": "Components",
+		"group": "Layout",
+		"height": 72,
+		"summary": "Page title row: icon + title (+ accessory) on the left, actions on the right.",
+		"use": "Top of every list page; matches DataTable.Toolbar.",
+		"provide": "`icon` (16px Phosphor fill in `subtle`), `title`, optional `titleAccessory`, actions as children.",
+		"notes": ""
+	},
+	{
+		"name": "PageContainer",
+		"category": "Components",
+		"group": "Layout",
+		"height": 120,
+		"summary": "The main content panel that sits on `outer-background`.",
+		"use": "Wrapping each page's content.",
+		"provide": "Children.",
+		"notes": ""
+	},
+	{
+		"name": "SandboxBanner",
+		"category": "Components",
+		"group": "Layout",
+		"height": 64,
+		"summary": "The blue tab hanging from the top edge that marks sandbox mode.",
+		"use": "Shown on every page while working in a sandbox or demo company.",
+		"provide": "Optional `label`, `icon`, `color`; `SandboxBannerAction` children.",
+		"notes": "Fill is `sandbox`; text white."
+	},
+	{
+		"name": "Separator",
+		"category": "Components",
+		"group": "Layout",
+		"height": 80,
+		"summary": "A 1px horizontal or vertical rule in `border`.",
+		"use": "Dividing groups in toolbars and panels.",
+		"provide": "`orientation`.",
+		"notes": ""
+	},
+	{
+		"name": "ScrollArea",
+		"category": "Components",
+		"group": "Layout",
+		"height": 160,
+		"summary": "A scroll container with thin custom scrollbars.",
+		"use": "Lists inside fixed-height panels and popovers.",
+		"provide": "Children; sizing classes; `ScrollBar orientation` for horizontal.",
+		"notes": ""
+	},
+	{
+		"name": "ResizablePanelGroup",
+		"category": "Components",
+		"group": "Layout",
+		"height": 160,
+		"summary": "Resizable split panes (react-resizable-panels 4).",
+		"use": "Editor layouts with a sidebar and canvas.",
+		"provide": "`orientation`, `ResizablePanel defaultSize`, `ResizableHandle withHandle`.",
+		"notes": ""
+	},
+	{
+		"name": "AmountInput",
+		"category": "Productivity",
+		"group": "Productivity",
+		"height": 240,
+		"summary": "The money field accountants type into: accepts plain figures, “1,234.50”, accounting brackets “(500)”, “1.2k” and formulas like “=1200*1.08” or “100+250.50-20”, and commits an exact decimal string.",
+		"use": "Anywhere a user enters an amount. While focused it shows exactly what was typed (with a live “= RM 1,296.00” hint for formulas); on blur or Enter it evaluates and shows the formatted, right-aligned figure.",
+		"provide": "value / defaultValue (decimal string, \"\" for empty), onValueChange(value: string), currency? (adds the symbol prefix via InputGroup and formats the hint), allowNegative?, invalid? + errorMessage?, placeholder?, messages? (\"below\" for forms, \"overlay\" for grids), onAutoFill? (what “=” then Enter fills), onParseError?, inputClassName?, className (root) and any native input props (aria-*, name, disabled, onBlur…). Forwards its ref to the <input>.",
+		"notes": "Maths via parseAmount / toSen (BigInt, half-up), so 0.1 + 0.2 is 0.30. Fills its container's width; negatives display bracketed in text-error-text."
+	},
+	{
+		"name": "JournalGrid",
+		"category": "Productivity",
+		"group": "Productivity",
+		"height": 600,
+		"summary": "A keyboard-first journal line editor: searchable Account, Description, Debit and Credit cells with spreadsheet movement, auto-balance and a sticky footer showing Total Dr, Total Cr and whether the entry balances.",
+		"use": "On the journal entry create/edit screen, and anywhere else lines must balance (opening balances, accrual templates, payroll postings).",
+		"provide": "lines / defaultLines ({ id, accountId?, description?, debit?, credit? } with decimal-string amounts), onLinesChange(lines), accounts ({ id, code, name, type }), currency? (default MYR), minLines? (default 2), showShortcuts? (default true), className and native div props. Helper: journalTotals(lines) → { debit, credit, difference }.",
+		"notes": "Keys: Tab / Shift+Tab move across cells and wrap to the next/previous line (and leave the grid past the ends); Enter moves down and adds a line on the last one; Shift+Enter up; ↑ ↓ change line in the same column unless the account list is open; mod+Enter adds a line below; mod+Backspace deletes the line (clears it at the minimum); Alt+B, or “=” then Enter in an amount cell, fills the figure that balances the entry; a Debit clears that line's Credit and vice versa, and a negative figure flips sides. Account cell: type a code or name, ↑ ↓ and Enter/Tab to pick, Alt+↓/F4 opens, Esc closes. Totals via sumAmounts; StatusChip shows Balanced / Out by RM x. Responsive: a grid on containers ≥ 36rem, a card per line below that (Debit and Credit side by side, each ≥ 6rem); the footer is sticky to the nearest scroll container."
+	},
+	{
+		"name": "InlineEditCell",
+		"category": "Productivity",
+		"group": "Productivity",
+		"height": 750,
+		"summary": "A table cell that edits in place: click, Enter or F2 to edit text or an amount, Enter or Tab to save, Esc to cancel, with a spinner while an async save is pending and a revert plus message when it fails.",
+		"use": "Inside DataList / table cells for quick single-field corrections where opening a form would be slower: descriptions, references, amounts on draft documents.",
+		"provide": "value, onSave(value) => void | Promise<void> (reject with an Error to revert and show its message), kind? (\"text\" | \"amount\"), currency? (amount read-out), placeholder?, allowNegative?, disabled?, aria-label (field name, e.g. \"Description for EXP-2026-0311\"), className and native div props.",
+		"notes": "Keyboard: the cell is a button (visible focus ring, pencil on hover/focus); Enter, Space, F2 or click starts editing; Enter saves and returns focus to the cell; Tab or blur saves and moves on; Esc cancels. Amount mode uses AmountInput, so formulas work and an invalid figure stays in edit mode. Status (Saving… / Saved / error) is announced through aria-live; the saved tick fades after 1.6s. Fills its cell, so it follows DataList's table / stacked layouts."
+	},
+	{
+		"name": "CommandPalette",
+		"category": "Productivity",
+		"group": "Productivity",
+		"height": 600,
+		"summary": "A ⌘K / Ctrl+K command palette on Cynco UI's CommandDialog: jump to any area, create documents, reopen recent records and run app actions, with fuzzy search across labels, keywords, document numbers and amounts.",
+		"use": "Mount once in the app shell and put a CommandPaletteTrigger in the header. Feed it recently opened records so accountants can type “inv 0142” or an amount like “3240” and land on the document. Use `inline` to embed the same search on a page (an empty state, a “Jump to” screen).",
+		"provide": "CommandPalette: open / defaultOpen / onOpenChange; items (CommandPaletteItem[]: id, group — “Go to” | “Create” | “Recent” | “Actions” or your own heading, label, keywords, icon, shortcut such as \"mod+k\" or \"g i\", hint, href, disabled, onSelect; defaults to CYNCO_PALETTE_ITEMS, Cynco's registry paths, keywords and keybinds); recent (CommandPaletteRecord[]: id, type — invoice | quotation | bill | credit_note | customer | vendor | journal | payment | item | account, number, label, status, amount as a decimal string, currency, keywords, href, onSelect); recentLimit (default 5); onSelect(item) to route with item.href / item.id; hotkey (default \"mod+k\", false to bind your own); placeholder; inline; className. CommandPaletteTrigger: label, shortcut, className and any button props (wire onClick).",
+		"notes": "Keys: ⌘K / Ctrl+K toggles, ↑ ↓ move, Enter runs, Esc closes (clears the query when inline), a leading “>” narrows to actions. Search: every word must match a label, keyword, number or amount (prefix > word start > fuzzy subsequence; acronyms like “gl”, “pl”); groups re-rank by best match. Focus returns to whatever opened it. Rows drop status, amount, type and keycaps as the dialog narrows (container queries), so it stays one line from 320px up."
+	},
+	{
+		"name": "ShortcutsDialog",
+		"category": "Productivity",
+		"group": "Productivity",
+		"height": 420,
+		"summary": "A searchable dialog listing every keyboard shortcut in sections, opened with “?”, plus useGoToShortcuts for two-key “g then i” navigation.",
+		"use": "Mount once in the app shell. Pass your own sections or use CYNCO_SHORTCUT_SECTIONS (Global, Go to, Create, Lists, Journal entry). Call useGoToShortcuts(CYNCO_GOTO_ROUTES, navigate) in the shell so G then I opens Invoices and C then J starts a journal entry.",
+		"provide": "ShortcutsDialog: open / defaultOpen / onOpenChange; sections ([{title, items: [{keys, label}]}], keys like \"mod+enter\", \"g i\" for a sequence, or an array of alternatives); hotkey (default \"?\", false to bind your own); title; className. useGoToShortcuts(map, navigate, {enabled, timeout = 1200 ms, leader = \"g\"}): map keys are a letter after the leader or a full sequence (\"c i\"); returns {pending} so you can show “G…” while it waits.",
+		"notes": "Keys: “?” opens (never while typing), type to filter by label, key or section, Esc closes and returns focus. Sequences are ignored while typing, inside dialogs and menus, and with ⌘/Ctrl/Alt held; any other key or the timeout cancels. Sections flow into two columns once the dialog is 36rem wide."
+	},
+	{
+		"name": "SavedViewsBar",
+		"category": "Productivity",
+		"group": "Productivity",
+		"height": 420,
+		"summary": "Saved views for any list: a scrolling row of view tabs with counts, the active filters as removable FilterChips, and Save / Save as new / Reset once the filters drift from the view; rename, duplicate, share and delete from the active view's menu.",
+		"use": "Above a DataList whose rows you filter from `filters`. Ship built-in views (All, Overdue, Due this week) as `locked`, let people save their own as personal or shared with the team, and persist `views` through onViewsChange.",
+		"provide": "views / defaultViews / onViewsChange (SavedView: id, name, filters, count, shared, locked); activeViewId / defaultActiveViewId / onActiveViewChange; filters / defaultFilters / onFiltersChange (SavedViewFilter: id, field, label, value — the list applies field+value, chips show label and value); counts (rows per view id); addFilter (your Add-filter control, rendered after the chips); label (accessible name, default “Saved views”); className and any div props.",
+		"notes": "A blue dot marks a modified view; locked views offer Save as new only. The tab row scrolls sideways on narrow containers and the save actions wrap under the chips."
+	},
+	{
+		"name": "BulkActionBar",
+		"category": "Productivity",
+		"group": "Productivity",
+		"height": 560,
+		"summary": "Floating toolbar for ticked rows: \"3 selected · RM 34,890.00\", Select all N / Clear, the main actions as buttons and the rest in a ⋯ menu.",
+		"use": "Under any DataList with checkboxes. Render it after the list inside the scrolling container; it sticks to the bottom while rows scroll and disappears at 0 selected. Compute `total` with sumAmounts over the selected rows' money field.",
+		"provide": "count, onClear, actions ([{id, label, icon?, onSelect, destructive?, shortcut? (\"p\", \"shift+v\", \"mod+e\"), disabled?, overflow? (always in the ⋯ menu)}]); optional total (decimal string), currency (default MYR), totalCount + onSelectAll (shows \"Select all N\"), maxVisible (buttons before the ⋯ menu, default 3), sticky (default true), label (toolbar name), className and any div props.",
+		"notes": "The count/total is aria-live. Responsive: one row from 48rem of container width (keycaps shown), below that the summary + Select all/Clear sit above the actions, and under 24rem the summary takes its own line; hidden in print."
+	},
+	{
+		"name": "UndoToast",
+		"category": "Productivity",
+		"group": "Productivity",
+		"height": 380,
+		"summary": "\"Do it, then offer Undo\": a toast with the message, an Undo button (⌘/Ctrl+Z), a countdown bar and late commit — the real write runs in onCommit only if nobody undoes.",
+		"use": "Mount UndoToastProvider once near the app root. On a destructive action, update the UI optimistically and call useUndoToast().show({message, onUndo, onCommit}); do the server call in onCommit. Keep real confirm dialogs only for actions that can't be held back (e.g. submitting to LHDN).",
+		"provide": "UndoToastProvider: children, max (default 3; a 4th toast commits the oldest), duration (ms, default 6000), viewport (default true; false to place <UndoToastViewport/> yourself), position (bottom-center | bottom-right | bottom-left). useUndoToast() → {show({message, onUndo, onCommit?, duration?, undoLabel?, id?}) → id, undo(id?), dismiss(id), count}. UndoToastViewport: position, className, section props. UndoToast (the presentational item): message, onUndo, onDismiss, onExpire, duration, undoLabel, showShortcut, paused, className, li props.",
+		"notes": "Keyboard: ⌘/Ctrl+Z undoes the newest toast (left alone while typing in a field, where it is the field's own undo); F8 jumps to the newest Undo button; Esc on a focused toast dismisses (commits) it; focus returns to where it was. The countdown pauses on hover, on focus and while the tab is hidden; the stack is an aria-live=\"polite\" list. Each toast settles exactly once; anything pending commits when the provider unmounts or on pagehide. No toast library — the countdown is a CSS animation whose end commits. Width is min(24rem, viewport − 2rem); hidden in print."
+	},
+	{
+		"name": "DensityToggle",
+		"category": "Productivity",
+		"group": "Productivity",
+		"height": 420,
+		"summary": "Compact / Default / Comfortable row density as a small segmented radio group with line-spacing icons; its value drives DensityProvider.",
+		"use": "In a list toolbar. Wrap the lists it controls in <DensityProvider density={value}>; every DataList inside picks it up. Pass storageKey to remember the choice per user.",
+		"provide": "value / defaultValue (\"compact\" | \"default\" | \"comfortable\", default \"default\") / onValueChange, labels (auto — hide words when the nearest @container is under 22rem; always; never), storageKey (localStorage, uncontrolled use), label (group name, default \"Row density\"), className and any div props.",
+		"notes": "The demo DataList uses stickyHeader + maxHeight=\"16rem\" so the header and the totals row stay in view while lines scroll; hidden in print."
+	},
+	{
+		"name": "PrintButton",
+		"category": "Productivity",
+		"group": "Productivity",
+		"height": 100,
+		"summary": "A \"Print\" button with a printer icon and a ⌘/Ctrl+P keycap; calls window.print() unless onPrint is given.",
+		"use": "Next to any Cynco document (TaxInvoiceDocument, ReceiptDocument, ProfitAndLossReport…). Pass onPrint to route printing elsewhere (e.g. download the server-rendered PDF).",
+		"provide": "onPrint?, bindShortcut? (default: true only when onPrint is set — otherwise the browser's own ⌘/Ctrl+P already prints the print layout), showShortcut (default true), children (label, default \"Print\"), plus Button props (variant — default secondary, size, disabled, className…).",
+		"notes": "Keyboard: Tab + Enter/Space; ⌘/Ctrl+P when bound (works from inputs too, as a mod shortcut). Hidden in print."
+	},
+	{
+		"name": "DocumentStudio",
+		"category": "Documents",
+		"group": "Documents",
+		"height": 1180,
+		"summary": "The brand editor for every printed document: logo, layout, typeface, language and footer note, with a live preview of any document at any paper size and stamp.",
+		"use": "Settings → Documents (invoice templates). One brand drives invoices, receipts, statements, payslips and reports, so customers set it once.",
+		"provide": "brand / defaultBrand / onBrandChange (DocBrand), documents ([{id, label, render({stamp, size}), sizes?, stamps?}]), defaultDocumentId, onPrint. brandFromCyncoTemplate(template, company) maps Cynco's stored invoice template onto a DocBrand.",
+		"notes": "Controls stack above the preview below 48rem of container width. Logo upload reads the file to a data URL (production should upload it and store the URL). Layout thumbnails and Inter / Geist / Newsreader; documents stay black ink, so there is no colour picker. Print prints only the previewed document."
+	},
+	{
+		"name": "DocumentPage",
+		"category": "Documents",
+		"group": "Documents",
+		"height": 600,
+		"summary": "The document kit: a sheet of paper plus the parts every business document is assembled from — Letterhead, DocumentMeta, PartyGrid, DocumentTable, TotalsBlock, PaymentBlock, EInvoiceBlock, NotesBlock, SignatureBlock, DocumentFooter, DocFields, DocCallout, DocFigureStrip, DocAmountWords.",
+		"use": "Build any printed document by composing the parts inside a DocumentPage, under a DocumentBrandProvider. Invoices, receipts, statements, payslips and reports in this group are all thin assemblies of these parts.",
+		"provide": "DocumentBrandProvider brand (company {name, registrationNo, tin, sstNo, address, phone, email, website}, logo (URL or element; typographic monogram when omitted), layout minimal (default) | classic | modern, font inter | geist | serif, locale en | ms | en-ms, labels overrides, signature, footerNote). DocumentPage: size a4 | a4-landscape | a5 | letter | receipt, stamp paid | void | draft | copy | overdue, fit, isolate, brand (override). Figures are decimal strings, printed as given.",
+		"notes": "Black ink on white paper only — no colour, tints or filled bars; hierarchy from type, spacing and hairlines. In print: real paper size and margins, page numbers \"2 / 3\", headers repeat, rows never split, and only the document prints (isolate). On screen the sheet scales to its container. amountInWords writes Ringgit Malaysia in English or Malay; formatDocAmount and formatDocDate are exact and timezone-safe."
+	},
+	{
+		"name": "TaxInvoiceDocument",
+		"category": "Documents",
+		"group": "Documents",
+		"height": 1052,
+		"summary": "Malaysian tax invoice — or plain Invoice for a seller not registered for SST — assembled from the document kit.",
+		"use": "Printing / PDF-ing a posted sales invoice, including foreign-currency invoices that must show tax and total in MYR for LHDN.",
+		"provide": "invoice: TaxInvoiceData { title ('taxInvoice'|'invoice'), number, status, subtitle?, invoiceDate, dueDate?, terms?, reference?, currency?, billTo, shipTo?, lines: SalesDocLine[] (description, detail, code, quantity, unit, unitPrice, discount, taxCode, taxRate, amount), totals: TotalsRow[], amountInWords?, exchange? {rate, rateDate, source, taxMyr, totalMyr}, payment? {bank…, qr}, einvoice? {status, uuid, validatedAt, url, qr}, notes?, termsAndConditions?, signature? } + brand?, size ('a4'|'letter'), stamp?, fit?, isolate?, className.",
+		"notes": "Layouts minimal / classic / modern in black ink only, any font, locales en / ms / en-ms (bilingual labels stacked or slashed). Money is printed exactly as given (decimal strings); nothing is recomputed. Print: named @page with page numbers, table headers repeat, rows and the totals/sign-off blocks avoid splitting; isolate (default true) prints only the sheet. Stamp from status (paid/void/overdue/draft; override with stamp, null hides). Discount and tax columns appear only when a line uses them; tax shows rate with the SST code under it. Totals rows may use label keys subtotal, discount, serviceTax, salesTax, sst, rounding, total, totalDue, deposit, amountPaid, balanceDue. Foreign currency: the exchange rate and MYR equivalents are printed in a ForeignCurrencyNote under the totals. Production must pass the posted totals, the MyInvois QR element once validated, and the DuitNow QR element if used. The computer-generated notice is hidden when a signature is printed."
+	},
+	{
+		"name": "QuotationDocument",
+		"category": "Documents",
+		"group": "Documents",
+		"height": 1052,
+		"summary": "Quotation with grouped line sections and subtotals, optional add-on items, totals, terms & conditions and a customer acceptance block beside the issuer's signature.",
+		"use": "Sending a priced proposal for the customer to sign and return (projects in phases, supply + installation jobs).",
+		"provide": "quotation: QuotationData { number, status, date, validUntil, reference?, terms?, currency?, preparedBy?, customer, shipTo?, lines? | sections? [{title, lines, subtotal}], optionalItems?, totals, amountInWords?, notes?, termsAndConditions (string | string[]), acceptance? (false | {statement, name, date}), signature? } + presentation props.",
+		"notes": "Layouts minimal / classic / modern in black ink only, any font, locales en / ms / en-ms (bilingual labels stacked or slashed). Money is printed exactly as given (decimal strings); nothing is recomputed. Print: named @page with page numbers, table headers repeat, rows and the totals/sign-off blocks avoid splitting; isolate (default true) prints only the sheet. Section subtotals print as given; optional items are listed in their own group marked 'Not included in the total'. A list of T&Cs prints numbered in two columns. Both sign-off columns use AcceptanceBlock so their lines align; the customer side has a company-stamp box."
+	},
+	{
+		"name": "AdjustmentNoteDocument",
+		"category": "Documents",
+		"group": "Documents",
+		"height": 1052,
+		"summary": "Credit note or debit note (kind) against an original invoice, with reason, lines, totals and the MyInvois e-invoice block.",
+		"use": "Returns, price adjustments and additional charges after an invoice has been issued; both note types are e-invoices in their own right under MyInvois.",
+		"provide": "note: AdjustmentNoteData { kind ('credit'|'debit'), number, status, date, currency?, customer, originalInvoice {number, date, amount}, reason {category?, text}, reference?, lines, totals, amountInWords?, exchange?, einvoice?, notes?, signature? } + presentation props.",
+		"notes": "Layouts minimal / classic / modern in black ink only, any font, locales en / ms / en-ms (bilingual labels stacked or slashed). Money is printed exactly as given (decimal strings); nothing is recomputed. Print: named @page with page numbers, table headers repeat, rows and the totals/sign-off blocks avoid splitting; isolate (default true) prints only the sheet. The original invoice (number, date, amount) sits in the meta band; the reason is a DocCallout beside the customer. Settlement rows (e.g. label 'appliedTo' with the invoice number as hint) follow the total."
+	},
+	{
+		"name": "ReceiptDocument",
+		"category": "Documents",
+		"group": "Documents",
+		"height": 1110,
+		"summary": "Official receipt in A4, A5 or 80mm thermal size: received from, payment method, amount received, allocation to invoices, amount in words and received-by signature.",
+		"use": "Acknowledging a customer payment — cash at the counter (thermal, with 5-sen rounding), or cheque / transfer / DuitNow / card / FPX on A4 or A5.",
+		"provide": "receipt: ReceiptData { number, status, date, currency?, receivedFrom, payment {method: cash|cheque|bank_transfer|duitnow|card|fpx, chequeNo?, bank?, reference?, card?}, amountReceived, allocations? [{number, date, invoiceAmount?, applied}], totals? (e.g. totalDue, rounding, amountReceived, cashTendered, change), notes?, receivedBy? } + size ('a4'|'a5'|'receipt'), monochrome?, brand?, stamp?, fit?, isolate?, className.",
+		"notes": "Layouts minimal / classic / modern in black ink only, any font, locales en / ms / en-ms (bilingual labels stacked or slashed). Money is printed exactly as given (decimal strings); nothing is recomputed. Print: named @page with page numbers, table headers repeat, rows and the totals/sign-off blocks avoid splitting; isolate (default true) prints only the sheet. A4/A5: amount-received headline, payment strip, 'the sum of' in words, allocation table, optional totals, received-by signature. 80mm: centred letterhead, single column of label/value rows, dashed separators, compact totals and words, no signature; monochrome by default because thermal printers print one ink. Cash rounding is a totals row passed by the caller (BNM 5-sen rounding)."
+	},
+	{
+		"name": "DeliveryOrderDocument",
+		"category": "Documents",
+		"group": "Documents",
+		"height": 1052,
+		"summary": "Delivery order without prices: deliver-to and bill-to, delivery date, vehicle and driver, ordered / delivered / back-ordered quantities, packages and weight, and a goods-received block.",
+		"use": "Sending with the goods for the customer to sign on receipt, including partial deliveries with back-orders.",
+		"provide": "order: DeliveryOrderData { number, status, date, deliveryDate?, reference? (PO), salesOrder?, invoiceNo?, billTo, shipTo, vehicleNo?, driver?, lines [{code?, description, detail?, unit?, ordered, delivered, backOrdered?}], packages?, weight?, notes?, signature?, received? {name, icNo, date, signatureImage} } + size ('a4'|'a5'|'letter') and presentation props.",
+		"notes": "Layouts minimal / classic / modern in black ink only, any font, locales en / ms / en-ms (bilingual labels stacked or slashed). Money is printed exactly as given (decimal strings); nothing is recomputed. Print: named @page with page numbers, table headers repeat, rows and the totals/sign-off blocks avoid splitting; isolate (default true) prints only the sheet. Quantities are strings printed as given; the back-ordered column only appears when something is outstanding, with zero shown as a dash. The receiving side uses AcceptanceBlock (signature, name, IC no., date and company-stamp box); fill-in lines print blank until received details are passed."
+	},
+	{
+		"name": "PurchaseOrderDocument",
+		"category": "Documents",
+		"group": "Documents",
+		"height": 1050,
+		"summary": "A purchase order to a vendor: letterhead with PO number, PO date / required-by / terms / quotation ref / requester, vendor and deliver-to blocks, priced lines with item code, quantity + unit and SST rate, posted totals in words, delivery instructions, terms and prepared-by / approved-by signatures.",
+		"use": "Printing, emailing or downloading an approved purchase order; the same component renders the on-screen preview.",
+		"provide": "order: PurchaseOrderData { number, date, requiredBy?, terms?, quotationRef?, requester? {name, department?}, currency?, revision?, vendor: DocParty, deliverTo: DocParty, lines: {itemCode?, description, detail?, quantity, unit?, unitPrice, taxRate?, taxCode?, amount}[], totals: {subtotal?, discount?, taxes?: {label?, rate?, amount}[], shipping?, rounding?, total}, deliveryInstructions?, termsAndConditions?, notes?, preparedBy?, approvedBy?, acceptedBy? }; plus brand?, size? (a4 | letter), stamp?, fit?, isolate?, className.",
+		"notes": "Minimal / classic / modern in black ink only, any font, en / ms / en-ms (bilingual), all from the DocumentBrandProvider. Lines and totals are printed exactly as given (posted values; no maths in the component). Delivery instructions, T&C and notes sit beside the totals so a typical order fits one A4 in modern/minimal English; classic + bilingual flows to a second page with headers repeated and signatures kept together. Footer omits the 'no signature required' notice because the PO is signed. Tax labels accept {en, ms}. Pass acceptedBy (or true) for a vendor acknowledgement line."
+	},
+	{
+		"name": "PaymentVoucherDocument",
+		"category": "Documents",
+		"group": "Documents",
+		"height": 1050,
+		"summary": "A payment voucher: payment date, method (bank transfer with reference, cheque with number, cash, DuitNow, card) and the account it was paid from, payee with bank details, 'Being payment for' purpose, the bills or expense lines paid with account codes, total paid in words, and a four-step approval chain.",
+		"use": "Supporting document for every bill payment, expense claim reimbursement or petty-cash payout; filed with the bills for audit.",
+		"provide": "voucher: PaymentVoucherData { number, date, method: {kind: bank_transfer | cheque | cash | duitnow | card, chequeNo?, bank?, reference?}, paidFrom?: string | {name, accountNumber?}, currency?, payee: DocParty, payeeBank? {bankName?, accountName?, accountNumber?, swiftCode?}, memo?, lines: {reference?, date?, description, detail?, accountCode?, accountName?, amount}[], totals: {subtotal?, taxes?, total, …}, notes?, preparedBy?, checkedBy?, approvedBy?, receivedBy? }; plus brand?, size?, stamp?, fit?, isolate?, className.",
+		"notes": "Credit notes netted off appear as negative lines in brackets. Cheque payments show the cheque number (emphasised) in place of the transaction ref. Signatures: Prepared by · Checked by · Approved by · Received by, in four columns, never split across pages. Fits one A4 in modern/minimal English; classic bilingual may move the signature row to page 2. Total in words follows the brand language (both lines when bilingual)."
+	},
+	{
+		"name": "StatementOfAccountDocument",
+		"category": "Documents",
+		"group": "Documents",
+		"height": 1050,
+		"summary": "A customer or vendor statement: statement date, period, account no. and terms; the party with an account summary (opening, invoices & charges, payments & credits, closing balance); every transaction with date, type, number, description, debit, credit and running balance; an aging strip ending in the total due; payment details and a tear-off remittance slip.",
+		"use": "Month-end customer statements and dunning, or vendor statements for reconciliation (role: 'vendor' drops the remittance slip).",
+		"provide": "statement: StatementOfAccountData { number?, date, periodFrom, periodTo, accountNo?, terms?, currency?, role? (customer | vendor), party: DocParty, openingBalance, totalDebit?, totalCredit?, closingBalance, transactions: {date, type, number?, description?, debit?, credit?, balance}[], aging: {current, days1to30, days31to60, days61to90, days90plus}, totalDue, payment? {bankName?, accountName?, accountNumber?, reference?, qr?}, notes?, remittance? }; plus brand?, size?, stamp?, fit?, isolate?, className.",
+		"notes": "Running balances, aging buckets and totals are printed as given (negative balances in brackets, zero buckets as an em dash). Transaction type accepts a label key (invoice, payment, creditNote, debitNote, refund, journal), {en, ms} or text, so types translate. A 'Balance brought forward' row opens the table and a closing-balance row ends it. Multi-page: the table header repeats on every printed page, rows never split; aging, payment details, footer and the remittance slip follow the last row. Remittance slip: dashed cut line with scissors, pay-to, customer / account / statement date / reference, amount due, and a blank for the amount enclosed."
+	},
+	{
+		"name": "PayslipDocument",
+		"category": "Documents",
+		"group": "Documents",
+		"height": 1050,
+		"summary": "A Malaysian payslip: employer (EPF / SOCSO / LHDN employer numbers) and employee particulars (staff ID, IC, position, department, EPF, SOCSO and income tax numbers, bank account), pay period and pay date, Earnings and Deductions side by side, gross / total deductions / net pay with net pay in words, employer EPF / SOCSO / EIS / HRD Corp contributions as a quieter strip, year-to-date figures and a confidentiality note.",
+		"use": "Monthly payslips from a pay run, printed, emailed as PDF or shown in the employee portal; A5 for the half-sheet many SMEs print.",
+		"provide": "payslip: PayslipData { number?, periodFrom, periodTo, payDate, currency?, employer? {epfNo?, socsoNo?, taxNo?}, employee: {name, staffId?, icNo?, position?, department?, epfNo?, socsoNo?, taxNo?, bankName?, bankAccount?}, earnings, deductions, employerContributions?: {label, detail?, amount}[], grossPay, totalDeductions, netPay, totalEmployerContributions?, ytd?: {label, amount}[], note? }; plus brand?, size? (a4 | a5), stamp?, fit?, isolate?, className.",
+		"notes": "Line labels take keys that translate (basicSalary, allowance, overtime, commission, bonus, epf → KWSP, socso → PERKESO, eis → SIP, pcb, zakat, advance, hrdf → HRD Corp levy), {en, ms} or text; the optional detail line carries the basis (e.g. '11% of EPF wages RM 4,930.00'). All statutory amounts come from the payroll engine and are printed as given (EPF 11% employee / 13% or 12% employer, SOCSO, EIS 0.2%, PCB, zakat, HRDF). A4: meta strip, employee and employer side by side, then a gross, deductions and net strip. A5: one half-sheet: pay period and date move into the letterhead, employer numbers share the Employee row, basis lines are hidden and net pay is a single total with words beside it. Bilingual stacks line labels (English, Malay beneath); basis lines stay in English."
+	},
+	{
+		"name": "ProfitAndLossReport",
+		"category": "Documents",
+		"group": "Documents",
+		"height": 1440,
+		"summary": "Printable Statement of Profit or Loss: revenue, cost of sales, gross profit, grouped operating expenses, operating profit, other income and finance costs, profit before tax, tax and profit for the period, with comparative period, variance and variance %.",
+		"use": "Monthly management accounts, year-to-date and annual P&L packs, board papers — anywhere the P&L leaves Cynco as paper or PDF.",
+		"provide": "report: ProfitAndLossData — period {kind, end, start?, months?}, basis?, currency?, filters?, title?, columns [{label, sublabel?}], variance?, codes?, revenue[], totalRevenue, costOfSales[], totalCostOfSales, grossProfit, operatingExpenses [{label, lines[], total, totalLabel?}], totalOperatingExpenses, operatingProfit, otherIncome?, otherExpenses?, profitBeforeTax, tax[], netProfit, preparedBy?, preparedOn?, notes? (lines are {label, code?, note?, values[], variance?, variancePct?}); plus brand?, size?, stamp?, fit?, isolate?, className.",
+		"notes": "Built from ReportHeader + StatementTable + ReportFooter on the kit's DocumentPage. Minimal / classic / modern in black ink only, any font, EN / BM / EN+BM (row and column labels stacked bilingually). Costs are passed as negative figures and print in brackets; every total and variance is printed as given, never recomputed. Gross/operating/pre-tax/net labels switch to 'loss' when the given figure is negative. A4 by default; the column header repeats on each printed page, totals avoid starting a page."
+	},
+	{
+		"name": "BalanceSheetReport",
+		"category": "Documents",
+		"group": "Documents",
+		"height": 1230,
+		"summary": "Printable Statement of Financial Position: non-current and current assets, current and non-current liabilities, equity, the 'Total equity and liabilities' line with an accountant's double rule, and a Balanced / Out-of-balance check.",
+		"use": "Month-end and year-end balance sheets, with a comparative column (e.g. the last audited year end).",
+		"provide": "report: BalanceSheetData — period (kind 'asAt'), columns, codes?, nonCurrentAssets[], totalNonCurrentAssets, currentAssets[], totalCurrentAssets, totalAssets, currentLiabilities[], totalCurrentLiabilities, nonCurrentLiabilities[], totalNonCurrentLiabilities, totalLiabilities, equity[], totalEquity, totalEquityAndLiabilities, balanced, difference?, basis?, currency?, filters?, preparedBy?, preparedOn?, notes?; plus brand?, size?, stamp?, fit?, isolate?, className.",
+		"notes": "Note references print in a Note column when any line carries one. All three layouts and EN / BM / EN+BM; A4; header repeats when printed."
+	},
+	{
+		"name": "TrialBalanceDocument",
+		"category": "Documents",
+		"group": "Documents",
+		"height": 1250,
+		"summary": "Printable trial balance: account code, account name, debit and credit grouped by account type, matching totals with a double rule, and a quiet 'Balanced' or red 'Out of balance by RM x' line.",
+		"use": "Month-end close packs, auditor requests, the TB attached to journals. (Named …Document because TrialBalanceReport is the on-screen report.)",
+		"provide": "report: TrialBalanceData — period, accounts [{code, name, group?, debit?, credit?}], totalDebit, totalCredit, balanced, difference?, basis?, currency?, filters?, preparedBy?, preparedOn?, notes?; plus brand?, size?, stamp?, fit?, isolate?, className.",
+		"notes": "Consecutive accounts with the same group print under one heading (group can be a label key like 'assets', 'costOfSales', 'expenses'). Empty Dr/Cr sides stay blank, rows are hairline-ruled for long lists. Balanced state is a data flag, never derived. All layouts and locales; A4, header repeats across pages."
+	},
+	{
+		"name": "GeneralLedgerReport",
+		"category": "Documents",
+		"group": "Documents",
+		"height": 580,
+		"summary": "Printable general ledger: per account a header with code, name and opening balance, dated lines with journal no., description, debit, credit and running balance (Dr/Cr), and a closing-balance row with period totals.",
+		"use": "Ledger listings for audit, account reviews, bank and receivables reconciliations; runs over many pages.",
+		"provide": "report: GeneralLedgerData — period, accounts [{code, name, openingBalance, lines [{date, journalNo, description, debit?, credit?, balance}], totalDebit, totalCredit, closingBalance}], balanceStyle? ('drcr' | 'brackets'), basis?, currency?, filters?, preparedBy?, preparedOn?, notes?; plus brand?, size? (default 'a4-landscape'), stamp?, fit?, isolate?, className.",
+		"notes": "Assembled on the kit's DocumentTable (sections per account, dense) so the column header repeats on every printed page; account headers don't orphan and the closing row doesn't start a page. Balances are debit-positive decimal strings printed with a Dr/Cr suffix (Dt/Kt in BM). Running balances come from the ledger — never recomputed."
+	},
+	{
+		"name": "AgedReceivablesReport",
+		"category": "Documents",
+		"group": "Documents",
+		"height": 1060,
+		"summary": "Printable aged receivables by customer: current, 1–30, 31–60, 61–90 and 90+ days with a total column, a totals row with double rule, a % of total row, and a bucket summary with proportional bars.",
+		"use": "Credit-control meetings, month-end receivables review, bank covenant and auditor packs.",
+		"provide": "report: AgedReceivablesData — period (kind 'asAt'), customers [{name, detail?, current, days1to30, days31to60, days61to90, over90, total}], totals {…same buckets}, percentages {…same buckets, e.g. '49.2'}, summary?, basis?, currency?, filters?, preparedBy?, preparedOn?, notes?; plus brand?, size?, stamp?, fit?, isolate?, className.",
+		"notes": "Bucket bars deepen from light to dark grey with age (black ink only). Percentages are supplied by the ledger, not calculated. Customer detail line suits code and terms ('C-0012 · Net 30'). A4 portrait by default (very long names wrap; pass size='a4-landscape' for wide ledgers)."
+	},
+	{
+		"name": "CashFlowReport",
+		"category": "Documents",
+		"group": "Documents",
+		"height": 1150,
+		"summary": "Printable Statement of Cash Flows (indirect method): profit before tax, adjustments, working-capital changes, cash generated from operations, interest and tax paid, investing and financing activities, net change, opening and closing cash, with a reconciliation check.",
+		"use": "Monthly, year-to-date and annual cash flow statements, single period or with comparatives.",
+		"provide": "report: CashFlowData — period, columns, profitBeforeTax, adjustments[], operatingProfitBeforeWorkingCapital, workingCapitalChanges[], cashGeneratedFromOperations, operatingOther?[], netOperating, investing[], netInvesting, financing[], netFinancing, netChange, openingCash, fxEffect?, closingCash, reconciled?, basis?, currency?, filters?, preparedBy?, preparedOn?, notes?; plus brand?, size?, stamp?, fit?, isolate?, className.",
+		"notes": "All layouts and locales; A4; header repeats when printed."
+	},
+	{
+		"name": "InvoiceListTable",
+		"category": "Accounting",
+		"group": "Sales",
+		"height": 470,
+		"summary": "The invoices list: Invoice #, Customer, Date, Due Date, Amount and Status, with row selection, sort headers and per-row actions.",
+		"use": "The Invoicing page's main list, above which InvoiceBulkBar appears once rows are ticked.",
+		"provide": "invoices (invoiceNumber, customerName, invoiceDate, dueDate, total, currency, status, journalEntryId, emailStatus), selectedIds, onToggleRow, onToggleAll, sortField, sortDirection, onSort, optional footer; className.",
+		"notes": "Invoice numbers use text-tiny-id in primary and amounts are right-aligned tabular-nums. Responsive: Built on DataList: a tray table from 48rem of container width, a stacked card per invoice below that (customer and amount, then status and signals, then Invoice #, Date and Due Date)."
+	},
+	{
+		"name": "InvoiceLineItems",
+		"category": "Accounting",
+		"group": "Sales",
+		"height": 528,
+		"summary": "Editable invoice line rows (item and description, qty, unit price, discount, tax code, amount) with a margin dot, a total and estimated-profit footer, and Add item, Browse library and Add line actions.",
+		"use": "Step 2 of the invoice and quotation builders, and read-only on a stored document (readOnly).",
+		"provide": "items (name, description, quantity, price, discount, discountType, taxCode, margin), onChange, currency, taxCodes (value, label, rate; defaults to SST 8%/6%, Sales 10% and Exempt), readOnly, estimatedProfit, onAddItem, onBrowseLibrary; className and native div props.",
+		"notes": "The footer sits on the tray, below the rows."
+	},
+	{
+		"name": "InvoiceTotalsPanel",
+		"category": "Accounting",
+		"group": "Sales",
+		"height": 206,
+		"summary": "The document totals block: Subtotal, Discount (n%), the tax line(s), Total, and Deposit and Balance Due when a deposit is set.",
+		"use": "Under the line items in the invoice and quotation builders.",
+		"provide": "rows ({label, value, bold, accent, negative}), which you can build with the exported buildSalesTotals({subtotal, discount, discountPercent, taxes, deposit}), and currency; className and native dl props.",
+		"notes": "A bg-card bordered panel with text-tertiary-foreground labels. Total is semibold above a table-row-divider, and Balance Due is the one text-primary accent. Responsive: Label and value wrap onto two lines rather than overlapping in a narrow column."
+	},
+	{
+		"name": "InvoiceMetricTiles",
+		"category": "Accounting",
+		"group": "Sales",
+		"height": 108,
+		"summary": "The all-time invoice metric strip: Sales, Paid, Pending and Overdue, where Overdue turns red and shows an 'n invoices' badge.",
+		"use": "Top of the Invoicing page; clicking the Overdue tile filters the list to overdue invoices.",
+		"provide": "stats ({totalValue, paidValue, pendingValue, overdueValue, overdueCount}, or null when the stats failed to load, which shows a dash and Unavailable), currency, onShowOverdue; className and native div props.",
+		"notes": "Responsive: StatGrid/StatTile tiles that auto-fit: 4-up on a page, 2-up on a phone, and the value never truncates."
+	},
+	{
+		"name": "InvoiceCreateSteps",
+		"category": "Accounting",
+		"group": "Sales",
+		"height": 268,
+		"summary": "The invoice builder's vertical three-step rail (Customer Information, Line Items, Invoice Summary) with numbered and checked step markers and a connecting line.",
+		"use": "Left side of the create-invoice flow, wrapping each step's form content.",
+		"provide": "currentStep (1–3), optional completed step numbers, and children keyed by step number for each step's content; className and native ol props.",
+		"notes": "Responsive: A vertical ordered list that works at any width."
+	},
+	{
+		"name": "InvoiceSummaryRail",
+		"category": "Accounting",
+		"group": "Sales",
+		"height": 294,
+		"summary": "The always-visible total bar under the builder: Subtotal, Discount and Tax figures, a large Total and a caret that opens the full breakdown above it, plus trailing actions.",
+		"use": "Sticky footer of the invoice and quotation builders, so the amount stays visible while the preview is collapsed.",
+		"provide": "rows (as for InvoiceTotalsPanel), currency, actions (buttons), defaultOpen; className and native div props.",
+		"notes": "The secondary figures hide through a container query when the rail is too narrow, so the total never truncates. When there are no rows, it reads 'Add a line item to see the total'. Responsive: The Subtotal/Discount/Tax figures show only from 36rem of container width, and the actions wrap under the total when space runs out."
+	},
+	{
+		"name": "InvoiceActionsPanel",
+		"category": "Accounting",
+		"group": "Sales",
+		"height": 298,
+		"summary": "The invoice view's Actions card, which lists only the shortcuts the status allows (Send email or reminder, Mark as paid, Download receipt, Edit, Delivery orders, Credit and debit notes).",
+		"use": "Right rail of the invoice detail page.",
+		"provide": "status, emailSent, onAction(label); className and native section props.",
+		"notes": "Responsive: Built on the SectionPanel primitive."
+	},
+	{
+		"name": "MarkAsPaidDialog",
+		"category": "Accounting",
+		"group": "Sales",
+		"height": 600,
+		"summary": "Records a manual payment against an invoice: a fact block (customer, invoice, amount, balance to record), payment date, payment method chips, the 'Deposited to' bank account, a note, an offline-payment warning and confirm, plus a 'Payment recorded' success state.",
+		"use": "From an invoice's Mark as paid action, for payments received offline.",
+		"provide": "open, defaultOpen, modal, onOpenChange, invoice ({invoiceNumber, customerName, total, paidAmount, currency}), paymentDate, paymentMethod, bankAccounts ({accountCode, accountName}), bankAccount, note, isSubmitting, showSuccess, onConfirm; className (merged onto the dialog panel).",
+		"notes": "Dialog and DialogContent, with the fact block on bg-table-tray and sections divided by table-row-divider. The warning is Alert variant=\"warning\", and bank accounts show their mono account code. Confirm is the primary Button, and it is disabled with no date or when a bank account is required but not chosen. Responsive: The fact block stacks its labels above the values in a narrow dialog, the method chips wrap, and the panel scrolls within the viewport."
+	},
+	{
+		"name": "InvoiceBulkBar",
+		"category": "Accounting",
+		"group": "Sales",
+		"height": 122,
+		"summary": "A floating toolbar for ticked invoice rows: 'n selected', Download PDFs, Delete and clear. A blocked action dims and keeps its reason as a tooltip (drafts have no PDF, invoices with payments or voided can't be deleted).",
+		"use": "Bottom-centre of the Invoicing page while rows are selected.",
+		"provide": "selected ({id, status, hasPayments}), onClear, onDownload, onDelete, downloading, deleting, floating (pins it to the viewport); className and native div props.",
+		"notes": "A bg-card rounded-xl bar with a shadow and skeleton Buttons. Delete uses the destructive text tone. Responsive: The bar wraps: the count goes on its own line in a narrow container, and it never overflows."
+	},
+	{
+		"name": "InvoiceFilterChips",
+		"category": "Accounting",
+		"group": "Sales",
+		"height": 84,
+		"summary": "One removable chip per active list filter (search, status, issued, due or created period, amount range, issued by, currency), plus Clear all.",
+		"use": "Under the invoice search bar, so the active filters are visible and each can be removed.",
+		"provide": "chips ({key, label, value}), onRemove(key), onClearAll; className and native div props.",
+		"notes": "Responsive: Built on ActionBar, so the chips wrap."
+	},
+	{
+		"name": "CreditNoteSummary",
+		"category": "Accounting",
+		"group": "Sales",
+		"height": 316,
+		"summary": "A credit or debit note's totals and where its money went: Applied, Refunded and Credit left for a credit note, or Paid and Still owed for a debit note, with an optional Payments list.",
+		"use": "The credit and debit note detail page.",
+		"provide": "note ({noteType, status, subtotal, discountAmount, taxAmount, totalAmount, appliedAmount, refundAmount, remainingAmount, paidAmount, isInvoiceAmendment, currency}) and payments ({id, paymentDate, method, reference, amount}); className and native div props.",
+		"notes": "The settlement rows hide on drafts, voided notes and invoice amendments. Payments sit on a bg-table-surface list with table-row-divider, and references show in primary text-tiny-id. Responsive: rows and payments wrap rather than overlap when narrow."
+	},
+	{
+		"name": "CreditDebitNoteList",
+		"category": "Accounting",
+		"group": "Sales",
+		"height": 492,
+		"summary": "The credit and debit notes list: Note, Type, Customer, Amount, Status, Date and a row menu.",
+		"use": "The Credit & Debit Notes page.",
+		"provide": "notes ({id, noteNumber, noteType, customerName, totalAmount, currency, status, date}) and onOpen(id); className.",
+		"notes": "On the table tray, with statuses shown through DocStatus. The note type is a neutral tag with a coloured square: hue goes in the square, never the label. A draft note shows 'Draft' in place of its number. Responsive: built on DataList: a table from 48rem of container width, a stacked card per note below (note number and amount, then type and status, then customer and date)."
+	},
+	{
+		"name": "QuotationBoardCard",
+		"category": "Accounting",
+		"group": "Sales",
+		"height": 124,
+		"summary": "One quotation on the Kanban board: customer, quotation number, status, total and relative age ('3d ago', 'Yesterday').",
+		"use": "Inside QuotationBoardColumn, or anywhere you show a quotation at a glance.",
+		"provide": "quotation ({id, quotationNumber, customerName, totalAmount, currency, status, createdAt}), now (reference date for the relative time), onOpen; className and native button props.",
+		"notes": "A bg-card rounded-xl button that hovers to interactive-secondary-hover. The status is a DocStatus chip, with Converted on the refresh glyph. Responsive: the status moves under the name when the card is very narrow."
+	},
+	{
+		"name": "QuotationBoardColumn",
+		"category": "Accounting",
+		"group": "Sales",
+		"height": 388,
+		"summary": "One Kanban column of the quotations board (Draft, Sent / Viewed, Accepted, or Rejected / Expired): icon, label and count above a tray of cards with a column Total, or an empty message.",
+		"use": "Board view of the Quotations page, with four columns side by side.",
+		"provide": "column ('draft' | 'active' | 'accepted' | 'terminal'), quotations, currency, now, onOpen; className and native section props.",
+		"notes": "Responsive: Fluid width (no fixed minimum): lay the columns out in an auto-fit grid or a ScrollRow."
+	},
+	{
+		"name": "QuotationStats",
+		"category": "Accounting",
+		"group": "Sales",
+		"height": 108,
+		"summary": "The quotation KPI row: Total quoted, Sent, Accepted and Conversion rate.",
+		"use": "Top of the Quotations page.",
+		"provide": "stats ({totalQuotedAmount, currency, sentCount, acceptedCount, conversionRate}); className and native div props.",
+		"notes": "Each accent (warning, success, violet) shrinks to a small coloured square before the label, so the figures stay in foreground. Responsive: StatGrid/StatTile, auto-fit 4-up to 2-up."
+	},
+	{
+		"name": "RecurringTemplateTable",
+		"category": "Accounting",
+		"group": "Sales",
+		"height": 328,
+		"summary": "The recurring invoice templates list: Customer with email, Frequency, Next generation, Amount, Generated count and Status.",
+		"use": "The Recurring Invoices page.",
+		"provide": "templates ({id, customerName, customerEmail, frequency, nextGenerationDate, totalAmount, currency, totalGenerated, status}); className.",
+		"notes": "Frequencies read Weekly through Annually; the lifecycle status is a DocStatus chip, with Paused on the pause glyph. Missing values show an em dash. Responsive: built on DataList: a table from 36rem of container width, stacked cards below."
+	},
+	{
+		"name": "AccountingWorkbenchHeader",
+		"category": "Accounting",
+		"group": "Ledger",
+		"height": 190,
+		"summary": "The slim title bar and metric strip that open every accounting workbench tab (Overview, Journal, Ledger, Periods, Opening Balances).",
+		"use": "At the top of a ledger or journal screen, to name the tab, give its quiet sub-line and show three to five at-a-glance figures.",
+		"provide": "title, meta (e.g. \"Company · FY2026 · 214 accounts · MYR\"), actions (buttons), stats [{ key, label, value, hint?, href?, status?: success|warning|danger }], className? (merged on the root) and native props.",
+		"notes": "A workbench title row and a StatGrid in one. Tiles are card surfaces (rounded-xl border bg-card) with text-tiny captions and text-sub tabular values; the single state dot uses the StatusChip tones; linked tiles show a hover arrow. Responsive: tiles are StatGrid/StatTile (auto-fit, values wrap instead of truncating); the action bar wraps under the title when narrow."
+	},
+	{
+		"name": "JournalEntryHeader",
+		"category": "Accounting",
+		"group": "Ledger",
+		"height": 180,
+		"summary": "The journal entry form's top bar: Back, the title with the entry number, the entry status and the From template / Save Draft / Save & Post actions.",
+		"use": "Above the journal entry editor, on both the create and edit screens.",
+		"provide": "title, entryNumber?, status? (draft|pending_approval|approved|posted|reversed|cancelled), isCreate, approvalRequired, isSaving, isPosting, onBack, onFromTemplate, onSave, onPost, className? (merged on the root) and native props.",
+		"notes": "Entry number in text-tiny-id. Approval-required entries show \"Save & Submit for Approval\". Responsive: Actions sit in an ActionBar that wraps under the title on narrow containers."
+	},
+	{
+		"name": "JournalLineEditor",
+		"category": "Accounting",
+		"group": "Ledger",
+		"height": 300,
+		"summary": "The spreadsheet-style debit/credit grid of a journal entry, with an account picker in each Account cell, line description, grouped amount inputs and Add line.",
+		"use": "Inside the journal entry form, above the balance bar, for creating or editing a manual journal.",
+		"provide": "lines [{ key, accountId?, accountCode?, accountName?, description?, debitAmount?, creditAmount? }], accounts (picker list), recentIds?, fieldErrors? keyed `${key}.accountId`, onLinesChange?, className? (merged on the root) and native props.",
+		"notes": "An AI-suggested but unconfirmed account (code with no id) shows a dashed border and an amber warning glyph. Remove is a skeleton icon button, disabled at two lines (double-entry minimum)."
+	},
+	{
+		"name": "AccountPickerField",
+		"category": "Accounting",
+		"group": "Ledger",
+		"height": 430,
+		"summary": "A searchable chart-of-accounts picker: recent accounts first, then one group per account type, codes in mono with the account's normal balance (DR/CR).",
+		"use": "Wherever a single GL account is chosen: journal lines, bank categorisation, default account settings.",
+		"provide": "accounts [{ id, accountCode, accountName, accountType, normalBalance }], recentIds?, selectedId?, defaultOpen?, label?, onSelect?, onCreate?(query), className? (merged on the root) and native props.",
+		"notes": "Keeps the \"Create new account\" / Create “query” sentinel row. No fetching: the consumer passes the accounts. Responsive: The popup follows the trigger width (min 18rem, max the viewport)."
+	},
+	{
+		"name": "JournalBalanceBar",
+		"category": "Accounting",
+		"group": "Ledger",
+		"height": 262,
+		"summary": "The journal form's DR = CR footer: debit and credit totals with Balanced or Off by MYR x, plus the auto-save line.",
+		"use": "Pinned under the line editor so the user always sees whether the entry balances before posting.",
+		"provide": "totalDebit, totalCredit, currency?, hasAmounts?, showError?, autoSave? (saving|saved), className? (merged on the root) and native props.",
+		"notes": "Responsive: Totals and the balance chip wrap onto two lines when narrow."
+	},
+	{
+		"name": "JournalDraftRecoveryBanner",
+		"category": "Accounting",
+		"group": "Ledger",
+		"height": 80,
+		"summary": "The banner offering to recover an unsaved local journal draft.",
+		"use": "Below the journal top bar when a recoverable draft exists in local storage.",
+		"provide": "savedAgo (e.g. \"12 minutes ago\"), onRecover, onDismiss, className? (merged on the root) and native props.",
+		"notes": "Responsive: Buttons wrap under the message when narrow."
+	},
+	{
+		"name": "JournalLinesTable",
+		"category": "Accounting",
+		"group": "Ledger",
+		"height": 340,
+		"summary": "The read-only line items of a saved journal entry: line number, account (code, name, type), description, debit, credit and totals.",
+		"use": "On the journal entry detail page beside the details rail.",
+		"provide": "lines [{ id, lineNumber, accountCode, accountName, accountType, debitAmount, creditAmount, description? }], currency?, className? (merged on the root) and native props.",
+		"notes": "The Balanced / Unbalanced state is a StatusChip in the header. Empty sides are blank and totals are formatted with formatCurrency. Responsive: built on DataList: a tray table on wide containers, stacked line cards (account, Dr/Cr amount, description) below 36rem."
+	},
+	{
+		"name": "JournalEntryDetailsRail",
+		"category": "Accounting",
+		"group": "Ledger",
+		"height": 580,
+		"summary": "The Details · Memo · Activity panel beside a journal entry, with the approval/posting timeline.",
+		"use": "Right rail of the journal entry detail page.",
+		"provide": "entry { entryDate, period, currency, documentNumber?, manualReason?, vendorName?, customerName?, approvedBy?, approvedAt?, postedAt?, memo? }, statusHistory [{ id, fromStatus, toStatus, changedAt, changedBy?, notes? }], createdAt?, updatedAt?, className? (merged on the root) and native props.",
+		"notes": "A hairline-divided card (divide-y, bg-card, rounded-xl) with section-label captions. Timeline statuses are DocStatus chips and the timeline dots take StatusChip tones. Dates read \"29 Oct 2026, 16:05\"; period and reference are text-tiny-id. Responsive: fills its container (no fixed width); long values wrap."
+	},
+	{
+		"name": "ChartOfAccountsTree",
+		"category": "Accounting",
+		"group": "Ledger",
+		"height": 560,
+		"summary": "The nested Chart of Accounts: expandable header accounts, category dot, mono code, name, type and balance, with inactive accounts marked.",
+		"use": "The Chart of Accounts page's main list; pair with CoaAccountPanel for the selected account.",
+		"provide": "nodes [{ id, accountCode, accountName, accountType, balance?, isHeaderAccount?, isActive?, children? }], currency?, defaultExpandedIds?, selectedId?, onSelect?, className? (merged on the root) and native props.",
+		"notes": "Keeps the ARIA tree (role=treeitem, aria-level/expanded/selected, Enter/Space/Arrow keys). Header accounts show \"—\", negatives in text-destructive, Inactive as a neutral StatusChip. Responsive: Container-responsive: below 28rem the code sits above the name, below 36rem the Type column is dropped; headers reuse the row layout so they always line up."
+	},
+	{
+		"name": "CoaAccountPanel",
+		"category": "Accounting",
+		"group": "Ledger",
+		"height": 600,
+		"summary": "The detail panel for a selected account: current balance, normal balance and status, flags, balance history, recent transactions and AI mapping keywords, with an inline edit form.",
+		"use": "Right-hand panel of the Chart of Accounts page.",
+		"provide": "account { accountCode, accountName, accountType, normalBalance, isActive, description?, isSystemAccount?, isBankAccount?, isCashAccount?, isRetainedEarnings?, taxRelated?, currency?, isMonetary?, mappingKeywords? }, currency?, currentBalance, transactionCount, lastTransactionAt?, balanceHistory [{ period, periodDebit, periodCredit, closingBalance }], transactions [{ id, date, description, type, amount, source? }], defaultEditing?, onClose?, className? (merged on the root) and native props.",
+		"notes": "Balance tile is a StatTile on bg-interactive-secondary. Flags and keywords use Badge variant=\"muted\". Responsive: Fills its container (no fixed width); balance tile is a StatTile and balance history a DataList that stacks inside a narrow panel."
+	},
+	{
+		"name": "GeneralLedgerTable",
+		"category": "Accounting",
+		"group": "Ledger",
+		"height": 490,
+		"summary": "The general ledger register for an account: date and entry number, description with counterparty, debit, credit, running balance and reconciled flag, bracketed by opening and closing balance rows.",
+		"use": "The Ledger tab and the ledger explorer, once an account is selected (showAccount for the all-accounts view).",
+		"provide": "rows [{ id, date, entryNumber, description, counterparty?, debit, credit, currency?, baseDebit?, baseCredit?, runningBalance, isReconciled?, accountCode?, accountName? }], baseCurrency?, showAccount?, openingBalance?, openingDate?, closingDate?, className? (merged on the root).",
+		"notes": "Page totals and the closing balance sit on the tray footer. Foreign-currency lines show the ISO code with the \"≈ RM\" base figure underneath; zero sides print \"-\". Reconciled lines carry a green StatusChipIcon. Entry # stacks under the date and the counterparty under the description so the table fits 720px. Responsive: built on DataList: a tray table from 42rem (the description truncates with a tooltip), below that stacked postings with one Dr/Cr amount, date, entry #, balance and Rec."
+	},
+	{
+		"name": "BankLedgerHeader",
+		"category": "Accounting",
+		"group": "Ledger",
+		"height": 180,
+		"summary": "The header over a bank account's ledger: account name, number and linked GL code, the statement tie-out, book vs statement balance, the month stepper and the month's totals.",
+		"use": "Above the bank/GL register for one bank account and month.",
+		"provide": "account { name, number?, glCode?, institutionName?, currency }, month (YYYY-MM), tieOut ({status:'tied',statementClosing} | {status:'off',difference} | {status:'none',basis}), bookBalance, statement?, notCounted?, transactionCount, credits, debits, canPrev?, canNext?, onMonthChange?, onDownload?, className? (merged on the root) and native props.",
+		"notes": "The GL code sits in a mono tag. Credits and debits are neutral figures; an unreconciled gap gets an amber warning glyph rather than coloured text. CSV export is a skeleton icon button (wire onExport yourself). Responsive: balances, the tie-out chip and the month stepper all wrap on narrow containers."
+	},
+	{
+		"name": "PeriodCloseRow",
+		"category": "Accounting",
+		"group": "Ledger",
+		"height": 315,
+		"summary": "One fiscal period in the periods list: open/closed/locked status, year-end marker, account and transaction counts, Dr/Cr totals and the lifecycle actions.",
+		"use": "Stacked in the Periods tab, newest first.",
+		"provide": "period { period (YYYY-MM), fiscalStatus: open|closed|locked, accountCount, transactionCount, totalDebit, totalCredit }, isYearEnd?, baseCurrency?, onClose, onReopen, onLock, onUnlock, className? (merged on the root) and native props.",
+		"notes": "Card row (rounded-xl border bg-card). Open is a green StatusChip; Closed/Locked are neutral chips carrying the lock glyph; Year-End is a muted Badge. Actions are secondary IconButtons: Close period · Lock + Reopen · Unlock. Responsive: Totals and actions drop under the period name when narrow."
+	},
+	{
+		"name": "PeriodCloseChecklist",
+		"category": "Accounting",
+		"group": "Ledger",
+		"height": 420,
+		"summary": "The pre-close checks for a period, grouped worst first (Blocking, Needs attention, Advisories) with the fix-it actions, and the passed checks folded away.",
+		"use": "In the close-period flow before a period is closed.",
+		"provide": "items [{ id, status: fail|attention|warn|pass, label, detail, task?: depreciation|recognition|fxRevaluation, unclosedPeriod?, failure?, attention?: AttentionCard[] }], runningTask?, busy?, onRunTask?, onClosePeriodFirst?, className? (merged on the root) and native props.",
+		"notes": "Passed is a disclosure with Show/Hide. Close notes are kept in local state. Responsive: Passed checks use Collapsible and go two-column from 36rem; action buttons wrap."
+	},
+	{
+		"name": "PeriodCloseAttentionCard",
+		"category": "Accounting",
+		"group": "Ledger",
+		"height": 330,
+		"summary": "A check Cynco could not verify: what is wrong, on which accounts, why it matters, links to fix it, and the closer's note for the close record.",
+		"use": "Inside a Needs attention check of the close checklist (also rendered there automatically).",
+		"provide": "card { key, title, accounts?: [{ code, name }], why, risk, fixes?: [{ label }], fallback? }, note?, onNoteChange?, className? (merged on the root) and native props.",
+		"notes": "Fix links are primary-coloured with the external-link glyph; the note is a Textarea styled with input-base. Label switches to \"Acknowledged. Note for the close record\" once a note is typed. Responsive: Text and fix links wrap at any width."
+	},
+	{
+		"name": "OpeningBalanceTotalsBar",
+		"category": "Accounting",
+		"group": "Ledger",
+		"height": 275,
+		"summary": "The opening-balance trial balance's last line: debit and credit totals, whether they balance (or what is out and where the gap goes), and Discard / Post.",
+		"use": "Sticky at the bottom of the opening balances sheet.",
+		"provide": "debit, credit, currency?, filled, invalidCount?, overLimit?, maxAmount?, suspenseLabel?, onlySubledger?, entryStatus? (draft|posted), isDirty?, isPosting?, canPost?, onDiscard?, onPost?, className? (merged on the root) and native props.",
+		"notes": "Responsive: Container-responsive: one line from 48rem, below that the status box and buttons wrap to their own rows."
+	},
+	{
+		"name": "BankFeedList",
+		"category": "Accounting",
+		"group": "Banking",
+		"height": 570,
+		"summary": "The day-grouped bank transaction stream: search, lifecycle filter, count, and per-day sections of feed rows with the day's net.",
+		"use": "The main Banking feed for one account or all accounts.",
+		"provide": "days [{date, net?, rows: BankFeedTransaction[]}], total, statusLabel, search, showAccount, selectedIds, postAll (money summary when filtered to To post), className and native props (spread on the root).",
+		"notes": "Responsive by container: toolbar wraps (ActionBar), rows switch to the narrow FeedRow layout."
+	},
+	{
+		"name": "BankFeedRow",
+		"category": "Accounting",
+		"group": "Banking",
+		"height": 360,
+		"summary": "One bank line: checkbox, lifecycle spine, payee with transfer and review-flag chips, account dot and description, category cell, signed amount, and any proposed matches beneath.",
+		"use": "Inside the feed list, or anywhere a single bank line is listed.",
+		"provide": "tx (BankFeedTransaction: payeeName, description, reference, type, amount, status, category, suggestion, isTransfer, flags, excludeReason, account {name, color}, matches), selected, showAccount, className and native props (spread on the root).",
+		"notes": "Responsive by container: below 32rem the payee wraps to two lines, flags wrap, the category drops under the text and the amount stays top right."
+	},
+	{
+		"name": "BankCategoryCell",
+		"category": "Accounting",
+		"group": "Banking",
+		"height": 170,
+		"summary": "The categorisation affordance in its four states: AI suggestion with confidence, confirmed chip, '+ Assign', locked, plus the account-picker trigger.",
+		"use": "Wherever a bank line's chart-of-accounts category is set or accepted.",
+		"provide": "status, category, suggestion {accountName, accountCode?, confidence}, picking, onAccept, onPick, className and native props (spread on the root).",
+		"notes": "All states are Buttons (secondary / dotted / skeleton) inside a span root."
+	},
+	{
+		"name": "BankConfidenceMeter",
+		"category": "Accounting",
+		"group": "Banking",
+		"height": 120,
+		"summary": "AI confidence as a tier chip (≥90 high, 70–89 medium, <70 low), a primary progress ring, or a bare percent.",
+		"use": "Beside any AI proposal: categories, matches, changeset reviews.",
+		"provide": "confidence (0–1), variant ('badge' | 'ring' | 'inline'), showTier, className and native props (spread on the root).",
+		"notes": "Inline at any width."
+	},
+	{
+		"name": "BankLifecycleSpine",
+		"category": "Accounting",
+		"group": "Banking",
+		"height": 170,
+		"summary": "Four stacked dots encoding imported → categorized → posted → reconciled; green when settled, hollow when excluded.",
+		"use": "At the start of every feed row; its horizontal aggregate is the settled meter in the account rail.",
+		"provide": "status ('imported' | 'categorized' | 'posted' | 'reconciled' | 'excluded'), className and native props (spread on the root).",
+		"notes": "Fixed 4×4px glyph, width-independent."
+	},
+	{
+		"name": "BankMatchReview",
+		"category": "Accounting",
+		"group": "Banking",
+		"height": 430,
+		"summary": "Proposed matches of a bank line to an invoice or bill: target and mono reference, match % or Confirmed, evidence, what accepting does, and Accept / Reject.",
+		"use": "Under a feed row with matches, or standalone with the bank line as its header.",
+		"provide": "matches [{id, targetLabel, targetReference, confidence, status, evidence[], consequence}], line? {date, payee, description, amount, type}, pendingId, error, onAccept, onReject, className and native props (spread on the root).",
+		"notes": "Responsive by container: Accept / Reject drop under the evidence below 28rem; the bank-line header wraps."
+	},
+	{
+		"name": "BankReviewCard",
+		"category": "Accounting",
+		"group": "Banking",
+		"height": 390,
+		"summary": "One line in the review queue with its AI suggestion and confidence ring, Change / Exclude / Skip, and the why-timeline when active.",
+		"use": "The keyboard review mode for uncategorised lines.",
+		"provide": "tx {payeeName, description, date, type, amount, suggestion}, accountName, active, picking, events, className and native props (spread on the root).",
+		"notes": "Active card gets border-primary/45 on bg-interactive-secondary; inactive cards sit on bg-card. Responsive by container: payee wraps to two lines and actions wrap under the suggestion when narrow."
+	},
+	{
+		"name": "BankTransactionTimeline",
+		"category": "Accounting",
+		"group": "Banking",
+		"height": 210,
+		"summary": "The glass-box reasoning trail for one bank line — rule match, AI suggestion, policy hold, user action — newest first.",
+		"use": "In the review card, import review and ledger detail, so the explanation reads the same everywhere.",
+		"provide": "events [{actor: rule|ai|policy|system|user, action, at, reasoning, confidence, ruleStats, policy}], className and native props (spread on the root).",
+		"notes": "Actor icons are Phosphor at 14px; AI uses text-primary, others the text steps; dates via formatDate. Responsive by container: below 24rem the date moves under each event."
+	},
+	{
+		"name": "BankPostingSummary",
+		"category": "Accounting",
+		"group": "Banking",
+		"height": 300,
+		"summary": "'Waiting to post, by account': what To post will put in the ledger per account and direction, with line counts and signed totals.",
+		"use": "Above the feed when filtered to To post, so a miscoding shows as a total on the wrong account.",
+		"provide": "totals [{accountCode, accountName, type, count, total, currency}], activeKey ('code|type'), onSelect(key | null), className and native props (spread on the root).",
+		"notes": "Responsive: built on DataList: a tray table from 32rem, stacked rows (account and total, then direction and line count) below."
+	},
+	{
+		"name": "BankBalanceEquation",
+		"category": "Accounting",
+		"group": "Banking",
+		"height": 400,
+		"summary": "Opening + money in − money out = result, set against a check balance with a verdict: Ties, Off by RM x, or why it can't be verified; pending terms shimmer.",
+		"use": "Any proof in banking: a statement, a month end, a month's cash.",
+		"provide": "terms [{label, amount (number | null unknown | undefined pending), op, hint}], resultLabel, check {label, amount}, currency, tiesLabel, unknownLabel, size, className and native props (spread on the root).",
+		"notes": "Terms wrap onto new lines; verdict chips wrap their label instead of truncating."
+	},
+	{
+		"name": "BankStatementEquation",
+		"category": "Accounting",
+		"group": "Banking",
+		"height": 410,
+		"summary": "A statement's own proof — opening, money in (n lines), money out (n lines), closing vs the statement's printed closing — with a broken running-balance warning by row.",
+		"use": "Statement import review and the import done screen.",
+		"provide": "statement {openingBalance, closingBalance, totalCredits, totalDebits, creditLines, debitLines} | null while reading, chainValid, brokenRows (0-based), currency, size, className and native props (spread on the root).",
+		"notes": "Built on BankBalanceEquation; the warning line uses an amber StatusChipIcon instead of warning-coloured text. Inherits the equation's wrapping; no overflow at 320px."
+	},
+	{
+		"name": "BankMonthProof",
+		"category": "Accounting",
+		"group": "Banking",
+		"height": 510,
+		"summary": "The month-end proof: statement closing − lines not yet in the ledger − lines dated on another day = expected ledger, checked against the linked GL account, with any difference explained in words.",
+		"use": "The Reconcile lens for the selected month.",
+		"provide": "monthName, asOf, statementClosing (null = no statement), unpostedNet, inTransit {count, net}, ledger, link (linked {code, name} | unlinked | foreign_currency | missing_account), currency, state, className and native props (spread on the root).",
+		"notes": "Inherits the equation's wrapping; prose is max-w-prose."
+	},
+	{
+		"name": "BankMonthClose",
+		"category": "Accounting",
+		"group": "Banking",
+		"height": 420,
+		"summary": "Closing a month: the bank sign-off (or its signed / stale state), then Period close — fiscal status, the two bank checklist items with their figures, and the way to Periods.",
+		"use": "The aside beside the month-end proof in Reconcile.",
+		"provide": "monthName, state, signedOffLabel, standing ('none' | 'holds' | 'stale'), staleNote, signing, fiscalStatus, checks [{id, label, status: pass|warn|attention|fail, text, figures}] (undefined = loading), className and native props (spread on the root).",
+		"notes": "Single column that fits any width; place it in an aside or stack it under the proof."
+	},
+	{
+		"name": "BankCloseStateChip",
+		"category": "Accounting",
+		"group": "Banking",
+		"height": 90,
+		"summary": "A month's close state as a status chip: Closed, Ready to close, Needs work, No statement, Covered, In progress, Not started.",
+		"use": "On the selected month heading and anywhere a month's close state is listed.",
+		"provide": "state, className and native props (spread on the root).",
+		"notes": "Inline at any width."
+	},
+	{
+		"name": "BankReconciliationYearStrip",
+		"category": "Accounting",
+		"group": "Banking",
+		"height": 240,
+		"summary": "'Month-end close · FY 2026' with year stepping, the fiscal year as twelve month cells with state bars and open-line counts, and the selected month's heading and next step.",
+		"use": "Top of the Reconcile lens for one bank account.",
+		"provide": "months [{period 'YYYY-MM', state, openLines, missing, untied, signedOff}], selected, yearLabel, accountName, calendarMonths, selectedSummary {nextStep, signedOffLabel}, className and native props (spread on the root).",
+		"notes": "The strip sits in a table-tray band; the selected cell is a raised bg-table-surface tab with a primary underline; bars use var(--status-green/amber) and neutrals. Responsive by container: 12 months across from 42rem, 6 per row from 24rem, 4 per row below."
+	},
+	{
+		"name": "BankAccountAvatar",
+		"category": "Accounting",
+		"group": "Banking",
+		"height": 90,
+		"summary": "A bank account's mark: the institution's short code in a circle on its brand colour, or the account-type glyph (bank, card, wallet) when there is no institution.",
+		"use": "Account rail rows, reconcile account chooser, connect dialogs.",
+		"provide": "account {accountName, accountType, institution? {name, shortName, primaryColor}}, size, className and native props (spread on the root).",
+		"notes": "Size via the size prop; colour and size styles are data-driven."
+	},
+	{
+		"name": "BankAccountRail",
+		"category": "Accounting",
+		"group": "Banking",
+		"height": 600,
+		"summary": "Accounts as instruments: all-accounts net position, grouped account rows with avatar, feed glyph, statement-gap warning, compact balance, to-categorize count and settled meter, the 6-month net-flow sparkline, and add actions.",
+		"use": "The left rail of the Banking workspace.",
+		"provide": "accounts [{id, accountName, accountType, balance, currency, institution, counts, hasChainIssue, feed {health, summary}}], selectedId, net [{amount, currency}] (never summed across currencies), cashFlow [{month, net}], className and native props (spread on the root).",
+		"notes": "Fills its container (constrain it, e.g. max-w-60, when used as a side rail)."
+	},
+	{
+		"name": "BankRulesTable",
+		"category": "Accounting",
+		"group": "Banking",
+		"height": 600,
+		"summary": "Categorisation rules with match, target account, source, priority, times applied and override rate, plus search, All/Active/Inactive filter, 'Apply to unposted lines' and 'New rule'.",
+		"use": "Banking → Rules.",
+		"provide": "rules [{id, matchType, pattern, account {code, name} | null, category, priority, source, isActive, timesApplied, timesOverridden}], search, status, className and native props (spread on the root).",
+		"notes": "Rule sources are StatusChips (You blue, Learned purple, Default neutral); the row menu is a ToolbarButton and the source filter a GroupedTabButton. Responsive: built on DataList: a tray table from 48rem; below that, stacked cards with the source chip, the three figures folded into one line, and the target account."
+	},
+	{
+		"name": "BankCashFlowChart",
+		"category": "Accounting",
+		"group": "Banking",
+		"height": 330,
+		"summary": "Monthly inflow and outflow bars with net as a line across them, with period totals in the legend.",
+		"use": "Banking overview / cash-flow lens.",
+		"provide": "data [{label, credits, debits, net}], currency, title, className and native props (spread on the root).",
+		"notes": "Built on SectionPanel: the legend wraps under the title when narrow; chart fills the width."
+	},
+	{
+		"name": "TrialBalanceReport",
+		"category": "Accounting",
+		"group": "Reports",
+		"height": 540,
+		"summary": "The trial balance grid: account code and name, Debit/Credit pairs per column group, a totals row that must tie, and a Balanced/Unbalanced chip.",
+		"use": "The trial balance report in its standard, comparative (current | prior | variance) or extended (unadjusted | adjustments | adjusted) shape.",
+		"provide": "rows ({accountId, accountCode, accountName, accountType?, debit?, credit?}); optional groups [{label, muted, signed, debit(row), credit(row), totalDebit?, totalCredit?}], period, description, showType, balanced, badgeLabel, currency; plus className and native element props (spread on the root).",
+		"notes": "Zero Dr/Cr cells stay blank, totals get an accountant's double rule, codes use text-tiny-id. Responsive: DataList tray table from 36rem of container width, one card per account below (blank Dr/Cr show an em dash there); built on SectionPanel + DataList."
+	},
+	{
+		"name": "ProfitLossStatement",
+		"category": "Accounting",
+		"group": "Reports",
+		"height": 570,
+		"summary": "Profit & loss statement: section headers, indented account lines, section totals, Gross profit / Operating profit subtotals and Net Income, single-period or comparative.",
+		"use": "The P&L report page, monthly or YTD; pass priorPeriod for the Current | Prior | Variance | % layout.",
+		"provide": "period, rows (StatementRow: {key, kind: heading|section-header|account|section-total|line|subtotal|grand-total, label, accountCode?, values [current, prior?], negate?, variance?, variancePct?}); optional priorPeriod, description, currency; plus className and native element props (spread on the root).",
+		"notes": "Prior column in text-tertiary-foreground. Responsive: bespoke container-query ladder on surfaces.tray; Variance/% drop below 32rem and the (MYR) suffix below 28rem, account names wrap."
+	},
+	{
+		"name": "BalanceSheetStatement",
+		"category": "Accounting",
+		"group": "Reports",
+		"height": 600,
+		"summary": "Balance sheet: the Total assets / liabilities / equity strip, an out-of-balance callout, and the Assets / Liabilities / Equity ladder with a Balanced chip.",
+		"use": "The balance sheet report as at a period end, single or comparative.",
+		"provide": "asAt, rows (StatementRow ladder, see ProfitLossStatement), totals {assets, liabilities, equity}; optional priorPeriod, equityLabel (legal-form wording), showTotalsStrip, balanced, description, currency; plus className and native element props (spread on the root).",
+		"notes": "Responsive: totals in an auto-fit StatGrid; same container-query ladder as the P&L."
+	},
+	{
+		"name": "ReportToolbar",
+		"category": "Accounting",
+		"group": "Reports",
+		"height": 250,
+		"summary": "Report page header with its control cluster: period select grouped by fiscal year, Monthly/YTD or Standard/Extended view, Compare toggle + comparison period, Save snapshot, freshness label and Export menu.",
+		"use": "Top of every financial statement page (ReportShell header).",
+		"provide": "period ('YYYY-MM'), periods[]; optional title, meta, fiscalYearEnd ('MM-DD'), view + views[{value,label}], compare, comparePeriod, showSaveSnapshot, freshness {mode:'live', lastPostingAt} | {mode:'snapshot', takenAt}, now, onExport(format); plus className and native element props (spread on the root).",
+		"notes": "Layout splits into title row (freshness + Export at right) and a controls row so it fits 720px. State is local, no router. Responsive: title row and controls row are ActionBars that wrap; selects are w-36 max-w-full."
+	},
+	{
+		"name": "KpiTileGrid",
+		"category": "Accounting",
+		"group": "Reports",
+		"height": 210,
+		"summary": "A row of KPI tiles: label, hero figure, signed % delta chip, optional meta chip, sparkline and one quiet sub-line.",
+		"use": "Financial pulse on the reports overview, aging and dashboard pages.",
+		"provide": "tiles [{label, value, delta?, badge?, badgeTone?, sub?, subTone: up|down|warn|muted, sparkline?: number[], accent?}], columns 2–5; plus className and native element props (spread on the root).",
+		"notes": "Tiles are bg-card rounded-xl with the figure in foreground; the accent colour goes to the sparkline (chart-series tokens) and the change is a neutral StatusChip with a green or red arrow. The meta line sits under the figure. Responsive: StatGrid/StatTile auto-fit (min 9rem), 4-up to 2-up; money wraps, never truncates."
+	},
+	{
+		"name": "OwedAgingRings",
+		"category": "Accounting",
+		"group": "Reports",
+		"height": 300,
+		"summary": "Receivables and payables as aging rings — one arc per band (Current, 1–30, 31–60, 61–90, 90+), the total in the middle, a keyed legend and the overdue footnote.",
+		"use": "The Owed band of the CFO numbers panel, or any compact AR/AP aging glance.",
+		"provide": "receivables, payables ({current, days1to30, days31to60, days61to90, over90, total?} or null); optional dso, currency; plus className and native element props (spread on the root).",
+		"notes": "Band colours use the status tokens (--status-green/blue/amber/orange/red); the ring track is stroke-muted; key dots use text-tiny tertiary. Responsive: rings sit side by side from 24rem of container width, stacked below."
+	},
+	{
+		"name": "ReceivablesAgingTable",
+		"category": "Accounting",
+		"group": "Reports",
+		"height": 600,
+		"summary": "Accounts receivable aging: the five-figure summary strip, then customers (top debtors first) across Current / 1-30 / 31-60 / 61-90 / 90+ / Total with totals on the tray.",
+		"use": "AR (or AP with partyLabel 'Vendor') aging report pages and a top-debtors list (limit).",
+		"provide": "asOf, rows [{id, name, invoices?, current, days1to30, days31to60, days61to90, over90}]; optional dso, limit, partyLabel, currency; plus className and native element props (spread on the root).",
+		"notes": "Responsive: StatGrid summary; DataList table from 42rem, a card per customer (bands as label/value lines, total at right) below; totals are the last row."
+	},
+	{
+		"name": "CashFlowOverview",
+		"category": "Accounting",
+		"group": "Reports",
+		"height": 370,
+		"summary": "Money movement chart: inflow and outflow bars per month with net as a line, a 3M/6M range toggle and the window's net, or a connect-bank empty state.",
+		"use": "Dashboard overview cash-flow card.",
+		"provide": "points [{label, credits, debits, net}] oldest → newest; optional currency, hasActivity, defaultRange; plus className and native element props (spread on the root).",
+		"notes": "Responsive: SectionPanel header wraps the net figure and range toggle under the title; chart fills the width."
+	},
+	{
+		"name": "CashRunwayPosition",
+		"category": "Accounting",
+		"group": "Reports",
+		"height": 225,
+		"summary": "The position band of the CFO figures: cash on hand across accounts, the runway meter (months at the last 3 months' burn) and the implied cash trail.",
+		"use": "Top of Cynco numbers panel, answering 'how much cash, how long does it last'.",
+		"provide": "cash, runwayMonths (null when unknown); optional accounts, cashPositive, trail [{label, cash}], currency; plus className and native element props (spread on the root).",
+		"notes": "Responsive: runway block drops under the cash figure below 28rem; trail caption moves under the chart."
+	},
+	{
+		"name": "BusinessHealthPanel",
+		"category": "Accounting",
+		"group": "Reports",
+		"height": 380,
+		"summary": "The controls checklist: each check's verdict, one line of evidence and its area (Books, Collections, Payables, Compliance), failures first, with a summary like '2 of 5 checks need you'.",
+		"use": "Dashboard 'Checks' pane — the CFO's to-do for today.",
+		"provide": "checks [{id, label, detail, area, status: fail|warn|pass|na, href?}] or null (unavailable); plus className and native element props (spread on the root).",
+		"notes": "Responsive: area tag hides below 24rem; evidence line wraps instead of truncating on narrow containers."
+	},
+	{
+		"name": "RecentActivityFeed",
+		"category": "Accounting",
+		"group": "Reports",
+		"height": 410,
+		"summary": "Unified feed of invoices raised, payments moved and bills entered: kind tile, counterparty and reference, status, signed amount and relative time.",
+		"use": "Dashboard 'Recent activity' card.",
+		"provide": "items [{id, kind: invoice|payment|bill, direction: in|out|neutral, title, subtitle?, amount, currency?, status, date, href?}] or null; optional now, viewAllHref (clock for relative times); plus className and native element props (spread on the root).",
+		"notes": "Responsive: status chip moves under the counterparty below 28rem; names and references wrap instead of truncating."
+	},
+	{
+		"name": "BillCard",
+		"category": "Accounting",
+		"group": "Expenses & parties",
+		"height": 330,
+		"summary": "A bill as a compact card: vendor initials, vendor name, bill number, total, due date, category, Overdue/Duplicate flags, AI-extraction confidence and GL-posting indicator, with a status quick-action menu.",
+		"use": "Expense board columns and anywhere a bill is shown outside a table (set showStatus outside a status column).",
+		"provide": "bill (vendorName, billNumber, totalAmount, paidAmount, currency, dueDate, status, category, overdue, isDuplicate, postedToGl, aiConfidence), showStatus, selected / onToggle / someSelected, onAction; className and native div props.",
+		"notes": "Selected state uses border-primary + bg-active-primary. Responsive by container: Wraps its footer and amount instead of clipping in narrow columns."
+	},
+	{
+		"name": "BillsBoard",
+		"category": "Accounting",
+		"group": "Expenses & parties",
+		"height": 470,
+		"summary": "The bills Kanban: In Review, Pending Approval, Awaiting Payment, Scheduled and Paid columns of BillCards with counts, empty messages and a compact per-currency column total.",
+		"use": "The Expenses page board view.",
+		"provide": "bills, columns (subset of board keys, in order), selectedIds + onToggleBill, paidFilterLabel; className and native div props.",
+		"notes": "Responsive by container: columns sit side by side from a 48rem container and stack as sections (cards two-up from 36rem) below that."
+	},
+	{
+		"name": "BillDetailHeader",
+		"category": "Accounting",
+		"group": "Expenses & parties",
+		"height": 310,
+		"summary": "Bill page header: Bills breadcrumb, vendor title with status and Overdue chips, More menu (Archive with confirm) and Re-extract, plus the Bill no. / Issued / Due / Total / Received fact strip and an archived banner.",
+		"use": "Top of the bill detail page.",
+		"provide": "bill (vendorName, billNumber, issueDate, dueDate, totalAmount, currency, status, overdue, isArchived), receivedVia, hasDocument, isReExtracting, isExtracting, onReExtract, onArchive, onRestore; className and native div props.",
+		"notes": "Responsive by container: title, actions and fact strip wrap on narrow containers; the archived banner moves its action under the text."
+	},
+	{
+		"name": "BillAlerts",
+		"category": "Accounting",
+		"group": "Expenses & parties",
+		"height": 330,
+		"summary": "The stack of bill alerts: possible duplicate (with Dismiss), rejection notes, unused vendor credit (Apply vendor credit), vendor list load error and corrupted line items.",
+		"use": "Above the bill form on the bill detail page.",
+		"provide": "isDuplicate, duplicateBill, status, rejectionNotes, unusedCredit {amount, currency}, vendorLoadError, lineItemsCorrupted, onDismissDuplicate, onApplyCredit; className and native div props.",
+		"notes": "Responsive by container: each alert's action drops under its text below a 28rem container."
+	},
+	{
+		"name": "PayRunTable",
+		"category": "Accounting",
+		"group": "Expenses & parties",
+		"height": 565,
+		"summary": "The pay run: Ready / Overdue / Selected metrics, a schedule date (and optional Pay from account) with Schedule selected, and a selectable table of payable bills with outstanding amounts and a total-to-pay footer.",
+		"use": "Expenses Pay runs view, choosing which approved bills to schedule.",
+		"provide": "bills, selectedIds / onSelectedChange or defaultSelectedIds, scheduledDate, today, bankAccounts (optional), onSchedule, isSubmitting; className and native div props.",
+		"notes": "Table primitives inside the DataTable tray: header band on bg-table-tray, rows on bg-table-surface, selected rows bg-active-primary. Only approved or awaiting-payment bills can be scheduled; the rest are counted in an amber 'N excluded' chip. A Pay from account select and a footer total sit on the tray. Responsive: built on StatGrid, ActionBar and DataList: the table becomes stacked bill cards below a 42rem container."
+	},
+	{
+		"name": "RecordBillPaymentDialog",
+		"category": "Accounting",
+		"group": "Expenses & parties",
+		"height": 600,
+		"summary": "Record payment button and right-side sheet: bill total / outstanding summary, Payment Amount (validated against outstanding), date, method, Bank / Cash Account, reference and notes, with Confirm payment.",
+		"use": "Recording a full or partial payment against an approved bill.",
+		"provide": "billAmount, paidAmount, currency, bankAccounts {id, accountCode, accountName}, defaultOpen, defaultDate, disabled, onSubmit; className (trigger button), contentClassName (sheet panel).",
+		"notes": "Fields use text-form-label with Input, Select and Textarea, and a ShortcutButton (⌘/Ctrl ↵) submits, following the long-form-in-a-Sheet rule. Account codes show in mono inside the select. Responsive: the sheet goes full width on phones; the summary uses KeyValueList."
+	},
+	{
+		"name": "ReceiptExtractionProgress",
+		"category": "Accounting",
+		"group": "Expenses & parties",
+		"height": 380,
+		"summary": "Every Cynco AI extraction state on a bill: the four-step Reading / Extracting / Checking / Applying timeline, timed out, done with confidence, and failed (with or without retry).",
+		"use": "Top of the bill form while a receipt or bill document is being read.",
+		"provide": "view ({kind:'running', stage, detail, slow} | {kind:'timed-out'} | {kind:'done', confidence} | {kind:'failed', message, retryable}), hasExtractedData, manualEntry, isReExtracting, onReview, onReExtract, onEnterManually, onCheckStatus; className and native div props.",
+		"notes": "Responsive: actions sit under the message, so it reads at any width."
+	},
+	{
+		"name": "PartyOverviewHeader",
+		"category": "Accounting",
+		"group": "Expenses & parties",
+		"height": 330,
+		"summary": "Top of a customer or vendor page: breadcrumb, name with Inactive chip, Statement and New invoice/New bill actions, the four position KPIs (owes, overdue since, open items, 12-month total) and Activity / Ledger / Details tabs with the terms fact strip.",
+		"use": "Customer and vendor party pages (CustomerPartyPage / VendorPartyPage).",
+		"provide": "role, name, isActive, balance, overdue, overdueSince, openCount, trendTotal, paymentTerms, category, since, currency, tab, onTabChange; className and native div props.",
+		"notes": "Responsive by container: KPIs are a StatGrid (four-up from 48rem, wrapping below); tabs scroll sideways in a ScrollRow."
+	},
+	{
+		"name": "PartyRail",
+		"category": "Accounting",
+		"group": "Expenses & parties",
+		"height": 600,
+		"summary": "The facts rail of a party page: available credit (customers), Position with Books tie / Needs review, the Aging stacked bar and buckets, the 12-month billed/spend bar chart and the contacts list.",
+		"use": "Right column of customer and vendor pages.",
+		"provide": "role, currency, ledgerBalance, openItemsTotal, aging {current, days1to30, days31to60, days61plus}, trend [{month, total}], credits [{currency, amount, count}], contacts [{name, role, email, phone, isPrimary}], className (e.g. grid-cols-2); className and native aside props.",
+		"notes": "Responsive by container: one column as a rail, two from a 36rem container, three from 64rem."
+	},
+	{
+		"name": "PartyTimeline",
+		"category": "Accounting",
+		"group": "Expenses & parties",
+		"height": 430,
+		"summary": "The party Activity story: month-grouped invoices/bills, payments and bank lines with day, kind dot, reference, due date, status, Overdue chip and amount (with MYR equivalent for foreign documents).",
+		"use": "Activity tab of customer and vendor pages.",
+		"provide": "events [{kind, date, title, reference, status, dueDate, overdue, amount, currency, baseAmount}], role, currency; className and native div props.",
+		"notes": "Responsive by container: below a 28rem container the day joins the detail line and titles wrap to two lines."
+	},
+	{
+		"name": "PartyLedgerTable",
+		"category": "Accounting",
+		"group": "Expenses & parties",
+		"height": 300,
+		"summary": "The party subledger: Date, Event, Document, Amount and running Balance, newest first.",
+		"use": "Ledger tab of customer and vendor pages — the ground-truth statement behind the position.",
+		"provide": "rows [{entryDate, event, documentNumber, documentType, amount, runningBalance}] oldest-first, currency; className.",
+		"notes": "Responsive by container: DataList: stacked entries below a 36rem container."
+	},
+	{
+		"name": "CustomerListTable",
+		"category": "Accounting",
+		"group": "Expenses & parties",
+		"height": 445,
+		"summary": "The customers list: selection, customer with initials, contact and location, Owes you (outstanding, overdue or open count, credit-limit chip), Est. margin (90d) and Next action, with row actions.",
+		"use": "Customers page list.",
+		"provide": "customers [{name, email, phone, location, isActive, currency, creditLimit, receivables {outstanding, overdue, openInvoiceCount, extraCurrencies, nextAction {label, tone}}, margin {percent, revenue, belowCostLines}}], defaultSelectedIds, marginWindowDays; selectedIds / onSelectedChange (controlled), onRowClick, className.",
+		"notes": "Responsive by container: DataList: stacked customer cards below a 42rem container, avatar hidden under 28rem."
+	},
+	{
+		"name": "VendorListTable",
+		"category": "Accounting",
+		"group": "Expenses & parties",
+		"height": 365,
+		"summary": "The vendors list: selection, vendor with initials and contact / category / place, You owe (with overdue or All overdue), Paid to date, Last paid and row actions.",
+		"use": "Vendors page list.",
+		"provide": "vendors [{name, email, phone, category, city, country, isActive, outstanding, overdue, totalPaid, lastPaymentDate}], defaultSelectedIds, currency; selectedIds / onSelectedChange (controlled), onRowClick, className.",
+		"notes": "Responsive by container: DataList: stacked vendor cards below a 42rem container."
+	},
+	{
+		"name": "CustomerStatementMetrics",
+		"category": "Accounting",
+		"group": "Expenses & parties",
+		"height": 310,
+		"summary": "Statement of account KPIs: total transactions, invoiced amount with % collected, amount received, balance due, plus credits applied / debits added and the multiple-currencies notice.",
+		"use": "Above the statement of account table.",
+		"provide": "metrics {totalTransactions, invoicedAmount, collectionRate, amountReceived, creditedAmount, debitedAmount, balanceDue}, currency, availableCurrencies, isSingleCurrency; className and native div props.",
+		"notes": "Responsive by container: StatGrid tiles: four-up from 48rem, wrapping to one per row on phones."
+	},
+	{
+		"name": "CustomerStatementTable",
+		"category": "Accounting",
+		"group": "Expenses & parties",
+		"height": 580,
+		"summary": "Statement of account lines: Date, Transactions, Details, Currency, Amount (debit), Payment (credit) and running Balance, with a Balance Due footer.",
+		"use": "Customer statement of account page and its send/print preview.",
+		"provide": "transactions [{date, transactionType, details, currency, amount, payment, balance}], currency, isSingleCurrency, balanceDue, page, totalPages; className.",
+		"notes": "A tray table: zero debits and credits render as em dashes (ReportAmount) and balances are bracketed when negative; Balance Due and the page count sit on the tray footer; the currency code is mono. Responsive: built on DataList: each line becomes a stacked card with its running balance below a 42rem container."
+	},
+	{
+		"name": "TaxComputationSummary",
+		"category": "Accounting",
+		"group": "Tax, assets & operations",
+		"height": 526,
+		"summary": "Form C chargeable income build-up (accounting profit → adjusted → statutory business → total → chargeable income) beside the tax computation (SME bands, rebates, s110/bilateral credits, CP204 paid, balance payable).",
+		"use": "Corporate tax return page, Computation tab.",
+		"provide": "`data` with every Form C line (numbers or numeric strings, null = 0) and `isSME`; optional `rateExplanation` shown under the Standard 24% chip; optional `className` and native div props on the root.",
+		"notes": "Responsive by container: two panels side by side from 42rem of container width, stacked below."
+	},
+	{
+		"name": "TaxInstallmentSchedule",
+		"category": "Accounting",
+		"group": "Tax, assets & operations",
+		"height": 563,
+		"summary": "CP204 monthly instalment table (#, due date, amount, paid, status) with Mark paid on pending rows and a paid-to-date progress bar.",
+		"use": "Tax return page, CP204 tab.",
+		"provide": "`installments` [{id, installmentNumber, dueDate, amount, paidAmount, status: paid|pending|partial|overdue}], `totalDue`, `totalPaid`; optional `onMarkPaid(id)`, `isSubmitting`; optional `description` (defaults to Cynco's 12-instalment copy), `className` and native div props on the root.",
+		"notes": "A table in the DataTable tray (table-tray / table-surface); the totals row sits on the tray and progress shows in the header. Responsive: built on DataList: a tray table when wide, stacked cards (due date, amount, status, paid) when narrow."
+	},
+	{
+		"name": "TaxAdjustmentsTable",
+		"category": "Accounting",
+		"group": "Tax, assets & operations",
+		"height": 309,
+		"summary": "Add-backs, deductions or reliefs for a tax computation: item code, description with GL account, source (Auto (GL) / Manual / AI) and amount, with a total.",
+		"use": "Tax computation adjustments sections, one per category.",
+		"provide": "`title`, `category` (add_back|deduction|relief), `adjustments` [{id, category, itemCode, description, amount, source, accountCode}]; optional `readOnly`, `onAdd`, `onDelete(id)`; optional `className` and native div props on the root.",
+		"notes": "Codes and account codes in mono."
+	},
+	{
+		"name": "TaxFilingWorkflow",
+		"category": "Accounting",
+		"group": "Tax, assets & operations",
+		"height": 210,
+		"summary": "Draft → Reviewed → Filed stepper for a tax return with filing reference, reviewed/filed dates and the next action (Mark reviewed / Mark filed).",
+		"use": "Top of a tax return page.",
+		"provide": "`status` (draft|reviewed|filed|amended); optional `filingReference`, `reviewedAt`, `filedAt`, `readOnly`, `onReview`, `onFile`; optional `className` and native div props on the root.",
+		"notes": "Amended shows the DocStatus chip after the steps. Responsive by container: steps in a ScrollRow; actions wrap under the steps below 42rem."
+	},
+	{
+		"name": "FixedAssetOverview",
+		"category": "Accounting",
+		"group": "Tax, assets & operations",
+		"height": 579,
+		"summary": "Fixed-asset detail: name and status, KPI tiles (total cost, accumulated depreciation, NBV, qualifying expenditure), tabs, fact strip and the Asset details / Depreciation & Tax (method, useful life, CA class, IA/AA) cards, plus disposal details when disposed.",
+		"use": "Fixed asset detail page.",
+		"provide": "`asset` (the cynco LoaderData asset fields); optional `schedule` for the Depreciation tab, `defaultTab`; optional `className` and native div props on the root.",
+		"notes": "The Capital allowances and Revaluations tabs are placeholders in the demo."
+	},
+	{
+		"name": "AssetDepreciationSchedule",
+		"category": "Accounting",
+		"group": "Tax, assets & operations",
+		"height": 335,
+		"summary": "Depreciation schedule by period: charge, accumulated to date, NBV after, and Posted (linked to its journal) or Draft.",
+		"use": "Fixed asset Depreciation tab, or anywhere a schedule is listed.",
+		"provide": "`entries` [{id, period, depreciationAmount, accumulatedToDate, netBookValueAfter, isPosted, journalEntryId}]; optional `onOpenJournal(id)`; optional `className` and native div props on the root.",
+		"notes": "Responsive by container: DataList: table when wide, period/NBV cards when narrow."
+	},
+	{
+		"name": "ItemsListTable",
+		"category": "Accounting",
+		"group": "Tax, assets & operations",
+		"height": 436,
+		"summary": "Items catalogue with selection: name and description, unit price, profit (margin % vs cost or estimated on sales), inventory on hand vs reorder point, tax rate and discount.",
+		"use": "Items page list.",
+		"provide": "`items` [{id, name, description, unitPrice, unitCost, costingMode, targetMarginPercent, trackInventory, unitOfMeasure, reorderPoint, taxRate, discountRate, isArchived}], `inventoryByItem`, `realizedByItem`; optional `selectedItems`, `onToggle`, `onToggleAll`; optional `className` and native div props on the root.",
+		"notes": "Loss-making or below-target margins read in error-text; everything else stays neutral. Responsive: DataList (stacks below 42rem) with the checkbox kept as the leading cell."
+	},
+	{
+		"name": "ItemStatsRow",
+		"category": "Accounting",
+		"group": "Tax, assets & operations",
+		"height": 246,
+		"summary": "Items KPI row: estimated margin on sales (or average profit margin), average revenue per item, highest earning item, most sold item, each over the trailing sales window.",
+		"use": "Above the items list.",
+		"provide": "`stats` {avgProfitMargin, avgRevenuePerItem, highestEarningItem, mostSoldItem}; optional `realizedMargins` {marginPercent, lineCount, belowCostItemCount}, `currency`, `windowDays`; optional `className` and native div props on the root.",
+		"notes": "Responsive by container: StatGrid tiles auto-fit and never truncate."
+	},
+	{
+		"name": "InventoryFlowPanel",
+		"category": "Accounting",
+		"group": "Tax, assets & operations",
+		"height": 322,
+		"summary": "Stock lifecycle in five steps (set up items, order and receive, record bill, dispatch goods, reconcile) with the GL reconciled / review state.",
+		"use": "Top of the inventory workspace.",
+		"provide": "`trackedItems` count and `isReconciled`; optional `className` and native section props on the root.",
+		"notes": "Responsive by container: steps 1 / 2 / 3 / 5 per row by container width."
+	},
+	{
+		"name": "StockBalancesReport",
+		"category": "Accounting",
+		"group": "Tax, assets & operations",
+		"height": 391,
+		"summary": "Stock balances by item and location (on hand, WAC to 4 dp, value, Healthy/Low/Negative) with the GL inventory vs stock ledger reconciliation strip.",
+		"use": "Inventory workspace balances and reports.",
+		"provide": "`balances` [{itemId, itemName, locationName, quantity, unitOfMeasure, weightedAvgCost, value, reorderPoint}], `reconciliation` {glBalance, subledgerBalance, difference, isReconciled}; optional `period`; optional `className` and native section props on the root.",
+		"notes": "Balances table, per-item balance status and a reconciliation strip in one panel. Responsive: DataList for balances; the reconciliation strip wraps."
+	},
+	{
+		"name": "PurchaseOrderStats",
+		"category": "Accounting",
+		"group": "Tax, assets & operations",
+		"height": 111,
+		"summary": "Purchase order KPI row: total POs, drafts, approved total.",
+		"use": "Top of the purchase orders list.",
+		"provide": "`stats` [{status, count, total}]; optional `currency`; optional `className` and native div props on the root.",
+		"notes": "Responsive by container: StatGrid tiles auto-fit."
+	},
+	{
+		"name": "PurchaseOrderLines",
+		"category": "Accounting",
+		"group": "Tax, assets & operations",
+		"height": 317,
+		"summary": "Editable PO line items (description, qty, unit price, amount auto-calculated as qty × price) with remove, Add line item, and subtotal / SST / total.",
+		"use": "Create or edit a purchase order; `readOnly` on the PO detail.",
+		"provide": "`lineItems` [{id, description, quantity, unitPrice, amount}]; optional `onChange` (uncontrolled when omitted), `readOnly`, `currency`, `taxAmount`; optional `className` and native div props on the root.",
+		"notes": "The totals block mirrors the PO's subtotal/tax/total fields."
+	},
+	{
+		"name": "PurchaseOrderLinkedBills",
+		"category": "Accounting",
+		"group": "Tax, assets & operations",
+		"height": 144,
+		"summary": "Bills linked to a purchase order: bill number, issue date, amount and bill status.",
+		"use": "PO detail sidebar.",
+		"provide": "`bills` [{id, billNumber, status, totalAmount, currency, issueDate}]; optional `currency`, `onOpen(id)`; optional `className` and native div props on the root.",
+		"notes": "Responsive by container: rows wrap amount and status under the bill number when narrow."
+	},
+	{
+		"name": "PayslipSummary",
+		"category": "Accounting",
+		"group": "Tax, assets & operations",
+		"height": 568,
+		"summary": "One payslip: gross, statutory deductions, net pay, employer cost; pay lines (earnings and EPF/SOCSO/EIS/PCB deductions); employee and employer contributions per scheme with Unverified flags; payment state and Mark paid.",
+		"use": "Payslip drawer or detail on a payroll run.",
+		"provide": "`payslip` {employeeName, reference, gross, statutoryDeductions, otherDeductions, net, employerCost, paymentStatus, paymentReference, lines, contributions} in integer sen; optional `month`, `canMarkPaid`, `onMarkPaid(reference)`; optional `className` and native section props on the root.",
+		"notes": "Responsive by container: StatGrid tiles wrap; pay lines and contributions sit side by side from 42rem."
+	},
+	{
+		"name": "PayslipsRunTable",
+		"category": "Accounting",
+		"group": "Tax, assets & operations",
+		"height": 391,
+		"summary": "A payroll run's payslips: employee and reference, gross, statutory, other deductions, net, employer cost and Paid/Unpaid, with run totals.",
+		"use": "Payroll run page.",
+		"provide": "`payslips` (PayslipSummary shape, sen); optional `payable` (false for correction runs), `onOpen(id)`; optional `className` and native div props on the root.",
+		"notes": "Responsive by container: DataList: table when wide, employee/net cards when narrow; totals wrap."
+	},
+	{
+		"name": "PayrollRemittancesPanel",
+		"category": "Accounting",
+		"group": "Tax, assets & operations",
+		"height": 362,
+		"summary": "Owed to agencies: employee and employer shares a run remits per creditor (KWSP/EPF, PERKESO SOCSO and EIS, LHDN PCB, HRD Corp).",
+		"use": "Payroll run page, after compute.",
+		"provide": "`remittances` [{payable, label, employee, employer}] in sen; optional `className` and native section props on the root.",
+		"notes": "Responsive by container: DataList stacks below 24rem; totals wrap."
+	},
+	{
+		"name": "EInvoiceStatusCard",
+		"category": "Accounting",
+		"group": "Tax, assets & operations",
+		"height": 321,
+		"summary": "LHDN MyInvois e-invoice state for an invoice or note per environment (valid, pending validation, rejected with LHDN errors, unconfirmed, cancelled, buyer-requested rejection), the validated UUID / long ID stamp, and Submit / Cancel (72-hour window) actions.",
+		"use": "Invoice and credit/debit note detail sidebars (NoteEInvoiceCard).",
+		"provide": "`credentialEnvironments` (sandbox|production), `byEnvironment` {status, documentUuid, longId, validatedAt, rejectionRequestedAt, rejectionReason, validationErrors, unconfirmed, withinCancelWindow}; optional `documentLabel`, `hasCorrection`, `onSubmit`, `onCancel`, `onCheck`; optional `className` and native div props on the root.",
+		"notes": "Fetcher, retry hold and portal-settle flow are left to the caller. Validation stamp from templates/EInvoiceValidationBlock (QR omitted). Responsive by container: controls in a wrapping ActionBar; UUID and long ID break instead of overflowing."
+	},
+	{
+		"name": "Artifact",
+		"category": "AI",
+		"group": "AI",
+		"height": 220,
+		"summary": "A titled container for something the assistant produced (a file, config or document), with actions and a close button.",
+		"use": "Showing generated output beside or inside a chat.",
+		"provide": "`ArtifactHeader` › `ArtifactTitle`, `ArtifactDescription`, `ArtifactActions` › `ArtifactAction` (`tooltip`, `label`, `icon` or children), `ArtifactClose`; `ArtifactContent`.",
+		"notes": ""
+	},
+	{
+		"name": "Canvas",
+		"category": "AI",
+		"group": "AI",
+		"height": 300,
+		"summary": "A React Flow canvas preset for agent workflows: dotted background, pan/zoom, delete keys.",
+		"use": "Visualising multi-step agent or approval workflows.",
+		"provide": "React Flow props: `nodes`, `edges`, `nodeTypes` (use Node), `edgeTypes` (use Edge), plus children such as Controls, Panel.",
+		"notes": "Imports `@xyflow/react/dist/style.css`, so your bundler must handle CSS imports (Vite, Next.js and Astro do)."
+	},
+	{
+		"name": "Node",
+		"category": "AI",
+		"group": "AI",
+		"height": 220,
+		"summary": "A Card-styled workflow node with optional connection handles.",
+		"use": "Each step on a Canvas.",
+		"provide": "`handles` {target, source}; `NodeHeader` › `NodeTitle`, `NodeDescription`, `NodeAction`; `NodeContent`; `NodeFooter`.",
+		"notes": "Register it in `nodeTypes`; with handles it must render inside a Canvas."
+	},
+	{
+		"name": "Edge",
+		"category": "AI",
+		"group": "AI",
+		"height": 220,
+		"summary": "Two edge styles for the Canvas: `Edge.Animated` (a dot travels the path) and `Edge.Temporary` (dashed).",
+		"use": "Connections between Nodes; Temporary for proposed links.",
+		"provide": "Register as `edgeTypes={{animated: Edge.Animated, temporary: Edge.Temporary}}` and set each edge's `type`.",
+		"notes": "Stroke uses `ring`."
+	},
+	{
+		"name": "Controls",
+		"category": "AI",
+		"group": "AI",
+		"height": 220,
+		"summary": "React Flow zoom/fit/lock controls styled for Cynco.",
+		"use": "Inside a Canvas.",
+		"provide": "React Flow Controls props.",
+		"notes": ""
+	},
+	{
+		"name": "Panel",
+		"category": "AI",
+		"group": "AI",
+		"height": 200,
+		"summary": "A floating panel pinned to a corner of the Canvas.",
+		"use": "Canvas titles, run buttons, legends.",
+		"provide": "`position` (`top-left` … `bottom-right`), children.",
+		"notes": ""
+	},
+	{
+		"name": "Toolbar",
+		"category": "AI",
+		"group": "AI",
+		"height": 240,
+		"summary": "A node toolbar that floats above a selected Node.",
+		"use": "Edit/delete actions on a node.",
+		"provide": "React Flow NodeToolbar props: `isVisible`, `position`; children buttons.",
+		"notes": ""
+	},
+	{
+		"name": "Connection",
+		"category": "AI",
+		"group": "AI",
+		"height": 200,
+		"summary": "The connection line drawn while dragging from a handle.",
+		"use": "Pass as the Canvas `connectionLineComponent`.",
+		"provide": "Nothing — React Flow supplies the coordinates.",
+		"notes": "Only visible during a drag."
+	},
+	{
+		"name": "ChainOfThought",
+		"category": "AI",
+		"group": "AI",
+		"height": 240,
+		"summary": "A collapsible list of the assistant's reasoning steps with status, results and images.",
+		"use": "Showing how an answer was reached.",
+		"provide": "`open`/`defaultOpen`; `ChainOfThoughtHeader`, `ChainOfThoughtContent` › `ChainOfThoughtStep` (`label`, `description`, `status` complete · active · pending, `icon`), `ChainOfThoughtSearchResults` › `ChainOfThoughtSearchResult`, `ChainOfThoughtImage caption`.",
+		"notes": ""
+	},
+	{
+		"name": "Checkpoint",
+		"category": "AI",
+		"group": "AI",
+		"height": 72,
+		"summary": "A divider row marking a restorable point in a conversation.",
+		"use": "Between messages, to roll back.",
+		"provide": "`CheckpointIcon`, `CheckpointTrigger` (Button props + `tooltip`).",
+		"notes": ""
+	},
+	{
+		"name": "CodeBlock",
+		"category": "AI",
+		"group": "AI",
+		"height": 180,
+		"summary": "Syntax-highlighted code (Shiki, one-light / one-dark-pro) with line numbers and a copy button.",
+		"use": "Code in assistant replies and tool output.",
+		"provide": "`code`, `language`, `showLineNumbers`; `CodeBlockCopyButton` child.",
+		"notes": "The bundle carries Shiki grammars for TypeScript, TSX, JavaScript, JSX, JSON, Bash, Python, CSS, HTML, Markdown, YAML, SQL and Go; other languages render as plain text."
+	},
+	{
+		"name": "CompactPromptInput",
+		"category": "AI",
+		"group": "AI",
+		"height": 72,
+		"summary": "A one-line prompt field with the submit button inline.",
+		"use": "Small \"ask about this\" boxes without attachments.",
+		"provide": "`value`, `onChange`, `onSubmit`, `placeholder`, `isLoading`.",
+		"notes": ""
+	},
+	{
+		"name": "Confirmation",
+		"category": "AI",
+		"group": "AI",
+		"height": 150,
+		"summary": "An approval request for a tool call, built on Alert.",
+		"use": "When the agent needs a yes/no before acting (deleting, posting).",
+		"provide": "`state` (AI SDK tool state), `approval`; `ConfirmationTitle` › `ConfirmationRequest` / `ConfirmationAccepted` / `ConfirmationRejected`; `ConfirmationActions` › `ConfirmationAction`.",
+		"notes": "Each child renders only in its matching state."
+	},
+	{
+		"name": "Context",
+		"category": "AI",
+		"group": "AI",
+		"height": 300,
+		"summary": "A token-usage meter with a hover card breaking down input, output, reasoning and cache tokens and cost.",
+		"use": "Showing how much of the model's context window is used.",
+		"provide": "`usedTokens`, `maxTokens`, `usage`, `modelId`; `ContextTrigger`, `ContextContent` › `ContextContentHeader`, `ContextContentBody` (usage rows), `ContextContentFooter`.",
+		"notes": "Cost uses tokenlens model prices."
+	},
+	{
+		"name": "Conversation",
+		"category": "AI",
+		"group": "AI",
+		"height": 260,
+		"summary": "A scroll container that sticks to the bottom as messages stream in.",
+		"use": "The chat transcript.",
+		"provide": "`ConversationContent` with Messages; `ConversationEmptyState` (`title`, `description`, `icon`); `ConversationScrollButton`.",
+		"notes": ""
+	},
+	{
+		"name": "Image",
+		"category": "AI",
+		"group": "AI",
+		"height": 140,
+		"summary": "Renders an AI SDK generated image from base64.",
+		"use": "Images returned by an image model.",
+		"provide": "`base64`, `mediaType`, `uint8Array`, `alt`, `className`.",
+		"notes": ""
+	},
+	{
+		"name": "InlineCitation",
+		"category": "AI",
+		"group": "AI",
+		"height": 220,
+		"summary": "Inline citation badges with a hover card listing sources (with carousel for several).",
+		"use": "Citing sources inside assistant text.",
+		"provide": "`InlineCitationText`, `InlineCitationCard` › `InlineCitationCardTrigger sources`, `InlineCitationCardBody` › `InlineCitationSource` (`title`, `url`, `description`) or the carousel parts, `InlineCitationQuote`.",
+		"notes": ""
+	},
+	{
+		"name": "Loader",
+		"category": "AI",
+		"group": "AI",
+		"height": 64,
+		"summary": "A small spinning loader glyph.",
+		"use": "While the assistant is working.",
+		"provide": "`size`.",
+		"notes": ""
+	},
+	{
+		"name": "Message",
+		"category": "AI",
+		"group": "AI",
+		"height": 220,
+		"summary": "A chat message: user bubbles on the right, assistant replies as Markdown, with actions, branches and attachments.",
+		"use": "Every chat turn.",
+		"provide": "`from` (`user` · `assistant`); `MessageContent` › `MessageResponse` (Streamdown Markdown) ; `MessageActions` › `MessageAction` (`tooltip`, `label`); `MessageBranch*` for alternative replies; `MessageAttachments` › `MessageAttachment`.",
+		"notes": "Mermaid diagrams inside Markdown are not bundled and render as nothing."
+	},
+	{
+		"name": "ModelSelector",
+		"category": "AI",
+		"group": "AI",
+		"height": 320,
+		"summary": "A command-palette dialog for choosing a model, with provider logos.",
+		"use": "Model pickers in chat inputs.",
+		"provide": "Dialog props; `ModelSelectorTrigger`, `ModelSelectorContent title` › `ModelSelectorInput`, `ModelSelectorList` › `ModelSelectorGroup heading` › `ModelSelectorItem` › `ModelSelectorLogo provider` + `ModelSelectorName`.",
+		"notes": "Logos load from models.dev at runtime."
+	},
+	{
+		"name": "OpenIn",
+		"category": "AI",
+		"group": "AI",
+		"height": 300,
+		"summary": "A dropdown that opens the current query in ChatGPT, Claude, Cursor, T3, Scira or v0.",
+		"use": "\"Open in…\" next to docs or prompts.",
+		"provide": "`query`; `OpenInTrigger`, `OpenInContent` › `OpenInChatGPT`, `OpenInClaude`, `OpenInCursor`, `OpenInT3`, `OpenInScira`, `OpenInv0`.",
+		"notes": ""
+	},
+	{
+		"name": "Plan",
+		"category": "AI",
+		"group": "AI",
+		"height": 230,
+		"summary": "A collapsible card describing a plan the agent proposes, with a shimmer while streaming.",
+		"use": "Before running multi-step changes.",
+		"provide": "`isStreaming`, `defaultOpen`; `PlanHeader` › `PlanTitle`, `PlanDescription` (strings), `PlanAction` › `PlanTrigger`; `PlanContent`; `PlanFooter`.",
+		"notes": ""
+	},
+	{
+		"name": "PromptInput",
+		"category": "AI",
+		"group": "AI",
+		"height": 170,
+		"summary": "The full chat composer: textarea, attachments, tools, model select, speech and submit with status.",
+		"use": "The main chat input.",
+		"provide": "`onSubmit(message)`, `accept`, `multiple`, `maxFiles`; `PromptInputBody` › `PromptInputTextarea`; `PromptInputFooter` › `PromptInputTools` (buttons, `PromptInputActionMenu`, `PromptInputSelect`, `PromptInputSpeechButton`) + `PromptInputSubmit status`; optional `PromptInputProvider` to control it from outside.",
+		"notes": ""
+	},
+	{
+		"name": "Queue",
+		"category": "AI",
+		"group": "AI",
+		"height": 220,
+		"summary": "A collapsible queue of pending and completed tasks or messages.",
+		"use": "Showing what the agent will do next.",
+		"provide": "`QueueSection` › `QueueSectionTrigger` › `QueueSectionLabel count label`, `QueueSectionContent` › `QueueList` › `QueueItem` › `QueueItemIndicator completed`, `QueueItemContent`, `QueueItemDescription`, `QueueItemActions`.",
+		"notes": ""
+	},
+	{
+		"name": "Reasoning",
+		"category": "AI",
+		"group": "AI",
+		"height": 170,
+		"summary": "The model's reasoning in a collapsible that auto-opens while streaming and reports how long it thought.",
+		"use": "Reasoning models' thinking text.",
+		"provide": "`isStreaming`, `duration`, `defaultOpen`; `ReasoningTrigger` (`getThinkingMessage`), `ReasoningContent` (string, Markdown).",
+		"notes": ""
+	},
+	{
+		"name": "Shimmer",
+		"category": "AI",
+		"group": "AI",
+		"height": 64,
+		"summary": "Text with a moving shimmer.",
+		"use": "Short \"working\" labels while streaming.",
+		"provide": "String children; `duration`, `spread`, `as`.",
+		"notes": ""
+	},
+	{
+		"name": "Sources",
+		"category": "AI",
+		"group": "AI",
+		"height": 160,
+		"summary": "A \"Used N sources\" disclosure listing source links.",
+		"use": "Under answers that searched the web or docs.",
+		"provide": "`SourcesTrigger count`, `SourcesContent` › `Source href title`.",
+		"notes": "Collapsible: pass `defaultOpen` to show the list."
+	},
+	{
+		"name": "Suggestion",
+		"category": "AI",
+		"group": "AI",
+		"height": 72,
+		"summary": "A horizontal row of suggested prompts as pill buttons.",
+		"use": "Empty chats and follow-up ideas.",
+		"provide": "`Suggestions` › `Suggestion suggestion onClick`.",
+		"notes": ""
+	},
+	{
+		"name": "Task",
+		"category": "AI",
+		"group": "AI",
+		"height": 170,
+		"summary": "A collapsible task with its sub-steps and file references.",
+		"use": "Showing an agent's search or edit work.",
+		"provide": "`TaskTrigger title`, `TaskContent` › `TaskItem` (with `TaskItemFile`).",
+		"notes": ""
+	},
+	{
+		"name": "Tool",
+		"category": "AI",
+		"group": "AI",
+		"height": 380,
+		"summary": "A collapsible card for a tool call: name, status badge, parameters and result as highlighted JSON.",
+		"use": "Every tool call in a transcript.",
+		"provide": "`ToolHeader` (`type`, `state`, `title`), `ToolContent` › `ToolInput input`, `ToolOutput output errorText`.",
+		"notes": "States: input-streaming, input-available, approval-requested, output-available, output-error, output-denied."
+	},
+	{
+		"name": "WebPreview",
+		"category": "AI",
+		"group": "AI",
+		"height": 200,
+		"summary": "A mini browser: navigation buttons, URL bar, an iframe body and a collapsible console.",
+		"use": "Previewing a page the agent built.",
+		"provide": "`defaultUrl`, `onUrlChange`; `WebPreviewNavigation` › `WebPreviewNavigationButton tooltip`, `WebPreviewUrl`; `WebPreviewBody` (iframe); `WebPreviewConsole logs`.",
+		"notes": "The demo leaves out the iframe body."
+	}
+]

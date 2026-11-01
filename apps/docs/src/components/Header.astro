@@ -1,0 +1,84 @@
+---
+const GITHUB = "https://github.com/cynco-labs/cynco-ui";
+interface Props {
+	current: string;
+}
+const { current } = Astro.props;
+const links = [
+	{ label: "Docs", href: "/installation", active: !current.startsWith("/components") },
+	{ label: "Components", href: "/components", active: current.startsWith("/components") },
+];
+---
+
+<header class="sticky top-0 z-50 h-14 border-b border-border bg-background/85 backdrop-blur-md supports-[backdrop-filter]:bg-background/75">
+	<div class="mx-auto flex h-full max-w-[90rem] items-center gap-3 px-4 sm:px-6 lg:px-8">
+		<button
+			id="nav-toggle"
+			type="button"
+			class="-ml-1.5 inline-flex size-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground lg:hidden"
+			aria-label="Open navigation"
+			aria-controls="sidebar"
+			aria-expanded="false"
+		>
+			<svg class="size-[18px]" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M224 128a8 8 0 0 1-8 8H40a8 8 0 0 1 0-16h176a8 8 0 0 1 8 8ZM40 72h176a8 8 0 0 0 0-16H40a8 8 0 0 0 0 16Zm176 112H40a8 8 0 0 0 0 16h176a8 8 0 0 0 0-16Z"></path></svg>
+		</button>
+		<a href="/" class="flex items-center gap-2 text-[15px] font-semibold tracking-[-0.01em] text-foreground" aria-label="Cynco UI home">
+			<svg class="size-[22px]" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" class="fill-foreground"></rect><path d="M20.5 11.2a6.5 6.5 0 1 0 0 9.6" fill="none" class="stroke-background" stroke-width="3" stroke-linecap="round"></path></svg>
+			Cynco UI
+		</a>
+		<nav class="ml-6 hidden items-center gap-1 md:flex" aria-label="Main">
+			{
+				links.map((l) => (
+					<a
+						href={l.href}
+						class:list={[
+							"rounded-md px-2.5 py-1 text-[13.5px] font-medium transition-colors",
+							l.active ? "text-foreground" : "text-tertiary-foreground hover:text-foreground",
+						]}
+					>
+						{l.label}
+					</a>
+				))
+			}
+		</nav>
+		<div class="ml-auto flex items-center gap-1">
+			<span class="mr-2 hidden rounded-md border border-border px-1.5 py-0.5 font-mono text-[11px] text-subtle sm:inline">v0.1.0</span>
+			<a
+				href={GITHUB}
+				class="inline-flex size-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
+				aria-label="GitHub repository"
+				rel="noopener"
+			>
+				<svg class="size-[17px]" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.65.5.5 5.65.5 12a11.5 11.5 0 0 0 7.86 10.92c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.52-1.33-1.28-1.69-1.28-1.69-1.05-.71.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.68 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.83 1.19 3.09 0 4.41-2.69 5.38-5.26 5.67.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z"></path></svg>
+			</a>
+			<button
+				id="theme-toggle"
+				type="button"
+				class="inline-flex size-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
+				aria-label="Toggle dark mode"
+			>
+				<svg class="size-[17px] dark:hidden" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M233.54 142.23a8 8 0 0 0-8-2 88.08 88.08 0 0 1-109.8-109.8 8 8 0 0 0-10-10 104.84 104.84 0 0 0-52.91 37A104 104 0 0 0 136 224a103.09 103.09 0 0 0 62.52-20.88 104.84 104.84 0 0 0 37-52.91 8 8 0 0 0-1.98-7.98Zm-44.64 48.11A88 88 0 0 1 65.66 67.11a89 89 0 0 1 31.4-26A106 106 0 0 0 96 56a104.11 104.11 0 0 0 104 104 106 106 0 0 0 14.92-1.06 89 89 0 0 1-26.02 31.4Z"></path></svg>
+				<svg class="hidden size-[17px] dark:block" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M120 40V16a8 8 0 0 1 16 0v24a8 8 0 0 1-16 0Zm72 88a64 64 0 1 1-64-64 64.07 64.07 0 0 1 64 64Zm-16 0a48 48 0 1 0-48 48 48.05 48.05 0 0 0 48-48ZM58.34 69.66a8 8 0 0 0 11.32-11.32l-16-16a8 8 0 0 0-11.32 11.32Zm0 116.68-16 16a8 8 0 0 0 11.32 11.32l16-16a8 8 0 0 0-11.32-11.32ZM192 72a8 8 0 0 0 5.66-2.34l16-16a8 8 0 0 0-11.32-11.32l-16 16A8 8 0 0 0 192 72Zm5.66 114.34a8 8 0 0 0-11.32 11.32l16 16a8 8 0 0 0 11.32-11.32ZM48 128a8 8 0 0 0-8-8H16a8 8 0 0 0 0 16h24a8 8 0 0 0 8-8Zm80 80a8 8 0 0 0-8 8v24a8 8 0 0 0 16 0v-24a8 8 0 0 0-8-8Zm112-88h-24a8 8 0 0 0 0 16h24a8 8 0 0 0 0-16Z"></path></svg>
+			</button>
+		</div>
+	</div>
+</header>
+
+<script>
+	const root = document.documentElement;
+	document.getElementById("theme-toggle")?.addEventListener("click", () => {
+		const dark = !root.classList.contains("dark");
+		root.classList.toggle("dark", dark);
+		localStorage.setItem("theme", dark ? "dark" : "light");
+		window.dispatchEvent(new CustomEvent("site-theme", { detail: dark ? "dark" : "light" }));
+	});
+	const toggle = document.getElementById("nav-toggle")!;
+	toggle.addEventListener("click", () => {
+		const open = !root.hasAttribute("data-nav-open");
+		root.toggleAttribute("data-nav-open", open);
+		toggle.setAttribute("aria-expanded", String(open));
+	});
+	window.matchMedia("(min-width: 1024px)").addEventListener("change", (e) => {
+		if (e.matches) root.removeAttribute("data-nav-open");
+	});
+</script>

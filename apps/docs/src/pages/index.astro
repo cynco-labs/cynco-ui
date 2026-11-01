@@ -1,0 +1,122 @@
+---
+import Docs from "../layouts/Docs.astro";
+import { CATEGORIES, byCategory, registry } from "../lib/registry";
+import { PRINCIPLES } from "../lib/home";
+
+const MINI: Record<string, { slug: string; width: number }> = {
+	Layout: { slug: "data-list", width: 880 },
+	Components: { slug: "data-table", width: 860 },
+	Productivity: { slug: "journal-grid", width: 900 },
+	Documents: { slug: "tax-invoice-document", width: 900 },
+	Accounting: { slug: "bank-feed-list", width: 900 },
+	AI: { slug: "conversation", width: 760 },
+};
+const cards = CATEGORIES.map((c) => {
+	const items = byCategory(c.name);
+	return { ...c, count: items.length, first: items[0], mini: MINI[c.name], examples: items.slice(0, 4).map((i) => i.name) };
+});
+---
+
+<Docs title="Cynco UI" description="The design system for accounting and ERP interfaces: components, layout primitives, productivity patterns and printable business documents." current="/" mdHref="/index.md" wide pager={false}>
+	<section class="pt-6 sm:pt-12">
+		<p class="flex items-center gap-2 text-[13px] font-medium text-subtle">
+			<span class="font-mono">@cynco-labs/ui</span><span aria-hidden="true">·</span><span>v0.1.0</span>
+		</p>
+		<h1 class="mt-4 text-[40px] font-semibold leading-[1.05] tracking-[-0.035em] text-foreground sm:text-[56px]">Cynco UI</h1>
+		<p class="mt-5 max-w-[38rem] text-[17px] leading-relaxed text-tertiary-foreground sm:text-[19px]">
+			The design system for accounting and ERP software. Quiet, dense components for ledgers, invoices, bank feeds and the documents you print, built with React, Base UI and Tailwind CSS.
+		</p>
+
+		<div class="mt-8 flex flex-wrap items-center gap-3">
+			<a href="/installation" class="inline-flex h-10 items-center rounded-lg bg-foreground px-4 text-[14px] font-medium text-background transition-opacity hover:opacity-90">Get started</a>
+			<a href="/components" class="inline-flex h-10 items-center rounded-lg border border-border bg-interactive-secondary px-4 text-[14px] font-medium text-foreground transition-colors hover:bg-interactive-secondary-hover">Browse components</a>
+			<div class="flex h-10 min-w-0 items-center gap-2 rounded-lg border border-border bg-card pl-3.5 pr-1.5 font-mono text-[13px] text-muted-foreground">
+				<span class="select-none text-subtle">$</span>
+				<span class="truncate">pnpm add @cynco-labs/ui</span>
+				<button
+					type="button"
+					data-copy-text="pnpm add @cynco-labs/ui"
+					class="inline-flex size-7 shrink-0 items-center justify-center rounded-md text-tertiary-foreground hover:bg-muted hover:text-foreground"
+					aria-label="Copy install command"
+				>
+					<svg class="size-3.5" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M216 32H88a8 8 0 0 0-8 8v40H40a8 8 0 0 0-8 8v128a8 8 0 0 0 8 8h128a8 8 0 0 0 8-8v-40h40a8 8 0 0 0 8-8V40a8 8 0 0 0-8-8Zm-56 176H48V96h112Zm48-48h-32V88a8 8 0 0 0-8-8H96V48h112Z"></path></svg>
+				</button>
+			</div>
+		</div>
+
+		<dl class="mt-12 grid max-w-[44rem] grid-cols-2 gap-x-8 gap-y-4 border-t border-border pt-6 sm:grid-cols-4">
+			<div><dt class="text-[12.5px] text-subtle">Components</dt><dd class="mt-0.5 text-[20px] font-semibold tabular-nums text-foreground">{registry.length}</dd></div>
+			<div><dt class="text-[12.5px] text-subtle">Printable documents</dt><dd class="mt-0.5 text-[20px] font-semibold tabular-nums text-foreground">{byCategory("Documents").length}</dd></div>
+			<div><dt class="text-[12.5px] text-subtle">Themes</dt><dd class="mt-0.5 text-[20px] font-semibold tabular-nums text-foreground">4</dd></div>
+			<div><dt class="text-[12.5px] text-subtle">Document languages</dt><dd class="mt-0.5 text-[20px] font-semibold text-foreground">EN · BM</dd></div>
+		</dl>
+	</section>
+
+	<section class="mt-20" aria-labelledby="explore">
+		<h2 id="explore" class="text-[13px] font-semibold text-foreground">Explore</h2>
+		<div class="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+			{
+				cards.map((c) => (
+					<a href={`/components#${c.name.toLowerCase()}`} class="group flex flex-col overflow-hidden rounded-xl border border-border bg-card transition-colors hover:border-input-border-hover">
+						<div class="mini relative h-[200px] overflow-hidden border-b border-border bg-background" aria-hidden="true">
+							<iframe
+								data-src={`/demo/${c.mini.slug}`}
+								title=""
+								tabindex="-1"
+								loading="lazy"
+								class="pointer-events-none absolute left-0 top-0 origin-top-left border-0"
+								style={`width:${c.mini.width}px;height:${Math.round(200 / 0.46)}px;transform:scale(0.46)`}
+							/>
+						</div>
+						<div class="flex flex-1 flex-col p-4">
+							<div class="flex items-baseline justify-between gap-3">
+								<h3 class="text-[15px] font-semibold text-foreground">{c.name}</h3>
+								<span class="text-[12px] tabular-nums text-subtle">{c.count}</span>
+							</div>
+							<p class="mt-1.5 text-[13.5px] leading-relaxed text-tertiary-foreground">{c.blurb}</p>
+							<p class="mt-3 truncate font-mono text-[11.5px] text-subtle">{c.examples.join(" · ")}</p>
+						</div>
+					</a>
+				))
+			}
+		</div>
+	</section>
+
+	<section class="mt-20" aria-labelledby="principles">
+		<h2 id="principles" class="text-[13px] font-semibold text-foreground">Principles</h2>
+		<div class="mt-4 grid gap-x-10 gap-y-8 border-t border-border pt-8 sm:grid-cols-2 lg:grid-cols-3">
+			{
+				PRINCIPLES.map((p) => (
+					<div>
+						<h3 class="text-[15px] font-semibold text-foreground">{p.title}</h3>
+						<p class="mt-1.5 text-[14px] leading-relaxed text-tertiary-foreground">{p.body}</p>
+					</div>
+				))
+			}
+		</div>
+	</section>
+
+	<section class="mt-20 rounded-xl border border-border bg-card p-6 sm:p-8">
+		<div class="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-center">
+			<div>
+				<h2 class="text-[18px] font-semibold tracking-[-0.01em] text-foreground">Built for people and for agents</h2>
+				<p class="mt-2 max-w-[40rem] text-[14px] leading-relaxed text-tertiary-foreground">
+					Every page on this site has a Markdown version (add <code class="font-mono text-[0.9em] text-foreground">.md</code> to the URL), <a class="link" href="/llms.txt">/llms.txt</a> indexes them all, and the package ships its registry so the <a class="link" href="/cli">CLI</a> and coding agents can read the exact usage of every component.
+				</p>
+			</div>
+			<a href="/llms.txt" class="inline-flex h-9 items-center justify-self-start rounded-lg border border-border bg-interactive-secondary px-3.5 font-mono text-[12.5px] text-foreground hover:bg-interactive-secondary-hover">/llms.txt</a>
+		</div>
+	</section>
+</Docs>
+
+<script>
+	const theme = () => (document.documentElement.classList.contains("dark") ? "dark" : "light");
+	const frames = [...document.querySelectorAll<HTMLIFrameElement>(".mini iframe")];
+	for (const f of frames) f.src = `${f.dataset.src}?theme=${theme()}`;
+	window.addEventListener("site-theme", () => {
+		for (const f of frames) f.contentWindow?.postMessage({ type: "cynco-demo-theme", theme: theme() }, "*");
+	});
+	for (const b of document.querySelectorAll<HTMLButtonElement>("[data-copy-text]")) {
+		b.addEventListener("click", () => navigator.clipboard.writeText(b.dataset.copyText!));
+	}
+</script>

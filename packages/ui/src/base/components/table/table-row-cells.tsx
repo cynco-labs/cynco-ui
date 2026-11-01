@@ -1,0 +1,223 @@
+import {
+	type TableLinkComponent,
+	useTableContext,
+} from "./table-context";
+import { Checkbox } from "../ui/checkbox";
+import { Skeleton } from "../ui/skeleton";
+import {
+	TableBody as ShadcnTableBody,
+	TableCell,
+	TableRow,
+} from "../ui/table";
+import { cn } from "../../lib/utils";
+import type { Row } from "@tanstack/react-table";
+import { flexRender } from "@tanstack/react-table";
+import { type CSSProperties, memo, type ReactNode } from "react";
+
+interface TableRowCellsProps<T> {
+	row: Row<T>;
+	enableSelection?: boolean;
+	flexibleTableColumns?: boolean;
+	rowHref?: string;
+	visibleColumnKey?: string;
+	isExpanded?: boolean;
+}
+
+function CellLink({
+	href,
+	className,
+	linkComponent: LinkComponent,
+	children,
+}: {
+	href: string;
+	className?: string;
+	linkComponent?: TableLinkComponent;
+	children: ReactNode;
+}) {
+	if (LinkComponent) {
+		return (
+			<LinkComponent className={className} to={href}>
+				{children}
+			</LinkComponent>
+		);
+	}
+	return (
+		<a className={className} href={href}>
+			{children}
+		</a>
+	);
+}
+
+function TableRowCellsInner<T>({
+	row,
+	enableSelection,
+	flexibleTableColumns,
+	rowHref,
+}: TableRowCellsProps<T>) {
+	const { linkComponent: LinkComponent } = useTableContext<T>();
+	const visibleCells = row.getVisibleCells();
+
+	return (
+		<>
+			{enableSelection && (
+				<TableCell className="w-[50px]">
+					<Checkbox
+						aria-label="Select row"
+						checked={row.getIsSelected()}
+						onCheckedChange={(checked) => row.toggleSelected(!!checked)}
+					/>
+				</TableCell>
+			)}
+			{visibleCells.map((cell, cellIndex) => {
+				const cellContent = flexRender(
+					cell.column.columnDef.cell,
+					cell.getContext(),
+				);
+				const cellStyle = getColumnWidthStyle({
+					size: cell.column.getSize(),
+					flexible: flexibleTableColumns,
+					grow: cell.column.columnDef.meta?.grow,
+				});
+
+				return (
+					<TableCell
+						className={cn(
+							"px-2 h-4 text-tertiary-foreground",
+							cellIndex === 0 && "pl-4 text-muted-foreground font-medium",
+							rowHref && "p-0",
+						)}
+						key={cell.id}
+						style={cellStyle}
+					>
+						{rowHref ? (
+							<CellLink
+								className={cn(
+									"flex items-center h-full w-full px-2",
+									cellIndex === 0 && "pl-4",
+								)}
+								href={rowHref}
+								linkComponent={LinkComponent}
+							>
+								{cellContent}
+							</CellLink>
+						) : (
+							cellContent
+						)}
+					</TableCell>
+				);
+			})}
+		</>
+	);
+}
+
+export const TableRowCells = memo(
+	TableRowCellsInner,
+	(prevProps, nextProps) => {
+		return (
+			prevProps.row.id === nextProps.row.id &&
+			prevProps.row.original === nextProps.row.original &&
+			prevProps.row.getIsSelected() === nextProps.row.getIsSelected() &&
+			prevProps.isExpanded === nextProps.isExpanded &&
+			prevProps.rowHref === nextProps.rowHref &&
+			prevProps.enableSelection === nextProps.enableSelection &&
+			prevProps.flexibleTableColumns === nextProps.flexibleTableColumns &&
+			prevProps.visibleColumnKey === nextProps.visibleColumnKey
+		);
+	},
+) as typeof TableRowCellsInner;
+
+const SKELETON_WIDTHS = ["w-3/5", "w-1/2", "w-2/3", "w-2/5", "w-3/4", "w-1/2"];
+
+export function getColumnWidthStyle({
+	size,
+	flexible,
+	grow,
+}: {
+	size: number;
+	flexible?: boolean;
+	grow?: boolean;
+}): CSSProperties {
+	if (grow) return { minWidth: `${size}px` };
+	if (flexible) return { width: `${size}px`, maxWidth: `${size}px` };
+	return { width: `${size}px` };
+}
+
+export type ColumnSkeletonMeta = {
+	skeleton?: ReactNode | ((rowIndex: number) => ReactNode);
+	hidden?: boolean;
+};
+
+export function TableSkeletonRows({
+	columns,
+	rowCount = 12,
+	rowClassName,
+	flexibleTableColumns,
+	asFragment = false,
+}: {
+	columns: {
+		id: string;
+		size: number;
+		grow?: boolean;
+		skeleton?: ColumnSkeletonMeta;
+	}[];
+	rowCount?: number;
+	rowClassName?: string;
+	flexibleTableColumns?: boolean;
+	asFragment?: boolean;
+}) {
+	const skeletonRows = Array.from({ length: rowCount }).map((_, rowIndex) => (
+		<TableRow
+			key={`skeleton-${rowIndex}`}
+			className={cn(
+				"h-10 hover:bg-transparent dark:hover:bg-transparent",
+				rowClassName,
+			)}
+		>
+			{columns.map((col, colIndex) => {
+				const meta = col.skeleton;
+				const cellStyle = getColumnWidthStyle({
+					size: col.size,
+					flexible: flexibleTableColumns,
+					grow: col.grow,
+				});
+
+				if (meta?.hidden) {
+					return (
+						<TableCell
+							key={`skeleton-${col.id}-${rowIndex}`}
+							style={cellStyle}
+						/>
+					);
+				}
+
+				const widthClass =
+					SKELETON_WIDTHS[(colIndex * 3 + rowIndex) % SKELETON_WIDTHS.length];
+
+				const skeletonContent =
+					typeof meta?.skeleton === "function"
+						? meta.skeleton(rowIndex)
+						: meta?.skeleton;
+
+				return (
+					<TableCell
+						key={`skeleton-${col.id}-${rowIndex}`}
+						className={cn("px-2", colIndex === 0 && "pl-4")}
+						style={cellStyle}
+					>
+						{skeletonContent ?? (
+							<Skeleton className={cn("h-3.5 rounded-sm", widthClass)} />
+						)}
+					</TableCell>
+				);
+			})}
+		</TableRow>
+	));
+
+	if (asFragment) return <>{skeletonRows}</>;
+
+	return (
+		<ShadcnTableBody className="divide-y bg-interactive-secondary">
+			{skeletonRows}
+		</ShadcnTableBody>
+	);
+}

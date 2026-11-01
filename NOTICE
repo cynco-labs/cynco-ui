@@ -1,0 +1,15 @@
+Cynco UI
+Copyright (c) 2026 Cynco Sdn Bhd — MIT License (see LICENSE)
+
+Third-party components
+----------------------
+
+packages/ui/src/base/
+  Portions of this directory are derived from software Copyright 2025 Recase Inc.,
+  licensed under the Apache License, Version 2.0 (packages/ui/src/base/LICENSE).
+  These files have been modified by Cynco Sdn Bhd (renamed imports, theme tokens,
+  accessibility and layout fixes).
+
+packages/ui/fonts/
+  Inter, JetBrains Mono, Geist, Geist Mono and Newsreader are licensed under the
+  SIL Open Font License 1.1 by their respective authors.

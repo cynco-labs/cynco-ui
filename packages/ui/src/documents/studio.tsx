@@ -1,0 +1,296 @@
+/**
+ * Cynco UI — Document studio: the brand editor for every printed document.
+ *
+ * One `DocBrand` (logo, layout, typeface, language, footer note, signature). Documents print in black ink only;
+ * the customer's own logo is the only colour on the page. The brand drives invoices, receipts,
+ * statements, payslips and reports alike. The studio edits that brand with a live preview of any document,
+ * so it can sit in Settings → Documents. It is controlled or uncontrolled and knows nothing about the
+ * documents themselves: you pass `documents` as render functions.
+ *
+ * `brandFromCyncoTemplate` maps Cynco's stored invoice template (logoUrl, message, designName, signatureUrl)
+ * onto a DocBrand, so existing templates keep working. Its `color` is intentionally not used.
+ */
+import * as React from "react";
+import { Button, GroupedTabButton, Input, cn } from "../base";
+import { ArrowCounterClockwiseIcon, ImageSquareIcon, PrinterIcon, TrashIcon } from "@phosphor-icons/react";
+import { DocumentBrandProvider, ScrollRow, type DocBrand, type DocFont, type DocLayout, type DocLocale, type DocumentStamp, type PaperSize } from "../lib/shared";
+
+/* ═════════════ Types ═════════════ */
+
+export type StudioRenderOptions = { stamp?: DocumentStamp; size?: PaperSize };
+
+export type StudioDocument = {
+	id: string;
+	label: string;
+	/** Render the document with sample (or real) data. The studio wraps it in the brand being edited. */
+	render: (opts: StudioRenderOptions) => React.ReactNode;
+	/** Paper sizes this document supports; the first is the default. */
+	sizes?: PaperSize[];
+	/** Stamps worth previewing for this document. */
+	stamps?: DocumentStamp[];
+};
+
+export type DocumentStudioProps = Omit<React.ComponentProps<"div">, "defaultValue" | "onChange"> & {
+	/** Controlled brand. */
+	brand?: DocBrand;
+	/** Uncontrolled starting brand. */
+	defaultBrand?: DocBrand;
+	onBrandChange?: (brand: DocBrand) => void;
+	documents: StudioDocument[];
+	defaultDocumentId?: string;
+	/** Called when the user presses Print (defaults to window.print, which prints only the previewed document). */
+	onPrint?: () => void;
+};
+
+/** Map Cynco's stored invoice template onto a DocBrand (company details come from the organisation). */
+export function brandFromCyncoTemplate(
+	template: { logoUrl?: string | null; color?: string | null; message?: string | null; designName?: string | null; signatureUrl?: string | null },
+	company: DocBrand["company"],
+	extra: Partial<DocBrand> = {},
+): DocBrand {
+	const layout: DocLayout = template.designName && /classic|traditional|formal/i.test(template.designName) ? "classic" : template.designName && /minimal|simple|clean/i.test(template.designName) ? "minimal" : "modern";
+	return {
+		company,
+		logo: template.logoUrl || undefined,
+		layout,
+		footerNote: template.message || undefined,
+		signature: template.signatureUrl ? { image: template.signatureUrl, ...extra.signature } : extra.signature,
+		...extra,
+	};
+}
+
+/* ═════════════ Small controls ═════════════ */
+
+function Field({ label, children, hint }: { label: string; children: React.ReactNode; hint?: React.ReactNode }) {
+	return (
+		<div className="flex min-w-0 flex-col gap-1.5">
+			<div className="flex items-baseline justify-between gap-2">
+				<span className="text-xs font-medium text-muted-foreground">{label}</span>
+				{hint && <span className="text-2xs text-tertiary-foreground">{hint}</span>}
+			</div>
+			{children}
+		</div>
+	);
+}
+
+/** Thumbnail of a layout: a tiny sheet that shows where colour and weight sit. */
+function LayoutThumb({ layout }: { layout: DocLayout }) {
+	const accent = "#1a1a1a";
+	const line = (w: string, cls = "") => <div className={cn("h-[3px] rounded-full bg-black/15", cls)} style={{ width: w }} />;
+	return (
+		<div className="relative flex h-[58px] w-full flex-col gap-[5px] overflow-hidden rounded-[4px] bg-white p-[7px] shadow-[0_0_0_1px_rgba(0,0,0,.08)]">
+			{layout === "modern" && (
+				<>
+										<div className="flex items-start justify-between">
+						<div className="size-[10px] border-[1.5px]" style={{ borderColor: accent }} />
+						<div className="h-[6px] w-[22px] rounded-[1px] bg-black/70" />
+					</div>
+					<div className="h-[7px] rounded-[2px]" style={{ borderTop: "1px solid rgba(0,0,0,.12)", borderBottom: "1px solid rgba(0,0,0,.12)" }} />
+					<div className="h-[1.5px]" style={{ background: accent }} />
+					{line("70%")}
+					<div className="ml-auto w-[40%] border-t-[1.5px] pt-[2px]" style={{ borderColor: accent }}><div className="ml-auto h-[4px] w-[60%] rounded-[1px] bg-black/70" /></div>
+				</>
+			)}
+			{layout === "classic" && (
+				<>
+					<div className="mx-auto size-[10px] rounded-full border" style={{ borderColor: accent }} />
+					<div className="flex items-center gap-1">
+						<div className="h-px flex-1 bg-black/60" />
+						<div className="h-[5px] w-[24px] rounded-[1px] bg-black/60" />
+						<div className="h-px flex-1 bg-black/60" />
+					</div>
+					<div className="h-px bg-black/15" />
+					{line("80%")}
+					{line("64%")}
+					<div className="ml-auto w-[40%] border-y border-black/60 py-[1px]">
+						<div className="h-[2px]" />
+					</div>
+				</>
+			)}
+			{layout === "minimal" && (
+				<>
+					<div className="flex items-start justify-between">
+						<div className="text-[9px] leading-none font-semibold text-black/80">
+							Ab<span className="text-black/40">.</span>
+						</div>
+						<div className="h-[6px] w-[26px] rounded-[1px] bg-black/50" />
+					</div>
+					<div className="h-px bg-black/10" />
+					{line("76%")}
+					{line("60%")}
+					<div className="h-px bg-black/50" />
+					<div className="ml-auto h-[5px] w-[30%] rounded-[1px] bg-black/60" />
+				</>
+			)}
+		</div>
+	);
+}
+
+const FONT_SAMPLES: Array<{ value: DocFont; label: string; family: string }> = [
+	{ value: "inter", label: "Inter", family: "'Inter', sans-serif" },
+	{ value: "geist", label: "Geist", family: "'Geist', 'Inter', sans-serif" },
+	{ value: "serif", label: "Newsreader", family: "'Newsreader', Georgia, serif" },
+];
+
+const STAMP_LABEL: Record<DocumentStamp, string> = { paid: "Paid", void: "Void", draft: "Draft", copy: "Copy", overdue: "Overdue" };
+const SIZE_LABEL: Record<PaperSize, string> = { a4: "A4", "a4-landscape": "A4 landscape", a5: "A5", letter: "Letter", receipt: "80mm" };
+
+/* ═════════════ Studio ═════════════ */
+
+/**
+ * Brand editor with a live document preview. Left: logo, colour, layout, typeface, language, footer note.
+ * Right: the chosen document on paper, with paper size and stamp toggles. Stacks on narrow containers.
+ */
+export function DocumentStudio({ brand: brandProp, defaultBrand, onBrandChange, documents, defaultDocumentId, onPrint, className, ...props }: DocumentStudioProps) {
+	const [inner, setInner] = React.useState<DocBrand>(() => defaultBrand ?? brandProp ?? { company: { name: "Your company" } });
+	const brand = brandProp ?? inner;
+	const initial = React.useRef(brand);
+	const update = (patch: Partial<DocBrand>) => {
+		const next = { ...brand, ...patch };
+		if (!brandProp) setInner(next);
+		onBrandChange?.(next);
+	};
+
+	const [docId, setDocId] = React.useState(defaultDocumentId ?? documents[0]?.id);
+	const doc = documents.find((d) => d.id === docId) ?? documents[0];
+	const sizes = doc?.sizes ?? ["a4"];
+	const [sizeByDoc, setSizeByDoc] = React.useState<Record<string, PaperSize>>({});
+	const size: PaperSize = (doc ? sizeByDoc[doc.id] : undefined) ?? sizes[0];
+	const [stamp, setStamp] = React.useState<DocumentStamp | "none">("none");
+
+	const layout = brand.layout ?? "minimal";
+	const font: DocFont = brand.font ?? (layout === "classic" ? "serif" : "inter");
+	const locale: DocLocale = brand.locale ?? "en";
+	const fileRef = React.useRef<HTMLInputElement>(null);
+
+	const onLogo = (file: File | undefined) => {
+		if (!file) return;
+		const reader = new FileReader();
+		reader.onload = () => update({ logo: String(reader.result) });
+		reader.readAsDataURL(file);
+	};
+
+	return (
+		<div data-slot="cy-document-studio" className={cn("@container min-w-0", className)} {...props}>
+			<div className="grid gap-4 @3xl:grid-cols-[17.5rem_minmax(0,1fr)]">
+				{/* ── Controls ── */}
+				<aside aria-label="Document brand" className="flex min-w-0 flex-col gap-5 rounded-xl border border-border bg-card p-4">
+					<div className="flex items-center justify-between gap-2">
+						<div className="min-w-0">
+							<div className="text-sm font-semibold text-foreground">Brand</div>
+							<div className="text-xs text-tertiary-foreground">Applies to every document</div>
+						</div>
+						<Button variant="skeleton" size="sm" onClick={() => update(initial.current)} aria-label="Reset brand" className="gap-1.5">
+							<ArrowCounterClockwiseIcon size={14} aria-hidden />
+							Reset
+						</Button>
+					</div>
+
+					<Field label="Logo" hint={typeof brand.logo === "string" ? "Image" : "Monogram"}>
+						<div className="flex items-center gap-2">
+							<input ref={fileRef} type="file" accept="image/png,image/jpeg,image/svg+xml,image/webp" className="sr-only" onChange={(e) => onLogo(e.target.files?.[0])} aria-label="Upload logo" />
+							<Button variant="secondary" size="sm" onClick={() => fileRef.current?.click()} className="gap-1.5">
+								<ImageSquareIcon size={14} aria-hidden />
+								{brand.logo ? "Replace" : "Upload"}
+							</Button>
+							{brand.logo && (
+								<Button variant="skeleton" size="sm" onClick={() => update({ logo: undefined })} className="gap-1.5">
+									<TrashIcon size={14} aria-hidden />
+									Use monogram
+								</Button>
+							)}
+						</div>
+					</Field>
+
+					<Field label="Layout">
+						<div role="radiogroup" aria-label="Layout" className="grid grid-cols-3 gap-2">
+							{(["minimal", "classic", "modern"] as DocLayout[]).map((l) => (
+								<button
+									key={l}
+									type="button"
+									role="radio"
+									aria-checked={layout === l}
+									onClick={() => update({ layout: l, font: l === "classic" ? "serif" : brand.font === "serif" ? "inter" : brand.font })}
+									className={cn(
+										"flex cursor-pointer flex-col gap-1.5 rounded-lg border p-1.5 text-left outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring",
+										layout === l ? "border-primary bg-active-primary" : "border-border hover:bg-interactive-secondary-hover",
+									)}
+								>
+									<LayoutThumb layout={l} />
+									<span className="px-0.5 text-xs font-medium text-foreground capitalize">{l}</span>
+								</button>
+							))}
+						</div>
+					</Field>
+
+					<Field label="Typeface">
+						<div role="radiogroup" aria-label="Typeface" className="grid grid-cols-3 gap-2">
+							{FONT_SAMPLES.map((f) => (
+								<button
+									key={f.value}
+									type="button"
+									role="radio"
+									aria-checked={font === f.value}
+									onClick={() => update({ font: f.value })}
+									className={cn(
+										"flex cursor-pointer flex-col items-start gap-0.5 rounded-lg border px-2.5 py-2 outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring",
+										font === f.value ? "border-primary bg-active-primary" : "border-border hover:bg-interactive-secondary-hover",
+									)}
+								>
+									<span className="text-lg leading-none text-foreground" style={{ fontFamily: f.family }}>
+										Aa
+									</span>
+									<span className="text-2xs text-tertiary-foreground">{f.label}</span>
+								</button>
+							))}
+						</div>
+					</Field>
+
+					<Field label="Language">
+						<GroupedTabButton
+							value={locale}
+							onValueChange={(v) => update({ locale: v as DocLocale })}
+							options={[
+								{ value: "en", label: "English" },
+								{ value: "ms", label: "Melayu" },
+								{ value: "en-ms", label: "Both" },
+							]}
+						/>
+					</Field>
+
+					<Field label="Footer note">
+						<Input value={typeof brand.footerNote === "string" ? brand.footerNote : ""} placeholder="Thank you for your business." onChange={(e) => update({ footerNote: e.target.value || undefined })} />
+					</Field>
+				</aside>
+
+				{/* ── Preview ── */}
+				<section aria-label="Preview" className="flex min-w-0 flex-col gap-3">
+					<ScrollRow role="tablist" aria-label="Document">
+						{documents.map((d) => (
+							<Button key={d.id} role="tab" aria-selected={d.id === doc?.id} variant={d.id === doc?.id ? "secondary" : "skeleton"} size="sm" onClick={() => setDocId(d.id)} className="shrink-0">
+								{d.label}
+							</Button>
+						))}
+					</ScrollRow>
+					<div className="flex flex-wrap items-center gap-2">
+						{sizes.length > 1 && (
+							<GroupedTabButton value={size} onValueChange={(v) => doc && setSizeByDoc((m) => ({ ...m, [doc.id]: v as PaperSize }))} options={sizes.map((s) => ({ value: s, label: SIZE_LABEL[s] }))} />
+						)}
+						{doc?.stamps && doc.stamps.length > 0 && (
+							<GroupedTabButton value={stamp} onValueChange={(v) => setStamp(v as DocumentStamp | "none")} options={[{ value: "none", label: "No stamp" }, ...doc.stamps.map((s) => ({ value: s, label: STAMP_LABEL[s] }))]} />
+						)}
+						<Button variant="secondary" size="sm" className="ml-auto gap-1.5" onClick={() => (onPrint ? onPrint() : window.print())}>
+							<PrinterIcon size={14} aria-hidden />
+							Print / PDF
+						</Button>
+					</div>
+					<div className={cn("min-w-0 rounded-xl bg-[color-mix(in_srgb,var(--muted)_70%,transparent)] p-[clamp(8px,3cqi,28px)]", size === "receipt" && "flex justify-center")}>
+						<div className={cn("min-w-0", size === "receipt" && "w-full max-w-[340px]")}>
+							<DocumentBrandProvider brand={brand}>{doc?.render({ stamp: stamp === "none" ? undefined : stamp, size })}</DocumentBrandProvider>
+						</div>
+					</div>
+				</section>
+			</div>
+		</div>
+	);
+}

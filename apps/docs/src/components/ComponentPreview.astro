@@ -1,0 +1,152 @@
+---
+import { Code } from "astro:components";
+
+interface Props {
+	slug: string;
+	name: string;
+	source: string;
+	minHeight: number;
+}
+const { slug, name, source, minHeight } = Astro.props;
+const h = Math.max(120, Math.min(minHeight + 16, 1400));
+const seg = "inline-flex h-7 items-center rounded-md px-2.5 text-[12.5px] font-medium text-tertiary-foreground transition-colors hover:text-foreground aria-pressed:bg-background aria-pressed:text-foreground aria-pressed:shadow-[0_0_0_1px_var(--border),0_1px_2px_rgb(0_0_0/0.04)] aria-selected:bg-background aria-selected:text-foreground aria-selected:shadow-[0_0_0_1px_var(--border),0_1px_2px_rgb(0_0_0/0.04)]";
+---
+
+<div class="cy-preview not-prose overflow-hidden rounded-xl border border-border bg-card" data-slug={slug} data-min={h}>
+	<div class="flex flex-wrap items-center justify-between gap-2 border-b border-border px-2 py-1.5">
+		<div class="flex items-center gap-0.5 rounded-lg bg-muted p-0.5" role="tablist" aria-label={`${name} example`}>
+			<button type="button" role="tab" class={seg} data-tab="preview" aria-selected="true">Preview</button>
+			<button type="button" role="tab" class={seg} data-tab="code" aria-selected="false">Code</button>
+		</div>
+		<div class="flex items-center gap-1.5" data-preview-tools>
+			<div class="hidden items-center gap-0.5 rounded-lg bg-muted p-0.5 sm:flex" role="group" aria-label="Preview width">
+				<button type="button" class={seg} data-width="desktop" aria-pressed="true" title="Full width">
+					<svg class="size-3.5" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M208 40H48a24 24 0 0 0-24 24v112a24 24 0 0 0 24 24h160a24 24 0 0 0 24-24V64a24 24 0 0 0-24-24Zm8 136a8 8 0 0 1-8 8H48a8 8 0 0 1-8-8V64a8 8 0 0 1 8-8h160a8 8 0 0 1 8 8Zm-48 48a8 8 0 0 1-8 8H96a8 8 0 0 1 0-16h64a8 8 0 0 1 8 8Z"></path></svg>
+					<span class="ml-1.5 hidden md:inline">Desktop</span>
+				</button>
+				<button type="button" class={seg} data-width="phone" aria-pressed="false" title="360px wide">
+					<svg class="size-3.5" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M176 16H80a24 24 0 0 0-24 24v176a24 24 0 0 0 24 24h96a24 24 0 0 0 24-24V40a24 24 0 0 0-24-24Zm8 200a8 8 0 0 1-8 8H80a8 8 0 0 1-8-8V40a8 8 0 0 1 8-8h96a8 8 0 0 1 8 8ZM140 60a12 12 0 1 1-12-12 12 12 0 0 1 12 12Z"></path></svg>
+					<span class="ml-1.5 hidden md:inline">Phone</span>
+				</button>
+			</div>
+			<div class="flex items-center gap-0.5 rounded-lg bg-muted p-0.5" role="group" aria-label="Preview theme">
+				<button type="button" class={seg} data-theme-choice="light" aria-pressed="false" title="Light" aria-label="Light">
+					<svg class="size-3.5" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M120 40V16a8 8 0 0 1 16 0v24a8 8 0 0 1-16 0Zm72 88a64 64 0 1 1-64-64 64.07 64.07 0 0 1 64 64Zm-16 0a48 48 0 1 0-48 48 48.05 48.05 0 0 0 48-48ZM58.34 69.66a8 8 0 0 0 11.32-11.32l-16-16a8 8 0 0 0-11.32 11.32Zm0 116.68-16 16a8 8 0 0 0 11.32 11.32l16-16a8 8 0 0 0-11.32-11.32ZM192 72a8 8 0 0 0 5.66-2.34l16-16a8 8 0 0 0-11.32-11.32l-16 16A8 8 0 0 0 192 72Zm5.66 114.34a8 8 0 0 0-11.32 11.32l16 16a8 8 0 0 0 11.32-11.32ZM48 128a8 8 0 0 0-8-8H16a8 8 0 0 0 0 16h24a8 8 0 0 0 8-8Zm80 80a8 8 0 0 0-8 8v24a8 8 0 0 0 16 0v-24a8 8 0 0 0-8-8Zm112-88h-24a8 8 0 0 0 0 16h24a8 8 0 0 0 0-16Z"></path></svg>
+				</button>
+				<button type="button" class={seg} data-theme-choice="dark" aria-pressed="false" title="Dark" aria-label="Dark">
+					<svg class="size-3.5" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M233.54 142.23a8 8 0 0 0-8-2 88.08 88.08 0 0 1-109.8-109.8 8 8 0 0 0-10-10 104.84 104.84 0 0 0-52.91 37A104 104 0 0 0 136 224a103.09 103.09 0 0 0 62.52-20.88 104.84 104.84 0 0 0 37-52.91 8 8 0 0 0-1.98-7.98Zm-44.64 48.11A88 88 0 0 1 65.66 67.11a89 89 0 0 1 31.4-26A106 106 0 0 0 96 56a104.11 104.11 0 0 0 104 104 106 106 0 0 0 14.92-1.06 89 89 0 0 1-26.02 31.4Z"></path></svg>
+				</button>
+			</div>
+			<a
+				href={`/demo/${slug}`}
+				target="_blank"
+				rel="noopener"
+				class="inline-flex size-7 items-center justify-center rounded-md text-tertiary-foreground hover:bg-muted hover:text-foreground"
+				title="Open in a new tab"
+				aria-label="Open demo in a new tab"
+			>
+				<svg class="size-3.5" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M224 104a8 8 0 0 1-16 0V59.32l-66.33 66.34a8 8 0 0 1-11.32-11.32L196.68 48H152a8 8 0 0 1 0-16h64a8 8 0 0 1 8 8Zm-40 24a8 8 0 0 0-8 8v72H48V80h72a8 8 0 0 0 0-16H48a16 16 0 0 0-16 16v128a16 16 0 0 0 16 16h128a16 16 0 0 0 16-16v-72a8 8 0 0 0-8-8Z"></path></svg>
+			</a>
+		</div>
+		<button type="button" data-copy class="hidden h-7 items-center gap-1.5 rounded-md px-2.5 text-[12.5px] font-medium text-tertiary-foreground hover:bg-muted hover:text-foreground">
+			<svg class="size-3.5" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M216 32H88a8 8 0 0 0-8 8v40H40a8 8 0 0 0-8 8v128a8 8 0 0 0 8 8h128a8 8 0 0 0 8-8v-40h40a8 8 0 0 0 8-8V40a8 8 0 0 0-8-8Zm-56 176H48V96h112Zm48-48h-32V88a8 8 0 0 0-8-8H96V48h112Z"></path></svg>
+			<span>Copy</span>
+		</button>
+	</div>
+	<div data-panel="preview" class="cy-stage bg-background transition-colors">
+		<div class="mx-auto transition-[max-width] duration-200" data-frame-wrap style="max-width:100%">
+			<iframe
+				title={`${name} demo`}
+				data-src={`/demo/${slug}`}
+				class="block w-full border-0 bg-background"
+				style={`height:${h}px`}
+				loading="lazy"></iframe>
+		</div>
+	</div>
+	<div data-panel="code" hidden class="code-plain max-h-[36rem] overflow-auto bg-card">
+		<Code code={source} lang="tsx" themes={{ light: "github-light", dark: "github-dark" }} defaultColor={false} />
+		<textarea hidden data-source>{source}</textarea>
+	</div>
+</div>
+
+<script>
+	function siteTheme() {
+		return document.documentElement.classList.contains("dark") ? "dark" : "light";
+	}
+	const previews = [...document.querySelectorAll<HTMLElement>(".cy-preview")];
+	for (const el of previews) {
+		const iframe = el.querySelector("iframe")!;
+		const wrap = el.querySelector<HTMLElement>("[data-frame-wrap]")!;
+		const stage = el.querySelector<HTMLElement>(".cy-stage")!;
+		const min = Number(el.dataset.min);
+		let theme = siteTheme();
+		let pinned = false;
+
+		const setThemeButtons = () => {
+			for (const b of el.querySelectorAll<HTMLButtonElement>("[data-theme-choice]")) b.setAttribute("aria-pressed", String(b.dataset.themeChoice === theme));
+			stage.classList.toggle("dark", theme === "dark");
+		};
+		const applyTheme = () => {
+			setThemeButtons();
+			iframe.contentWindow?.postMessage({ type: "cynco-demo-theme", theme }, "*");
+		};
+		iframe.src = `${iframe.dataset.src}?theme=${theme}`;
+		setThemeButtons();
+
+		for (const b of el.querySelectorAll<HTMLButtonElement>("[data-theme-choice]")) {
+			b.addEventListener("click", () => {
+				theme = b.dataset.themeChoice!;
+				pinned = true;
+				applyTheme();
+			});
+		}
+		window.addEventListener("site-theme", (e) => {
+			if (pinned) return;
+			theme = (e as CustomEvent).detail;
+			applyTheme();
+		});
+		for (const b of el.querySelectorAll<HTMLButtonElement>("[data-width]")) {
+			b.addEventListener("click", () => {
+				const phone = b.dataset.width === "phone";
+				wrap.style.maxWidth = phone ? "360px" : "100%";
+				wrap.classList.toggle("cy-phone", phone);
+				for (const o of el.querySelectorAll<HTMLButtonElement>("[data-width]")) o.setAttribute("aria-pressed", String(o === b));
+			});
+		}
+		window.addEventListener("message", (e) => {
+			if (e.source !== iframe.contentWindow || e.data?.type !== "cynco-demo-size") return;
+			iframe.style.height = `${Math.max(min, Math.min(e.data.height, 2400))}px`;
+		});
+
+		const tools = el.querySelector<HTMLElement>("[data-preview-tools]")!;
+		const copy = el.querySelector<HTMLButtonElement>("[data-copy]")!;
+		for (const tab of el.querySelectorAll<HTMLButtonElement>("[data-tab]")) {
+			tab.addEventListener("click", () => {
+				const code = tab.dataset.tab === "code";
+				for (const t of el.querySelectorAll("[data-tab]")) t.setAttribute("aria-selected", String(t === tab));
+				el.querySelector<HTMLElement>('[data-panel="preview"]')!.hidden = code;
+				el.querySelector<HTMLElement>('[data-panel="code"]')!.hidden = !code;
+				tools.classList.toggle("hidden", code);
+				tools.classList.toggle("flex", !code);
+				copy.classList.toggle("hidden", !code);
+				copy.classList.toggle("inline-flex", code);
+			});
+		}
+		copy.addEventListener("click", async () => {
+			await navigator.clipboard.writeText(el.querySelector<HTMLTextAreaElement>("[data-source]")!.value);
+			const label = copy.querySelector("span")!;
+			label.textContent = "Copied";
+			setTimeout(() => (label.textContent = "Copy"), 1500);
+		});
+	}
+</script>
+
+<style>
+	.cy-phone {
+		border-left: 1px solid var(--border);
+		border-right: 1px solid var(--border);
+	}
+	.cy-stage:has(.cy-phone) {
+		background-color: var(--outer-background);
+	}
+</style>

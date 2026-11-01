@@ -1,0 +1,79 @@
+---
+interface Props {
+	headings: { depth: number; slug: string; text: string }[];
+	mdHref?: string;
+}
+const { headings, mdHref } = Astro.props;
+const items = headings.filter((h) => h.depth === 2 || h.depth === 3);
+---
+
+<aside class="sticky top-14 hidden h-[calc(100dvh-3.5rem)] w-56 shrink-0 min-[1360px]:block" aria-label="On this page">
+	<div class="scrollbar-quiet h-full overflow-y-auto pb-16 pl-2 pt-8">
+		{
+			items.length > 0 && (
+				<>
+					<p class="mb-2 text-[12px] font-semibold text-foreground">On this page</p>
+					<ul class="toc space-y-0.5 border-l border-border">
+						{items.map((h) => (
+							<li>
+								<a
+									href={`#${h.slug}`}
+									data-toc={h.slug}
+									class:list={[
+										"-ml-px block border-l border-transparent py-1 text-[13px] leading-snug text-tertiary-foreground transition-colors hover:text-foreground",
+										h.depth === 3 ? "pl-6" : "pl-3",
+									]}
+								>
+									{h.text}
+								</a>
+							</li>
+						))}
+					</ul>
+				</>
+			)
+		}
+		{
+			mdHref && (
+				<div class="mt-6 space-y-1.5 border-t border-border pt-4 text-[13px]">
+					<a href={mdHref} class="flex items-center gap-1.5 text-tertiary-foreground hover:text-foreground">
+						<svg class="size-3.5" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M213.66 82.34l-56-56A8 8 0 0 0 152 24H56a16 16 0 0 0-16 16v176a16 16 0 0 0 16 16h144a16 16 0 0 0 16-16V88a8 8 0 0 0-2.34-5.66ZM160 51.31 188.69 80H160ZM200 216H56V40h88v48a8 8 0 0 0 8 8h48v120Z"></path></svg>
+						View as Markdown
+					</a>
+					<button type="button" data-copy-md={mdHref} class="flex items-center gap-1.5 text-tertiary-foreground hover:text-foreground">
+						<svg class="size-3.5" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M216 32H88a8 8 0 0 0-8 8v40H40a8 8 0 0 0-8 8v128a8 8 0 0 0 8 8h128a8 8 0 0 0 8-8v-40h40a8 8 0 0 0 8-8V40a8 8 0 0 0-8-8Zm-56 176H48V96h112Zm48-48h-32V88a8 8 0 0 0-8-8H96V48h112Z"></path></svg>
+						<span>Copy page for LLMs</span>
+					</button>
+				</div>
+			)
+		}
+	</div>
+</aside>
+
+<script>
+	const links = [...document.querySelectorAll<HTMLAnchorElement>("[data-toc]")];
+	const targets = links.map((a) => document.getElementById(a.dataset.toc!)).filter(Boolean) as HTMLElement[];
+	function update() {
+		let current = targets[0];
+		for (const t of targets) if (t.getBoundingClientRect().top < 120) current = t;
+		for (const a of links) {
+			const on = a.dataset.toc === current?.id;
+			a.classList.toggle("text-foreground", on);
+			a.classList.toggle("border-foreground", on);
+			a.classList.toggle("text-tertiary-foreground", !on);
+		}
+	}
+	if (targets.length) {
+		update();
+		addEventListener("scroll", update, { passive: true });
+	}
+	for (const b of document.querySelectorAll<HTMLButtonElement>("[data-copy-md]")) {
+		b.addEventListener("click", async () => {
+			const text = await (await fetch(b.dataset.copyMd!)).text();
+			await navigator.clipboard.writeText(text);
+			const label = b.querySelector("span")!;
+			const prev = label.textContent;
+			label.textContent = "Copied";
+			setTimeout(() => (label.textContent = prev), 1500);
+		});
+	}
+</script>
