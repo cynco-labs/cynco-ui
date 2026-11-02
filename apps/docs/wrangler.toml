@@ -1,5 +1,11 @@
-# Cloudflare Pages: `pnpm build` at the repo root, then deploy apps/docs/dist
-#   npx wrangler pages deploy apps/docs/dist --project-name cynco-ui
+# Cloudflare Workers static assets, served at ui.cynco.io.
+#   pnpm build:ui && pnpm --filter @cynco-labs/docs build
+#   cd apps/docs && npx wrangler deploy
 name = "cynco-ui"
-pages_build_output_dir = "./dist"
 compatibility_date = "2026-10-01"
+account_id = "f06c6a7080a4bddf940c20024561d41c"
+routes = [{ pattern = "ui.cynco.io", custom_domain = true }]
+
+[assets]
+directory = "./dist"
+not_found_handling = "404-page"
