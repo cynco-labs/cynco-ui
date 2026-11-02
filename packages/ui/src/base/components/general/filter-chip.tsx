@@ -18,7 +18,7 @@ export function FilterChip({
 				type="button"
 				aria-label={`Remove ${label} filter`}
 				onClick={onRemove}
-				className="flex size-4 shrink-0 cursor-pointer items-center justify-center rounded-sm text-tertiary-foreground hover:bg-primary/10 hover:text-foreground"
+				className="relative flex size-4 shrink-0 cursor-pointer items-center justify-center rounded-sm text-tertiary-foreground after:absolute after:-inset-1 hover:bg-primary/10 hover:text-foreground"
 			>
 				<XIcon aria-hidden="true" size={10} weight="bold" />
 			</button>

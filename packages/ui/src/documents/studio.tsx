@@ -91,6 +91,7 @@ function Field({ label, labelId, htmlFor, children, hint }: { label: string; lab
  * wrapping at the ends; Home / End jump to the first / last. The selected item is the group's only tab stop.
  */
 function onRovingKeyDown<T extends string>(e: React.KeyboardEvent<HTMLElement>, role: "radio" | "tab", values: readonly T[], current: T, select: (v: T) => void) {
+	if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
 	const step = e.key === "ArrowRight" || e.key === "ArrowDown" ? 1 : e.key === "ArrowLeft" || e.key === "ArrowUp" ? -1 : 0;
 	const at = values.indexOf(current);
 	const next = e.key === "Home" ? 0 : e.key === "End" ? values.length - 1 : step ? (at + step + values.length) % values.length : -1;

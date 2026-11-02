@@ -65,8 +65,9 @@ Without Tailwind, `import "@cynco-labs/ui/styles.css"` once at the root. Wrap th
 7. **Documents are black ink.** Invoices, receipts, statements, payslips and reports print in black on
    white: no colour, tints or filled bars. Pass totals exactly as posted; documents never recalculate.
    Labels come from the kit's English/Malay dictionary through `DocumentBrandProvider`'s locale.
-8. **Accessibility.** Icon-only buttons get `aria-label`. Keep the visible focus ring. Prefer Undo
-   (`useUndoToast`) to "Are you sure?" dialogs for reversible bulk actions.
+8. **Accessibility.** Icon-only buttons get `aria-label`. Keep the visible focus ring. A control revealed on
+   hover also takes `no-hover:opacity-100`, so touch screens show it. Prefer Undo (`useUndoToast`) to
+   "Are you sure?" dialogs for reversible bulk actions.
 9. **Composable.** Every component takes `className` (merged, so your classes win) and native props on
    its root. Stateful ones support `value`/`defaultValue`/`onValueChange`.
 

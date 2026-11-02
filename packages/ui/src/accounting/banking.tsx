@@ -23,6 +23,7 @@ import {
 	ChartTooltip,
 	ChartTooltipContent,
 	cn,
+	useControllableState,
 	type StatusTone,
 	type StatusGlyph,
 } from "../base";
@@ -191,7 +192,7 @@ export function BankConfidenceMeter({
 export type BankCoaSuggestion = { accountCode?: string; accountName: string; confidence?: number | null };
 
 /** The dashed primary chip an AI suggestion is drawn as. */
-const SUGGEST = "h-6 min-w-0 gap-1 border-dashed border-primary/45 bg-active-primary px-1.5 text-2xs font-normal text-primary hover:border-solid hover:bg-active-primary";
+const SUGGEST = "h-6 min-w-0 shrink gap-1 [&>span]:min-w-0 border-dashed border-primary/45 bg-active-primary px-1.5 text-2xs font-normal text-primary hover:border-solid hover:bg-active-primary";
 
 /**
  * CategoryCell — the categorization affordance on a feed row. Four states:
@@ -239,7 +240,7 @@ export function BankCategoryCell({
 					<span className="truncate">{category}</span>
 				</span>
 			) : (
-				<Button variant="secondary" size="sm" onClick={onPick} className="h-6 min-w-0 gap-1 px-1.5 text-2xs font-normal text-muted-foreground hover:text-foreground" aria-label={`Category ${category}, change`}>
+				<Button variant="secondary" size="sm" onClick={onPick} className="h-6 min-w-0 gap-1 px-1.5 text-2xs font-normal text-muted-foreground hover:text-foreground shrink [&>span]:min-w-0" aria-label={`Category ${category}, change`}>
 					<TagIcon size={11} className="size-3 shrink-0" aria-hidden="true" />
 					<span className="truncate">{category}</span>
 				</Button>
@@ -410,14 +411,33 @@ function FlagChip({ icon, children, title }: { icon: React.ReactNode; children: 
  * with matches beneath. Narrow: the payee wraps to two lines and the category
  * drops under it, the amount stays top right.
  */
-export function BankFeedRow({ tx, selected = false, showAccount = false, className, ...props }: With<{ tx: BankFeedTransaction; selected?: boolean; showAccount?: boolean; className?: string }>) {
+export function BankFeedRow({
+	tx,
+	selected: selectedProp,
+	defaultSelected = false,
+	onSelectedChange,
+	showAccount = false,
+	className,
+	...props
+}: With<{
+	tx: BankFeedTransaction;
+	/** Whether the row's checkbox is ticked (controlled). */
+	selected?: boolean;
+	/** Initial tick state when uncontrolled. */
+	defaultSelected?: boolean;
+	/** Called when the checkbox is toggled by click or Space. */
+	onSelectedChange?: (selected: boolean) => void;
+	showAccount?: boolean;
+	className?: string;
+}>) {
+	const [selected = false, setSelected] = useControllableState({ prop: selectedProp, defaultProp: defaultSelected, onChange: onSelectedChange });
 	const excluded = tx.status === "excluded";
 	const primary = tx.payeeName || tx.description || "";
 	const secondary = tx.payeeName && tx.description && tx.description !== primary ? tx.description : tx.reference;
 	return (
 		<div className={cn("@container border-b border-table-row-divider last:border-b-0", className)} {...props}>
 			<div className={cn("group/row flex items-start gap-2.5 px-3 py-2 transition-colors @lg:items-center", selected ? "bg-active-primary" : "hover:bg-table-row-hover")}>
-				<Checkbox checked={selected} aria-label={`Select ${primary || "transaction"}, ${formatDate(tx.date)}, ${signedByType(tx.amount, tx.type, tx.currency)}`} className={cn("mt-1 @lg:mt-0", !selected && "opacity-50 group-hover/row:opacity-100")} />
+				<Checkbox checked={selected} onCheckedChange={setSelected} aria-label={`Select ${primary || "transaction"}, ${formatDate(tx.date)}, ${signedByType(tx.amount, tx.type, tx.currency)}`} className={cn("mt-1 @lg:mt-0", !selected && "opacity-50 group-hover/row:opacity-100")} />
 				<BankLifecycleSpine status={tx.status} className="mt-1 shrink-0 @lg:mt-0" />
 				<div className="flex min-w-0 flex-1 flex-col gap-1 @lg:flex-row @lg:items-center @lg:gap-3">
 					<div className={cn("min-w-0 flex-1", excluded && "text-tertiary-foreground")}>
@@ -480,7 +500,9 @@ export function BankFeedList({
 	statusLabel = "All statuses",
 	search,
 	showAccount = true,
-	selectedIds = [],
+	selectedIds: selectedIdsProp,
+	defaultSelectedIds = [],
+	onSelectedChange,
 	postAll,
 	className,
 	...props
@@ -490,11 +512,17 @@ export function BankFeedList({
 	statusLabel?: string;
 	search?: string;
 	showAccount?: boolean;
+	/** Ids of the ticked rows (controlled). */
 	selectedIds?: string[];
+	/** Initially ticked row ids when uncontrolled. */
+	defaultSelectedIds?: string[];
+	/** Called with the new ids when a row is ticked or unticked. */
+	onSelectedChange?: (ids: string[]) => void;
 	/** "RM 4,210.00 in · RM 1,180.40 out" shown on Post all, when filtered to To post. */
 	postAll?: string;
 	className?: string;
 }>) {
+	const [selectedIds = [], setSelectedIds] = useControllableState({ prop: selectedIdsProp, defaultProp: defaultSelectedIds, onChange: onSelectedChange });
 	return (
 		<div className={cn("@container flex min-w-0 flex-col gap-2", className)} {...props}>
 			<ActionBar>
@@ -528,7 +556,13 @@ export function BankFeedList({
 						</header>
 						<div className={surfaces.surface}>
 							{day.rows.map((tx) => (
-								<BankFeedRow key={tx.id} tx={tx} showAccount={showAccount} selected={selectedIds.includes(tx.id)} />
+								<BankFeedRow
+									key={tx.id}
+									tx={tx}
+									showAccount={showAccount}
+									selected={selectedIds.includes(tx.id)}
+									onSelectedChange={(on) => setSelectedIds(on ? [...selectedIds, tx.id] : selectedIds.filter((id) => id !== tx.id))}
+								/>
 							))}
 						</div>
 					</section>

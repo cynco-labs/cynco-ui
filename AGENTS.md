@@ -18,7 +18,7 @@ Guidance for coding agents and contributors. Read it before changing anything.
 3. **Responsive by container.** Roots set `@container`; use `@sm:`…`@3xl:` variants. Every component must work from 320px to a full page of its own width. No fixed pixel layouts.
 4. **Composable.** Every exported component accepts `className` (merged with `cn()`) and spreads native props on its root. Stateful components support controlled and uncontrolled use (`value` / `defaultValue` / `onValueChange`).
 5. **Money.** Amounts are decimal strings (`"1234.50"`), never floats. Use `parseAmount`, `sumAmounts`, `toSen`/`fromSen`, `formatCurrency`. Documents print totals exactly as given and never recalculate posted figures.
-6. **Accessibility.** Keyboard-operable, visible `focus-visible` rings, `aria-label` on icon-only buttons, status never by colour alone (`StatusChip` pairs a square, glyph and word).
+6. **Accessibility.** Keyboard-operable, visible `focus-visible` rings, controls revealed on hover also take `no-hover:opacity-100` so touch screens show them, `aria-label` on icon-only buttons, status never by colour alone (`StatusChip` pairs a square, glyph and word).
 7. **Documents are black ink.** No colour, tints or filled bars on printed documents; hierarchy from type, spacing and hairlines.
 8. **Unique export names** across the whole package (`src/index.ts` re-exports everything).
 

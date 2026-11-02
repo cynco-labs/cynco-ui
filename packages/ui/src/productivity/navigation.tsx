@@ -1014,7 +1014,7 @@ export function SavedViewsBar({
 								{isActive && (
 									<DropdownMenu>
 										<DropdownMenuTrigger
-											render={<Button variant="skeleton" size="icon" aria-label={`Options for ${v.name} view`} className="mx-0.5 !size-5 justify-center !p-0 text-tertiary-foreground focus-ring" />}
+											render={<Button variant="skeleton" size="icon" aria-label={`Options for ${v.name} view`} className="mx-0.5 !size-5 justify-center !p-0 text-tertiary-foreground focus-ring after:absolute after:-inset-0.5" />}
 										>
 											<DotsThreeIcon weight="bold" className="size-3.5" />
 										</DropdownMenuTrigger>

@@ -163,7 +163,7 @@ function SortHeader({ id, label, sortField, sortDirection, onSort }: { id: strin
 			size="sm"
 			onClick={() => onSort?.(id)}
 			aria-label={`Sort by ${label}`}
-			className={cn("-mx-1 h-5 gap-1 !px-1 text-xs font-medium", active ? "text-foreground" : "text-tertiary-foreground")}
+			className={cn("-mx-1 h-5 gap-1 !px-1 text-xs font-medium after:absolute after:-inset-y-0.5", active ? "text-foreground" : "text-tertiary-foreground")}
 		>
 			{label}
 			{active && (sortDirection === "asc" ? <ArrowUpIcon size={10} weight="bold" aria-hidden="true" /> : <ArrowDownIcon size={10} weight="bold" aria-hidden="true" />)}

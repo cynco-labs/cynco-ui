@@ -157,7 +157,7 @@ export const CopyIconButton = ({
 						icon={<AnimatedCopyIcon copied={copied} />}
 						onClick={handleCopy}
 						className={cn(
-							"cursor-pointer px-0! hover:text-foreground!",
+							"relative cursor-pointer px-0! after:absolute after:-inset-x-1 hover:text-foreground!",
 							className,
 							copied && "opacity-100",
 						)}
@@ -194,7 +194,7 @@ export const MiniCopyButton = ({
 			side={side}
 			{...props}
 			className={cn(
-				"opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
+				"opacity-0 group-hover:opacity-100 focus-visible:opacity-100 no-hover:opacity-100",
 				iconClassName,
 			)}
 		/>

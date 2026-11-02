@@ -233,8 +233,8 @@ const PICKER_GROUPS: { label: string; types: string[] }[] = [
 	{ label: "Expenses", types: ["expense", "contra_expense", "cost_of_sales", "operating_expense", "other_expense"] },
 ];
 
-/** The popup follows the trigger's width, never narrower than 18rem nor wider than the viewport. */
-const PICKER_POPUP = "w-(--anchor-width) min-w-72 max-w-[calc(100vw-2rem)] p-0";
+/** The popup follows the trigger's width, never narrower than 18rem nor wider than the viewport, and never taller than the room left on screen. */
+const PICKER_POPUP = "flex max-h-(--available-height) w-(--anchor-width) min-w-72 max-w-[calc(100vw-2rem)] flex-col p-0";
 
 function AccountOption({ a, selected }: { a: LedgerPickerAccount; selected?: boolean }) {
 	return (
@@ -264,9 +264,9 @@ function AccountPickerList({
 	const [query, setQuery] = React.useState("");
 	const recent = recentIds.map((id) => accounts.find((a) => a.id === id)).filter((a): a is LedgerPickerAccount => !!a);
 	return (
-		<Command className="rounded-lg">
+		<Command className="min-h-0 rounded-lg">
 			<CommandInput placeholder="Search by code or name..." value={query} onValueChange={setQuery} />
-			<CommandList className="max-h-64">
+			<CommandList className="max-h-64 min-h-0">
 				<CommandEmpty>No accounts found.</CommandEmpty>
 				{recent.length > 0 && !query && (
 					<CommandGroup heading="Recent">
@@ -966,7 +966,7 @@ function CoaRow({
 								size="icon"
 								tabIndex={-1}
 								aria-label={open ? `Collapse ${node.accountName}` : `Expand ${node.accountName}`}
-								className="size-5 shrink-0 p-0"
+								className="size-5 shrink-0 p-0 after:absolute after:-inset-0.5"
 								onClick={(e) => {
 									e.stopPropagation();
 									onToggle(node.id);
@@ -2087,7 +2087,7 @@ export function AccountingWorkbenchHeader({ title, meta, actions, stats = [], cl
 								value={value}
 								sub={s.hint}
 								className={cn("h-full", s.href && "transition-colors group-hover:border-primary/40")}
-								badge={s.href ? <ArrowUpRightIcon weight="bold" size={14} aria-hidden="true" className="text-tertiary-foreground opacity-0 transition-opacity group-hover:opacity-100" /> : undefined}
+								badge={s.href ? <ArrowUpRightIcon weight="bold" size={14} aria-hidden="true" className="text-tertiary-foreground opacity-0 transition-opacity group-hover:opacity-100 no-hover:opacity-100" /> : undefined}
 							/>
 						);
 						return s.href ? (

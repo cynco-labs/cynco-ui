@@ -19,6 +19,8 @@
 
 @custom-variant dark (&:is(.dark:not(.react-flow) *, [data-theme$="dark"] *));
 @custom-variant preset (&:is(.preset-modern *, [data-theme^="modern"] *));
+/* Touch screens and other devices that cannot hover: controls revealed on hover show at all times. */
+@custom-variant no-hover (@media (hover: none));
 
 /*
  * Shared keyboard focus ring. An outline (not a box-shadow ring), so it survives forced-colors mode,

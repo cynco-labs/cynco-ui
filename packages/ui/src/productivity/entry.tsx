@@ -999,7 +999,7 @@ export function InlineEditCell({
 						) : status === "saved" ? (
 							<CheckIcon size={13} weight="bold" className="text-status-green-text" />
 						) : (
-							!disabled && <PencilSimpleIcon size={13} className="text-tertiary-foreground opacity-0 transition-opacity group-hover/iec:opacity-100 group-focus-visible/iec:opacity-100" />
+							!disabled && <PencilSimpleIcon size={13} className="text-tertiary-foreground opacity-0 transition-opacity group-hover/iec:opacity-100 group-focus-visible/iec:opacity-100 no-hover:opacity-100" />
 						)}
 					</span>
 				</button>

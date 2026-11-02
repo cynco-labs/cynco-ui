@@ -123,10 +123,12 @@ Inside the feed list, or anywhere a single bank line is listed.
 
 ## Props
 
-tx (BankFeedTransaction: payeeName, description, reference, type, amount, status, category, suggestion, isTransfer, flags, excludeReason, account {name, color}, matches), selected, showAccount, className and native props (spread on the root).
+tx (BankFeedTransaction: payeeName, description, reference, type, amount, status, category, suggestion, isTransfer, flags, excludeReason, account {name, color}, matches), selected / defaultSelected / onSelectedChange, showAccount, className and native props (spread on the root).
 
 - `tx`: `BankFeedTransaction`
-- `selected?`: `boolean`. Default `false`.
+- `selected?`: `boolean`. Whether the row's checkbox is ticked (controlled).
+- `defaultSelected?`: `boolean`. Initial tick state when uncontrolled. Default `false`.
+- `onSelectedChange?`: `(selected: boolean) => void`. Called when the checkbox is toggled by click or Space.
 - `showAccount?`: `boolean`. Default `false`.
 - Also accepts `ComponentProps<"div">`.
 

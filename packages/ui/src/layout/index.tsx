@@ -15,7 +15,8 @@ import { isMacPlatform, useIsMac } from "../base/lib/utils";
 /** Class names for Cynco UI's table tray: a recessed band holding a raised surface. */
 export const surfaces = {
 	tray: "rounded-xl border border-table-tray-border bg-table-tray p-1",
-	surface: "overflow-hidden rounded-lg border border-table-surface-border bg-table-surface",
+	/** `relative` keeps absolutely placed descendants (sr-only text) inside the clip, so they cannot widen the page. */
+	surface: "relative overflow-hidden rounded-lg border border-table-surface-border bg-table-surface",
 	card: "rounded-xl border border-border bg-card",
 	/** Negative figures and error text — readable in every theme. */
 	negative: "text-error-text",
@@ -189,7 +190,7 @@ export function ScrollRow({ className, ref, role, tabIndex, ...props }: React.Co
 			data-slot="cy-scroll-row"
 			role={role ?? (needsStop && named ? "group" : undefined)}
 			tabIndex={tabIndex ?? (needsStop ? 0 : undefined)}
-			className={cn("flex min-w-0 items-center gap-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden", SCROLL_STOP_RING, className)}
+			className={cn("relative flex min-w-0 items-center gap-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden", SCROLL_STOP_RING, className)}
 			{...props}
 		/>
 	);

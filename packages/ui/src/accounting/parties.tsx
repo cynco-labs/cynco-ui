@@ -348,9 +348,9 @@ export function BillCard({ bill, showStatus = false, selected, onToggle, someSel
 		>
 			<div className="flex items-start gap-2.5">
 				<div className="relative size-8 shrink-0">
-					<PartyInitials name={bill.vendorName} className={cn(onToggle && (showCheckbox ? "opacity-0" : "group-hover:opacity-0 group-focus-within:opacity-0"))} />
+					<PartyInitials name={bill.vendorName} className={cn(onToggle && (showCheckbox ? "opacity-0" : "group-hover:opacity-0 group-focus-within:opacity-0 no-hover:opacity-0"))} />
 					{onToggle && (
-						<div className={cn("absolute inset-0 flex items-center justify-center", showCheckbox ? "opacity-100" : "opacity-0 group-hover:opacity-100 group-focus-within:opacity-100")}>
+						<div className={cn("absolute inset-0 flex items-center justify-center", showCheckbox ? "opacity-100" : "opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 no-hover:opacity-100")}>
 							<RowSelect checked={!!selected} onToggle={() => onToggle(bill.id)} label={`Select ${bill.vendorName ?? "bill"}`} />
 						</div>
 					)}
@@ -479,7 +479,7 @@ export function BillsBoard({ bills, columns, selectedIds, onToggleBill, paidFilt
 	const selected = new Set(selectedIds ?? []);
 	return (
 		<div className={cn("@container min-w-0", className)} {...props}>
-			<div className="flex flex-col gap-4 @3xl:flex-row @3xl:gap-3 @3xl:overflow-x-auto @3xl:pb-1">
+			<div className="relative flex flex-col gap-4 @3xl:flex-row @3xl:gap-3 @3xl:overflow-x-auto @3xl:pb-1">
 				{cols.map((col) => {
 					const list = bills.filter((b) => (col.statuses as readonly string[]).includes(b.status));
 					return (
@@ -1550,7 +1550,7 @@ export function PartyRail({ role, currency = "MYR", ledgerBalance, openItemsTota
 												)}
 											</div>
 										</div>
-										<div className="flex shrink-0 items-center opacity-0 group-hover:opacity-100 group-focus-within:opacity-100">
+										<div className="flex shrink-0 items-center opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 no-hover:opacity-100">
 											{!c.isPrimary && (
 												<Button variant="skeleton" size="icon" aria-label={`Set ${c.name} as primary`}>
 													<StarIcon size={13} aria-hidden="true" />

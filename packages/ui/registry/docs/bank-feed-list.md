@@ -120,7 +120,7 @@ export default function BankFeedListDemo() {
 			total={248}
 			statusLabel="All statuses"
 			showAccount
-			selectedIds={["t2"]}
+			defaultSelectedIds={["t2"]}
 		/>
 	);
 }
@@ -132,14 +132,16 @@ The main Banking feed for one account or all accounts.
 
 ## Props
 
-days [{date, net?, rows: BankFeedTransaction[]}], total, statusLabel, search, showAccount, selectedIds, postAll (money summary when filtered to To post), className and native props (spread on the root).
+days [{date, net?, rows: BankFeedTransaction[]}], total, statusLabel, search, showAccount, selectedIds / defaultSelectedIds / onSelectedChange, postAll (money summary when filtered to To post), className and native props (spread on the root).
 
 - `days`: `BankFeedDay[]`
 - `total`: `number`
 - `statusLabel?`: `string`. Default `"All statuses"`.
 - `search?`: `string`
 - `showAccount?`: `boolean`. Default `true`.
-- `selectedIds?`: `string[]`. Default `[]`.
+- `selectedIds?`: `string[]`. Ids of the ticked rows (controlled).
+- `defaultSelectedIds?`: `string[]`. Initially ticked row ids when uncontrolled. Default `[]`.
+- `onSelectedChange?`: `(ids: string[]) => void`. Called with the new ids when a row is ticked or unticked.
 - `postAll?`: `string`. "RM 4,210.00 in · RM 1,180.40 out" shown on Post all, when filtered to To post.
 - Also accepts `ComponentProps<"div">`.
 

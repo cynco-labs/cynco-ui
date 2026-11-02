@@ -140,6 +140,7 @@ function TagInput({
 						<span className="text-tiny">{displayValue}</span>
 						<button
 							type="button"
+							className="relative after:absolute after:-inset-y-1.5 after:-right-2 after:-left-1"
 							aria-label={`Remove ${displayValue}`}
 							onClick={(e) => {
 								e.stopPropagation();

@@ -4438,7 +4438,20 @@
 				"name": "selectedIds",
 				"type": "string[]",
 				"required": false,
-				"default": "[]"
+				"description": "Ids of the ticked rows (controlled)."
+			},
+			{
+				"name": "defaultSelectedIds",
+				"type": "string[]",
+				"required": false,
+				"default": "[]",
+				"description": "Initially ticked row ids when uncontrolled."
+			},
+			{
+				"name": "onSelectedChange",
+				"type": "(ids: string[]) => void",
+				"required": false,
+				"description": "Called with the new ids when a row is ticked or unticked."
 			},
 			{
 				"name": "postAll",
@@ -4462,7 +4475,20 @@
 				"name": "selected",
 				"type": "boolean",
 				"required": false,
-				"default": "false"
+				"description": "Whether the row's checkbox is ticked (controlled)."
+			},
+			{
+				"name": "defaultSelected",
+				"type": "boolean",
+				"required": false,
+				"default": "false",
+				"description": "Initial tick state when uncontrolled."
+			},
+			{
+				"name": "onSelectedChange",
+				"type": "(selected: boolean) => void",
+				"required": false,
+				"description": "Called when the checkbox is toggled by click or Space."
 			},
 			{
 				"name": "showAccount",

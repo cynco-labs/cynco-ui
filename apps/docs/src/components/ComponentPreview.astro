@@ -20,7 +20,7 @@ const controlEntries = Object.entries(controls ?? {});
 	<div class="flex flex-wrap items-center justify-between gap-2 border-b border-border px-2 py-1.5">
 		<div class={SEG_GROUP} role="tablist" aria-label={`${name} example`}>
 			<button type="button" role="tab" class={SEG} data-tab="preview" aria-selected="true">Preview</button>
-			<button type="button" role="tab" class={SEG} data-tab="code" aria-selected="false">Code</button>
+			<button type="button" role="tab" class={SEG} data-tab="code" aria-selected="false" tabindex="-1">Code</button>
 		</div>
 		<div class="flex items-center gap-1.5" data-preview-tools>
 			<button type="button" class:list={[SEG, "hidden sm:inline-flex"]} data-inspect aria-pressed="false" title="Hover the demo to see sizes, padding and type">
@@ -201,10 +201,24 @@ const controlEntries = Object.entries(controls ?? {});
 
 		const tools = el.querySelector<HTMLElement>("[data-preview-tools]")!;
 		const copy = el.querySelector<HTMLButtonElement>("[data-copy]")!;
-		for (const tab of el.querySelectorAll<HTMLButtonElement>("[data-tab]")) {
+		const tabs = [...el.querySelectorAll<HTMLButtonElement>("[data-tab]")];
+		for (const tab of tabs) {
+			// APG tabs: the selected tab is the group's only Tab stop; arrows, Home and End move and select.
+			tab.addEventListener("keydown", (e) => {
+				if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+				const at = tabs.indexOf(tab);
+				const next = e.key === "ArrowRight" ? (at + 1) % tabs.length : e.key === "ArrowLeft" ? (at - 1 + tabs.length) % tabs.length : e.key === "Home" ? 0 : e.key === "End" ? tabs.length - 1 : -1;
+				if (next < 0) return;
+				e.preventDefault();
+				tabs[next].click();
+				tabs[next].focus();
+			});
 			tab.addEventListener("click", () => {
 				const code = tab.dataset.tab === "code";
-				for (const t of el.querySelectorAll("[data-tab]")) t.setAttribute("aria-selected", String(t === tab));
+				for (const t of tabs) {
+					t.setAttribute("aria-selected", String(t === tab));
+					t.tabIndex = t === tab ? 0 : -1;
+				}
 				el.querySelector<HTMLElement>('[data-panel="preview"]')!.hidden = code;
 				el.querySelector<HTMLElement>('[data-panel="code"]')!.hidden = !code;
 				tools.classList.toggle("hidden", code);

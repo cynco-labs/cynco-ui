@@ -1,6 +1,9 @@
+import { useState } from "react";
 import { BillCard } from "@cynco-labs/ui";
 
 export default function BillCardDemo() {
+	const [selected, setSelected] = useState<string[]>(["b4"]);
+	const toggle = (id: string) => setSelected((ids) => (ids.includes(id) ? ids.filter((x) => x !== id) : [...ids, id]));
 	return (
 		<div className="grid gap-3 sm:grid-cols-2 max-w-[600px]">
 			<BillCard
@@ -17,7 +20,8 @@ export default function BillCardDemo() {
 					postedToGl: true,
 					aiConfidence: 96,
 				}}
-				onToggle={() => {}}
+				selected={selected.includes("b1")}
+				onToggle={toggle}
 			/>
 			<BillCard
 				bill={{
@@ -61,8 +65,8 @@ export default function BillCardDemo() {
 					postedToGl: false,
 				}}
 				showStatus
-				selected
-				onToggle={() => {}}
+				selected={selected.includes("b4")}
+				onToggle={toggle}
 			/>
 		</div>
 	);

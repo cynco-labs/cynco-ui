@@ -109,7 +109,7 @@ export default function BankFeedListDemo() {
 			total={248}
 			statusLabel="All statuses"
 			showAccount
-			selectedIds={["t2"]}
+			defaultSelectedIds={["t2"]}
 		/>
 	);
 }

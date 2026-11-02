@@ -31,12 +31,11 @@ export default function ActionBarDemo() {
 					Columns
 				</Button>
 			</ActionBar>
-			<ScrollRow role="tablist" aria-label="Status">
+			<ScrollRow role="group" aria-label="Status">
 				{tabs.map((t) => (
 					<Button
 						key={t}
-						role="tab"
-						aria-selected={s === t}
+						aria-pressed={s === t}
 						variant={s === t ? "secondary" : "skeleton"}
 						size="sm"
 						onClick={() => {

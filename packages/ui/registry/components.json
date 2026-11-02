@@ -6386,7 +6386,7 @@
 		"group": "Banking",
 		"summary": "The day-grouped bank transaction stream: search, lifecycle filter, count, and per-day sections of feed rows with the day's net.",
 		"use": "The main Banking feed for one account or all accounts.",
-		"provide": "days [{date, net?, rows: BankFeedTransaction[]}], total, statusLabel, search, showAccount, selectedIds, postAll (money summary when filtered to To post), className and native props (spread on the root).",
+		"provide": "days [{date, net?, rows: BankFeedTransaction[]}], total, statusLabel, search, showAccount, selectedIds / defaultSelectedIds / onSelectedChange, postAll (money summary when filtered to To post), className and native props (spread on the root).",
 		"notes": "Responsive by container: toolbar wraps (ActionBar), rows switch to the narrow FeedRow layout.",
 		"sourcePath": "packages/ui/src/accounting/banking.tsx",
 		"demoPath": "apps/docs/src/demos/BankFeedList.tsx",
@@ -6425,7 +6425,20 @@
 					"name": "selectedIds",
 					"type": "string[]",
 					"required": false,
-					"default": "[]"
+					"description": "Ids of the ticked rows (controlled)."
+				},
+				{
+					"name": "defaultSelectedIds",
+					"type": "string[]",
+					"required": false,
+					"default": "[]",
+					"description": "Initially ticked row ids when uncontrolled."
+				},
+				{
+					"name": "onSelectedChange",
+					"type": "(ids: string[]) => void",
+					"required": false,
+					"description": "Called with the new ids when a row is ticked or unticked."
 				},
 				{
 					"name": "postAll",
@@ -6446,7 +6459,7 @@
 		"group": "Banking",
 		"summary": "One bank line: checkbox, lifecycle spine, payee with transfer and review-flag chips, account dot and description, category cell, signed amount, and any proposed matches beneath.",
 		"use": "Inside the feed list, or anywhere a single bank line is listed.",
-		"provide": "tx (BankFeedTransaction: payeeName, description, reference, type, amount, status, category, suggestion, isTransfer, flags, excludeReason, account {name, color}, matches), selected, showAccount, className and native props (spread on the root).",
+		"provide": "tx (BankFeedTransaction: payeeName, description, reference, type, amount, status, category, suggestion, isTransfer, flags, excludeReason, account {name, color}, matches), selected / defaultSelected / onSelectedChange, showAccount, className and native props (spread on the root).",
 		"notes": "Responsive by container: below 32rem the payee wraps to two lines, flags wrap, the category drops under the text and the amount stays top right.",
 		"sourcePath": "packages/ui/src/accounting/banking.tsx",
 		"demoPath": "apps/docs/src/demos/BankFeedRow.tsx",
@@ -6463,7 +6476,20 @@
 					"name": "selected",
 					"type": "boolean",
 					"required": false,
-					"default": "false"
+					"description": "Whether the row's checkbox is ticked (controlled)."
+				},
+				{
+					"name": "defaultSelected",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Initial tick state when uncontrolled."
+				},
+				{
+					"name": "onSelectedChange",
+					"type": "(selected: boolean) => void",
+					"required": false,
+					"description": "Called when the checkbox is toggled by click or Space."
 				},
 				{
 					"name": "showAccount",

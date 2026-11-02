@@ -463,7 +463,7 @@ export function DocumentPage({
 					data-slot="cy-document"
 					// At 100% the sheet scrolls sideways in narrow containers: make that scroller reachable by keyboard (WCAG 2.1.1).
 					{...(fit === "none" ? { role: "region", tabIndex: 0, "aria-label": docLabelText("document", brand.locale === "ms" ? "ms" : "en") } : {})}
-					className={cn("w-full min-w-0 print:overflow-visible", fit === "width" ? "overflow-hidden" : "overflow-x-auto")}
+					className={cn("relative w-full min-w-0 print:overflow-visible", fit === "width" ? "overflow-hidden" : "overflow-x-auto")}
 				>
 					<DocStyles />
 					<PrintPage size={size} isolate={isolate} />
