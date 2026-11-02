@@ -75,22 +75,25 @@
     "use-stick-to-bottom": "^1.1.1"
   },
   "peerDependencies": {
+    "@phosphor-icons/react": "^2.1.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "@phosphor-icons/react": "^2.1.0"
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
+    "@phosphor-icons/react": "^2.1.10",
+    "@tailwindcss/cli": "^4.0.13",
+    "@testing-library/react": "^16.3.3",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
-    "typescript": "~5.7.2",
-    "vite": "^6.0.0",
     "@vitejs/plugin-react": "^4.3.4",
-    "tailwindcss": "^4.0.13",
-    "@tailwindcss/cli": "^4.0.13",
-    "vitest": "^2.1.8",
+    "axe-core": "^4.14.0",
+    "jsdom": "^30.1.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "@phosphor-icons/react": "^2.1.10"
+    "tailwindcss": "^4.0.13",
+    "typescript": "~5.7.2",
+    "vite": "^6.0.0",
+    "vitest": "^2.1.8"
   },
   "publishConfig": {
     "access": "public"
