@@ -52,7 +52,10 @@ export interface TableProps<T> {
 	linkComponent?: TableLinkComponent;
 	/** For non-navigation actions like opening sheets/modals */
 	onRowClick?: (row: T) => void;
-	/** For double-click actions (e.g. opening external links) */
+	/**
+	 * For double-click actions (e.g. opening external links). Without `onRowClick`, keyboard users run this with Enter/Space on the row. With both, Enter runs
+	 * `onRowClick`, so also offer this action in the row menu.
+	 */
 	onRowDoubleClick?: (row: T) => void;
 	rowClassName?: string;
 	/** Per-row className (e.g. to style nested/variant rows differently) */
@@ -68,8 +71,16 @@ export interface TableProps<T> {
 	scrollContainer?: HTMLDivElement | null;
 }
 
-//biome-ignore lint/suspicious/noExplicitAny: type could be any here
-export const TableContext = createContext<TableProps<any> | null>(null);
+/**
+ * One context serves tables of every row type. TypeScript can't express "TableProps<T> for some T"
+ * (no existential types), so the row type is erased when stored and restored when read. These two
+ * assertions are the only places that happens; each table reads back the T its provider stored.
+ */
+export const TableContext = createContext<TableProps<unknown> | null>(null);
+
+export function toTableContextValue<T>(props: TableProps<T>): TableProps<unknown> {
+	return props as TableProps<unknown>;
+}
 
 export function useTableContext<T>(): TableProps<T> {
 	const context = useContext(TableContext);

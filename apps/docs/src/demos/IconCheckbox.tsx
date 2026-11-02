@@ -18,7 +18,7 @@ export default function IconCheckboxDemo() {
 			<IconCheckbox variant="secondary" iconOrientation="left" icon={<UsersIcon />} checked={false}>
 				Group by customer
 			</IconCheckbox>
-			<IconCheckbox variant="secondary" icon={<FunnelSimpleIcon />} checked />
+			<IconCheckbox variant="secondary" icon={<FunnelSimpleIcon />} checked aria-label="Show filters" />
 		</div>
 	);
 }

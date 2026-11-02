@@ -50,10 +50,11 @@ function PopoverContent({
 		PopoverPrimitive.Positioner.Props,
 		"align" | "side" | "sideOffset" | "anchor" | "collisionAvoidance"
 	> & {
-		onEscapeKeyDown?: (e: any) => void;
-		onPointerDownOutside?: (e: any) => void;
-		onOpenAutoFocus?: (e: any) => void;
-		onCloseAutoFocus?: (e: any) => void;
+		/** Radix compatibility props; accepted and ignored (Base UI handles dismissal and focus itself). */
+		onEscapeKeyDown?: (event: Event) => void;
+		onPointerDownOutside?: (event: Event) => void;
+		onOpenAutoFocus?: (event: Event) => void;
+		onCloseAutoFocus?: (event: Event) => void;
 		forceMount?: boolean;
 		asChild?: boolean;
 	}) {

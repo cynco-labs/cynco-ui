@@ -42,7 +42,11 @@ export const ModelSelectorContent = ({
 }: ModelSelectorContentProps) => (
 	<DialogContent className={cn("p-0", className)} {...props}>
 		<DialogTitle className="sr-only">{title}</DialogTitle>
-		<Command className="**:data-[slot=command-input-wrapper]:h-auto">
+		{/* cmdk labels its combobox input and listbox from this; empty, they are unnamed. */}
+		<Command
+			className="**:data-[slot=command-input-wrapper]:h-auto"
+			label={typeof title === "string" ? title : "Model Selector"}
+		>
 			{children}
 		</Command>
 	</DialogContent>
@@ -101,10 +105,7 @@ export const ModelSelectorSeparator = (props: ModelSelectorSeparatorProps) => (
 	<CommandSeparator {...props} />
 );
 
-export type ModelSelectorLogoProps = Omit<
-	ComponentProps<"img">,
-	"src" | "alt"
-> & {
+export type ModelSelectorLogoProps = Omit<ComponentProps<"img">, "src"> & {
 	provider:
 		| "moonshotai-cn"
 		| "lucidquery"
@@ -168,11 +169,13 @@ export type ModelSelectorLogoProps = Omit<
 export const ModelSelectorLogo = ({
 	provider,
 	className,
+	alt,
 	...props
 }: ModelSelectorLogoProps) => (
 	<img
 		{...props}
-		alt={`${provider} logo`}
+		// Pass alt="" when the provider name is printed beside the logo.
+		alt={alt ?? `${provider} logo`}
 		className={cn("size-3 dark:invert", className)}
 		height={12}
 		src={`https://models.dev/logos/${provider}.svg`}

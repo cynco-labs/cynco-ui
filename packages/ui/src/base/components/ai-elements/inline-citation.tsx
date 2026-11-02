@@ -7,11 +7,7 @@ import {
 	CarouselContent,
 	CarouselItem,
 } from "../ui/carousel";
-import {
-	HoverCard,
-	HoverCardContent,
-	HoverCardTrigger,
-} from "../ui/hover-card";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { cn } from "../../lib/utils";
 import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
 import {
@@ -47,10 +43,14 @@ export const InlineCitationText = ({
 	/>
 );
 
-export type InlineCitationCardProps = ComponentProps<typeof HoverCard>;
+/**
+ * A popover, not a hover card: it still opens on hover, and Enter/Space on the trigger opens it and moves
+ * focus inside, so keyboard and screen-reader users can reach every source and the carousel (WCAG 2.1.1).
+ */
+export type InlineCitationCardProps = ComponentProps<typeof Popover>;
 
 export const InlineCitationCard = (props: InlineCitationCardProps) => (
-	<HoverCard closeDelay={0} openDelay={0} {...props} />
+	<Popover {...props} />
 );
 
 export type InlineCitationCardTriggerProps = ComponentProps<typeof Badge> & {
@@ -60,35 +60,38 @@ export type InlineCitationCardTriggerProps = ComponentProps<typeof Badge> & {
 export const InlineCitationCardTrigger = ({
 	sources,
 	className,
+	render,
 	...props
 }: InlineCitationCardTriggerProps) => (
-	<HoverCardTrigger asChild>
-		<Badge
-			className={cn("ml-1 rounded-full", className)}
-			variant="secondary"
-			{...props}
-		>
-			{sources[0] ? (
-				<>
-					{new URL(sources[0]).hostname}{" "}
-					{sources.length > 1 && `+${sources.length - 1}`}
-				</>
-			) : (
-				"unknown"
-			)}
-		</Badge>
-	</HoverCardTrigger>
+	<PopoverTrigger
+		openOnHover
+		render={
+			<Badge
+				className={cn("ml-1 cursor-pointer rounded-full focus-ring", className)}
+				render={render ?? <button type="button" />}
+				variant="secondary"
+				{...props}
+			/>
+		}
+	>
+		{sources[0] ? (
+			<>
+				{new URL(sources[0]).hostname}{" "}
+				{sources.length > 1 && `+${sources.length - 1}`}
+			</>
+		) : (
+			"unknown"
+		)}
+	</PopoverTrigger>
 );
 
-export type InlineCitationCardBodyProps = ComponentProps<
-	typeof HoverCardContent
->;
+export type InlineCitationCardBodyProps = ComponentProps<typeof PopoverContent>;
 
 export const InlineCitationCardBody = ({
 	className,
 	...props
 }: InlineCitationCardBodyProps) => (
-	<HoverCardContent className={cn("relative w-80 p-0", className)} {...props} />
+	<PopoverContent className={cn("relative w-80 p-0", className)} {...props} />
 );
 
 const CarouselApiContext = createContext<CarouselApi | undefined>(undefined);
@@ -259,7 +262,14 @@ export const InlineCitationSource = ({
 			<h4 className="truncate font-medium text-sm leading-tight">{title}</h4>
 		)}
 		{url && (
-			<p className="truncate break-all text-muted-foreground text-xs">{url}</p>
+			<a
+				className="block truncate break-all text-muted-foreground text-xs underline-offset-2 hover:underline focus-ring"
+				href={url}
+				rel="noreferrer"
+				target="_blank"
+			>
+				{url}
+			</a>
 		)}
 		{description && (
 			<p className="line-clamp-3 text-muted-foreground text-sm leading-relaxed">

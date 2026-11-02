@@ -13,15 +13,30 @@ export const LabelInput = ({
 	description?: string;
 	placeholder: string;
 } & React.ComponentProps<"input">) => {
-	const inputId = useId();
+	const generatedId = useId();
+	const inputId = props.id ?? generatedId;
+	const descriptionId = `${inputId}-description`;
+	const describedBy =
+		[description ? descriptionId : undefined, props["aria-describedby"]]
+			.filter(Boolean)
+			.join(" ") || undefined;
 
 	return (
 		<div className={className}>
-			<div className="text-form-label block mb-1">{label}</div>
+			<label htmlFor={inputId} className="text-form-label block mb-1">
+				{label}
+			</label>
 			{description && (
-				<p className="text-tertiary-foreground text-xs mb-1">{description}</p>
+				<p id={descriptionId} className="text-tertiary-foreground text-xs mb-1">
+					{description}
+				</p>
 			)}
-			<Input id={inputId} placeholder={placeholder} {...props} />
+			<Input
+				placeholder={placeholder}
+				{...props}
+				id={inputId}
+				aria-describedby={describedBy}
+			/>
 		</div>
 	);
 };

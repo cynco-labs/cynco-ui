@@ -2,6 +2,7 @@ import {
 	type TableLinkComponent,
 	useTableContext,
 } from "./table-context";
+import { CONTROL_COLUMNS } from "./table-row-cells";
 import { Skeleton } from "../ui/skeleton";
 import { cn } from "../../lib/utils";
 import type { Cell, Row } from "@tanstack/react-table";
@@ -9,7 +10,6 @@ import { flexRender } from "@tanstack/react-table";
 
 const SKELETON_CARD_COUNT = 3;
 
-const CONTROL_COLUMNS = new Set(["actions", "select"]);
 const NON_TITLE_COLUMNS = new Set(["actions", "select", "scope"]);
 
 export function TableMobileCards() {
@@ -30,7 +30,8 @@ export function TableMobileCards() {
 
 	if (showSkeleton && !rows.length) {
 		return (
-			<div className="flex flex-col gap-2.5">
+			// Placeholder cards carry no data; TableContent announces the loading state.
+			<div aria-hidden="true" className="flex flex-col gap-2.5">
 				{Array.from({ length: SKELETON_CARD_COUNT }).map((_, cardIndex) => (
 					<div
 						key={`skeleton-card-${cardIndex}`}
@@ -101,20 +102,55 @@ function MobileCard<T>({
 
 	const interactive = Boolean(rowHref || onRowClick);
 	const cardClassName = cn(
-		"rounded-xl border bg-interactive-secondary p-4 flex flex-col gap-3 transition-colors",
+		"relative rounded-xl border bg-interactive-secondary p-4 flex flex-col gap-3 transition-colors",
 		isSelected ? "border-primary" : "active:bg-interactive-secondary-hover",
 		interactive && "cursor-pointer",
 	);
 
-	const content = (
-		<>
+	const title =
+		titleCell &&
+		flexRender(titleCell.column.columnDef.cell, titleCell.getContext());
+
+	// The title is the card's one link or button; its ::after stretches over the card so
+	// the whole card stays clickable without nesting the actions control inside it.
+	const targetClassName =
+		"after:absolute after:inset-0 after:rounded-xl focus-visible:outline-none focus-visible:after:outline-2 focus-visible:after:outline-focus-ring";
+	const ariaCurrent = isSelected || undefined;
+
+	let titleTarget = title;
+	if (rowHref && LinkComponent) {
+		titleTarget = (
+			<LinkComponent className={targetClassName} to={rowHref}>
+				{title}
+			</LinkComponent>
+		);
+	} else if (rowHref) {
+		titleTarget = (
+			<a aria-current={ariaCurrent} className={targetClassName} href={rowHref}>
+				{title}
+			</a>
+		);
+	} else if (onRowClick) {
+		titleTarget = (
+			<button
+				aria-current={ariaCurrent}
+				className={cn(targetClassName, "max-w-full truncate text-left")}
+				onClick={() => onRowClick(row.original)}
+				type="button"
+			>
+				{title}
+			</button>
+		);
+	}
+
+	return (
+		<div className={cardClassName}>
 			<div className="flex items-center justify-between gap-3">
 				<div className="min-w-0 flex-1 text-foreground font-medium text-[15px] truncate">
-					{titleCell &&
-						flexRender(titleCell.column.columnDef.cell, titleCell.getContext())}
+					{titleTarget}
 				</div>
 				{actionsCell && (
-					<div className="shrink-0 -mr-1.5 -my-1">
+					<div className="relative z-10 shrink-0 -mr-1.5 -my-1">
 						{flexRender(
 							actionsCell.column.columnDef.cell,
 							actionsCell.getContext(),
@@ -130,37 +166,8 @@ function MobileCard<T>({
 					))}
 				</dl>
 			)}
-		</>
+		</div>
 	);
-
-	// Nested action controls stopPropagation, so wrapping the whole card in a link
-	// is safe and keeps the table router-agnostic via the injected linkComponent.
-	if (rowHref && LinkComponent) {
-		return (
-			<LinkComponent className={cardClassName} to={rowHref}>
-				{content}
-			</LinkComponent>
-		);
-	}
-	if (rowHref) {
-		return (
-			<a className={cardClassName} href={rowHref}>
-				{content}
-			</a>
-		);
-	}
-	if (onRowClick) {
-		return (
-			<button
-				className={cn(cardClassName, "text-left")}
-				onClick={() => onRowClick(row.original)}
-				type="button"
-			>
-				{content}
-			</button>
-		);
-	}
-	return <div className={cardClassName}>{content}</div>;
 }
 
 function CardDetailRow<T>({ cell }: { cell: Cell<T, unknown> }) {
@@ -170,7 +177,12 @@ function CardDetailRow<T>({ cell }: { cell: Cell<T, unknown> }) {
 		: flexRender(cell.column.columnDef.cell, cell.getContext());
 
 	if (meta?.mobileCard === "full") {
-		return <div className="text-sm text-foreground">{cellContent}</div>;
+		return (
+			<div className="text-sm text-foreground">
+				{typeof header === "string" && <dt className="sr-only">{header}</dt>}
+				<dd>{cellContent}</dd>
+			</div>
+		);
 	}
 
 	return (

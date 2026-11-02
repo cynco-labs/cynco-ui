@@ -1,3 +1,4 @@
+import { LiveStatus } from "./live-status";
 import { cn } from "../../lib/utils";
 import { X } from "lucide-react";
 import * as React from "react";
@@ -27,6 +28,8 @@ function TagInput({
 }: TagInputProps) {
 	const [internalInputValue, setInternalInputValue] = React.useState("");
 	const [isFocused, setIsFocused] = React.useState(false);
+	// Tags change without focus moving (Space, paste, Backspace), so announce them.
+	const [announcement, setAnnouncement] = React.useState("");
 	const inputRef = React.useRef<HTMLInputElement>(null);
 
 	const inputValue =
@@ -40,14 +43,18 @@ function TagInput({
 		if (trimmedValue && !value.includes(trimmedValue)) {
 			onChange([...value, trimmedValue]);
 			setInputValue("");
+			setAnnouncement(`${trimmedValue} added`);
 			onTagAdd?.();
 		}
 	}, [inputValue, value, onChange, setInputValue, onTagAdd]);
 
 	const removeTag = React.useCallback(
 		(index: number) => {
+			const removed = value[index];
+			if (removed === undefined) return;
 			const newTags = value.filter((_, i) => i !== index);
 			onChange(newTags);
+			setAnnouncement(`${removed} removed`);
 			onTagRemove?.(index);
 		},
 		[value, onChange, onTagRemove],
@@ -62,6 +69,7 @@ function TagInput({
 			if (trimmedValue && !value.includes(trimmedValue)) {
 				onChange([...value, trimmedValue]);
 				setInputValue("");
+				setAnnouncement(`${trimmedValue} added`);
 				onTagAdd?.();
 			}
 		} else {
@@ -85,6 +93,7 @@ function TagInput({
 			if (newTags.length > 0) {
 				onChange([...value, ...newTags]);
 				setInputValue("");
+				setAnnouncement(`${newTags.join(", ")} added`);
 				// Call onTagAdd for each tag added
 				if (onTagAdd) {
 					for (let i = 0; i < newTags.length; i++) {
@@ -109,7 +118,7 @@ function TagInput({
 	return (
 		<div
 			className={cn(
-				"file:text-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-lg border bg-transparent outline-none disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",
+				"file:text-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input-background border-input w-full min-w-0 rounded-lg border bg-transparent outline-none disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",
 				"aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
 				"placeholder:text-placeholder placeholder:select-none min-h-input",
 				"flex items-center flex-wrap gap-2 p-2 cursor-text text-left",
@@ -126,14 +135,17 @@ function TagInput({
 				return (
 					<div
 						key={index}
-						className="flex items-center gap-1 border border-zinc-300 dark:border-zinc-600 bg-zinc-50 dark:bg-zinc-800 rounded-lg pl-3 pr-2 py-1 text-xs"
+						className="flex items-center gap-1 border border-border bg-muted rounded-lg pl-3 pr-2 py-1 text-xs"
 					>
 						<span className="text-tiny">{displayValue}</span>
 						<button
 							type="button"
+							aria-label={`Remove ${displayValue}`}
 							onClick={(e) => {
 								e.stopPropagation();
 								removeTag(index);
+								// This button unmounts; keep focus in the field.
+								inputRef.current?.focus();
 							}}
 						>
 							<X size={12} className="size-3 text-subtle" />
@@ -160,6 +172,9 @@ function TagInput({
 				data-lpignore="true"
 				data-bwignore="true"
 			/>
+			<LiveStatus>
+				{announcement}
+			</LiveStatus>
 		</div>
 	);
 }

@@ -33,7 +33,7 @@ export default function ButtonDemo() {
 				<Button variant="secondary" size="mini">
 					Mini
 				</Button>
-				<Button variant="secondary" size="icon">
+				<Button variant="secondary" size="icon" aria-label="More actions">
 					<DotsThreeIcon size={14} weight="bold" />
 				</Button>
 				<Button variant="primary" isLoading>

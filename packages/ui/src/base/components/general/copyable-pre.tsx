@@ -1,3 +1,4 @@
+import { LiveStatus } from "./live-status";
 import { CopyButton } from "./copy-button";
 import { Check, Copy } from "lucide-react";
 import React from "react";
@@ -6,7 +7,11 @@ export function CopyablePre({ text }: { text: string }) {
 	return (
 		<div className="relative w-full min-w-0">
 			<pre className="text-sm bg-muted/50 p-4 rounded-lg overflow-auto border w-full h-full">
-				<CopyButton text={text} className="absolute top-2 right-2 z-10">
+				<CopyButton
+					text={text}
+					aria-label="Copy"
+					className="absolute top-2 right-2 z-10"
+				>
 					<></>
 				</CopyButton>
 				<code className="text-sm block w-full whitespace-pre-wrap [overflow-wrap:anywhere]">
@@ -47,20 +52,26 @@ export function CopyableSpan({
 	};
 
 	return (
-		<span
-			className={`inline-flex items-center rounded-xl bg-muted/50 pl-3 py-1 text-md font-mono text-muted-foreground relative font-normal gap-1 cursor-pointer transition-opacity ${
-				copied ? "opacity-30" : ""
-			}${className ? ` ${className}` : ""}`}
-			onClick={handleClick}
-		>
-			<span className="pr-2">{text}</span>
-			<div className="ml-1 p-0.5 rounded transition bg-transparent size-6 z-[1] static bg-none shadow-none border-none flex items-center justify-center">
-				{copied ? (
-					<Check size={copySize} className="text-muted-foreground" />
-				) : (
-					<Copy size={copySize} className="text-muted-foreground" />
-				)}
-			</div>
-		</span>
+		<>
+			<button
+				type="button"
+				className={`inline-flex items-center rounded-xl bg-muted/50 pl-3 py-1 text-md font-mono text-muted-foreground relative font-normal gap-1 cursor-pointer transition-opacity ${
+					copied ? "opacity-30" : ""
+				}${className ? ` ${className}` : ""}`}
+				onClick={handleClick}
+			>
+				<span className="pr-2">{text}</span>
+				<span className="ml-1 p-0.5 rounded transition bg-transparent size-6 z-[1] static bg-none shadow-none border-none flex items-center justify-center">
+					{copied ? (
+						<Check size={copySize} className="text-muted-foreground" />
+					) : (
+						<Copy size={copySize} className="text-muted-foreground" />
+					)}
+				</span>
+			</button>
+			<LiveStatus>
+				{copied ? "Copied" : ""}
+			</LiveStatus>
+		</>
 	);
 }

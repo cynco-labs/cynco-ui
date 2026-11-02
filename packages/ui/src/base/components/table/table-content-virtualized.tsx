@@ -5,6 +5,7 @@ import {
 	useTableContext,
 } from "./table-context";
 import { TableHeader } from "./table-header";
+import { TableStatus } from "./table-content";
 import { TableMobileCards } from "./table-mobile-cards";
 import { TABLE_TRAY_CLASS } from "./table-tray-classes";
 import { Table } from "../ui/table";
@@ -32,6 +33,7 @@ export function TableContentVirtualized({
 	} = context;
 	const { isLoading, isTransitioning } = context;
 	const rows = table.getRowModel().rows;
+	const headerRowCount = table.getHeaderGroups().length;
 	const showsSkeleton = (isLoading || isTransitioning) && !rows.length;
 	const showMobileCards = useShowMobileCards();
 
@@ -76,6 +78,7 @@ export function TableContentVirtualized({
 	if (showMobileCards) {
 		return (
 			<>
+				<TableStatus />
 				<TableMobileCards />
 				{footer}
 			</>
@@ -92,8 +95,9 @@ export function TableContentVirtualized({
 					className,
 				)}
 			>
+				<TableStatus />
 				{(isLoading || isTransitioning) && (
-					<div className="bg-white/40 dark:bg-black/40 absolute pointer-events-none rounded-xl -inset-[1px] z-70" />
+					<div className="bg-background/40 absolute pointer-events-none rounded-xl -inset-[1px] z-70" />
 				)}
 
 				{enableColumnVisibility && !columnVisibilityInToolbar && (
@@ -127,9 +131,12 @@ export function TableContentVirtualized({
 				>
 					{/* One table with a sticky thead: separate header/body tables size their
 					    columns independently. Fixed layout pins them to the header row. */}
+					{/* Only a window of rows is in the DOM; the count tells assistive tech the real size. */}
 					<Table
 						className="p-0 w-full h-auto"
 						style={{ minWidth: `${totalWidth}px` }}
+						aria-rowcount={headerRowCount + rows.length}
+						aria-busy={isLoading || isTransitioning || undefined}
 					>
 						{/* Mirrors the bottom edge below: rows only round off at the true first row. */}
 						<TableHeader

@@ -13,9 +13,9 @@
  * Money in every API is a decimal string ("1234.50"), never a float; maths goes through `./money`.
  */
 import * as React from "react";
-import { Button, IconButton, Input, InputGroup, InputGroupAddon, InputGroupInput, StatusChip, cn } from "../base";
+import { Button, IconButton, Input, InputGroup, InputGroupAddon, InputGroupInput, StatusChip, cn, LiveStatus } from "../base";
 import { CaretUpDownIcon, CheckIcon, CircleNotchIcon, PencilSimpleIcon, PlusIcon, TrashIcon } from "@phosphor-icons/react";
-import { Kbd, ToneDot, formatCurrency, fromSen, parseAmount, sumAmounts, surfaces, toSen, type StatusToneName } from "../lib/shared";
+import { Kbd, ToneDot, formatCurrency, fromSen, isDecimalString, parseAmount, sumAmounts, surfaces, toSen, type StatusToneName } from "../lib/shared";
 
 /* ------------------------------------------------------------------ helpers */
 
@@ -27,8 +27,8 @@ const noMods = (e: React.KeyboardEvent) => !e.metaKey && !e.ctrlKey && !e.altKey
 const plainFmt = new Intl.NumberFormat("en-MY", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 /** "1234.5" → "1,234.50" exactly (Intl formats the decimal string without a float round-trip). "" → "". */
 function formatPlain(v: string) {
-	if (v === "" || !/^-?\d+(\.\d+)?$/.test(v)) return v;
-	return plainFmt.format(v as unknown as number);
+	if (!isDecimalString(v)) return v;
+	return plainFmt.format(v);
 }
 /** Accounting display: negatives bracketed, "(500.00)". */
 function formatAccounting(v: string) {
@@ -167,15 +167,19 @@ export const AmountInput = React.forwardRef<HTMLInputElement, AmountInputProps>(
 
 	const text = draft ?? (focused ? committed : formatAccounting(committed));
 	const live = focused && draft != null ? parseAmount(draft) : null;
-	const hint =
-		focused && draft?.trim() === "=" && onAutoFill
-			? "↵ fills the balancing figure"
-			: live && live.ok && live.isExpression && live.value !== ""
-				? `= ${money(live.value, currency ?? "MYR")}`
-				: null;
+	const hint: React.ReactNode =
+		focused && draft?.trim() === "=" && onAutoFill ? (
+			<>
+				<span aria-hidden="true">↵</span>
+				<span className="sr-only">Enter</span> fills the balancing figure
+			</>
+		) : live && live.ok && live.isExpression && live.value !== "" ? (
+			`= ${money(live.value, currency ?? "MYR")}`
+		) : null;
 	const isInvalid = !!invalid || !!error;
 	const message = error ?? (invalid ? errorMessage : null);
 	const negative = !focused && draft == null && committed.startsWith("-");
+	const negId = React.useId();
 
 	const inputProps = {
 		...props,
@@ -189,7 +193,8 @@ export const AmountInput = React.forwardRef<HTMLInputElement, AmountInputProps>(
 		disabled,
 		value: text,
 		"aria-invalid": isInvalid || undefined,
-		"aria-describedby": cn(describedBy, (message || hint) && msgId) || undefined,
+		// A bracketed figure "(500.00)" is often read without its brackets: describe it as negative.
+		"aria-describedby": cn(describedBy, negative && negId, (message || hint) && msgId) || undefined,
 		onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
 			setDraft(e.target.value);
 			if (error) setError(null);
@@ -237,6 +242,11 @@ export const AmountInput = React.forwardRef<HTMLInputElement, AmountInputProps>(
 				</InputGroup>
 			) : (
 				<Input variant={isInvalid ? "destructive" : "default"} {...inputProps} className={cn(inputProps.className, isInvalid && INVALID_INPUT)} />
+			)}
+			{negative && (
+				<span id={negId} className="sr-only">
+					Negative amount
+				</span>
 			)}
 			<div
 				id={msgId}
@@ -395,7 +405,8 @@ function AccountCombobox({ accounts, valueId, onSelect, inputProps }: AccountCom
 					aria-label="Accounts"
 					className="absolute top-full left-0 z-30 mt-1 max-h-64 w-full overflow-y-auto rounded-xl border border-overlay-border bg-overlay p-1 shadow-overlay @xl:w-[max(100%,18rem)]"
 				>
-					{results.length === 0 && <li className="px-2 py-3 text-center text-xs text-tertiary-foreground">No account matches “{query}”</li>}
+					{/* Not an option: hidden from the listbox and announced by the status region below. */}
+					{results.length === 0 && <li role="presentation" aria-hidden="true" className="px-2 py-3 text-center text-xs text-tertiary-foreground">No account matches “{query}”</li>}
 					{results.map((a, i) => (
 						<li
 							key={a.id}
@@ -416,6 +427,10 @@ function AccountCombobox({ accounts, valueId, onSelect, inputProps }: AccountCom
 					))}
 				</ul>
 			)}
+			{/* Always mounted so the "no match" message is announced when the list empties. */}
+			<LiveStatus>
+				{open && results.length === 0 ? `No account matches “${query ?? ""}”` : ""}
+			</LiveStatus>
 		</div>
 	);
 }
@@ -620,7 +635,8 @@ export function JournalGrid({
 	return (
 		<div data-slot="cy-journal-grid" ref={rootRef} className={cn("@container flex min-w-0 flex-col", className)} onKeyDown={handleKeyDown} {...props}>
 			{showShortcuts && <JournalGridLegend />}
-			<div role="group" aria-label="Journal lines" className="flex flex-col gap-2 @xl:gap-0 @xl:rounded-lg @xl:border @xl:border-table-surface-border @xl:bg-table-surface">
+			{/* scroll-mb: a cell focused by Tab or Enter must not scroll in under the sticky balance footer. */}
+			<div role="group" aria-label="Journal lines" className="flex flex-col gap-2 @xl:gap-0 @xl:rounded-lg @xl:border @xl:border-table-surface-border @xl:bg-table-surface [&_[data-jg-col]]:scroll-mb-28">
 				<div aria-hidden="true" className={cn("hidden gap-2 border-b border-table-row-divider px-2 py-1.5 text-xs font-medium text-tertiary-foreground @xl:grid", GRID_COLS)}>
 					<span>Account</span>
 					<span>Description</span>
@@ -650,7 +666,7 @@ export function JournalGrid({
 							role="group"
 							aria-label={`Line ${n}`}
 							className={cn(
-								"grid grid-cols-2 gap-x-2 gap-y-1.5 rounded-lg border border-border bg-card p-2.5 focus-within:border-ring/60",
+								"grid grid-cols-2 gap-x-2 gap-y-1.5 rounded-lg border border-border bg-card p-2.5 focus-within:border-focus-ring",
 								"@xl:items-center @xl:gap-y-0 @xl:rounded-none @xl:border-0 @xl:border-b @xl:border-table-row-divider @xl:bg-transparent @xl:px-2 @xl:py-1 @xl:last:border-b-0 @xl:focus-within:bg-table-row-hover",
 								GRID_COLS,
 							)}
@@ -960,7 +976,7 @@ export function InlineEditCell({
 					}}
 					className={cn(
 						"group/iec -mx-1.5 flex min-h-input w-[calc(100%+0.75rem)] min-w-0 py-1 cursor-text items-center gap-1.5 rounded-md px-1.5 text-left text-sm text-foreground outline-none transition-colors",
-						"hover:bg-interactive-secondary-hover focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-default disabled:hover:bg-transparent",
+						"hover:bg-interactive-secondary-hover focus-ring disabled:cursor-default disabled:hover:bg-transparent",
 						isAmount && "justify-end text-right",
 						status === "error" && "ring-1 ring-destructive/40",
 					)}
@@ -980,7 +996,7 @@ export function InlineEditCell({
 						{status === "saving" ? (
 							<CircleNotchIcon size={13} className="animate-spin text-tertiary-foreground" />
 						) : status === "saved" ? (
-							<CheckIcon size={13} weight="bold" className="text-[var(--status-green)]" />
+							<CheckIcon size={13} weight="bold" className="text-status-green-text" />
 						) : (
 							!disabled && <PencilSimpleIcon size={13} className="text-tertiary-foreground opacity-0 transition-opacity group-hover/iec:opacity-100 group-focus-visible/iec:opacity-100" />
 						)}

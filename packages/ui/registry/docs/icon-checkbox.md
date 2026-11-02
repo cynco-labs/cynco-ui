@@ -1,6 +1,6 @@
 # IconCheckbox
 
-A toggle that looks like a small secondary button with an icon; checked shows the `primary` border.
+A toggle that looks like a small secondary button with an icon; checked shows the `primary` border and a check mark in its corner.
 
 ```tsx
 import { IconCheckbox } from "@cynco-labs/ui";
@@ -29,7 +29,7 @@ export default function IconCheckboxDemo() {
 			<IconCheckbox variant="secondary" iconOrientation="left" icon={<UsersIcon />} checked={false}>
 				Group by customer
 			</IconCheckbox>
-			<IconCheckbox variant="secondary" icon={<FunnelSimpleIcon />} checked />
+			<IconCheckbox variant="secondary" icon={<FunnelSimpleIcon />} checked aria-label="Show filters" />
 		</div>
 	);
 }
@@ -41,10 +41,10 @@ Toggling views and options in toolbars and attach/cancel forms.
 
 ## Props
 
-Button props plus `checked`, `onCheckedChange`, `icon`, `iconOrientation` (`left` with a label, `center` icon-only).
+Button props plus `checked`, `onCheckedChange`, `icon`, `iconOrientation` (`left` with a label, `center` icon-only, which needs an `aria-label`).
 
 ## Notes
 
-Default size `sm`.
+Default size `sm`. State is exposed as `aria-pressed` and shown by the corner check mark, not by colour alone. The mark sits slightly outside the button, so a clipping parent (`overflow-hidden`, or the `primary` variant's own clip) hides part of it.
 
 Category: Components · Selection. Source: `packages/ui/src/base/components/general/icon-checkbox.tsx`.

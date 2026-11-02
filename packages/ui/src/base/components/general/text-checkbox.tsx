@@ -22,7 +22,7 @@ export const TextCheckbox = ({
 			)}
 		>
 			<Checkbox id={id} disabled={disabled} {...checkboxProps} />
-			<div
+			<span
 				className={cn(
 					"text-sm font-semibold",
 					disabled
@@ -31,7 +31,7 @@ export const TextCheckbox = ({
 				)}
 			>
 				{children}
-			</div>
+			</span>
 		</label>
 	);
 };

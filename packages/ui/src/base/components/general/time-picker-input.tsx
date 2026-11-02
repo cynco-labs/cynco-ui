@@ -11,7 +11,14 @@ import {
 	type TimePickerType,
 } from "./time-picker-utils";
 import { cn } from "../../lib/utils";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useId, useMemo, useState } from "react";
+
+const SEGMENT_LABELS: Record<TimePickerType, string> = {
+	hours: "Hours",
+	"12hours": "Hours",
+	minutes: "Minutes",
+	seconds: "Seconds",
+};
 
 export interface TimePickerInputProps
 	extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -46,6 +53,7 @@ const TimePickerInput = React.forwardRef<
 		},
 		ref,
 	) => {
+		const generatedId = useId();
 		const [flag, setFlag] = useState(false);
 		const [prevIntKey, setPrevIntKey] = useState("0");
 
@@ -74,7 +82,8 @@ const TimePickerInput = React.forwardRef<
 		};
 
 		const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-			if (e.key === "Tab") return;
+			// Leave Tab and modifier shortcuts (paste, select all, submit) to the browser and app.
+			if (e.key === "Tab" || e.metaKey || e.ctrlKey || e.altKey) return;
 			e.preventDefault();
 
 			if (e.key === "ArrowRight") onRightFocus?.();
@@ -119,8 +128,9 @@ const TimePickerInput = React.forwardRef<
 		return (
 			<input
 				ref={ref}
-				id={id || picker}
+				id={id || generatedId}
 				name={name || picker}
+				aria-label={SEGMENT_LABELS[picker]}
 				className={cn(
 					"w-8 text-center text-sm tabular-nums caret-transparent",
 					"bg-transparent outline-none transition-none",

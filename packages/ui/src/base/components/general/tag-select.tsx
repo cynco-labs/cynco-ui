@@ -1,5 +1,3 @@
-/** biome-ignore-all lint/a11y/useKeyWithClickEvents: needed*/
-
 import {
 	Select,
 	SelectContent,
@@ -14,7 +12,13 @@ interface TagSelectOption {
 	label: string;
 }
 
-interface TagSelectProps {
+/** Lets a form label the trigger and point it at an error message. */
+type TagSelectA11yProps = Pick<
+	React.ComponentProps<"button">,
+	"id" | "aria-label" | "aria-labelledby" | "aria-describedby" | "aria-invalid"
+>;
+
+interface TagSelectProps extends TagSelectA11yProps {
 	value: string[];
 	onChange: (values: string[]) => void;
 	options: TagSelectOption[];
@@ -22,8 +26,15 @@ interface TagSelectProps {
 	formatTag?: (value: string) => string;
 	renderContent?: (setOpen: (open: boolean) => void) => React.ReactNode;
 	showAllProducts?: boolean;
+	/** Classes for the field box (the root). */
+	className?: string;
 }
 
+/**
+ * The trigger fills the field box from behind; the chips sit above it as siblings, so each remove
+ * button is its own control rather than a button nested inside the combobox. Clicks that miss a
+ * remove button fall through to the trigger.
+ */
 export function TagSelect({
 	value = [],
 	onChange,
@@ -32,79 +43,75 @@ export function TagSelect({
 	formatTag,
 	renderContent,
 	showAllProducts = false,
+	className,
+	...a11yProps
 }: TagSelectProps) {
 	const [open, setOpen] = React.useState(false);
-
-	const removeTag = (tagValue: string, e: React.MouseEvent) => {
-		e.preventDefault();
-		e.stopPropagation();
-		// Prevent the select from toggling
-		e.nativeEvent.stopImmediatePropagation();
-		onChange(value.filter((v) => v !== tagValue));
-	};
+	const triggerRef = React.useRef<HTMLButtonElement>(null);
 
 	const getLabel = (val: string) => {
 		const option = options.find((opt) => opt.value === val);
 		return formatTag ? formatTag(val) : option?.label || val;
 	};
 
+	const removeTag = (tagValue: string, button: HTMLButtonElement) => {
+		// The button unmounts; hand focus to the neighbouring chip, else the trigger.
+		const item = button.closest("li");
+		const neighbour = item?.nextElementSibling ?? item?.previousElementSibling;
+		const next = neighbour?.querySelector("button") ?? triggerRef.current;
+		next?.focus();
+		onChange(value.filter((v) => v !== tagValue));
+	};
+
+	const showTags = !showAllProducts && value.length > 0;
+
 	return (
-		<Select open={open} onOpenChange={setOpen}>
-			<SelectTrigger
-				className={cn(
-					"w-full",
-					value.length > 0 ? "!h-auto min-h-input !py-2" : "h-input",
-				)}
-			>
-				<div className="flex items-center flex-wrap gap-2 w-full pointer-events-none">
-					{showAllProducts ? (
-						<span className="text-muted-foreground">All Products</span>
-					) : value.length === 0 ? (
-						<span className="text-placeholder">{placeholder}</span>
-					) : (
-						value.map((val) => (
-							<div
+		<div className={cn("relative w-full min-h-input", className)}>
+			<Select open={open} onOpenChange={setOpen}>
+				<SelectTrigger
+					{...a11yProps}
+					ref={triggerRef}
+					className="absolute inset-0 h-auto w-full"
+				>
+					<span className="min-w-0 flex-1 truncate text-left">
+						{showAllProducts ? (
+							<span className="text-muted-foreground">All Products</span>
+						) : showTags ? (
+							<span className="sr-only">{value.length} selected</span>
+						) : (
+							<span className="text-placeholder">{placeholder}</span>
+						)}
+					</span>
+				</SelectTrigger>
+				<SelectContent className="w-[var(--anchor-width)] max-w-[var(--anchor-width)]">
+					{renderContent?.(setOpen)}
+				</SelectContent>
+			</Select>
+			{showTags && (
+				// pointer-events-none: only the remove buttons take clicks; the rest reach the trigger.
+				<ul className="pointer-events-none relative flex flex-wrap items-center gap-2 py-2 pl-2 pr-8">
+					{value.map((val) => {
+						const label = getLabel(val);
+						return (
+							<li
 								key={val}
-								className="flex items-center gap-1 border border-border bg-background rounded-lg pl-3 pr-2 py-1 text-xs pointer-events-auto"
-								onPointerDown={(e) => {
-									e.preventDefault();
-									e.stopPropagation();
-								}}
-								onClick={(e) => {
-									e.preventDefault();
-									e.stopPropagation();
-								}}
-								onMouseDown={(e) => {
-									e.preventDefault();
-									e.stopPropagation();
-								}}
+								className="flex min-w-0 max-w-full items-center gap-1 border border-border bg-background rounded-lg pl-3 pr-2 py-1 text-xs"
 							>
-								<span className="truncate max-w-[280px] text-tiny">
-									{getLabel(val)}
-								</span>
+								<span className="truncate max-w-[280px] text-tiny">{label}</span>
 								<button
 									type="button"
-									className="  pointer-events-auto"
-									onPointerDown={(e) => {
-										e.preventDefault();
-										e.stopPropagation();
-									}}
-									onClick={(e) => removeTag(val, e)}
-									onMouseDown={(e) => {
-										e.preventDefault();
-										e.stopPropagation();
-									}}
+									aria-label={`Remove ${label}`}
+									// 24×24 target (WCAG 2.5.8); negative margins keep the chip's size.
+									className="pointer-events-auto -my-1.5 -mr-1.5 inline-flex size-6 shrink-0 cursor-pointer items-center justify-center rounded-sm focus-ring"
+									onClick={(e) => removeTag(val, e.currentTarget)}
 								>
-									<X className="size-3 text-subtle" />
+									<X aria-hidden="true" className="size-3 text-subtle" />
 								</button>
-							</div>
-						))
-					)}
-				</div>
-			</SelectTrigger>
-			<SelectContent className="w-[var(--anchor-width)] max-w-[var(--anchor-width)]">
-				{renderContent?.(setOpen)}
-			</SelectContent>
-		</Select>
+							</li>
+						);
+					})}
+				</ul>
+			)}
+		</div>
 	);
 }

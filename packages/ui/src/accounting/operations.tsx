@@ -44,6 +44,7 @@ import {
 	SealCheckIcon,
 } from "@phosphor-icons/react";
 import {
+	FieldError,
 	formatCurrency,
 	formatDate,
 	ReportAmount,
@@ -133,9 +134,9 @@ function TrayTotals({ label, items }: { label: React.ReactNode; items: { label?:
 }
 
 /** Row-level icon action (delete etc.). */
-function RowIconButton({ label, onClick, disabled }: { label: string; onClick?: () => void; disabled?: boolean }) {
+function RowIconButton({ label, onClick, disabled, ...props }: { label: string; onClick?: () => void; disabled?: boolean } & Omit<React.ComponentProps<"button">, "onClick" | "disabled">) {
 	return (
-		<Button variant="skeleton" size="icon" aria-label={label} disabled={disabled} onClick={onClick} className="text-tertiary-foreground hover:text-error-text!">
+		<Button variant="skeleton" size="icon" aria-label={label} disabled={disabled} focusableWhenDisabled onClick={onClick} className="text-tertiary-foreground hover:text-error-text!" {...props}>
 			<TrashIcon size={14} aria-hidden="true" />
 		</Button>
 	);
@@ -252,7 +253,7 @@ export function TaxInstallmentSchedule({ installments, totalDue, totalPaid, isSu
 				actions={
 					<div className="flex w-40 max-w-full flex-col items-end gap-1.5">
 						<span className="text-2xs text-tertiary-foreground tabular-nums">{pct.toFixed(0)}% paid</span>
-						<Progress value={pct} className="w-full" />
+						<Progress value={pct} aria-label="Installments paid" className="w-full" />
 					</div>
 				}
 			>
@@ -264,8 +265,9 @@ export function TaxInstallmentSchedule({ installments, totalDue, totalPaid, isSu
 					dense
 					trailing={(i) =>
 						i.status === "pending" ? (
-							<Button variant="skeleton" size="sm" disabled={isSubmitting} onClick={() => onMarkPaid?.(i.id)} className="whitespace-nowrap">
+							<Button variant="skeleton" size="sm" disabled={isSubmitting} focusableWhenDisabled onClick={() => onMarkPaid?.(i.id)} className="whitespace-nowrap">
 								Mark paid
+								<span className="sr-only">{`, installment${i.installmentNumber != null ? ` ${i.installmentNumber}` : ""}${i.dueDate ? ` due ${formatDate(i.dueDate)}` : ""}`}</span>
 							</Button>
 						) : null
 					}
@@ -318,9 +320,10 @@ export function TaxAdjustmentsTable({ title, adjustments, category, readOnly = f
 			<ActionBar className="justify-between">
 				<h3 className="text-md font-semibold text-foreground">{title}</h3>
 				{!readOnly && (
-					<Button variant="secondary" size="sm" disabled={isSubmitting} onClick={onAdd}>
+					<Button variant="secondary" size="sm" disabled={isSubmitting} focusableWhenDisabled onClick={() => onAdd?.()}>
 						<PlusIcon size={12} weight="bold" aria-hidden="true" />
 						Add
+						<span className="sr-only"> to {title}</span>
 					</Button>
 				)}
 			</ActionBar>
@@ -373,6 +376,7 @@ export function TaxFilingWorkflow({ status, readOnly = false, isSubmitting = fal
 								) : (
 									<span className="px-1.5 text-2xs text-tertiary-foreground">{label}</span>
 								)}
+								<span className="sr-only">{complete ? ", done" : current ? ", current step" : ", not started"}</span>
 							</div>
 						);
 					})}
@@ -387,8 +391,8 @@ export function TaxFilingWorkflow({ status, readOnly = false, isSubmitting = fal
 					{filingReference && <span className="text-2xs text-tertiary-foreground">Ref: <span className="font-mono font-medium text-muted-foreground">{filingReference}</span></span>}
 					{reviewedAt && status !== "draft" && <span className="text-2xs text-tertiary-foreground">Reviewed: {new Date(reviewedAt).toLocaleDateString("en-MY", { day: "2-digit", month: "short" })}</span>}
 					{filedAt && <span className="text-2xs text-tertiary-foreground">Filed: {formatDate(filedAt)}</span>}
-					{!readOnly && status === "draft" && <Button variant="secondary" size="sm" disabled={isSubmitting} onClick={onReview}>Mark reviewed</Button>}
-					{!readOnly && status === "reviewed" && <Button variant="primary" size="sm" disabled={isSubmitting} onClick={onFile}>Mark filed</Button>}
+					{!readOnly && status === "draft" && <Button variant="secondary" size="sm" disabled={isSubmitting} focusableWhenDisabled onClick={() => onReview?.()}>Mark reviewed</Button>}
+					{!readOnly && status === "reviewed" && <Button variant="primary" size="sm" disabled={isSubmitting} focusableWhenDisabled onClick={() => onFile?.()}>Mark filed</Button>}
 				</ActionBar>
 			</div>
 		</div>
@@ -607,7 +611,12 @@ export function ItemsListTable({ items, inventoryByItem = {}, realizedByItem = {
 				const realized = realizedByItem[item.id];
 				return (
 					<div className="flex flex-col leading-tight">
-						<span className={cn("text-xs font-medium tabular-nums text-foreground", negativeClass(m.health === "loss" || m.health === "below"))}>{m.percent != null ? `${m.percent.toFixed(1)}%` : "—"}</span>
+						<span className={cn("inline-flex items-center gap-1 text-xs font-medium tabular-nums text-foreground", negativeClass(m.health === "loss" || m.health === "below"))}>
+							{(m.health === "loss" || m.health === "below") && <StatusChipIcon tone="red" glyph="alert" className="size-3" />}
+							{m.percent != null ? `${m.percent.toFixed(1)}%` : "—"}
+							{m.health === "loss" && <span className="sr-only">, selling at a loss</span>}
+							{m.health === "below" && <span className="sr-only">, below target margin</span>}
+						</span>
 						{realized && realized.marginPercent != null ? (
 							<span className={cn("text-2xs tabular-nums text-tertiary-foreground", negativeClass(realized.belowCostLineCount > 0))}>
 								Est. {realized.marginPercent.toFixed(1)}% on sales{realized.belowCostLineCount > 0 && " · below cost"}
@@ -825,7 +834,30 @@ export function PurchaseOrderLines({ lineItems, onChange, readOnly = false, curr
 	const tax = taxAmount ?? 0;
 	const input = "min-w-24 text-sm @xl:border-transparent @xl:bg-transparent @xl:shadow-none @xl:hover:border-[var(--color-input)] @xl:focus:border-[var(--color-input)]";
 	const fieldLabel = "text-2xs text-tertiary-foreground @xl:sr-only";
-	const remove = (i: number) => <RowIconButton label={`Remove line ${i + 1}`} onClick={() => set(lines.filter((_, j) => j !== i))} />;
+	const listRef = React.useRef<HTMLDivElement>(null);
+	/** Index of a removed line: its Remove button unmounts, so focus moves to the line that takes its place. */
+	const refocus = React.useRef<number | null>(null);
+	React.useEffect(() => {
+		const i = refocus.current;
+		if (i === null) return;
+		refocus.current = null;
+		// Two Remove buttons per line (narrow / wide); only the displayed one is focusable.
+		const items = listRef.current?.querySelectorAll<HTMLElement>('[role="listitem"]');
+		const item = items?.[Math.min(i, (items?.length ?? 0) - 1)];
+		const target = [...(item?.querySelectorAll<HTMLElement>("[data-line-remove]") ?? [])].find((b) => b.offsetParent !== null);
+		(target ?? item?.querySelector<HTMLElement>("input"))?.focus();
+	}, [lines]);
+	const remove = (i: number) => (
+		<RowIconButton
+			label={`Remove line ${i + 1}`}
+			data-line-remove=""
+			onClick={() => {
+				refocus.current = i;
+				set(lines.filter((_, j) => j !== i));
+			}}
+		/>
+	);
+	const line = (i: number) => <span className="sr-only">, line {i + 1}</span>;
 	return (
 		<div className={cn("@container flex min-w-0 flex-col gap-2", className)} {...props}>
 			<div className={surfaces.tray}>
@@ -836,7 +868,7 @@ export function PurchaseOrderLines({ lineItems, onChange, readOnly = false, curr
 					<span className="text-right">Amount ({currency})</span>
 					{!readOnly && <span className="sr-only">Actions</span>}
 				</div>
-				<div className={cn(surfaces.surface, "flex flex-col gap-2 p-2 @xl:gap-0 @xl:p-0")} role="list" aria-label="Purchase order lines">
+				<div ref={listRef} className={cn(surfaces.surface, "flex flex-col gap-2 p-2 @xl:gap-0 @xl:p-0")} role="list" aria-label="Purchase order lines">
 					{lines.map((it, i) => (
 						<div
 							key={it.id}
@@ -850,21 +882,21 @@ export function PurchaseOrderLines({ lineItems, onChange, readOnly = false, curr
 						>
 							<div className="col-span-full flex items-end gap-2 @xl:col-span-1">
 								<label className="flex min-w-0 flex-1 flex-col gap-1">
-									<span className={fieldLabel}>Description</span>
+									<span className={fieldLabel}>Description{line(i)}</span>
 									{readOnly ? <span className="text-sm text-foreground">{it.description || "—"}</span> : <Input value={it.description} placeholder="Line item description" onChange={(e) => update(i, "description", e.target.value)} className={input} />}
 								</label>
 								{!readOnly && <div className="@xl:hidden">{remove(i)}</div>}
 							</div>
 							<label className="flex min-w-0 flex-col gap-1">
-								<span className={fieldLabel}>Qty</span>
+								<span className={fieldLabel}>Qty{line(i)}</span>
 								{readOnly ? <span className="text-sm tabular-nums text-muted-foreground @xl:text-right">{it.quantity}</span> : <Input type="number" min={0} step="any" value={it.quantity} onChange={(e) => update(i, "quantity", e.target.value)} className={cn(input, "text-right tabular-nums")} />}
 							</label>
 							<label className="flex min-w-0 flex-col gap-1">
-								<span className={fieldLabel}>Unit price ({currency})</span>
+								<span className={fieldLabel}>Unit price ({currency}){line(i)}</span>
 								{readOnly ? <span className="text-sm tabular-nums text-muted-foreground @xl:text-right">{fmt2(it.unitPrice)}</span> : <Input type="number" min={0} step="any" placeholder="0.00" value={it.unitPrice ?? ""} onChange={(e) => update(i, "unitPrice", e.target.value)} className={cn(input, "text-right tabular-nums")} />}
 							</label>
 							<label className="flex min-w-0 flex-col gap-1">
-								<span className={fieldLabel}>Amount ({currency})</span>
+								<span className={fieldLabel}>Amount ({currency}){line(i)}</span>
 								{readOnly ? <span className="text-sm font-medium tabular-nums text-foreground @xl:text-right">{fmt2(it.amount)}</span> : <Input type="number" min={0} step="any" placeholder="0.00" value={it.amount ?? ""} onChange={(e) => update(i, "amount", e.target.value)} className={cn(input, "text-right tabular-nums text-foreground")} />}
 							</label>
 							{!readOnly && <div className="hidden justify-end @xl:flex">{remove(i)}</div>}
@@ -911,23 +943,23 @@ export function PurchaseOrderLinkedBills({ bills, currency = "MYR", onOpen, clas
 			{bills.map((b) => {
 				const number = b.billNumber || b.id.slice(0, 12);
 				return (
-					<button
-						key={b.id}
-						type="button"
-						role="listitem"
-						aria-label={`Open bill ${number}`}
-						onClick={() => onOpen?.(b.id)}
-						className="flex cursor-pointer flex-wrap items-center justify-between gap-x-3 gap-y-1 rounded-lg px-2 py-1.5 text-left outline-none hover:bg-table-row-hover focus-visible:ring-2 focus-visible:ring-primary/50"
-					>
-						<span className="flex min-w-0 items-baseline gap-2">
-							<span className="font-mono text-2xs font-medium text-primary">{number}</span>
-							{b.issueDate && <span className="text-2xs text-tertiary-foreground">{formatDate(b.issueDate)}</span>}
-						</span>
-						<span className="ml-auto flex shrink-0 items-center gap-2">
-							<span className="text-sm font-medium tabular-nums text-foreground">{b.totalAmount == null || b.totalAmount === "" ? "—" : formatCurrency(num(b.totalAmount), b.currency ?? currency)}</span>
-							<DocStatus status={b.status ?? "draft"} config={BILL_STATUS} />
-						</span>
-					</button>
+					<div key={b.id} role="listitem" className="flex min-w-0 flex-col">
+						<button
+							type="button"
+							onClick={() => onOpen?.(b.id)}
+							className="flex cursor-pointer flex-wrap items-center justify-between gap-x-3 gap-y-1 rounded-lg px-2 py-1.5 text-left outline-none hover:bg-table-row-hover focus-ring"
+						>
+							<span className="sr-only">Open bill </span>
+							<span className="flex min-w-0 items-baseline gap-2">
+								<span className="font-mono text-2xs font-medium text-primary">{number}</span>
+								{b.issueDate && <span className="text-2xs text-tertiary-foreground">{formatDate(b.issueDate)}</span>}
+							</span>
+							<span className="ml-auto flex shrink-0 items-center gap-2">
+								<span className="text-sm font-medium tabular-nums text-foreground">{b.totalAmount == null || b.totalAmount === "" ? "—" : formatCurrency(num(b.totalAmount), b.currency ?? currency)}</span>
+								<DocStatus status={b.status ?? "draft"} config={BILL_STATUS} />
+							</span>
+						</button>
+					</div>
 				);
 			})}
 		</div>
@@ -979,7 +1011,10 @@ export function PayslipSummary({ payslip, month, canMarkPaid = false, onMarkPaid
 										<span>{l.label}</span>
 										{l.code.toUpperCase() !== l.label.toUpperCase() && <span className="font-mono text-2xs font-medium text-subtle">{l.code}</span>}
 									</span>
-									<span className={cn("shrink-0 tabular-nums", l.amount < 0 ? "text-muted-foreground" : "text-foreground")}>{l.amount < 0 ? `(${sen(-l.amount)})` : sen(l.amount)}</span>
+									<span className={cn("shrink-0 tabular-nums", l.amount < 0 ? "text-muted-foreground" : "text-foreground")}>
+										{l.amount < 0 && <span className="sr-only">minus </span>}
+										{l.amount < 0 ? `(${sen(-l.amount)})` : sen(l.amount)}
+									</span>
 								</li>
 							))}
 							<li className="flex items-baseline justify-between gap-3 border-t border-border pt-2 text-sm font-semibold text-foreground">
@@ -993,17 +1028,17 @@ export function PayslipSummary({ payslip, month, canMarkPaid = false, onMarkPaid
 						<table className="w-full text-sm">
 							<thead>
 								<tr className="text-2xs text-tertiary-foreground">
-									<th className="py-1 text-left font-normal">Scheme</th>
-									<th className="py-1 pl-2 text-right font-normal">Employee</th>
-									<th className="py-1 pl-2 text-right font-normal">Employer</th>
+									<th scope="col" className="py-1 text-left font-normal">Scheme</th>
+									<th scope="col" className="py-1 pl-2 text-right font-normal">Employee</th>
+									<th scope="col" className="py-1 pl-2 text-right font-normal">Employer</th>
 								</tr>
 							</thead>
 							<tbody>
 								{p.contributions.map((c) => (
 									<tr key={c.code} className="border-b border-table-row-divider">
-										<td className="py-1.5 text-muted-foreground">
+										<th scope="row" className="py-1.5 text-left font-normal text-muted-foreground">
 											<span className="inline-flex flex-wrap items-center gap-1.5">{c.label}{!c.verified && <StatusChip tone="amber" glyph="alert">Unverified</StatusChip>}</span>
-										</td>
+										</th>
 										<td className="whitespace-nowrap py-1.5 pl-2 text-right tabular-nums text-foreground">{sen(c.employeeAmount)}</td>
 										<td className="whitespace-nowrap py-1.5 pl-2 text-right tabular-nums text-foreground">{sen(c.employerAmount)}</td>
 									</tr>
@@ -1011,7 +1046,7 @@ export function PayslipSummary({ payslip, month, canMarkPaid = false, onMarkPaid
 							</tbody>
 							<tfoot>
 								<tr className="font-semibold text-foreground">
-									<td className="pt-2">Total</td>
+									<th scope="row" className="pt-2 text-left">Total</th>
 									<td className="whitespace-nowrap pt-2 pl-2 text-right tabular-nums">{sen(employeeTotal)}</td>
 									<td className="whitespace-nowrap pt-2 pl-2 text-right tabular-nums">{sen(employerTotal)}</td>
 								</tr>
@@ -1047,10 +1082,11 @@ export function PayslipsRunTable({ payslips, payable = true, onOpen, className, 
 			header: "Employee",
 			mobile: "title",
 			cell: (s) => (
-				<div>
-					<div className="font-medium text-foreground">{s.employeeName}</div>
-					<div className="font-mono text-2xs font-medium text-tertiary-foreground">{s.reference}</div>
-				</div>
+				// Phrasing content only: with onOpen, this cell renders inside the row's button.
+				<span className="block">
+					<span className="block font-medium text-foreground">{s.employeeName}</span>
+					<span className="block font-mono text-2xs font-medium text-tertiary-foreground">{s.reference}</span>
+				</span>
 			),
 		},
 		money("gross", "Gross", (s) => s.gross),
@@ -1142,12 +1178,29 @@ function einvoiceState(s: EInvoiceEnvStatus | undefined): { label: string; tone:
 	return null;
 }
 
-const linkClass = "rounded-sm text-primary outline-none hover:underline focus-visible:ring-2 focus-visible:ring-primary/50";
+const linkClass = "rounded-sm text-primary outline-none hover:underline focus-ring";
 
 /** LHDN MyInvois filing for one invoice or note: validation state per environment, the validated stamp, and the submit / cancel actions. */
 export function EInvoiceStatusCard({ credentialEnvironments, byEnvironment, documentLabel = "invoice", hasCorrection = true, onSubmit, onCancel, onCheck, className, ...props }: DivProps<{ credentialEnvironments: EnvName[]; byEnvironment: Partial<Record<EnvName, EInvoiceEnvStatus>>; documentLabel?: string; hasCorrection?: boolean; onSubmit?: (env: EnvName) => void; onCancel?: (env: EnvName, reason: string) => void; onCheck?: (env: EnvName) => void }>) {
 	const [env, setEnv] = React.useState<EnvName>(credentialEnvironments[0] ?? "sandbox");
 	const [cancelReason, setCancelReason] = React.useState<string | null>(null);
+	const [reasonError, setReasonError] = React.useState(false);
+	const reasonId = React.useId();
+	const reasonRef = React.useRef<HTMLInputElement>(null);
+	const cancelRef = React.useRef<HTMLButtonElement>(null);
+	/** Opening or leaving the cancel form unmounts the control that was pressed; move focus to its replacement. */
+	const focusNext = React.useRef<"reason" | "cancel" | null>(null);
+	const cancelling = cancelReason !== null;
+	React.useEffect(() => {
+		const target = focusNext.current === "reason" ? reasonRef.current : focusNext.current === "cancel" ? cancelRef.current : null;
+		focusNext.current = null;
+		target?.focus();
+	}, [cancelling]);
+	const openCancel = (open: boolean) => {
+		focusNext.current = open ? "reason" : "cancel";
+		setReasonError(false);
+		setCancelReason(open ? "" : null);
+	};
 	const latest = byEnvironment[env];
 	const state = einvoiceState(latest);
 	const isValid = latest?.status === "valid";
@@ -1164,7 +1217,7 @@ export function EInvoiceStatusCard({ credentialEnvironments, byEnvironment, docu
 		<div className={cn("@container flex min-w-0 flex-col gap-3 rounded-xl border bg-card p-4 shadow-sm", className)} {...props}>
 			<ActionBar className="justify-between">
 				<h3 className="flex items-center gap-1.5 text-md font-semibold text-foreground"><SealCheckIcon size={16} weight="fill" className="text-subtle" aria-hidden="true" />MyInvois e-invoice</h3>
-				{env === "sandbox" && hasCreds && <Badge variant="muted" size="sm" className="text-sandbox">Sandbox</Badge>}
+				{env === "sandbox" && hasCreds && <Badge variant="muted" size="sm" className="text-sandbox-text">Sandbox</Badge>}
 			</ActionBar>
 
 			{state && (
@@ -1214,13 +1267,46 @@ export function EInvoiceStatusCard({ credentialEnvironments, byEnvironment, docu
 							The 72-hour cancellation window has passed. {hasCorrection ? <a href="#" onClick={(e) => e.preventDefault()} className={linkClass}>Correct this {documentLabel} with a credit note</a> : "Correct it with a credit or debit note"}.
 						</p>
 					) : cancelReason === null ? (
-						<Button variant="secondary" size="sm" onClick={() => setCancelReason("")}>Cancel e-invoice</Button>
+						<Button ref={cancelRef} variant="secondary" size="sm" onClick={() => openCancel(true)}>
+							Cancel e-invoice
+						</Button>
 					) : (
 						<div className="flex flex-col gap-2">
-							<Input aria-label="Reason for cancelling" placeholder="Reason for cancelling (sent to LHDN)" maxLength={300} value={cancelReason} onChange={(e) => setCancelReason(e.target.value)} />
+							<Input
+								ref={reasonRef}
+								aria-label="Reason for cancelling"
+								placeholder="Reason for cancelling (sent to LHDN)"
+								maxLength={300}
+								value={cancelReason}
+								aria-invalid={reasonError || undefined}
+								aria-describedby={reasonError ? reasonId : undefined}
+								onChange={(e) => {
+									setCancelReason(e.target.value);
+									if (e.target.value.trim()) setReasonError(false);
+								}}
+							/>
+							{reasonError && (
+								<FieldError id={reasonId}>Enter a reason for cancelling.</FieldError>
+							)}
 							<ActionBar>
-								<Button variant="destructive" size="sm" disabled={cancelReason.trim() === ""} onClick={() => onCancel?.(env, cancelReason)}>Confirm cancellation</Button>
-								<Button variant="secondary" size="sm" onClick={() => setCancelReason(null)}>Keep it</Button>
+								{/* Validated on press, not by disabling: a disabled button gives no reason and cannot be focused. */}
+								<Button
+									variant="destructive"
+									size="sm"
+									onClick={() => {
+										if (cancelReason.trim() === "") {
+											setReasonError(true);
+											reasonRef.current?.focus();
+											return;
+										}
+										onCancel?.(env, cancelReason);
+									}}
+								>
+									Confirm cancellation
+								</Button>
+								<Button variant="secondary" size="sm" onClick={() => openCancel(false)}>
+									Keep it
+								</Button>
 							</ActionBar>
 						</div>
 					)}

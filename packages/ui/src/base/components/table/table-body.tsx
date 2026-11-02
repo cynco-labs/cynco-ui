@@ -1,10 +1,7 @@
 import { useTableContext } from "./table-context";
+import { MotionTbody, useTableFadeIn } from "./table-motion";
 import {
-	MotionTbody,
-	TABLE_FADE_IN,
-	TABLE_TRANSITION,
-} from "./table-motion";
-import {
+	isRowButtonKeyPress,
 	TableRowCells,
 	TableSkeletonRows,
 } from "./table-row-cells";
@@ -33,6 +30,7 @@ export function TableBody() {
 		skeletonRowCount,
 	} = useTableContext();
 	const rows = table.getRowModel().rows;
+	const fadeIn = useTableFadeIn();
 	const lastRowCountRef = useRef(DEFAULT_SKELETON_ROWS);
 	const hasLoadedRef = useRef(false);
 
@@ -54,8 +52,7 @@ export function TableBody() {
 		return (
 			<MotionTbody
 				key="skeleton"
-				{...TABLE_FADE_IN}
-				transition={TABLE_TRANSITION}
+				{...fadeIn}
 				className="divide-y bg-interactive-secondary"
 			>
 				<TableSkeletonRows
@@ -71,7 +68,7 @@ export function TableBody() {
 
 	if (!hasRows) {
 		return (
-			<MotionTbody key="empty" {...TABLE_FADE_IN} transition={TABLE_TRANSITION}>
+			<MotionTbody key="empty" {...fadeIn}>
 				<TableRow className="hover:bg-transparent dark:hover:bg-transparent">
 					<TableCell
 						className="h-10 text-center py-0"
@@ -94,12 +91,12 @@ export function TableBody() {
 	return (
 		<MotionTbody
 			key="content"
-			{...TABLE_FADE_IN}
-			transition={TABLE_TRANSITION}
+			{...fadeIn}
 			className="divide-y bg-interactive-secondary"
 		>
 			{rows.map((row) => {
-				const isSelected = selectedItemId === (row.original as any).id;
+				const isSelected =
+					selectedItemId === (row.original as { id?: string }).id;
 				const rowHref = getRowHref?.(row.original);
 
 				return (
@@ -111,9 +108,19 @@ export function TableBody() {
 							isSelected ? "z-100" : "hover:bg-interactive-secondary-hover",
 							(onRowClick || rowHref) && "cursor-pointer",
 						)}
+						aria-current={isSelected || undefined}
 						data-state={row.getIsSelected() && "selected"}
 						key={row.id}
-						onClick={!rowHref ? () => onRowClick?.(row.original) : undefined}
+						onClick={
+							!rowHref
+								? (event) => {
+										// Keyboard activation of the row button (detail 0) runs the double-click action when
+										// there is no single-click one, so it has a keyboard path (WCAG 2.1.1).
+										if (onRowClick) onRowClick(row.original);
+										else if (isRowButtonKeyPress(event)) onRowDoubleClick?.(row.original);
+									}
+								: undefined
+						}
 						onDoubleClick={
 							onRowDoubleClick
 								? () => onRowDoubleClick(row.original)
@@ -125,6 +132,7 @@ export function TableBody() {
 							enableSelection={enableSelection}
 							flexibleTableColumns={flexibleTableColumns}
 							rowHref={rowHref}
+							isRowClickable={!rowHref && (!!onRowClick || !!onRowDoubleClick)}
 							visibleColumnKey={visibleColumnKey}
 							isExpanded={row.getIsExpanded()}
 						/>

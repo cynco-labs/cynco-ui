@@ -1,11 +1,9 @@
 import { IconButton } from "../general/icon-button";
 import { useTableContext } from "./table-context";
 import { Button } from "../ui/button";
-import { Checkbox } from "../ui/checkbox";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
-	DropdownMenuItem,
 	DropdownMenuSeparator,
 	DropdownMenuSub,
 	DropdownMenuSubContent,
@@ -13,8 +11,14 @@ import {
 	DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import type { ColumnGroup } from "../../hooks/use-column-visibility";
+import {
+	overlayItemClassName,
+	overlayItemHighlightClassName,
+} from "../../lib/overlay-classes";
 import { cn } from "../../lib/utils";
+import { Menu as MenuPrimitive } from "@base-ui/react/menu";
 import { FadersHorizontalIcon } from "@phosphor-icons/react";
+import { CheckIcon } from "lucide-react";
 import type { Column } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
 
@@ -26,18 +30,30 @@ function ColumnCheckboxItem<T>({ column }: { column: Column<T> }) {
 
 	const isVisible = column.getIsVisible();
 
+	// A menuitemcheckbox exposes the checked state itself; the box is only its picture.
 	return (
-		<DropdownMenuItem
-			key={column.id}
+		<MenuPrimitive.CheckboxItem
+			checked={isVisible}
 			closeOnClick={false}
-			onClick={() => {
-				column.toggleVisibility(!isVisible);
-			}}
-			className="flex items-center gap-2 cursor-pointer text-sm"
+			onCheckedChange={(checked) => column.toggleVisibility(checked)}
+			className={cn(
+				"group/dropdown-menu-item",
+				overlayItemClassName,
+				overlayItemHighlightClassName,
+				"flex items-center gap-2 cursor-pointer text-sm",
+			)}
 		>
-			<Checkbox checked={isVisible} className="border-border" />
+			<span
+				aria-hidden="true"
+				className={cn(
+					"inline-flex size-3.5 shrink-0 items-center justify-center rounded-[4px] border border-input shadow-xs",
+					isVisible && "border-primary bg-primary text-primary-foreground",
+				)}
+			>
+				{isVisible && <CheckIcon className="size-2.5 text-current" />}
+			</span>
 			{label}
-		</DropdownMenuItem>
+		</MenuPrimitive.CheckboxItem>
 	);
 }
 
@@ -132,6 +148,7 @@ export function TableColumnVisibility() {
 					</IconButton>
 				) : (
 					<Button
+						aria-label="Display"
 						variant="skeleton"
 						size="icon"
 						className={cn(
@@ -171,7 +188,9 @@ export function TableColumnVisibility() {
 				))}
 
 				{onColumnVisibilitySave && (
+					// Collapsed while clean: inert keeps the hidden Save button out of the tab order.
 					<div
+						inert={!columnVisibilityIsDirty}
 						className={cn(
 							"grid transition-[grid-template-rows] duration-100 ease-in-out",
 							columnVisibilityIsDirty ? "grid-rows-[1fr]" : "grid-rows-[0fr]",

@@ -1,6 +1,6 @@
 # InlineCitation
 
-Inline citation badges with a hover card listing sources (with carousel for several).
+Inline citation badges that open a card listing sources (with carousel for several) on hover, click or Enter, so keyboard users can reach every source.
 
 ```tsx
 import { InlineCitation } from "@cynco-labs/ui/ai";

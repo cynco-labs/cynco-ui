@@ -4,16 +4,16 @@ import { useRender } from "@base-ui/react/use-render";
 import { cva, type VariantProps } from "class-variance-authority";
 
 const badgeVariants = cva(
-	"inline-flex items-center rounded-lg border border-zinc-200 px-1.5 py-0.5 text-body-secondary",
+	"inline-flex items-center rounded-lg border border-border px-1.5 py-0.5 text-body-secondary",
 	{
 		variants: {
 			variant: {
 				default:
-					"border-transparent bg-zinc-900 text-zinc-50 shadow hover:bg-zinc-900/80 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-50/80",
+					"border-transparent bg-foreground text-background shadow hover:bg-foreground/80",
 
 				muted: "bg-muted border border-border/50",
 				secondary:
-					"border-transparent bg-zinc-100 text-zinc-900 hover:bg-zinc-100/80 dark:bg-zinc-800 dark:text-zinc-50 dark:hover:bg-zinc-800/80",
+					"border-transparent bg-muted text-foreground hover:bg-muted/80",
 			},
 			size: {
 				default: "px-1.5 py-0.5 text-xs",

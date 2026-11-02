@@ -1,3 +1,4 @@
+import { LiveStatus } from "./live-status";
 import { Button, type ButtonProps } from "../ui/button";
 import { cn } from "../../lib/utils";
 import { Check, Copy } from "lucide-react";
@@ -28,28 +29,34 @@ export function CopyTextButton({
 	}, [copied]);
 
 	return (
-		<Button
-			variant={variant as ButtonProps["variant"]}
-			size="icon"
-			className={cn(
-				"h-6 px-2 text-muted-foreground w-fit font-mono rounded-md truncate justify-start",
-				className,
-			)}
-			onClick={(e) => {
-				e.preventDefault();
-				e.stopPropagation();
-				navigator.clipboard.writeText(text);
-				setCopied(true);
-			}}
-		>
-			{children && <span className="truncate block">{children}</span>}
-			<div className="flex items-center justify-center">
-				{copied ? (
-					<Check size={copySize || 13} className="text-foreground" />
-				) : (
-					<Copy size={copySize || 13} />
+		<>
+			<Button
+				variant={variant as ButtonProps["variant"]}
+				size="icon"
+				aria-label={children ? undefined : "Copy"}
+				className={cn(
+					"h-6 px-2 text-muted-foreground w-fit font-mono rounded-md truncate justify-start",
+					className,
 				)}
-			</div>
-		</Button>
+				onClick={(e) => {
+					e.preventDefault();
+					e.stopPropagation();
+					navigator.clipboard.writeText(text);
+					setCopied(true);
+				}}
+			>
+				{children && <span className="truncate block">{children}</span>}
+				<div className="flex items-center justify-center">
+					{copied ? (
+						<Check size={copySize || 13} className="text-foreground" />
+					) : (
+						<Copy size={copySize || 13} />
+					)}
+				</div>
+			</Button>
+			<LiveStatus>
+				{copied ? "Copied" : ""}
+			</LiveStatus>
+		</>
 	);
 }

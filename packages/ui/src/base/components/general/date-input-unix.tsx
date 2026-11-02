@@ -13,7 +13,13 @@ import {
 import { cn } from "../../lib/utils";
 import { format } from "date-fns";
 import { CalendarIcon, Clock } from "lucide-react";
-import { useRef, useState } from "react";
+import { type ComponentProps, useRef, useState } from "react";
+
+/** Lets a form label the trigger and point it at an error message. */
+type DateInputA11yProps = Pick<
+	ComponentProps<"button">,
+	"id" | "aria-label" | "aria-labelledby" | "aria-describedby" | "aria-invalid"
+>;
 
 function TimePicker({
 	date,
@@ -70,6 +76,7 @@ function TimePicker({
 						<button
 							type="button"
 							onClick={togglePeriod}
+							aria-label={`${period}, switch to ${period === "AM" ? "PM" : "AM"}`}
 							className="rounded-sm px-1.5 py-0.5 text-xs font-medium text-muted-foreground transition-none hover:bg-accent select-none"
 						>
 							{period}
@@ -94,7 +101,8 @@ export const DateInputUnix = ({
 	use24Hour,
 	placeholder,
 	className,
-}: {
+	...a11yProps
+}: DateInputA11yProps & {
 	unixDate: number | null;
 	setUnixDate: (unixDate: number | null) => void;
 	disabled?: boolean;
@@ -181,6 +189,7 @@ export const DateInputUnix = ({
 			<PopoverTrigger asChild>
 				<button
 					type="button"
+					{...a11yProps}
 					data-state={popoverOpen ? "open" : "closed"}
 					disabled={disabled}
 					className={cn(

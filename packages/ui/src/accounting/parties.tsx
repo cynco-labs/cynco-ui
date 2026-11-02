@@ -45,6 +45,7 @@ import {
 	cn,
 	type StatusTone,
 	type StatusGlyph,
+	LiveStatus,
 } from "../base";
 import {
 	ArchiveIcon,
@@ -78,6 +79,8 @@ import {
 } from "@phosphor-icons/react";
 import { Bar, BarChart, XAxis } from "recharts";
 import {
+	FieldError,
+	fieldErrorProps,
 	ActionBar,
 	DataList,
 	DocStatus,
@@ -222,9 +225,9 @@ function RowSelect({ checked, onToggle, label }: { checked: boolean; onToggle?: 
 	return <Checkbox checked={checked} onCheckedChange={() => onToggle?.()} aria-label={label} />;
 }
 
-function SelectAll({ total, selected, onChange, label }: { total: number; selected: number; onChange: (all: boolean) => void; label: string }) {
+function SelectAll({ total, selected, onChange, label, ref, errorId }: { total: number; selected: number; onChange: (all: boolean) => void; label: string; ref?: React.Ref<HTMLButtonElement>; /** Id of an inline error about the selection; marks the checkbox invalid. */ errorId?: string }) {
 	const all = total > 0 && selected === total;
-	return <Checkbox checked={all} indeterminate={selected > 0 && !all} onCheckedChange={() => onChange(!all)} aria-label={label} />;
+	return <Checkbox ref={ref} checked={all} indeterminate={selected > 0 && !all} onCheckedChange={() => onChange(!all)} aria-label={label} aria-invalid={errorId ? true : undefined} aria-describedby={errorId} />;
 }
 
 function useSelection(controlled?: string[], defaultIds?: string[], onChange?: (ids: string[]) => void) {
@@ -268,20 +271,21 @@ function RowActions({ items, label = "Row actions" }: { items: Array<{ label: st
 /** Avatar + name (+ inactive chip) + one-line subtitle — the first cell of party lists. */
 function NameCell({ name, subtitle, inactiveLabel, inactive }: { name: string; subtitle?: string; inactiveLabel: string; inactive?: boolean }) {
 	return (
-		<div className="flex min-w-0 items-center gap-2.5">
+		// Spans only: this renders inside the row's button in Customer and Vendor lists.
+		<span className="flex min-w-0 items-center gap-2.5">
 			<PartyInitials name={name} className="hidden @md:inline-flex" />
-			<div className="min-w-0">
-				<div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
+			<span className="block min-w-0">
+				<span className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
 					<span className="min-w-0 break-words font-medium text-foreground @2xl:truncate">{name}</span>
 					{inactive && (
 						<StatusChip tone="neutral" glyph="minus" className="shrink-0">
 							{inactiveLabel}
 						</StatusChip>
 					)}
-				</div>
-				{subtitle && <div className="truncate text-xs font-normal text-tertiary-foreground">{subtitle}</div>}
-			</div>
-		</div>
+				</span>
+				{subtitle && <span className="block truncate text-xs font-normal text-tertiary-foreground">{subtitle}</span>}
+			</span>
+		</span>
 	);
 }
 
@@ -343,9 +347,9 @@ export function BillCard({ bill, showStatus = false, selected, onToggle, someSel
 		>
 			<div className="flex items-start gap-2.5">
 				<div className="relative size-8 shrink-0">
-					<PartyInitials name={bill.vendorName} className={cn(onToggle && (showCheckbox ? "opacity-0" : "group-hover:opacity-0"))} />
+					<PartyInitials name={bill.vendorName} className={cn(onToggle && (showCheckbox ? "opacity-0" : "group-hover:opacity-0 group-focus-within:opacity-0"))} />
 					{onToggle && (
-						<div className={cn("absolute inset-0 flex items-center justify-center", showCheckbox ? "opacity-100" : "opacity-0 group-hover:opacity-100")}>
+						<div className={cn("absolute inset-0 flex items-center justify-center", showCheckbox ? "opacity-100" : "opacity-0 group-hover:opacity-100 group-focus-within:opacity-100")}>
 							<RowSelect checked={!!selected} onToggle={() => onToggle(bill.id)} label={`Select ${bill.vendorName ?? "bill"}`} />
 						</div>
 					)}
@@ -410,7 +414,8 @@ export function BillCard({ bill, showStatus = false, selected, onToggle, someSel
 					{posted &&
 						(bill.postedToGl ? (
 							<span title="Posted to GL" className="flex shrink-0 text-tertiary-foreground">
-								<BookOpenIcon size={13} weight="fill" aria-label="Posted to GL" />
+								<BookOpenIcon size={13} weight="fill" aria-hidden="true" />
+								<span className="sr-only">Posted to GL</span>
 							</span>
 						) : (
 							<span title="No GL entry" className="flex shrink-0">
@@ -424,7 +429,7 @@ export function BillCard({ bill, showStatus = false, selected, onToggle, someSel
 			{actions.length > 0 && (
 				<div className="absolute top-2 right-2">
 					<DropdownMenu modal={false}>
-						<DropdownMenuTrigger render={<Button variant="skeleton" size="icon" aria-label="Quick actions" className="text-tertiary-foreground" />}>
+						<DropdownMenuTrigger render={<Button variant="skeleton" size="icon" aria-label={`Quick actions for ${bill.vendorName || "Unknown Vendor"}`} className="text-tertiary-foreground" />}>
 							<DotsThreeVerticalIcon size={14} weight="bold" aria-hidden="true" />
 						</DropdownMenuTrigger>
 						<DropdownMenuContent align="end" className="w-52">
@@ -537,6 +542,18 @@ export type BillDetailHeaderProps = React.ComponentProps<"div"> & {
 export function BillDetailHeader({ bill, receivedVia, hasDocument = true, isReExtracting, isExtracting, onReExtract, onArchive, onRestore, className, ...props }: BillDetailHeaderProps) {
 	const [confirmArchive, setConfirmArchive] = React.useState(false);
 	const archived = !!bill.isArchived;
+	// The confirm swaps out the control that had focus; move focus to its replacement (Cancel, then back to the menu).
+	const moreRef = React.useRef<HTMLButtonElement>(null);
+	const cancelRef = React.useRef<HTMLButtonElement>(null);
+	const swapped = React.useRef(false);
+	React.useEffect(() => {
+		if (!swapped.current) return;
+		(confirmArchive ? cancelRef : moreRef).current?.focus();
+	}, [confirmArchive]);
+	const askArchive = (next: boolean) => {
+		swapped.current = true;
+		setConfirmArchive(next);
+	};
 	const currency = bill.currency ?? "MYR";
 	return (
 		<div className={cn("flex min-w-0 flex-col gap-3", className)} {...props}>
@@ -581,14 +598,14 @@ export function BillDetailHeader({ bill, receivedVia, hasDocument = true, isReEx
 						<ActionBar>
 							{confirmArchive ? (
 								<>
-									<Button variant="secondary" onClick={() => setConfirmArchive(false)}>
+									<Button ref={cancelRef} variant="secondary" onClick={() => askArchive(false)}>
 										Cancel
 									</Button>
 									<Button
 										variant="destructive"
 										onClick={() => {
 											onArchive?.();
-											setConfirmArchive(false);
+											askArchive(false);
 										}}
 									>
 										Confirm archive
@@ -597,11 +614,11 @@ export function BillDetailHeader({ bill, receivedVia, hasDocument = true, isReEx
 							) : (
 								<>
 									<DropdownMenu modal={false}>
-										<DropdownMenuTrigger render={<Button variant="secondary" aria-label="More bill actions" className="w-7" />}>
+										<DropdownMenuTrigger render={<Button ref={moreRef} variant="secondary" aria-label="More bill actions" className="w-7" />}>
 											<DotsThreeVerticalIcon size={14} weight="bold" aria-hidden="true" />
 										</DropdownMenuTrigger>
 										<DropdownMenuContent align="end" className="w-44">
-											<DropdownMenuItem variant="destructive" onClick={() => setConfirmArchive(true)}>
+											<DropdownMenuItem variant="destructive" onClick={() => askArchive(true)}>
 												<TrashIcon size={14} aria-hidden="true" />
 												Archive
 											</DropdownMenuItem>
@@ -743,14 +760,32 @@ export function PayRunTable({ bills, selectedIds, onSelectedChange, defaultSelec
 	const schedulable = selected.filter((b) => b.status === "approved" || b.status === "awaiting_payment");
 	const excluded = selected.length - schedulable.length;
 	const overdueCount = bills.filter((b) => b.overdue).length;
-	const invalidDate = !date || date < todayStr;
-	const helper = invalidDate
-		? "Choose today or a future date."
-		: selected.length === 0
+	const helper =
+		selected.length === 0
 			? "Select awaiting-payment bills to schedule them."
 			: excluded > 0
 				? `${excluded} selected ${excluded === 1 ? "bill is" : "bills are"} already scheduled or partially paid.`
 				: `${schedulable.length} ready to schedule.`;
+
+	// Errors show only after "Schedule selected" is pressed, then clear on their own as each one is fixed.
+	const [attempted, setAttempted] = React.useState(false);
+	const uid = React.useId();
+	const dateRef = React.useRef<HTMLInputElement>(null);
+	const selectAllRef = React.useRef<HTMLButtonElement>(null);
+	const dateError = !date ? "Choose a payment date." : date < todayStr ? "Choose today or a later date." : null;
+	const billsError = schedulable.length > 0 ? null : selected.length === 0 ? "Select at least one bill." : "Select at least one bill that is awaiting payment.";
+	const showDateError = attempted && !!dateError;
+	const showBillsError = attempted && !!billsError;
+	const schedule = () => {
+		if (isSubmitting) return;
+		if (dateError || billsError) {
+			setAttempted(true);
+			(dateError ? dateRef : selectAllRef).current?.focus();
+			return;
+		}
+		setAttempted(false);
+		onSchedule?.(schedulable.map((b) => b.id), date, bank || undefined);
+	};
 
 	const columns: DataColumn<CyncoBill>[] = [
 		{ key: "vendor", header: "Vendor", mobile: "title", className: "min-w-36", cell: (b) => <span className="line-clamp-2 break-words">{b.vendorName ?? "Unknown vendor"}</span> },
@@ -771,7 +806,17 @@ export function PayRunTable({ bills, selectedIds, onSelectedChange, defaultSelec
 
 			<div className="flex flex-col gap-2 @2xl:flex-row @2xl:items-center @2xl:justify-between">
 				<ActionBar>
-					<Input type="date" aria-label="Scheduled payment date" value={date} min={todayStr} onChange={(e) => setDate(e.target.value)} aria-invalid={invalidDate || undefined} className="w-auto min-w-36 tabular-nums" />
+					<Input
+						ref={dateRef}
+						type="date"
+						aria-label="Scheduled payment date"
+						value={date}
+						min={todayStr}
+						onChange={(e) => setDate(e.target.value)}
+						aria-invalid={showDateError || undefined}
+						aria-describedby={showDateError ? `${uid}-date-error` : undefined}
+						className="w-auto min-w-36 tabular-nums"
+					/>
 					{bankAccounts && bankAccounts.length > 0 && (
 						<Select value={bank} onValueChange={setBank} items={bankAccounts.map((a) => ({ value: a.id, label: `${a.accountCode ? `${a.accountCode} · ` : ""}${a.accountName}` }))}>
 							<SelectTrigger aria-label="Pay from" className="min-w-0 max-w-full flex-1 @md:max-w-64">
@@ -790,9 +835,9 @@ export function PayRunTable({ bills, selectedIds, onSelectedChange, defaultSelec
 					<IconButton
 						variant="primary"
 						icon={<CalendarCheckIcon size={14} />}
+						// Always enabled: pressing it names each problem and focuses the first one. isLoading keeps focus (aria-disabled).
 						isLoading={isSubmitting}
-						disabled={schedulable.length === 0 || invalidDate || isSubmitting}
-						onClick={() => onSchedule?.(schedulable.map((b) => b.id), date, bank || undefined)}
+						onClick={schedule}
 					>
 						Schedule selected
 					</IconButton>
@@ -803,9 +848,15 @@ export function PayRunTable({ bills, selectedIds, onSelectedChange, defaultSelec
 							{`${excluded} excluded`}
 						</StatusChip>
 					)}
-					<span className={cn("text-xs tabular-nums", invalidDate ? surfaces.negative : "text-tertiary-foreground")}>{helper}</span>
+					<span className="text-xs tabular-nums text-tertiary-foreground">{helper}</span>
 				</ActionBar>
 			</div>
+			{(showDateError || showBillsError) && (
+				<div className="flex flex-col gap-1">
+					{showDateError && <FieldError className="text-xs" id={`${uid}-date-error`}>{dateError}</FieldError>}
+					{showBillsError && billsError && <FieldError className="text-xs" id={`${uid}-bills-error`}>{billsError}</FieldError>}
+				</div>
+			)}
 
 			<DataList
 				caption="Bills ready for payment"
@@ -814,7 +865,16 @@ export function PayRunTable({ bills, selectedIds, onSelectedChange, defaultSelec
 				getKey={(b) => b.id}
 				stackBelow="2xl"
 				isRowSelected={(b) => sel.has(b.id)}
-				leadingHeader={<SelectAll total={bills.length} selected={selected.length} onChange={(all) => set(all ? new Set(bills.map((b) => b.id)) : new Set())} label="Select all bills" />}
+				leadingHeader={
+					<SelectAll
+						ref={selectAllRef}
+						total={bills.length}
+						selected={selected.length}
+						onChange={(all) => set(all ? new Set(bills.map((b) => b.id)) : new Set())}
+						label="Select all bills"
+						errorId={showBillsError ? `${uid}-bills-error` : undefined}
+					/>
+				}
 				leading={(b) => <RowSelect checked={sel.has(b.id)} onToggle={() => toggle(b.id)} label={`Select ${b.vendorName ?? "bill"}`} />}
 				footer={
 					<div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
@@ -841,6 +901,7 @@ const PAYMENT_METHODS = [
 	{ value: "card", label: "Card" },
 ];
 
+/** Inline field error: a glyph plus words, so it never relies on colour. Link it with aria-describedby. */
 function FormField({ label, htmlFor, error, hint, children }: { label: string; htmlFor: string; error?: string | null; hint?: React.ReactNode; children: React.ReactNode }) {
 	return (
 		<div className="flex min-w-0 flex-col gap-1">
@@ -849,9 +910,7 @@ function FormField({ label, htmlFor, error, hint, children }: { label: string; h
 			</label>
 			{children}
 			{error ? (
-				<p role="alert" id={`${htmlFor}-error`} className={cn("text-xs", surfaces.negative)}>
-					{error}
-				</p>
+				<FieldError className="text-xs" id={`${htmlFor}-error`}>{error}</FieldError>
 			) : (
 				hint
 			)}
@@ -885,15 +944,41 @@ export function RecordBillPaymentDialog({ billAmount, paidAmount = 0, currency =
 	const [bank, setBank] = React.useState("__none__");
 	const [reference, setReference] = React.useState("");
 	const [notes, setNotes] = React.useState("");
+	// Errors show only after a submit attempt, then clear on their own as each field is fixed.
+	const [attempted, setAttempted] = React.useState(false);
+	const triggerRef = React.useRef<HTMLButtonElement>(null);
+	const uid = React.useId();
+	const fid = (k: string) => `${uid}-${k}`;
 
-	const n = Number(amount);
-	const amountError = isNaN(n) || n <= 0 ? "Amount must be greater than 0" : Math.round(n * 100) > Math.round(outstanding * 100) ? `Amount cannot exceed outstanding (${currency} ${outstanding.toFixed(2)})` : null;
-	const canSubmit = !!date && bank !== "__none__" && !amountError && !disabled;
+	const n = Number(amount.trim());
+	const errors = {
+		amount:
+			amount.trim() === "" || isNaN(n) || n <= 0
+				? "Enter an amount greater than zero."
+				: Math.round(n * 100) > Math.round(outstanding * 100)
+					? `Enter ${formatCurrency(outstanding, currency)} or less, the amount still outstanding.`
+					: null,
+		date: date ? null : "Choose a payment date.",
+		bank: bank !== "__none__" ? null : bankAccounts.length === 0 ? "Add a bank or cash account to your Chart of Accounts first." : "Choose a bank or cash account.",
+	};
+	const shown = (k: keyof typeof errors) => (attempted ? errors[k] : null);
+	const invalidProps = (k: keyof typeof errors) => fieldErrorProps(`${fid(k)}-error`, !!shown(k));
+	const openSheet = (o: boolean) => {
+		setOpen(o);
+		if (o) setAttempted(false);
+	};
 	const submit = () => {
-		if (!canSubmit) return;
+		if (disabled) return;
+		const firstInvalid = (["amount", "date", "bank"] as const).find((k) => errors[k]);
+		if (firstInvalid) {
+			setAttempted(true);
+			document.getElementById(fid(firstInvalid))?.focus();
+			return;
+		}
+		setAttempted(false);
 		onSubmit?.({
 			paymentDate: date,
-			paymentAmount: amount,
+			paymentAmount: amount.trim(),
 			paymentMethod: method === "__none__" ? undefined : method,
 			paymentReference: reference || undefined,
 			bankAccountId: bank,
@@ -905,11 +990,12 @@ export function RecordBillPaymentDialog({ billAmount, paidAmount = 0, currency =
 
 	return (
 		<>
-			<IconButton variant="primary" icon={<CurrencyCircleDollarIcon size={14} />} disabled={disabled} onClick={() => setOpen(true)} className={className}>
+			<IconButton ref={triggerRef} variant="primary" icon={<CurrencyCircleDollarIcon size={14} />} disabled={disabled} onClick={() => openSheet(true)} className={className}>
 				Record payment
 			</IconButton>
-			<Sheet open={open} onOpenChange={setOpen} modal={false}>
-				<SheetContent side="right" className={cn("sm:max-w-md", contentClassName)}>
+			{/* Modal: the sheet and its backdrop cover the page, so focus stays inside, the page behind is inert, and focus returns to "Record payment" on close. */}
+			<Sheet open={open} onOpenChange={openSheet}>
+				<SheetContent side="right" finalFocus={triggerRef} className={cn("sm:max-w-md", contentClassName)}>
 					<SheetHeader className="border-b border-border pr-12">
 						<SheetTitle>Record payment</SheetTitle>
 						<SheetDescription>Record a full or partial payment.</SheetDescription>
@@ -922,15 +1008,15 @@ export function RecordBillPaymentDialog({ billAmount, paidAmount = 0, currency =
 								{ label: hasPrior ? "Outstanding" : "Amount", value: formatCurrency(outstanding, currency), strong: true },
 							]}
 						/>
-						<FormField label="Payment Amount *" htmlFor="rbp-amount" error={amountError} hint={currency !== "MYR" ? <p className="text-xs text-tertiary-foreground">Exchange rate applied at time of recording</p> : null}>
-							<Input id="rbp-amount" type="number" step="0.01" min="0.01" value={amount} onChange={(e) => setAmount(e.target.value)} aria-invalid={amountError ? true : undefined} className="tabular-nums" />
+						<FormField label="Payment Amount *" htmlFor={fid("amount")} error={shown("amount")} hint={currency !== "MYR" ? <p className="text-xs text-tertiary-foreground">Exchange rate applied at time of recording</p> : null}>
+							<Input id={fid("amount")} type="number" step="0.01" min="0.01" value={amount} onChange={(e) => setAmount(e.target.value)} {...invalidProps("amount")} required className="tabular-nums" />
 						</FormField>
-						<FormField label="Payment date" htmlFor="rbp-date">
-							<Input id="rbp-date" type="date" value={date} onChange={(e) => setDate(e.target.value)} className="tabular-nums" />
+						<FormField label="Payment date *" htmlFor={fid("date")} error={shown("date")}>
+							<Input id={fid("date")} type="date" value={date} onChange={(e) => setDate(e.target.value)} {...invalidProps("date")} required className="tabular-nums" />
 						</FormField>
-						<FormField label="Payment method" htmlFor="rbp-method">
+						<FormField label="Payment method" htmlFor={fid("method")}>
 							<Select value={method} onValueChange={setMethod} items={PAYMENT_METHODS}>
-								<SelectTrigger id="rbp-method" className="w-full">
+								<SelectTrigger id={fid("method")} className="w-full">
 									<SelectValue placeholder="Select method..." />
 								</SelectTrigger>
 								<SelectContent>
@@ -944,11 +1030,12 @@ export function RecordBillPaymentDialog({ billAmount, paidAmount = 0, currency =
 						</FormField>
 						<FormField
 							label="Bank / Cash Account *"
-							htmlFor="rbp-bank"
+							htmlFor={fid("bank")}
+							error={shown("bank")}
 							hint={bankAccounts.length === 0 ? <p className={cn("text-xs", surfaces.negative)}>No bank/cash accounts found in your Chart of Accounts.</p> : null}
 						>
 							<Select value={bank} onValueChange={setBank} items={bankItems}>
-								<SelectTrigger id="rbp-bank" className="w-full">
+								<SelectTrigger id={fid("bank")} aria-required="true" {...invalidProps("bank")} className="w-full">
 									<SelectValue placeholder="Select account..." />
 								</SelectTrigger>
 								<SelectContent>
@@ -962,18 +1049,19 @@ export function RecordBillPaymentDialog({ billAmount, paidAmount = 0, currency =
 								</SelectContent>
 							</Select>
 						</FormField>
-						<FormField label="Reference number" htmlFor="rbp-ref">
-							<Input id="rbp-ref" value={reference} onChange={(e) => setReference(e.target.value)} placeholder="e.g. TXN-12345, check number" maxLength={100} />
+						<FormField label="Reference number" htmlFor={fid("ref")}>
+							<Input id={fid("ref")} value={reference} onChange={(e) => setReference(e.target.value)} placeholder="e.g. TXN-12345, check number" maxLength={100} />
 						</FormField>
-						<FormField label="Notes" htmlFor="rbp-notes">
-							<Textarea id="rbp-notes" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Optional payment notes..." rows={2} maxLength={1000} className="min-h-14 resize-none px-2 py-1.5 text-sm" />
+						<FormField label="Notes" htmlFor={fid("notes")}>
+							<Textarea id={fid("notes")} value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Optional payment notes..." rows={2} maxLength={1000} className="min-h-14 resize-none px-2 py-1.5 text-sm" />
 						</FormField>
 					</div>
 					<SheetFooter className="flex-row flex-wrap justify-end border-t border-border">
-						<Button variant="secondary" onClick={() => setOpen(false)}>
+						<Button variant="secondary" onClick={() => openSheet(false)}>
 							Cancel
 						</Button>
-						<ShortcutButton metaShortcut="enter" disabled={!canSubmit} onClick={submit}>
+						{/* Always enabled: pressing it names each problem and focuses the first one. */}
+						<ShortcutButton metaShortcut="enter" onClick={submit}>
 							Confirm payment
 						</ShortcutButton>
 					</SheetFooter>
@@ -1017,8 +1105,20 @@ export type ReceiptExtractionProgressProps = React.ComponentProps<"div"> & {
 export function ReceiptExtractionProgress({ view, hasExtractedData = true, manualEntry = false, isReExtracting, onReview, onReExtract, onEnterManually, onCheckStatus, className, ...props }: ReceiptExtractionProgressProps) {
 	if (!view) return null;
 	const enterManually = !manualEntry;
+	const activeStep = view.kind === "running" ? EXTRACTION_STEPS.find((s) => s.stage === (view.stage === "failed" ? "reading" : view.stage)) : undefined;
+	const announcement =
+		view.kind === "running"
+			? `Reading your bill${activeStep ? `: ${activeStep.label}` : ""}`
+			: view.kind === "done"
+				? `Read by Cynco AI${view.confidence !== null ? `, ${view.confidence}% ${confidenceLabel(view.confidence)}` : ""}`
+				: view.kind === "timed-out"
+					? TIMED_OUT
+					: "";
 	return (
 		<div data-slot="extraction-progress" className={cn("@container min-w-0 rounded-lg border border-border bg-card px-3 py-2.5", className)} {...props}>
+			<LiveStatus>
+				{announcement}
+			</LiveStatus>
 			{view.kind === "running" && (
 				<div className="flex flex-col gap-2">
 					<div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-1">
@@ -1044,7 +1144,7 @@ export function ReceiptExtractionProgress({ view, hasExtractedData = true, manua
 							const status = own < at ? "complete" : own === at ? "active" : "pending";
 							const last = i === EXTRACTION_STEPS.length - 1;
 							return (
-								<li key={step.stage} className={cn("flex gap-2.5", status === "pending" && "opacity-45")}>
+								<li key={step.stage} aria-current={status === "active" ? "step" : undefined} className={cn("flex gap-2.5", status === "pending" && "text-tertiary-foreground [&_*]:text-inherit")}>
 									<div className="flex w-3.5 shrink-0 flex-col items-center">
 										<div className="flex h-4 items-center">
 											{status === "complete" ? (
@@ -1061,6 +1161,7 @@ export function ReceiptExtractionProgress({ view, hasExtractedData = true, manua
 										<span className="text-xs leading-4 text-foreground">
 											{step.label}
 											{status === "active" && "…"}
+											<span className="sr-only">{status === "complete" ? ", done" : status === "active" ? ", in progress" : ", not started"}</span>
 										</span>
 										{status === "active" && view.detail && <span className="text-2xs text-tertiary-foreground">{view.detail}</span>}
 									</div>
@@ -1272,6 +1373,9 @@ const AGING_BUCKETS = [
 	{ key: "days61plus", label: "61+ days late", tone: "var(--status-red)" },
 ] as const;
 
+const CONTACT_LINK = "min-h-6 rounded-sm outline-none hover:text-foreground hover:underline focus-ring";
+const RAIL_ACTION = "inline-flex min-h-6 items-center rounded-sm outline-none hover:underline focus-ring";
+
 export type PartyAging = { current: number; days1to30: number; days31to60: number; days61plus: number };
 export type PartyContact = { id: string; name: string; role?: string | null; jobTitle?: string | null; email?: string | null; phone?: string | null; isPrimary?: boolean };
 
@@ -1287,11 +1391,15 @@ export type PartyRailProps = React.ComponentProps<"aside"> & {
 	trend?: Array<{ month: string; total: number }>;
 	/** Unused credit notes per currency (customers only). */
 	credits?: Array<{ currency: string; amount: number; count: number }>;
+	/** Where "View credit notes" goes; renders it as a real link. */
+	creditNotesHref?: string;
+	/** In-app handler for "View credit notes" when there is no URL; renders it as a button. Without either, the action is hidden. */
+	onViewCreditNotes?: () => void;
 	contacts?: PartyContact[];
 };
 
 /** One column as a rail; two (then three) columns when its container is wide. */
-export function PartyRail({ role, currency = "MYR", ledgerBalance, openItemsTotal, aging, trend, credits, contacts, className, ...props }: PartyRailProps) {
+export function PartyRail({ role, currency = "MYR", ledgerBalance, openItemsTotal, aging, trend, credits, creditNotesHref, onViewCreditNotes, contacts, className, ...props }: PartyRailProps) {
 	const isVendor = role === "vendor";
 	const tiesOut = Math.round(ledgerBalance * 100) === Math.round(openItemsTotal * 100);
 	const agingTotal = AGING_BUCKETS.reduce((s, b) => s + aging[b.key], 0);
@@ -1309,7 +1417,15 @@ export function PartyRail({ role, currency = "MYR", ledgerBalance, openItemsTota
 						) : (
 							<KeyValueList className="divide-y-0" items={credits.map((c) => ({ label: `${c.count} credit ${c.count === 1 ? "note" : "notes"}`, value: formatCurrency(c.amount, c.currency), strong: false }))} />
 						)}
-						<span className="mt-1 inline-block text-xs text-primary">View credit notes</span>
+						{creditNotesHref ? (
+							<a href={creditNotesHref} className={cn("mt-1 w-fit text-xs text-primary", RAIL_ACTION)}>
+								View credit notes
+							</a>
+						) : onViewCreditNotes ? (
+							<button type="button" onClick={onViewCreditNotes} className={cn("mt-1 w-fit cursor-pointer text-xs text-primary", RAIL_ACTION)}>
+								View credit notes
+							</button>
+						) : null}
 					</RailCard>
 				)}
 
@@ -1364,13 +1480,29 @@ export function PartyRail({ role, currency = "MYR", ledgerBalance, openItemsTota
 				{trend && (
 					<RailCard title={trendLabel} trailing={<span className="text-xs tabular-nums text-muted-foreground">{formatCurrency(trendTotal, currency)}</span>}>
 						{trendTotal > 0 ? (
-							<ChartContainer config={{ v: { label: trendLabel, color: "var(--chart-series-1)" } }} className="aspect-auto h-16 w-full">
-								<BarChart data={chartData} margin={{ top: 2, right: 0, bottom: 0, left: 0 }}>
-									<XAxis dataKey="m" hide />
-									<ChartTooltip cursor={false} content={<ChartTooltipContent hideIndicator formatter={(v) => formatCurrency(Number(v), currency)} />} />
-									<Bar dataKey="v" fill="var(--color-v)" radius={2} />
-								</BarChart>
-							</ChartContainer>
+							<>
+								<ChartContainer
+									config={{ v: { label: trendLabel, color: "var(--chart-series-1)" } }}
+									className="aspect-auto h-16 w-full"
+								>
+									<BarChart data={chartData} margin={{ top: 2, right: 0, bottom: 0, left: 0 }} title={`${trendLabel} by month`} desc="Use the arrow keys to step through months. The same figures follow as a table.">
+										<XAxis dataKey="m" hide />
+										<ChartTooltip cursor={false} content={<ChartTooltipContent hideIndicator formatter={(v) => formatCurrency(Number(v), currency)} />} />
+										<Bar dataKey="v" fill="var(--color-v)" radius={2} />
+									</BarChart>
+								</ChartContainer>
+								<table className="sr-only">
+									<caption>{trendLabel} by month</caption>
+									<tbody>
+										{(trend ?? []).map((m) => (
+											<tr key={m.month}>
+												<th scope="row">{monthYear(`${m.month}-01`)}</th>
+												<td>{formatCurrency(m.total, currency)}</td>
+											</tr>
+										))}
+									</tbody>
+								</table>
+							</>
 						) : (
 							<p className="py-1 text-sm text-muted-foreground">{isVendor ? "No bills in the last 12 months." : "No invoices in the last 12 months."}</p>
 						)}
@@ -1404,26 +1536,26 @@ export function PartyRail({ role, currency = "MYR", ledgerBalance, openItemsTota
 											</div>
 											<div className="mt-0.5 flex min-w-0 flex-col gap-0.5 text-xs text-tertiary-foreground">
 												{c.email && (
-													<span className="flex min-w-0 items-center gap-1">
+													<a href={`mailto:${c.email}`} className={cn("flex min-w-0 items-center gap-1", CONTACT_LINK)}>
 														<EnvelopeIcon size={12} className="shrink-0" aria-hidden="true" />
 														<span className="truncate">{c.email}</span>
-													</span>
+													</a>
 												)}
 												{c.phone && (
-													<span className="flex items-center gap-1 tabular-nums">
+													<a href={`tel:${c.phone.replace(/[^\d+]/g, "")}`} className={cn("flex w-fit items-center gap-1 tabular-nums", CONTACT_LINK)}>
 														<PhoneIcon size={12} className="shrink-0" aria-hidden="true" />
 														{c.phone}
-													</span>
+													</a>
 												)}
 											</div>
 										</div>
 										<div className="flex shrink-0 items-center opacity-0 group-hover:opacity-100 group-focus-within:opacity-100">
 											{!c.isPrimary && (
-												<Button variant="skeleton" size="icon" aria-label="Set as primary">
+												<Button variant="skeleton" size="icon" aria-label={`Set ${c.name} as primary`}>
 													<StarIcon size={13} aria-hidden="true" />
 												</Button>
 											)}
-											<Button variant="skeleton" size="icon" aria-label="Edit contact">
+											<Button variant="skeleton" size="icon" aria-label={`Edit contact ${c.name}`}>
 												<PencilSimpleIcon size={13} aria-hidden="true" />
 											</Button>
 										</div>
@@ -1463,6 +1595,7 @@ export type PartyTimelineProps = React.ComponentProps<"div"> & { events: PartyEv
 
 /** Day column on wide containers; on narrow ones the day joins the detail line. */
 export function PartyTimeline({ events, role, currency = "MYR", className, ...props }: PartyTimelineProps) {
+	const uid = React.useId();
 	if (events.length === 0) {
 		return (
 			<div className={cn("flex flex-col items-center rounded-xl border border-dashed border-border px-6 py-10 text-center", className)} {...props}>
@@ -1478,13 +1611,14 @@ export function PartyTimeline({ events, role, currency = "MYR", className, ...pr
 		byMonth.set(k, [...(byMonth.get(k) ?? []), e]);
 	}
 	const kindLabel = (e: PartyEvent) => (e.kind === "document" ? (role === "vendor" ? "Bill" : "Invoice") : e.kind === "payment" ? (role === "vendor" ? "Payment sent" : "Payment received") : "Bank line");
+	const sectionId = (month: string) => `${uid}-${month}`;
 	const statusText = (e: PartyEvent) => (!e.status || e.kind === "bank" ? null : e.kind === "document" && role === "vendor" ? (BILL_STATUS[e.status]?.label ?? e.status) : sentenceCase(e.status));
 
 	return (
 		<div className={cn("@container flex min-w-0 flex-col gap-5", className)} {...props}>
 			{[...byMonth].map(([month, list]) => (
-				<section key={month} aria-label={month}>
-					<h3 className="mb-2 text-xs font-medium text-tertiary-foreground">{new Date(`${month}-01`).toLocaleDateString("en-GB", { month: "long", year: "numeric" })}</h3>
+				<section key={month} aria-labelledby={sectionId(month)}>
+					<h3 id={sectionId(month)} className="mb-2 text-xs font-medium text-tertiary-foreground">{new Date(`${month}-01`).toLocaleDateString("en-GB", { month: "long", year: "numeric" })}</h3>
 					<ul className={surfaces.surface}>
 						{list.map((e) => {
 							const kind = kindLabel(e);
@@ -1675,9 +1809,10 @@ export function CustomerListTable({ customers, selectedIds, onSelectedChange, de
 			onRowClick={onRowClick}
 			isRowSelected={(c) => ids.has(c.id)}
 			leadingHeader={<SelectAll total={customers.length} selected={customers.filter((c) => ids.has(c.id)).length} onChange={(all) => set(all ? new Set(customers.map((c) => c.id)) : new Set())} label="Select all customers" />}
-			leading={(c) => <RowSelect checked={ids.has(c.id)} onToggle={() => toggle(c.id)} label={c.name} />}
-			trailing={() => (
+			leading={(c) => <RowSelect checked={ids.has(c.id)} onToggle={() => toggle(c.id)} label={`Select ${c.name}`} />}
+			trailing={(c) => (
 				<RowActions
+					label={`Actions for ${c.name}`}
 					items={[
 						{ label: "Edit", icon: <PencilSimpleIcon size={14} /> },
 						{ label: "Manage contacts", icon: <UserCheckIcon size={14} /> },
@@ -1762,9 +1897,10 @@ export function VendorListTable({ vendors, selectedIds, onSelectedChange, defaul
 			onRowClick={onRowClick}
 			isRowSelected={(v) => ids.has(v.id)}
 			leadingHeader={<SelectAll total={vendors.length} selected={vendors.filter((v) => ids.has(v.id)).length} onChange={(all) => set(all ? new Set(vendors.map((v) => v.id)) : new Set())} label="Select all vendors" />}
-			leading={(v) => <RowSelect checked={ids.has(v.id)} onToggle={() => toggle(v.id)} label={v.name} />}
+			leading={(v) => <RowSelect checked={ids.has(v.id)} onToggle={() => toggle(v.id)} label={`Select ${v.name}`} />}
 			trailing={(v) => (
 				<RowActions
+					label={`Actions for ${v.name}`}
 					items={[
 						{ label: "Record payment", icon: <CurrencyCircleDollarIcon size={14} /> },
 						{ label: "Edit", icon: <PencilSimpleIcon size={14} /> },

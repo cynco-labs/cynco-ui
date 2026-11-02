@@ -75,20 +75,22 @@ function CommandDialog({
 }) {
 	return (
 		<Dialog {...props}>
-			<DialogHeader className="sr-only">
-				<DialogTitle>{title}</DialogTitle>
-				<DialogDescription>{description}</DialogDescription>
-			</DialogHeader>
 			<DialogContent
 				className={cn(
 					"top-[18%] flex max-h-[calc(82dvh-1rem)] translate-y-0 flex-col gap-0 overflow-hidden rounded-xl bg-interactive-secondary p-0 shadow-2xl ring-foreground/8",
 					COMMAND_DIALOG_WIDTH[size],
 					className,
 				)}
-				overlayClassName="dark:bg-black/60"
+				overlayClassName="bg-overlay-dim"
 				showCloseButton={showCloseButton}
 			>
+				{/* Inside the popup, so it names the dialog and only exists while it is open. */}
+				<DialogHeader className="sr-only">
+					<DialogTitle>{title}</DialogTitle>
+					<DialogDescription>{description}</DialogDescription>
+				</DialogHeader>
 				<Command
+					label={title}
 					shouldFilter={false}
 					className={cn(
 						"min-h-0 rounded-none",
@@ -111,7 +113,7 @@ function CommandInput({
 			data-slot="command-input-wrapper"
 			className="flex h-9 items-center gap-2 border-b border-overlay-separator px-3 [&_svg]:size-3.5 [&_svg]:text-tertiary-foreground"
 		>
-			<MagnifyingGlassIcon className="size-4 shrink-0 text-tertiary-foreground" />
+			<MagnifyingGlassIcon aria-hidden="true" className="size-4 shrink-0 text-tertiary-foreground" />
 			<CommandPrimitive.Input
 				data-slot="command-input"
 				className={cn(
@@ -180,6 +182,8 @@ function CommandSeparator({
 	return (
 		<CommandPrimitive.Separator
 			data-slot="command-separator"
+			// cmdk renders role="separator" inside the listbox, which a listbox may not contain.
+			aria-hidden="true"
 			className={cn(overlaySeparatorClassName, "my-0", className)}
 			{...props}
 		/>

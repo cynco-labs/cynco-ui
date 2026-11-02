@@ -67,8 +67,14 @@ const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
 		const renderIcon = (icon: React.ReactNode) => {
 			if (!icon) return null;
 
-			if (React.isValidElement<{ className?: string }>(icon)) {
+			if (
+				React.isValidElement<{ className?: string; "aria-label"?: string }>(
+					icon,
+				)
+			) {
 				return React.cloneElement(icon, {
+					// Decorative unless the caller named the icon itself.
+					...(icon.props["aria-label"] ? {} : { "aria-hidden": true }),
 					className: cn(
 						size === "sm" ? "size-3" : "size-3.5",
 						getIconColor(),

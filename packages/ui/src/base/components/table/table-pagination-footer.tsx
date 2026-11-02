@@ -47,7 +47,11 @@ export function TablePaginationFooter({
 	return (
 		<div className={cn(TABLE_TRAY_FOOTER_CLASS, className)}>
 			{hasTotal && (
-				<span className="min-w-0 truncate text-xs text-tertiary-foreground tabular-nums">
+				// Announces the new range when the page or page size changes.
+				<span
+					className="min-w-0 truncate text-xs text-tertiary-foreground tabular-nums"
+					role="status"
+				>
 					<span className="hidden sm:inline">Showing </span>
 					{`${numberFormat.format(firstRowNumber)}–${numberFormat.format(lastRowNumber)} of ${isTotalCountApproximate ? "~" : ""}${numberFormat.format(totalCount)}`}
 				</span>

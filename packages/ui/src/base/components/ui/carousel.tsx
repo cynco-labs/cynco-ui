@@ -29,6 +29,19 @@ type CarouselContextProps = {
 
 const CarouselContext = React.createContext<CarouselContextProps | null>(null);
 
+/** Slide changes jump instead of animating when the user asks for reduced motion (embla's motion is JS, not CSS). */
+const prefersReducedMotion = () =>
+	typeof window !== "undefined" &&
+	window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/** Arrow keys typed into a field, or handled by a nested widget, are not slide navigation. */
+const isOwnedKeyTarget = (target: EventTarget) =>
+	target instanceof HTMLElement &&
+	(target.isContentEditable ||
+		target.closest(
+			"input, textarea, select, [role=slider], [role=tablist], [role=radiogroup], [role=listbox], [role=menu], [role=grid]",
+		) !== null);
+
 function useCarousel() {
 	const context = React.useContext(CarouselContext);
 
@@ -65,24 +78,27 @@ function Carousel({
 	}, []);
 
 	const scrollPrev = React.useCallback(() => {
-		api?.scrollPrev();
+		api?.scrollPrev(prefersReducedMotion());
 	}, [api]);
 
 	const scrollNext = React.useCallback(() => {
-		api?.scrollNext();
+		api?.scrollNext(prefersReducedMotion());
 	}, [api]);
 
 	const handleKeyDown = React.useCallback(
 		(event: React.KeyboardEvent<HTMLDivElement>) => {
-			if (event.key === "ArrowLeft") {
+			if (isOwnedKeyTarget(event.target)) return;
+			const prevKey = orientation === "vertical" ? "ArrowUp" : "ArrowLeft";
+			const nextKey = orientation === "vertical" ? "ArrowDown" : "ArrowRight";
+			if (event.key === prevKey) {
 				event.preventDefault();
 				scrollPrev();
-			} else if (event.key === "ArrowRight") {
+			} else if (event.key === nextKey) {
 				event.preventDefault();
 				scrollNext();
 			}
 		},
-		[scrollPrev, scrollNext],
+		[orientation, scrollPrev, scrollNext],
 	);
 
 	React.useEffect(() => {
@@ -189,6 +205,8 @@ function CarouselPrevious({
 				className,
 			)}
 			disabled={!canScrollPrev}
+			// Reaching the first slide must not drop keyboard focus to <body>.
+			focusableWhenDisabled
 			onClick={scrollPrev}
 			{...props}
 		>
@@ -219,6 +237,8 @@ function CarouselNext({
 				className,
 			)}
 			disabled={!canScrollNext}
+			// Reaching the last slide must not drop keyboard focus to <body>.
+			focusableWhenDisabled
 			onClick={scrollNext}
 			{...props}
 		>

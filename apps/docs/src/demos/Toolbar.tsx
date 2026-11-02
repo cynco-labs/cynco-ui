@@ -6,10 +6,10 @@ const NT2 = {
 	card: (p) => (
 		<div>
 			<Toolbar isVisible position="top">
-				<Button variant="skeleton" size="icon">
+				<Button variant="skeleton" size="icon" aria-label="Edit step">
 					<PencilSimpleIcon size={14} />
 				</Button>
-				<Button variant="skeleton" size="icon">
+				<Button variant="skeleton" size="icon" aria-label="Delete step">
 					<TrashIcon size={14} />
 				</Button>
 			</Toolbar>

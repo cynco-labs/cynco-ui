@@ -15,7 +15,7 @@ import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from "@cynco
 export default function InputOTPDemo() {
 	const [s, setS] = useState("3141");
 	return (
-		<InputOTP maxLength={6} value={s} onChange={setS}>
+		<InputOTP maxLength={6} value={s} onChange={setS} aria-label="Verification code">
 			<InputOTPGroup>
 				{[0, 1, 2].map((i) => (
 					<InputOTPSlot key={i} index={i} />

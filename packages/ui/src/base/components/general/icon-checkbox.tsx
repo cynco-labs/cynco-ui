@@ -4,6 +4,7 @@ import { iconButtonVariants } from "./icon-button";
 import { Button, type ButtonProps } from "../ui/button";
 import { cn, hasSubmitShortcutModifier } from "../../lib/utils";
 import type { VariantProps } from "class-variance-authority";
+import { SelectedMark } from "./selected-mark";
 import * as React from "react";
 
 interface IconCheckboxProps
@@ -37,8 +38,9 @@ const IconCheckbox = React.forwardRef<HTMLButtonElement, IconCheckboxProps>(
 		const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
 			onCheckedChange?.(!checked);
 			onClick?.(event);
-			// Remove focus after click to prevent stuck active state
-			event.currentTarget.blur();
+			// Remove focus after a pointer click to prevent stuck active state. Keyboard
+			// activation (detail 0) keeps focus so keyboard users don't lose their place.
+			if (event.detail > 0) event.currentTarget.blur();
 		};
 
 		const handleKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>) => {
@@ -53,8 +55,14 @@ const IconCheckbox = React.forwardRef<HTMLButtonElement, IconCheckboxProps>(
 		const renderIcon = (icon: React.ReactNode) => {
 			if (!icon) return null;
 
-			if (React.isValidElement<{ className?: string }>(icon)) {
+			if (
+				React.isValidElement<{ className?: string; "aria-label"?: string }>(
+					icon,
+				)
+			) {
 				return React.cloneElement(icon, {
+					// Decorative unless the caller named the icon itself.
+					...(icon.props["aria-label"] ? {} : { "aria-hidden": true }),
 					className: cn(
 						size === "sm" ? "size-3" : "size-3.5",
 						icon.props.className,
@@ -132,6 +140,7 @@ const IconCheckbox = React.forwardRef<HTMLButtonElement, IconCheckboxProps>(
 				{...props}
 			>
 				{renderContent()}
+				{checked && <SelectedMark />}
 			</Button>
 		);
 	},

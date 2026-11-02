@@ -17,6 +17,7 @@ export function TableDropdownMenuCell({
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>
 				<Button
+					aria-label="Row actions"
 					variant="skeleton"
 					size="icon"
 					className="p-0 size-4"

@@ -1,16 +1,28 @@
 import { useState } from "react";
-import { Switch, SwitchSizeProvider } from "@cynco-labs/ui";
+import { Label, Switch, SwitchSizeProvider } from "@cynco-labs/ui";
 
 export default function SwitchDemo() {
 	const [s, setS] = useState(true);
 	return (
-		<div className="flex flex-wrap items-center gap-2">
-			<Switch checked={s} onCheckedChange={setS} />
-			<Switch />
+		<div className="flex flex-wrap items-center gap-4">
+			<Label>
+				<Switch checked={s} onCheckedChange={setS} />
+				Email receipts
+			</Label>
+			<Label>
+				<Switch />
+				Auto-reconcile
+			</Label>
 			<SwitchSizeProvider size="sm">
-				<Switch defaultChecked />
+				<Label>
+					<Switch defaultChecked />
+					Compact
+				</Label>
 			</SwitchSizeProvider>
-			<Switch disabled />
+			<Label>
+				<Switch disabled />
+				Locked
+			</Label>
 		</div>
 	);
 }

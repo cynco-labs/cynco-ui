@@ -20,6 +20,7 @@ export default function PartyRailDemo() {
 			openItemsTotal={48250.4}
 			aging={{ current: 21470.4, days1to30: 14100, days31to60: 8180, days61plus: 4500 }}
 			credits={[{ currency: "MYR", amount: 1200, count: 2 }]}
+			creditNotesHref="/sales/credit-notes?customer=tropika-kopi"
 			trend={[
 				{ month: "2025-11", total: 12400 },
 				{ month: "2025-12", total: 18900 },

@@ -14,7 +14,11 @@ export function InfoRow({ icon, label, value, className, mono }: InfoRowProps) {
 
 	return (
 		<div className="flex items-center gap-2 min-w-0 overflow-hidden">
-			{icon && <div className="text-subtle/60 shrink-0">{icon}</div>}
+			{icon && (
+				<div aria-hidden="true" className="text-subtle shrink-0">
+					{icon}
+				</div>
+			)}
 			<div className="flex min-w-0 items-center overflow-hidden">
 				<div className="text-tertiary-foreground text-sm font-medium w-24 shrink-0 whitespace-nowrap">
 					{label}

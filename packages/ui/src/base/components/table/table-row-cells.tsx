@@ -12,15 +12,36 @@ import {
 import { cn } from "../../lib/utils";
 import type { Row } from "@tanstack/react-table";
 import { flexRender } from "@tanstack/react-table";
-import { type CSSProperties, memo, type ReactNode } from "react";
+import { type CSSProperties, memo, type MouseEvent, type ReactNode } from "react";
 
 interface TableRowCellsProps<T> {
 	row: Row<T>;
 	enableSelection?: boolean;
 	flexibleTableColumns?: boolean;
 	rowHref?: string;
+	/** Row has an `onRowClick` (or `onRowDoubleClick`) handler; the first cell gets a button so keyboard users can reach it. */
+	isRowClickable?: boolean;
 	visibleColumnKey?: string;
 	isExpanded?: boolean;
+}
+
+/** Columns holding their own controls: never wrapped in the row link or button, never a row title. */
+export const CONTROL_COLUMNS = new Set(["actions", "select"]);
+
+/** A keyboard press (click with detail 0) on the row's own button, not on a checkbox or menu inside the row. */
+export const isRowButtonKeyPress = (event: MouseEvent) =>
+	event.detail === 0 && event.target instanceof Element && event.target.closest("[data-row-button]") !== null;
+
+/** Names the row checkbox after the row's first text value, so each one is distinct. */
+function getRowSelectLabel<T>(row: Row<T>): string {
+	const titleCell = row
+		.getVisibleCells()
+		.find((cell) => !CONTROL_COLUMNS.has(cell.column.id));
+	const value = titleCell?.getValue();
+	if ((typeof value === "string" && value.trim()) || typeof value === "number") {
+		return `Select ${value}`;
+	}
+	return `Select row ${row.index + 1}`;
 }
 
 function CellLink({
@@ -53,6 +74,7 @@ function TableRowCellsInner<T>({
 	enableSelection,
 	flexibleTableColumns,
 	rowHref,
+	isRowClickable,
 }: TableRowCellsProps<T>) {
 	const { linkComponent: LinkComponent } = useTableContext<T>();
 	const visibleCells = row.getVisibleCells();
@@ -62,7 +84,7 @@ function TableRowCellsInner<T>({
 			{enableSelection && (
 				<TableCell className="w-[50px]">
 					<Checkbox
-						aria-label="Select row"
+						aria-label={getRowSelectLabel(row)}
 						checked={row.getIsSelected()}
 						onCheckedChange={(checked) => row.toggleSelected(!!checked)}
 					/>
@@ -78,28 +100,43 @@ function TableRowCellsInner<T>({
 					flexible: flexibleTableColumns,
 					grow: cell.column.columnDef.meta?.grow,
 				});
+				const isControlCell = CONTROL_COLUMNS.has(cell.column.id);
+				const hasLink = Boolean(rowHref) && !isControlCell;
+				// The row's onClick does the work; this button gives it a focus stop and a role.
+				const hasRowButton = isRowClickable && cellIndex === 0 && !isControlCell;
+				const targetClassName = cn(
+					"flex items-center h-full w-full px-2",
+					cellIndex === 0 && "pl-4",
+					// Inset, so the cell's overflow-hidden doesn't clip the ring.
+					"focus-ring-inset",
+				);
 
 				return (
 					<TableCell
 						className={cn(
 							"px-2 h-4 text-tertiary-foreground",
 							cellIndex === 0 && "pl-4 text-muted-foreground font-medium",
-							rowHref && "p-0",
+							(hasLink || hasRowButton) && "p-0",
 						)}
 						key={cell.id}
 						style={cellStyle}
 					>
-						{rowHref ? (
+						{hasLink && rowHref ? (
 							<CellLink
-								className={cn(
-									"flex items-center h-full w-full px-2",
-									cellIndex === 0 && "pl-4",
-								)}
+								className={targetClassName}
 								href={rowHref}
 								linkComponent={LinkComponent}
 							>
 								{cellContent}
 							</CellLink>
+						) : hasRowButton ? (
+							<button
+								className={cn(targetClassName, "text-left cursor-pointer")}
+								data-row-button=""
+								type="button"
+							>
+								{cellContent}
+							</button>
 						) : (
 							cellContent
 						)}
@@ -119,6 +156,7 @@ export const TableRowCells = memo(
 			prevProps.row.getIsSelected() === nextProps.row.getIsSelected() &&
 			prevProps.isExpanded === nextProps.isExpanded &&
 			prevProps.rowHref === nextProps.rowHref &&
+			prevProps.isRowClickable === nextProps.isRowClickable &&
 			prevProps.enableSelection === nextProps.enableSelection &&
 			prevProps.flexibleTableColumns === nextProps.flexibleTableColumns &&
 			prevProps.visibleColumnKey === nextProps.visibleColumnKey
@@ -165,8 +203,10 @@ export function TableSkeletonRows({
 	flexibleTableColumns?: boolean;
 	asFragment?: boolean;
 }) {
+	// Placeholder rows carry no data; TableContent announces the loading state instead.
 	const skeletonRows = Array.from({ length: rowCount }).map((_, rowIndex) => (
 		<TableRow
+			aria-hidden="true"
 			key={`skeleton-${rowIndex}`}
 			className={cn(
 				"h-10 hover:bg-transparent dark:hover:bg-transparent",

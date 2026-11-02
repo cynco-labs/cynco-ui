@@ -15,14 +15,20 @@ import {
 import { cn } from "../../lib/utils";
 import { CheckIcon, ChevronDownIcon } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
-import type { ReactNode } from "react";
+import type { ComponentProps, ReactNode } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 export type SearchableSelectFooter =
 	| ReactNode
 	| ((props: { close: () => void }) => ReactNode);
 
-export type SearchableSelectProps<T> = {
+/** Lets a form label the default trigger and point it at an error message. */
+type SearchableSelectA11yProps = Pick<
+	ComponentProps<"button">,
+	"id" | "aria-label" | "aria-labelledby" | "aria-describedby" | "aria-invalid"
+>;
+
+export type SearchableSelectProps<T> = SearchableSelectA11yProps & {
 	value: string | null;
 	onValueChange: (value: string) => void;
 	options: T[];
@@ -83,6 +89,7 @@ export function SearchableSelect<T>({
 	onSearchChange,
 	shouldFilter = !onSearchChange,
 	isLoading = false,
+	...a11yProps
 }: SearchableSelectProps<T>) {
 	const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
 	const open = controlledOpen ?? uncontrolledOpen;
@@ -129,10 +136,11 @@ export function SearchableSelect<T>({
 		<Popover open={open} onOpenChange={setOpen}>
 			<PopoverTrigger asChild disabled={disabled}>
 				{trigger ?? (
+					// PopoverTrigger supplies aria-expanded and aria-haspopup="dialog" (the popup
+					// is a dialog holding the search box and listbox), so none are set here.
 					<button
 						type="button"
-						aria-expanded={open}
-						aria-haspopup="listbox"
+						{...a11yProps}
 						disabled={disabled}
 						className={cn(
 							"flex items-center justify-between gap-2 w-full min-w-0 cursor-pointer text-sm outline-none disabled:cursor-not-allowed disabled:opacity-50 rounded-lg",
@@ -168,6 +176,9 @@ export function SearchableSelect<T>({
 							transition={{ duration: 0.3 }}
 						>
 							<Command
+								// cmdk points the search input's aria-labelledby at a label it
+								// always renders; without this the label is empty and the input unnamed.
+								label={searchPlaceholder}
 								className="bg-interactive-secondary"
 								filter={
 									!shouldFilter
@@ -224,6 +235,9 @@ export function SearchableSelect<T>({
 													value={optionValue}
 													onSelect={() => handleSelect(option)}
 													disabled={isDisabled}
+													// cmdk's aria-selected tracks the highlighted row, not the
+													// chosen value; expose the chosen one separately.
+													aria-current={isSelected ? "true" : undefined}
 													className={cn(
 														"min-w-0 cursor-pointer",
 														isDisabled &&

@@ -85,6 +85,12 @@ export const DOC_LABELS = {
 	draft: ["Draft", "Draf"],
 	copy: ["Copy", "Salinan"],
 	overdue: ["Overdue", "Tertunggak"],
+	/* ── Screen-reader text (not printed): names for images and signs the page shows visually ── */
+	document: ["Document", "Dokumen"],
+	minus: ["minus", "negatif"],
+	signed: ["Signed", "Ditandatangani"],
+	paymentQr: ["Payment QR code", "Kod QR pembayaran"],
+	eInvoiceQr: ["MyInvois QR code", "Kod QR MyInvois"],
 	/* ── Sales: invoices, quotations, notes, receipts, delivery orders ── */
 	exchangeRate: ["Exchange rate", "Kadar pertukaran"],
 	myrEquivalent: ["MYR equivalent", "Nilai setara MYR"],

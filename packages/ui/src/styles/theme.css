@@ -17,8 +17,72 @@
 
 @plugin "tailwindcss-animate";
 
-@custom-variant dark (&:is(.dark *, [data-theme$="dark"] *));
+@custom-variant dark (&:is(.dark:not(.react-flow) *, [data-theme$="dark"] *));
 @custom-variant preset (&:is(.preset-modern *, [data-theme^="modern"] *));
+
+/*
+ * Shared keyboard focus ring. An outline (not a box-shadow ring), so it survives forced-colors mode,
+ * drawn in --focus-ring, which holds at least 3:1 against every theme surface (WCAG 2.4.7, 1.4.11).
+ * `focus-ring` sits outside the element; `focus-ring-inset` sits inside it, for rows, viewports and
+ * anything inside an overflow-hidden parent.
+ */
+@utility focus-ring {
+	&:focus-visible {
+		outline: 2px solid var(--focus-ring);
+		outline-offset: 2px;
+	}
+}
+
+@utility focus-ring-inset {
+	&:focus-visible {
+		outline: 2px solid var(--focus-ring);
+		outline-offset: -2px;
+	}
+}
+
+/*
+ * Highlighted option in menus, selects, comboboxes and the command palette. The --overlay-hover tint is
+ * about 1.1:1 against the popup, so a 1px inset ring in --overlay-hover-ring carries the state at 3:1
+ * (WCAG 1.4.11). In the components layer so a utility on the item can still override it.
+ */
+@layer components {
+	[data-highlighted],
+	[cmdk-item][data-selected="true"] {
+		box-shadow: inset 0 0 0 1px var(--overlay-hover-ring);
+	}
+}
+
+/*
+ * Windows High Contrast and other forced-colors modes drop box-shadows and backgrounds, which is how
+ * many controls draw focus and the highlighted option. Unlayered, so it beats `outline-none` utilities.
+ */
+@media (forced-colors: active) {
+	:focus-visible {
+		outline: 2px solid Highlight;
+	}
+
+	[data-highlighted],
+	[cmdk-item][data-selected="true"] {
+		outline: 2px solid Highlight;
+		outline-offset: -2px;
+	}
+}
+
+/*
+ * Reduced motion, once for the whole library (WCAG 2.3.3, and 2.2.2 for looping effects). Animations
+ * and transitions finish instantly instead of being removed, so Base UI's animation-end handling still
+ * runs. Loading spinners keep turning: they report progress, not decoration.
+ */
+@media (prefers-reduced-motion: reduce) {
+	*:not(.animate-spin),
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+		scroll-behavior: auto !important;
+	}
+}
 
 @media (pointer: fine) {
 	html {
@@ -76,11 +140,6 @@
 
 }
 
-:is(.preset-modern.dark, [data-theme="modern-dark"]) [data-slot="sheet-overlay"],
-:is(.preset-modern.dark, [data-theme="modern-dark"]) [data-slot="dialog-overlay"] {
-	/* biome-ignore lint/complexity/noImportantStyles: override base overlay token */
-	background-color: rgb(0 0 0 / 0.6) !important;
-}
 
 @theme inline {
 	--color-error-text: var(--error-text);
@@ -89,6 +148,37 @@
 	--color-subtle: var(--subtle);
 	--color-placeholder: var(--placeholder);
 	--color-sandbox: var(--sandbox);
+	--color-sandbox-text: var(--sandbox-text);
+	--color-sandbox-foreground: var(--sandbox-foreground);
+	--shadow-segment: var(--segment-shadow);
+	--color-overlay-backdrop: var(--overlay-backdrop);
+	--color-overlay-veil: var(--overlay-veil);
+	--color-overlay-dim: var(--overlay-dim);
+
+	/* Status: fills and glyphs for chips; -text variants pass 4.5:1 as text or icons. */
+	--color-status-green: var(--status-green);
+	--color-status-green-glyph: var(--status-green-glyph);
+	--color-status-blue: var(--status-blue);
+	--color-status-blue-glyph: var(--status-blue-glyph);
+	--color-status-red: var(--status-red);
+	--color-status-red-glyph: var(--status-red-glyph);
+	--color-status-orange: var(--status-orange);
+	--color-status-orange-glyph: var(--status-orange-glyph);
+	--color-status-amber: var(--status-amber);
+	--color-status-amber-glyph: var(--status-amber-glyph);
+	--color-status-yellow: var(--status-yellow);
+	--color-status-yellow-glyph: var(--status-yellow-glyph);
+	--color-status-purple: var(--status-purple);
+	--color-status-purple-glyph: var(--status-purple-glyph);
+	--color-status-pink: var(--status-pink);
+	--color-status-pink-glyph: var(--status-pink-glyph);
+	--color-status-fuchsia: var(--status-fuchsia);
+	--color-status-fuchsia-glyph: var(--status-fuchsia-glyph);
+	--color-status-neutral: var(--status-neutral);
+	--color-status-neutral-glyph: var(--status-neutral-glyph);
+	--color-status-green-text: var(--status-green-text);
+	--color-status-amber-text: var(--status-amber-text);
+	--color-status-orange-text: var(--status-orange-text);
 
 	--color-outer-background: var(--outer-background);
 
@@ -106,6 +196,8 @@
 	--color-primary: var(--primary);
 	--color-primary-foreground: var(--primary-foreground); /* primary button hover */ /* primary button active */
 	--color-primary-btn-border: var(--primary); /* primary button border */
+	/* text-primary reads --primary-text (Tailwind checks --text-color-* before --color-*); dark themes need a lighter blue for text than for fills. */
+	--text-color-primary: var(--primary-text);
 
 	--color-muted: var(--muted);
 
@@ -153,6 +245,7 @@
 	--color-overlay-hover: var(--overlay-hover);
 	--color-input: var(--input);
 	--color-ring: var(--ring);
+	--color-focus-ring: var(--focus-ring);
 	--color-chart-1: var(--chart-1);
 	--color-chart-2: var(--chart-2);
 	--color-chart-3: var(--chart-3);
@@ -214,6 +307,13 @@
 	--shadow-lg:
 		0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
 	--shadow-card: 0 0 8px rgba(0, 0, 0, 0.04);
+	/* Component shadows, named once so components never hand-roll rgba values. */
+	--shadow-hairline: 0 2px 4px 0 rgb(0 0 0 / 0.02);
+	--shadow-glow: 0 0 4px 2px rgb(0 0 0 / 0.05);
+	--shadow-thumb: 0 1px 2px rgb(0 0 0 / 0.45);
+	--shadow-bevel: inset 0 -3px 4px 0 rgb(0 0 0 / 0.04);
+	--shadow-bevel-pressed: inset 0 -3px 4px 0 rgb(0 0 0 / 0.06), inset 0 3px 4px 0 rgb(255 255 255 / 0.1);
+	--shadow-panel-inset: inset 0 -8px 22px 0 rgb(0 0 0 / 0.04);
 
 	--color-yellow-50: #fefce8;
 	--color-yellow-100: #fdedd3;
@@ -293,6 +393,11 @@ input[type="number"]::-webkit-inner-spin-button {
 @layer base {
 	* {
 		@apply border-border outline-ring/50;
+	}
+
+	/* Elements that keep the browser's own focus ring get the verified focus colour, not ring/50. */
+	:focus-visible {
+		outline-color: var(--focus-ring);
 	}
 
 	body {
@@ -446,4 +551,25 @@ input[type="number"]::-webkit-inner-spin-button {
 		left: 150%;
 		opacity: 1;
 	}
+}
+
+/*
+ * React Flow (the AI canvas): its attribution link in theme colours with a 24px target (WCAG 1.4.3,
+ * 2.5.8), and the shared focus ring on nodes (React Flow removes the outline on selectable ones).
+ * Unlayered with one extra class of specificity, so they win over React Flow's own unlayered sheet.
+ */
+.react-flow {
+	--xy-attribution-background-color: var(--background);
+}
+.react-flow .react-flow__attribution a {
+	display: inline-block;
+	min-height: 1.5rem;
+	padding-inline: 0.25rem;
+	line-height: 1.5rem;
+	color: var(--tertiary-foreground);
+}
+.react-flow .react-flow__node:focus-visible,
+.react-flow .react-flow__node.selectable:focus-visible {
+	outline: 2px solid var(--focus-ring);
+	outline-offset: 2px;
 }

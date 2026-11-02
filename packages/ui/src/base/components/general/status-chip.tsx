@@ -1,18 +1,18 @@
 import { cn } from "../../lib/utils";
 import { type ComponentProps, useId } from "react";
 
-/** Light glyphs on the fill in light mode; dark glyphs in dark mode and on light fills. */
+/** Fill and glyph colours come from the status tokens; dark themes swap the glyph to a dark ink there. */
 export const STATUS_TONES = {
-	green: "text-[#30A46C] [--glyph:#fff] dark:[--glyph:#0E1C15]",
-	blue: "text-[#3E8BD9] [--glyph:#fff] dark:[--glyph:#0C1726]",
-	red: "text-[#E5484D] [--glyph:#fff] dark:[--glyph:#2A0C0D]",
-	orange: "text-[#E8742C] [--glyph:#fff] dark:[--glyph:#2A1405]",
-	amber: "text-[#E5A21F] [--glyph:#2A1C05]",
-	yellow: "text-[#E2B93B] [--glyph:#261F06]",
-	purple: "text-[#9A6BFF] [--glyph:#fff] dark:[--glyph:#1A0F33]",
-	pink: "text-[#D6409F] [--glyph:#fff] dark:[--glyph:#2A0C1E]",
-	fuchsia: "text-[#C050D8] [--glyph:#fff] dark:[--glyph:#240C2A]",
-	neutral: "text-[#8A8A8A] [--glyph:#fff] dark:[--glyph:#161616]",
+	green: "text-status-green [--glyph:var(--status-green-glyph)]",
+	blue: "text-status-blue [--glyph:var(--status-blue-glyph)]",
+	red: "text-status-red [--glyph:var(--status-red-glyph)]",
+	orange: "text-status-orange [--glyph:var(--status-orange-glyph)]",
+	amber: "text-status-amber [--glyph:var(--status-amber-glyph)]",
+	yellow: "text-status-yellow [--glyph:var(--status-yellow-glyph)]",
+	purple: "text-status-purple [--glyph:var(--status-purple-glyph)]",
+	pink: "text-status-pink [--glyph:var(--status-pink-glyph)]",
+	fuchsia: "text-status-fuchsia [--glyph:var(--status-fuchsia-glyph)]",
+	neutral: "text-status-neutral [--glyph:var(--status-neutral-glyph)]",
 };
 
 const CIRCLE = "M8 4.8a3.2 3.2 0 1 1 0 6.4a3.2 3.2 0 1 1 0-6.4";
@@ -189,7 +189,7 @@ export function StatusRing({
 				r={RING_RADIUS}
 				fill="none"
 				strokeWidth="2.5"
-				className="stroke-black/10 dark:stroke-[#2a2a2a]"
+				className="stroke-foreground/10"
 			/>
 			<circle
 				cx="8"
@@ -222,10 +222,10 @@ export function StatusChip({
 	return (
 		<span
 			className={cn(
-				"inline-flex h-[22px] min-w-0 max-w-full items-center gap-1.5 rounded-md border border-black/6 bg-black/4 pr-[7px] pl-1 text-xs leading-4 font-medium tracking-[-0.005em] whitespace-nowrap text-foreground dark:border-white/6 dark:bg-white/4",
+				"inline-flex h-[22px] min-w-0 max-w-full items-center gap-1.5 rounded-md border border-foreground/6 bg-foreground/4 pr-[7px] pl-1 text-xs leading-4 font-medium tracking-[-0.005em] whitespace-nowrap text-foreground",
 				!glyph && "pl-[7px]",
 				glyph && isIconGlyph(glyph) && "pl-[3px]",
-				dashed && "border-dashed border-black/15 dark:border-white/15",
+				dashed && "border-dashed border-foreground/15",
 				className,
 			)}
 			title={typeof children === "string" ? children : undefined}

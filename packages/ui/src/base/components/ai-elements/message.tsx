@@ -34,6 +34,7 @@ export const Message = ({ className, from, ...props }: MessageProps) => (
 			from === "user" ? "is-user ml-auto justify-end" : "is-assistant",
 			className,
 		)}
+		data-from={from}
 		{...props}
 	/>
 );
@@ -52,6 +53,7 @@ export const MessageContent = ({
 			"group-[.is-assistant]:text-foreground",
 			className,
 		)}
+		data-slot="message-content"
 		{...props}
 	>
 		{children}
@@ -297,6 +299,9 @@ export const MessageBranchPage = ({
 				"border-none bg-transparent text-muted-foreground shadow-none",
 				className,
 			)}
+			// Announce the new position when Previous/Next swaps the branch.
+			aria-atomic="true"
+			aria-live="polite"
 			{...props}
 		>
 			{currentBranch + 1} of {totalBranches}
@@ -358,8 +363,8 @@ export function MessageAttachment({
 					/>
 					{onRemove && (
 						<Button
-							aria-label="Remove attachment"
-							className="absolute top-2 right-2 size-6 rounded-full bg-background/80 p-0 opacity-0 backdrop-blur-sm transition-opacity hover:bg-background group-hover:opacity-100 [&>svg]:size-3"
+							aria-label={`Remove ${attachmentLabel}`}
+							className="absolute top-2 right-2 size-6 rounded-full bg-background/80 p-0 opacity-0 backdrop-blur-sm transition-opacity hover:bg-background group-hover:opacity-100 focus-visible:opacity-100 [&>svg]:size-3"
 							onClick={(e) => {
 								e.stopPropagation();
 								onRemove();
@@ -368,7 +373,6 @@ export function MessageAttachment({
 							variant="skeleton"
 						>
 							<XIcon />
-							<span className="sr-only">Remove</span>
 						</Button>
 					)}
 				</>
@@ -376,7 +380,13 @@ export function MessageAttachment({
 				<>
 					<Tooltip>
 						<TooltipTrigger asChild>
-							<div className="flex size-full shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
+							{/* Named and focusable so the file name reaches screen readers and keyboard users, not only hover. */}
+							<div
+								aria-label={attachmentLabel}
+								className="flex size-full shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground outline-none focus-ring-inset"
+								role="img"
+								tabIndex={0}
+							>
 								<PaperclipIcon className="size-4" />
 							</div>
 						</TooltipTrigger>
@@ -386,8 +396,8 @@ export function MessageAttachment({
 					</Tooltip>
 					{onRemove && (
 						<Button
-							aria-label="Remove attachment"
-							className="size-6 shrink-0 rounded-full p-0 opacity-0 transition-opacity hover:bg-accent group-hover:opacity-100 [&>svg]:size-3"
+							aria-label={`Remove ${attachmentLabel}`}
+							className="size-6 shrink-0 rounded-full p-0 opacity-0 transition-opacity hover:bg-accent group-hover:opacity-100 focus-visible:opacity-100 [&>svg]:size-3"
 							onClick={(e) => {
 								e.stopPropagation();
 								onRemove();
@@ -396,7 +406,6 @@ export function MessageAttachment({
 							variant="skeleton"
 						>
 							<XIcon />
-							<span className="sr-only">Remove</span>
 						</Button>
 					)}
 				</>

@@ -81,9 +81,16 @@ export function CursorPagination({
 					/>
 				</PaginationItem>
 				<PaginationItem className="min-w-[9ch] px-1.5 text-center text-xs text-tertiary-foreground tabular-nums whitespace-nowrap">
-					{totalPages === null
-						? "..."
-						: `${numberFormat.format(currentPage)} / ${numberFormat.format(totalPages)}`}
+					<span aria-hidden="true">
+						{totalPages === null
+							? "..."
+							: `${numberFormat.format(currentPage)} / ${numberFormat.format(totalPages)}`}
+					</span>
+					<span className="sr-only">
+						{totalPages === null
+							? `Page ${numberFormat.format(currentPage)}`
+							: `Page ${numberFormat.format(currentPage)} of ${numberFormat.format(totalPages)}`}
+					</span>
 				</PaginationItem>
 				<PaginationItem>
 					<IconButton
@@ -133,6 +140,7 @@ export function PageSizeSelector({
 			)}
 		>
 			<SelectTrigger
+				aria-label="Rows per page"
 				className="h-7 w-fit justify-between rounded-lg border-transparent bg-foreground/4 px-2 text-xs tabular-nums shadow-none"
 				style={{ minWidth: `calc(${widestOptionLength}ch + 1.75rem)` }}
 			>

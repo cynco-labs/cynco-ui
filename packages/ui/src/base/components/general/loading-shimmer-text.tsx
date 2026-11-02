@@ -11,8 +11,15 @@ export function LoadingShimmerText({
 	className,
 }: LoadingShimmerTextProps) {
 	return (
-		<div className={cn("flex items-center justify-start gap-2", className)}>
-			<SmallSpinner size={12} className="text-tertiary-foreground" />
+		<div
+			role="status"
+			className={cn("flex items-center justify-start gap-2", className)}
+		>
+			<SmallSpinner
+				size={12}
+				aria-hidden="true"
+				className="text-tertiary-foreground"
+			/>
 			<span className="text-sm shimmer">{text}</span>
 		</div>
 	);

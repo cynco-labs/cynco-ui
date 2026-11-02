@@ -1,11 +1,13 @@
 import { useState } from "react";
-import { TagSelect } from "@cynco-labs/ui";
+import { FormLabel, TagSelect } from "@cynco-labs/ui";
 
 export default function TagSelectDemo() {
-	const [s, setS] = useState(["sa"]);
+	const [s, setS] = useState(["sa", "kl"]);
 	return (
 		<div className="max-w-[360px]">
+			<FormLabel htmlFor="tag-select-branches">Branches</FormLabel>
 			<TagSelect
+				id="tag-select-branches"
 				value={s}
 				onChange={setS}
 				placeholder="Select branches"

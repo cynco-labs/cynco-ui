@@ -5,6 +5,19 @@
 /* The docs site's own classes (demos are scanned too, so every class they use is generated). */
 @source "../";
 
+/* Wordmark face. Geist Serif ships at a single weight (400), so never pair font-serif with a bolder weight. */
+@font-face {
+	font-family: "Geist Serif";
+	src: url("/fonts/GeistSerif-Regular.woff2") format("woff2");
+	font-weight: 400;
+	font-style: normal;
+	font-display: swap;
+}
+
+@theme {
+	--font-serif: "Geist Serif", "Times New Roman", Times, serif;
+}
+
 /* ------------------------------------------------------------------ site chrome */
 
 html {

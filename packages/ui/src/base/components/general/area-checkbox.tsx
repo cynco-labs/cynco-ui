@@ -33,6 +33,7 @@ function AreaCheckbox({
 	children,
 }: AreaCheckboxProps) {
 	const id = React.useId();
+	const reasonId = `${id}-reason`;
 
 	if (hide) return null;
 
@@ -49,6 +50,7 @@ function AreaCheckbox({
 					}
 				}}
 				disabled={isDisabled}
+				aria-describedby={disabledReason ? reasonId : undefined}
 				size="sm"
 				className="mt-[3px]"
 			/>
@@ -67,6 +69,9 @@ function AreaCheckbox({
 				{/* Expanded content */}
 				{(children || description) && (
 					<div
+						// Collapsed content stays mounted for the height transition; inert keeps
+						// its controls out of the tab order and the accessibility tree.
+						inert={!checked}
 						className={cn(
 							"grid transition-all duration-200",
 							checked
@@ -95,6 +100,9 @@ function AreaCheckbox({
 				<TooltipContent side="left" className="max-w-60">
 					{disabledReason}
 				</TooltipContent>
+				<span id={reasonId} hidden>
+					{disabledReason}
+				</span>
 			</Tooltip>
 		);
 	}

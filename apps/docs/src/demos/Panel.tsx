@@ -8,7 +8,7 @@ export default function PanelDemo() {
 				<Panel position="top-left">
 					<span className="text-body px-1">Workflow · draft</span>
 				</Panel>
-				<Panel position="bottom-right">
+				<Panel position="top-right">
 					<Button variant="primary" size="mini">
 						Publish
 					</Button>

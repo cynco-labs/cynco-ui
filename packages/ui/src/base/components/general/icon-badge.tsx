@@ -51,7 +51,7 @@ const IconBadge = React.forwardRef<HTMLSpanElement, IconBadgeProps>(
 				case "muted":
 					return "text-subtle";
 				case "default":
-					return "text-zinc-50";
+					return "text-background";
 				default:
 					return "text-subtle"; // Default fallback
 			}
@@ -60,8 +60,14 @@ const IconBadge = React.forwardRef<HTMLSpanElement, IconBadgeProps>(
 		const renderIcon = (icon: React.ReactNode) => {
 			if (!icon) return null;
 
-			if (React.isValidElement<{ className?: string }>(icon)) {
+			if (
+				React.isValidElement<{ className?: string; "aria-label"?: string }>(
+					icon,
+				)
+			) {
 				return React.cloneElement(icon, {
+					// Decorative unless the caller named the icon itself.
+					...(icon.props["aria-label"] ? {} : { "aria-hidden": true }),
 					className: cn("size-3", getIconColor(), icon.props.className),
 				} as React.HTMLAttributes<HTMLElement>);
 			}

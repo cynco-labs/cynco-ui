@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
+import { useShortcutAllowed } from "./use-character-key-shortcuts";
 
 /**
  * Hook to toggle a dropdown open/closed with a keyboard shortcut
@@ -15,6 +16,7 @@ export function useDropdownShortcut({
 	setIsOpen: (open: boolean) => void;
 	enabled?: boolean;
 }) {
+	const allowed = useShortcutAllowed();
 	useHotkeys(
 		shortcut,
 		(e) => {
@@ -22,7 +24,8 @@ export function useDropdownShortcut({
 			setIsOpen(!isOpen);
 		},
 		{
-			enabled,
+			// A bare letter honours the user's "Single-key shortcuts" switch (WCAG 2.1.4).
+			enabled: enabled && allowed(shortcut),
 			enableOnFormTags: false,
 		},
 	);
@@ -34,15 +37,8 @@ export type ShortcutEntry = { key: string; handler: () => void };
  * Capture-phase keydown listener that fires registered shortcuts
  * before Base UI's typeahead can intercept them.
  */
-export function useMenuShortcuts(
-	isOpen: boolean,
-	onOpenChange: ((open: boolean, details: any) => void) | undefined,
-) {
+export function useMenuShortcuts(isOpen: boolean, close: () => void) {
 	const shortcuts = useRef<ShortcutEntry[]>([]);
-
-	const close = useCallback(() => {
-		onOpenChange?.(false, {});
-	}, [onOpenChange]);
 
 	useEffect(() => {
 		if (!isOpen) return;

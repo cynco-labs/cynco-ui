@@ -62,8 +62,6 @@ function BreadcrumbPage({ className, ...props }: React.ComponentProps<"span">) {
 	return (
 		<span
 			data-slot="breadcrumb-page"
-			role="link"
-			aria-disabled="true"
 			aria-current="page"
 			className={cn("text-foreground font-normal", className)}
 			{...props}
@@ -96,11 +94,10 @@ function BreadcrumbEllipsis({
 	return (
 		<span
 			data-slot="breadcrumb-ellipsis"
-			role="presentation"
-			aria-hidden="true"
 			className={cn("flex size-9 items-center justify-center", className)}
 			{...props}
 		>
+			{/* The text stays exposed so a menu trigger wrapping the ellipsis has a name. */}
 			<MoreHorizontal className="size-4" />
 			<span className="sr-only">More</span>
 		</span>

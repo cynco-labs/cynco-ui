@@ -1,10 +1,7 @@
 import { useTableContext } from "./table-context";
+import { MotionTbody, useTableFadeIn } from "./table-motion";
 import {
-	MotionTbody,
-	TABLE_FADE_IN,
-	TABLE_TRANSITION,
-} from "./table-motion";
-import {
+	isRowButtonKeyPress,
 	TableRowCells,
 	TableSkeletonRows,
 } from "./table-row-cells";
@@ -23,7 +20,10 @@ const DEFAULT_OVERSCAN = 30;
 interface VirtualRowProps<T> {
 	row: Row<T>;
 	virtualRow: VirtualItem;
+	/** 1-based position among all rows, header rows included; only a window of rows is in the DOM. */
+	ariaRowIndex: number;
 	isSelected: boolean;
+	isRowClickable: boolean;
 	rowHref?: string;
 	rowClassName?: string;
 	enableSelection?: boolean;
@@ -37,7 +37,9 @@ interface VirtualRowProps<T> {
 const VirtualRowInner = <T,>({
 	row,
 	virtualRow,
+	ariaRowIndex,
 	isSelected,
+	isRowClickable,
 	rowHref,
 	rowClassName,
 	enableSelection,
@@ -46,9 +48,16 @@ const VirtualRowInner = <T,>({
 	onRowDoubleClick,
 	visibleColumnKey,
 }: VirtualRowProps<T>) => {
-	const handleClick = useCallback(() => {
-		if (!rowHref) onRowClick?.(row.original);
-	}, [rowHref, onRowClick, row.original]);
+	// Keyboard activation of the row button (a click with detail 0) runs the double-click action when
+	// the row has no single-click one, so that action has a keyboard path too (WCAG 2.1.1).
+	const handleClick = useCallback(
+		(event: React.MouseEvent) => {
+			if (rowHref) return;
+			if (onRowClick) onRowClick(row.original);
+			else if (isRowButtonKeyPress(event)) onRowDoubleClick?.(row.original);
+		},
+		[rowHref, onRowClick, onRowDoubleClick, row.original],
+	);
 
 	const handleDoubleClick = useCallback(() => {
 		onRowDoubleClick?.(row.original);
@@ -56,13 +65,15 @@ const VirtualRowInner = <T,>({
 
 	return (
 		<TableRow
+			aria-rowindex={ariaRowIndex}
+			aria-current={isSelected || undefined}
 			data-state={row.getIsSelected() && "selected"}
 			data-index={virtualRow.index}
 			className={cn(
 				"text-tertiary-foreground transition-none h-10 relative border-b last:border-b-0",
 				rowClassName,
 				isSelected ? "z-100" : "hover:bg-interactive-secondary-hover",
-				(onRowClick || rowHref) && "cursor-pointer",
+				(isRowClickable || rowHref) && "cursor-pointer",
 			)}
 			onClick={handleClick}
 			onDoubleClick={onRowDoubleClick ? handleDoubleClick : undefined}
@@ -72,6 +83,7 @@ const VirtualRowInner = <T,>({
 				enableSelection={enableSelection}
 				flexibleTableColumns={flexibleTableColumns}
 				rowHref={rowHref}
+				isRowClickable={isRowClickable}
 				visibleColumnKey={visibleColumnKey}
 			/>
 		</TableRow>
@@ -87,6 +99,8 @@ const VirtualRow = memo(VirtualRowInner, (prevProps, nextProps) => {
 		prevProps.row.id === nextProps.row.id &&
 		prevProps.row.original === nextProps.row.original &&
 		prevProps.isSelected === nextProps.isSelected &&
+		prevProps.ariaRowIndex === nextProps.ariaRowIndex &&
+		prevProps.isRowClickable === nextProps.isRowClickable &&
 		prevProps.row.getIsSelected() === nextProps.row.getIsSelected() &&
 		prevProps.rowHref === nextProps.rowHref &&
 		prevProps.virtualRow.index === nextProps.virtualRow.index &&
@@ -114,6 +128,8 @@ export function TableBodyVirtualized() {
 	} = useTableContext();
 
 	const rows = table.getRowModel().rows;
+	const headerRowCount = table.getHeaderGroups().length;
+	const fadeIn = useTableFadeIn();
 	const rowHeight = virtualization?.rowHeight ?? DEFAULT_ROW_HEIGHT;
 	const overscan = virtualization?.overscan ?? DEFAULT_OVERSCAN;
 	const lastRowCountRef = useRef(20);
@@ -209,8 +225,7 @@ export function TableBodyVirtualized() {
 		return (
 			<MotionTbody
 				key="skeleton"
-				{...TABLE_FADE_IN}
-				transition={TABLE_TRANSITION}
+				{...fadeIn}
 				className="divide-y bg-interactive-secondary"
 			>
 				<TableSkeletonRows
@@ -226,7 +241,7 @@ export function TableBodyVirtualized() {
 
 	if (!hasRows) {
 		return (
-			<MotionTbody key="empty" {...TABLE_FADE_IN} transition={TABLE_TRANSITION}>
+			<MotionTbody key="empty" {...fadeIn}>
 				<TableRow className="hover:bg-transparent dark:hover:bg-transparent">
 					<TableCell
 						className="h-10 text-center py-0"
@@ -245,8 +260,7 @@ export function TableBodyVirtualized() {
 		return (
 			<MotionTbody
 				key="content"
-				{...TABLE_FADE_IN}
-				transition={TABLE_TRANSITION}
+				{...fadeIn}
 				className="bg-interactive-secondary"
 			>
 				{rows.map((row, index) => {
@@ -259,12 +273,14 @@ export function TableBodyVirtualized() {
 							key={row.id}
 							row={row}
 							virtualRow={{ index } as VirtualItem}
+							ariaRowIndex={headerRowCount + index + 1}
 							isSelected={isSelected}
+							isRowClickable={!rowHref && (!!onRowClick || !!onRowDoubleClick)}
 							rowHref={rowHref}
 							rowClassName={rowClassName}
 							enableSelection={enableSelection}
 							flexibleTableColumns={flexibleTableColumns}
-							onRowClick={memoizedOnRowClick}
+							onRowClick={onRowClick ? memoizedOnRowClick : undefined}
 							onRowDoubleClick={memoizedOnRowDoubleClick}
 							visibleColumnKey={visibleColumnKey}
 						/>
@@ -277,12 +293,12 @@ export function TableBodyVirtualized() {
 	return (
 		<MotionTbody
 			key="content"
-			{...TABLE_FADE_IN}
-			transition={TABLE_TRANSITION}
+			{...fadeIn}
 			className="bg-interactive-secondary"
 		>
+			{/* Spacers stand in for off-screen rows; aria-rowindex/rowcount carry the real positions. */}
 			{paddingTop > 0 && (
-				<tr style={{ height: paddingTop }}>
+				<tr aria-hidden="true" style={{ height: paddingTop }}>
 					<td
 						colSpan={spannedColumnCount}
 						style={{ padding: 0, border: "none" }}
@@ -301,12 +317,14 @@ export function TableBodyVirtualized() {
 						key={row.id}
 						row={row}
 						virtualRow={virtualRow}
+						ariaRowIndex={headerRowCount + virtualRow.index + 1}
 						isSelected={isSelected}
+						isRowClickable={!rowHref && (!!onRowClick || !!onRowDoubleClick)}
 						rowHref={rowHref}
 						rowClassName={rowClassName}
 						enableSelection={enableSelection}
 						flexibleTableColumns={flexibleTableColumns}
-						onRowClick={memoizedOnRowClick}
+						onRowClick={onRowClick ? memoizedOnRowClick : undefined}
 						onRowDoubleClick={memoizedOnRowDoubleClick}
 						visibleColumnKey={visibleColumnKey}
 					/>
@@ -314,7 +332,7 @@ export function TableBodyVirtualized() {
 			})}
 
 			{paddingBottom > 0 && (
-				<tr style={{ height: paddingBottom }}>
+				<tr aria-hidden="true" style={{ height: paddingBottom }}>
 					<td
 						colSpan={spannedColumnCount}
 						style={{ padding: 0, border: "none" }}

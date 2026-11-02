@@ -8,6 +8,7 @@ import {
 	Position,
 	useInternalNode,
 } from "@xyflow/react";
+import { useReducedMotion } from "motion/react";
 
 const Temporary = ({
 	id,
@@ -105,6 +106,7 @@ const getEdgeParams = (
 const Animated = ({ id, source, target, markerEnd, style }: EdgeProps) => {
 	const sourceNode = useInternalNode(source);
 	const targetNode = useInternalNode(target);
+	const reduceMotion = useReducedMotion();
 
 	if (!(sourceNode && targetNode)) {
 		return null;
@@ -127,9 +129,12 @@ const Animated = ({ id, source, target, markerEnd, style }: EdgeProps) => {
 	return (
 		<>
 			<BaseEdge id={id} markerEnd={markerEnd} path={edgePath} style={style} />
-			<circle fill="var(--primary)" r="4">
-				<animateMotion dur="2s" path={edgePath} repeatCount="indefinite" />
-			</circle>
+			{/* SMIL ignores CSS reduced-motion rules, so drop the travelling dot here. */}
+			{!reduceMotion && (
+				<circle aria-hidden="true" fill="var(--primary)" r="4">
+					<animateMotion dur="2s" path={edgePath} repeatCount="indefinite" />
+				</circle>
+			)}
 		</>
 	);
 };

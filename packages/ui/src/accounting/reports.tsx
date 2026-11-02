@@ -60,6 +60,8 @@ import {
 } from "@phosphor-icons/react";
 import { Bar, CartesianGrid, ComposedChart, Line, XAxis, YAxis } from "recharts";
 import {
+	BracketedFigure,
+	ReportAmount,
 	ActionBar,
 	DataList,
 	formatBracketed,
@@ -76,6 +78,7 @@ import {
 	ToneDot,
 	toneBg,
 	type StatusToneName,
+	useNeedsScrollStop,
 } from "../lib/shared";
 
 /* ────────────────────────────────────────────────────────────────────────── */
@@ -84,9 +87,9 @@ import {
 
 /** Status-token colour classes (the theme has no status utilities; literal strings so Tailwind sees them). */
 const STATUS_TEXT: Record<"green" | "red" | "amber", string> = {
-	green: "text-[var(--status-green)]",
-	red: "text-[var(--status-red)]",
-	amber: "text-[var(--status-amber)]",
+	green: "text-status-green-text",
+	red: "text-error-text",
+	amber: "text-status-amber-text",
 };
 
 
@@ -100,14 +103,7 @@ function periodShort(period: string): string {
 
 /** Report figure, unsigned symbol: "1,234.00", "(1,234.00)", or a muted em dash at zero. */
 function Figure({ value, red = true, className }: { value: number; red?: boolean; className?: string }) {
-	if (value === 0)
-		return (
-			<span className={cn("text-tertiary-foreground", className)}>
-				<span aria-hidden="true">—</span>
-				<span className="sr-only">0.00</span>
-			</span>
-		);
-	return <span className={cn("tabular-nums whitespace-nowrap", red && negativeClass(value < 0), className)}>{formatBracketed(value)}</span>;
+	return <ReportAmount amount={value} red={red} className={className} />;
 }
 
 /** Blank in the table (accounting convention), an em dash once DataList stacks (below 36rem). */
@@ -275,14 +271,14 @@ export function TrialBalanceReport({
 				const v = side === "debit" ? g.totalDebit! : g.totalCredit!;
 				return (
 					<span className={cn("font-semibold", g.muted && "text-tertiary-foreground", g.signed && negativeClass(v < 0))}>
-						<span className={cn(!g.signed && DOUBLE_RULE)}>{formatBracketed(v)}</span>
+						<span className={cn(!g.signed && DOUBLE_RULE)}><BracketedFigure value={v} /></span>
 					</span>
 				);
 			}
 			const v = side === "debit" ? g.debit(r) : g.credit(r);
 			const shown = g.signed ? v !== 0 : v > 0;
 			if (!shown) return STACKED_DASH;
-			return <span className={cn(g.muted && "text-tertiary-foreground", g.signed && negativeClass(v < 0))}>{formatBracketed(v)}</span>;
+			return <span className={cn(g.muted && "text-tertiary-foreground", g.signed && negativeClass(v < 0))}><BracketedFigure value={v} /></span>;
 		},
 	});
 
@@ -394,14 +390,25 @@ function StatementTable({
 	ariaLabel: string;
 }) {
 	const span = comparative ? 5 : 2;
-	const WIDE = "hidden @lg:table-cell";
+	// Every column stays at every width: the table scrolls sideways instead (tables are exempt from reflow,
+	// hiding figures is not). The scroller becomes a tab stop while it overflows so the keyboard can scroll it.
+	const scroller = React.useRef<HTMLDivElement>(null);
+	const needsStop = useNeedsScrollStop(scroller);
 	const TH = "px-2 py-2 text-xs font-medium whitespace-nowrap text-tertiary-foreground first:pl-3 last:pr-3 @lg:px-3";
 	const TD = "px-2 py-1 align-top first:pl-3 last:pr-3 @lg:px-3";
 	const NUM = "text-right tabular-nums whitespace-nowrap";
 	const INDENT = "first:pl-5 @md:first:pl-7";
+	/** Row headers (the account / line label) keep body-cell styling. */
+	const RH = "text-left font-normal";
 	return (
 		<div className={cn("@container min-w-0", surfaces.tray)}>
-			<div className={cn(surfaces.surface, "overflow-x-auto")}>
+			<div
+				ref={scroller}
+				role={needsStop ? "group" : undefined}
+				aria-label={needsStop ? `${ariaLabel}, scrolls sideways` : undefined}
+				tabIndex={needsStop ? 0 : undefined}
+				className={cn(surfaces.surface, "overflow-x-auto outline-none focus-ring-inset")}
+			>
 				<table className="w-full border-collapse text-sm" aria-label={ariaLabel}>
 					<thead>
 						<tr className="border-b border-table-row-divider">
@@ -416,10 +423,10 @@ function StatementTable({
 									<th scope="col" className={cn(TH, "text-right")}>
 										Prior <span className="hidden @md:inline">({currency})</span>
 									</th>
-									<th scope="col" className={cn(TH, WIDE, "text-right")}>
+									<th scope="col" className={cn(TH, "text-right")}>
 										Variance
 									</th>
-									<th scope="col" className={cn(TH, WIDE, "text-right")}>
+									<th scope="col" className={cn(TH, "text-right")}>
 										%
 									</th>
 								</>
@@ -438,35 +445,35 @@ function StatementTable({
 							const total = row.kind === "subtotal" || row.kind === "grand-total";
 							const compareCells = comparative && (
 								<>
-									<td className={cn(TD, NUM, WIDE, total && "font-semibold", variance < 0 ? surfaces.negative : "text-foreground")}>
+									<td className={cn(TD, NUM, total && "font-semibold", variance < 0 ? surfaces.negative : "text-foreground")}>
 										<Figure value={variance} />
 									</td>
-									<td className={cn(TD, NUM, WIDE, "text-tertiary-foreground")}>{formatVariancePct(pct)}</td>
+									<td className={cn(TD, NUM, "text-tertiary-foreground")}>{formatVariancePct(pct)}</td>
 								</>
 							);
 							switch (row.kind) {
 								case "heading":
 									return (
 										<tr key={row.key}>
-											<td colSpan={span} className="px-3 pt-1.5 pb-1 text-2xs font-medium uppercase tracking-[0.04em] text-tertiary-foreground">
+											<th scope="row" colSpan={span} className="px-3 pt-1.5 pb-1 text-left text-2xs font-medium uppercase tracking-[0.04em] text-tertiary-foreground">
 												{row.label}
-											</td>
+											</th>
 										</tr>
 									);
 								case "section-header":
 									return (
 										<tr key={row.key}>
-											<td colSpan={span} className={cn(TD, "pt-1.5 font-medium text-foreground")}>
+											<th scope="row" colSpan={span} className={cn(TD, RH, "pt-1.5 font-medium text-foreground")}>
 												{row.label}
-											</td>
+											</th>
 										</tr>
 									);
 								case "account":
 									return (
 										<tr key={row.key} className="hover:bg-table-row-hover">
-											<td className={cn(TD, INDENT)}>
+											<th scope="row" className={cn(TD, RH, INDENT)}>
 												<AccountLabel code={row.accountCode} label={row.label} />
-											</td>
+											</th>
 											<td className={cn(TD, NUM, "text-foreground")}>{contribution(current, row.negate)}</td>
 											{comparative && <td className={cn(TD, NUM, "text-tertiary-foreground")}>{contribution(prior, row.negate)}</td>}
 											{compareCells}
@@ -475,7 +482,9 @@ function StatementTable({
 								case "section-total":
 									return (
 										<tr key={row.key}>
-											<td className={cn(TD, INDENT, "text-foreground")}>{row.label}</td>
+											<th scope="row" className={cn(TD, RH, INDENT, "text-foreground")}>
+												{row.label}
+											</th>
 											<td className={cn(TD, NUM, "text-foreground")}>
 												<span className={SINGLE_RULE}>{contribution(current, row.negate, !!row.negate)}</span>
 											</td>
@@ -490,7 +499,9 @@ function StatementTable({
 								case "line":
 									return (
 										<tr key={row.key}>
-											<td className={cn(TD, INDENT, "italic")}>{row.label}</td>
+											<th scope="row" className={cn(TD, RH, INDENT, "italic")}>
+												{row.label}
+											</th>
 											<td className={cn(TD, NUM, "text-foreground")}>
 												<Figure value={current} />
 											</td>
@@ -507,7 +518,9 @@ function StatementTable({
 									const rule = row.kind === "grand-total" ? DOUBLE_RULE : "";
 									return (
 										<tr key={row.key} className="bg-muted/60">
-											<td className={cn(TD, "font-semibold text-foreground")}>{row.label}</td>
+											<th scope="row" className={cn(TD, "text-left font-semibold text-foreground")}>
+												{row.label}
+											</th>
 											<td className={cn(TD, NUM, "font-semibold text-foreground")}>
 												<span className={rule}>
 													<Figure value={current} red={signColorTotals} />
@@ -757,7 +770,9 @@ export function ReportToolbar({
 				</SelectTrigger>
 				<SelectContent>{options()}</SelectContent>
 			</Select>
-			{views && view !== undefined && <GroupedTabButton className="w-auto" value={view} onValueChange={setView} options={views} />}
+			{views && view !== undefined && (
+					<GroupedTabButton aria-label="Report view" className="w-auto" value={view} onValueChange={setView} options={views} />
+			)}
 			{compare !== undefined && (
 				<>
 					<Button variant={compare ? "primary" : "secondary"} aria-pressed={compare} onClick={() => setCompare(!compare)}>
@@ -1256,15 +1271,15 @@ export function CashFlowOverview({
 							<span className="block text-2xs text-tertiary-foreground">Net</span>
 							<span className={cn("text-sm font-semibold tabular-nums text-foreground", negativeClass(net < 0))}>{formatCurrency(net, currency)}</span>
 						</span>
-						<GroupedTabButton
-							className="w-auto"
-							value={range}
-							onValueChange={setRange}
-							options={[
-								{ value: "3", label: "3M" },
-								{ value: "6", label: "6M" },
-							]}
-						/>
+							<GroupedTabButton aria-label="Range"
+								className="w-auto"
+								value={range}
+								onValueChange={setRange}
+								options={[
+									{ value: "3", label: "3M" },
+									{ value: "6", label: "6M" },
+								]}
+							/>
 					</>
 				)
 			}
@@ -1280,7 +1295,13 @@ export function CashFlowOverview({
 						config={{ credits: { label: "Inflows", color: FLOW.credits }, debits: { label: "Outflows", color: FLOW.debits }, net: { label: "Net", color: FLOW.net } }}
 						className="mt-2 aspect-auto h-56 w-full"
 					>
-						<ComposedChart data={windowed} margin={{ top: 8, right: 4, left: 0, bottom: 0 }} barGap={2}>
+						<ComposedChart
+							data={windowed}
+							margin={{ top: 8, right: 4, left: 0, bottom: 0 }}
+							barGap={2}
+							title="Money movement chart: inflows, outflows and net per month"
+							desc="Use the arrow keys to step through months. The same figures follow as a table."
+						>
 							<CartesianGrid vertical={false} stroke="var(--chart-grid-stroke)" />
 							<XAxis dataKey="label" tickLine={false} axisLine={false} tickMargin={8} />
 							<YAxis tickLine={false} axisLine={false} width={60} tickFormatter={(v: number) => formatCurrencyCompact(v, currency)} />
@@ -1290,6 +1311,27 @@ export function CashFlowOverview({
 							<Line isAnimationActive={false} dataKey="net" type="monotone" stroke={FLOW.net} strokeWidth={2} dot={{ r: 2.5, fill: FLOW.net, strokeWidth: 0 }} />
 						</ComposedChart>
 					</ChartContainer>
+					<table className="sr-only">
+						<caption>Money movement by month ({currency})</caption>
+						<thead>
+							<tr>
+								<th scope="col">Month</th>
+								<th scope="col">Inflows</th>
+								<th scope="col">Outflows</th>
+								<th scope="col">Net</th>
+							</tr>
+						</thead>
+						<tbody>
+							{windowed.map((p) => (
+								<tr key={p.label}>
+									<th scope="row">{p.label}</th>
+									<td>{formatCurrency(p.credits, currency)}</td>
+									<td>{formatCurrency(p.debits, currency)}</td>
+									<td>{formatCurrency(p.net, currency)}</td>
+								</tr>
+							))}
+						</tbody>
+					</table>
 				</>
 			) : (
 				<div className="flex h-44 flex-col items-center justify-center gap-3 rounded-lg border border-dashed px-4 text-center">
@@ -1310,9 +1352,9 @@ export function CashFlowOverview({
 /** A runway longer than this reads as plenty; the meter tops out there. */
 const RUNWAY_FULL_MONTHS = 12;
 const RUNWAY_INDICATOR = {
-	green: "[&_[data-slot=progress-indicator]]:bg-[var(--status-green)]",
-	amber: "[&_[data-slot=progress-indicator]]:bg-[var(--status-amber)]",
-	red: "[&_[data-slot=progress-indicator]]:bg-[var(--status-red)]",
+	green: "[&_[data-slot=progress-indicator]]:bg-status-green",
+	amber: "[&_[data-slot=progress-indicator]]:bg-status-amber",
+	red: "[&_[data-slot=progress-indicator]]:bg-status-red",
 	neutral: "[&_[data-slot=progress-indicator]]:bg-muted",
 } as const;
 
@@ -1374,6 +1416,17 @@ export function CashRunwayPosition({
 			{trail && trail.length > 1 && (
 				<div className="mt-2">
 					<MiniSparkline data={trail.map((t) => t.cash)} color="var(--chart-series-1)" className="h-11" />
+					<table className="sr-only">
+						<caption>Implied month-end cash</caption>
+						<tbody>
+							{trail.map((t) => (
+								<tr key={t.label}>
+									<th scope="row">{t.label}</th>
+									<td>{formatCurrency(t.cash, currency)}</td>
+								</tr>
+							))}
+						</tbody>
+					</table>
 					<div className="mt-0.5 flex justify-between gap-2 text-2xs text-tertiary-foreground">
 						<span>{trail[0]!.label}</span>
 						<span className="hidden text-center @md:inline">Implied from today&rsquo;s balance and bank movement</span>
@@ -1418,7 +1471,19 @@ function healthSummary(checks: HealthCheck[]): string {
 	return `${acting} of ${judged} check${judged === 1 ? "" : "s"} need${acting === 1 ? "s" : ""} you`;
 }
 
-const ROW_LINK = "flex items-center gap-3 outline-none hover:bg-table-row-hover focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset";
+const ROW = "flex items-center gap-3";
+const ROW_LINK = cn(ROW, "outline-none hover:bg-table-row-hover focus-ring-inset");
+
+/** A real link when there is somewhere to go; plain content otherwise, never an `href="#"` that does nothing. */
+function RowLink({ href, className, children }: { href?: string; className?: string; children: React.ReactNode }) {
+	return href ? (
+		<a href={href} className={cn(ROW_LINK, className)}>
+			{children}
+		</a>
+	) : (
+		<div className={cn(ROW, className)}>{children}</div>
+	);
+}
 
 /**
  * The controls checklist (cynco dashboard/overview/HealthPanel): every check,
@@ -1446,7 +1511,7 @@ export function BusinessHealthPanel({ checks, className, ...props }: React.Compo
 						const s = CHECK_STATUS[check.status];
 						return (
 							<li key={check.id} className="border-b border-table-row-divider last:border-b-0">
-								<a href={check.href ?? "#"} onClick={check.href ? undefined : (e) => e.preventDefault()} className={cn(ROW_LINK, "min-h-10 px-4 py-1.5")}>
+								<RowLink href={check.href} className="min-h-10 px-4 py-1.5">
 									<StatusChipIcon tone={s.tone} glyph={s.glyph} />
 									<span className="sr-only">{s.name}:</span>
 									<span className="min-w-0 flex-1">
@@ -1456,8 +1521,8 @@ export function BusinessHealthPanel({ checks, className, ...props }: React.Compo
 										</span>
 									</span>
 									<span className="hidden shrink-0 text-2xs font-medium uppercase tracking-[0.04em] text-tertiary-foreground @sm:inline">{AREA_LABEL[check.area]}</span>
-									<CaretRightIcon size={12} aria-hidden="true" className="shrink-0 text-tertiary-foreground" />
-								</a>
+									{check.href && <CaretRightIcon size={12} aria-hidden="true" className="shrink-0 text-tertiary-foreground" />}
+								</RowLink>
 							</li>
 						);
 					})}
@@ -1494,6 +1559,9 @@ const KIND_TILE = {
 	out: "bg-[color-mix(in_oklab,var(--chart-series-5)_14%,var(--card))] text-[color-mix(in_oklab,var(--chart-series-5)_82%,var(--foreground))]",
 	in: "bg-[color-mix(in_oklab,var(--chart-series-3)_14%,var(--card))] text-[color-mix(in_oklab,var(--chart-series-3)_82%,var(--foreground))]",
 } as const;
+
+/** What the kind tile's glyph says, for screen readers. */
+const KIND_NAME = { invoice: "Invoice", bill: "Bill", out: "Payment out", in: "Payment in" } as const;
 
 function activityVisual(item: ActivityItem) {
 	if (item.kind === "invoice") return { Icon: InvoiceIcon, tile: KIND_TILE.invoice };
@@ -1541,14 +1609,15 @@ export function RecentActivityFeed({
 			{...props}
 			title="Recent activity"
 			actions={
-				<a
-					href={viewAllHref ?? "#"}
-					onClick={viewAllHref ? undefined : (e) => e.preventDefault()}
-					className="inline-flex items-center gap-1 rounded-md text-2xs font-medium text-tertiary-foreground outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-primary"
-				>
-					View all
-					<ArrowRightIcon size={12} aria-hidden="true" />
-				</a>
+				viewAllHref && (
+					<a
+						href={viewAllHref}
+						className="inline-flex items-center gap-1 rounded-md text-2xs font-medium text-tertiary-foreground outline-none hover:text-foreground focus-ring"
+					>
+						View all
+						<ArrowRightIcon size={12} aria-hidden="true" />
+					</a>
+				)
 			}
 		>
 			<div className="border-t p-1.5">
@@ -1571,15 +1640,11 @@ export function RecentActivityFeed({
 							</StatusChip>
 						);
 						return (
-							<a
-								key={item.id}
-								href={item.href ?? "#"}
-								onClick={item.href ? undefined : (e) => e.preventDefault()}
-								className={cn(ROW_LINK, "items-start rounded-lg px-2.5 py-2 @md:items-center")}
-							>
+							<RowLink key={item.id} href={item.href} className="items-start rounded-lg px-2.5 py-2 @md:items-center">
 								<span className={cn("flex size-8 shrink-0 items-center justify-center rounded-lg", tile)}>
 									<Icon size={16} weight="bold" aria-hidden="true" />
 								</span>
+								<span className="sr-only">{KIND_NAME[item.kind === "payment" ? (item.direction === "out" ? "out" : "in") : item.kind]}:</span>
 								<span className="min-w-0 flex-1">
 									<span className="block text-sm text-foreground @md:truncate">{item.title}</span>
 									{item.subtitle && <span className="block text-tiny-id text-tertiary-foreground [overflow-wrap:anywhere] @md:truncate">{item.subtitle}</span>}
@@ -1592,7 +1657,7 @@ export function RecentActivityFeed({
 									</span>
 									<span className="block text-2xs text-tertiary-foreground">{relativeTimeShort(item.date, clock)}</span>
 								</span>
-							</a>
+							</RowLink>
 						);
 					})
 				)}

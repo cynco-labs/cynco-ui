@@ -6,8 +6,8 @@
 		"height": 700,
 		"summary": "The one way to show rows of records: Cynco UI's tray table on wide containers, one stacked card per row on narrow ones.",
 		"use": "Any list of documents, accounts, transactions or lines. Don't hand-build <table> markup in a screen; declare columns and let DataList handle layout, selection, totals and the narrow-width card view.",
-		"provide": "columns (key, header, cell, align, className, mobile: title | value | badge | meta | hidden | table | stacked, stackedAs, stackedCell, stackedLabel), rows, getKey; optional stackBelow (sm…3xl or never, default xl = 36rem of container width), column nowrap (keep IDs and dates on one line in the table), onRowClick (rows become keyboard-focusable; Enter/Space activates), isRowSelected, rowClassName, leading / leadingHeader (checkbox), trailing (row menu), totals ({label, [columnKey]: node} — a column-aligned tfoot in the table, a bold summary card when stacked), footer, empty, caption, dense / density (compact | default | comfortable; defaults from DensityProvider), stickyHeader + maxHeight (rows scroll, headers and totals stay put), className and any div props.",
-		"notes": "Responds to its own container (CSS container queries), so the same list works in a page, a side sheet and on a phone. Leading/trailing cells stop click propagation so a checkbox or menu doesn't open the row."
+		"provide": "columns (key, header, cell, align, className, mobile: title | value | badge | meta | hidden | table | stacked, stackedAs, stackedCell, stackedLabel), rows, getKey; optional stackBelow (sm…3xl or never, default xl = 36rem of container width), column nowrap (keep IDs and dates on one line in the table), onRowClick (the primary cell, or the title when stacked, becomes the row's button; a click anywhere else on the row opens it too), column primary (the row header and button cell; default the first table column), column sortDirection (ascending | descending | none, announced as aria-sort on the header; DataList doesn't sort), isRowSelected, rowClassName, leading / leadingHeader (checkbox), trailing (row menu), totals ({label, [columnKey]: node} — a column-aligned tfoot in the table, a bold summary card when stacked), footer, empty, caption, dense / density (compact | default | comfortable; defaults from DensityProvider), stickyHeader + maxHeight (rows scroll, headers and totals stay put), className and any div props.",
+		"notes": "Responds to its own container (CSS container queries), so the same list works in a page, a side sheet and on a phone. The primary column renders as the row header (th scope=row). Rows are never focus stops themselves: with onRowClick the primary cell holds a real button (focus-ring-inset), so screen readers announce it and the row's checkbox and menu aren't nested inside a focusable row. Selection without a leading checkbox is aria-current on that button. Leading/trailing cells and any control inside a row keep their clicks; keep a clickable row's primary cell free of links and buttons."
 	},
 	{
 		"name": "StatTile",
@@ -107,7 +107,7 @@
 		"summary": "A primary or secondary Button that shows and binds a keyboard shortcut.",
 		"use": "Sheet and dialog submit actions (`metaShortcut=\"enter\"` → ⌘/Ctrl ↵) and page-level \"new\" actions (`singleShortcut=\"n\"`).",
 		"provide": "`children`, `metaShortcut` or `singleShortcut`, `variant` (`primary` · `secondary`), `onClick`, `isLoading`.",
-		"notes": "The shortcut is registered while mounted; the keycap renders inside the button."
+		"notes": "The shortcut is registered while mounted; the keycap renders inside the button. A bare-letter `singleShortcut` never fires while typing in a field and follows the user's single-key shortcuts switch (WCAG 2.1.4, `useCharacterKeyShortcuts`, set in ShortcutsDialog): when it is off the key stops firing and the keycap and aria-keyshortcuts are dropped. ⌘/Ctrl chords and named keys like Escape always work. The shortcut triggers a real click, so `onClick` and form submit behave exactly as a mouse click."
 	},
 	{
 		"name": "ToolbarButton",
@@ -154,10 +154,10 @@
 		"category": "Components",
 		"group": "Actions",
 		"height": 110,
-		"summary": "A large, tactile tile button with screws and seams, selected state glowing in the primary colour.",
+		"summary": "A large, tactile tile button with screws and seams; the selected tile takes a primary border and a check mark in its corner.",
 		"use": "Picking one of a few big options in onboarding (business type, tax registration).",
-		"provide": "`isSelected`, `onClick`, `icon` (Phosphor duotone, 20px).",
-		"notes": "Selected tile uses the `panel-shadow` glow (primary-tinted); unselected tiles are neutral. Styled for the light theme."
+		"provide": "`isSelected`, `onClick`, `icon` (Phosphor duotone, 20px), and an `aria-label` (the tile is icon-only).",
+		"notes": "Selection is exposed as `aria-pressed` and shown by the corner check mark, not by colour alone. The mark sits slightly outside the tile, so leave a few pixels of room around it."
 	},
 	{
 		"name": "GroupedTabButton",
@@ -244,10 +244,10 @@
 		"category": "Components",
 		"group": "Inputs",
 		"height": 80,
-		"summary": "A multi-select shown as tags inside a select-style trigger.",
+		"summary": "A multi-select shown as removable tags in a select-style field.",
 		"use": "Choosing several known options (tags, branches, tax codes).",
-		"provide": "`value`, `onChange`, `options` [{value,label}], `placeholder`, optional `formatTag`, `renderContent`.",
-		"notes": ""
+		"provide": "`value`, `onChange`, `options` [{value,label}], `placeholder`, optional `formatTag`, `renderContent`, `className` (the field box). Label it with `id` + a `<label htmlFor>` (FormLabel, FieldLabel), or `aria-label` / `aria-labelledby`; `aria-describedby` and `aria-invalid` also go on the trigger.",
+		"notes": "The trigger fills the field from behind and announces \"{n} selected\"; the tags sit beside it, not inside it, so each \"Remove {label}\" button is its own tab stop. Removing a tag moves focus to the next tag, or back to the trigger."
 	},
 	{
 		"name": "DateInputUnix",
@@ -334,10 +334,10 @@
 		"category": "Components",
 		"group": "Selection",
 		"height": 64,
-		"summary": "A toggle that looks like a small secondary button with an icon; checked shows the `primary` border.",
+		"summary": "A toggle that looks like a small secondary button with an icon; checked shows the `primary` border and a check mark in its corner.",
 		"use": "Toggling views and options in toolbars and attach/cancel forms.",
-		"provide": "Button props plus `checked`, `onCheckedChange`, `icon`, `iconOrientation` (`left` with a label, `center` icon-only).",
-		"notes": "Default size `sm`."
+		"provide": "Button props plus `checked`, `onCheckedChange`, `icon`, `iconOrientation` (`left` with a label, `center` icon-only, which needs an `aria-label`).",
+		"notes": "Default size `sm`. State is exposed as `aria-pressed` and shown by the corner check mark, not by colour alone. The mark sits slightly outside the button, so a clipping parent (`overflow-hidden`, or the `primary` variant's own clip) hides part of it."
 	},
 	{
 		"name": "RadioGroup",
@@ -743,21 +743,21 @@
 		"name": "FormLabel",
 		"category": "Components",
 		"group": "Forms",
-		"height": 64,
-		"summary": "The standard field label in `text-form-label`, dimmed when disabled.",
+		"height": 80,
+		"summary": "The standard field label (a native `<label>`) in `text-form-label`, dimmed when disabled.",
 		"use": "Above inputs in sheets.",
-		"provide": "Children, `disabled`.",
-		"notes": ""
+		"provide": "Children, `htmlFor` (the control's `id`) or a wrapped control, `disabled`, and any `<label>` props.",
+		"notes": "Pair `disabled` with the control's own `disabled`; the label only dims."
 	},
 	{
 		"name": "FieldLabel",
 		"category": "Components",
 		"group": "Forms",
-		"height": 110,
-		"summary": "A field label with optional description and info tooltip.",
+		"height": 150,
+		"summary": "A field label (a native `<label>`) with optional description and info tooltip.",
 		"use": "Fields that need a hint.",
-		"provide": "Children, optional `description`, `tooltip`, `empty`.",
-		"notes": ""
+		"provide": "Children, `htmlFor` (the control's `id`), optional `description` + `descriptionId`, `tooltip`, `empty`, and any `<label>` props.",
+		"notes": "The description and tooltip render outside the `<label>`, so the control's name is just the label text; point the control's `aria-describedby` at `descriptionId` to read the hint with it. With a description or tooltip, `className` goes on the wrapper and `<label>` props on the label. `empty` renders an aria-hidden spacer."
 	},
 	{
 		"name": "PageHeader",
@@ -857,7 +857,7 @@
 		"summary": "A ⌘K / Ctrl+K command palette on Cynco UI's CommandDialog: jump to any area, create documents, reopen recent records and run app actions, with fuzzy search across labels, keywords, document numbers and amounts.",
 		"use": "Mount once in the app shell and put a CommandPaletteTrigger in the header. Feed it recently opened records so accountants can type “inv 0142” or an amount like “3240” and land on the document. Use `inline` to embed the same search on a page (an empty state, a “Jump to” screen).",
 		"provide": "CommandPalette: open / defaultOpen / onOpenChange; items (CommandPaletteItem[]: id, group — “Go to” | “Create” | “Recent” | “Actions” or your own heading, label, keywords, icon, shortcut such as \"mod+k\" or \"g i\", hint, href, disabled, onSelect; defaults to CYNCO_PALETTE_ITEMS, Cynco's registry paths, keywords and keybinds); recent (CommandPaletteRecord[]: id, type — invoice | quotation | bill | credit_note | customer | vendor | journal | payment | item | account, number, label, status, amount as a decimal string, currency, keywords, href, onSelect); recentLimit (default 5); onSelect(item) to route with item.href / item.id; hotkey (default \"mod+k\", false to bind your own); placeholder; inline; className. CommandPaletteTrigger: label, shortcut, className and any button props (wire onClick).",
-		"notes": "Keys: ⌘K / Ctrl+K toggles, ↑ ↓ move, Enter runs, Esc closes (clears the query when inline), a leading “>” narrows to actions. Search: every word must match a label, keyword, number or amount (prefix > word start > fuzzy subsequence; acronyms like “gl”, “pl”); groups re-rank by best match. Focus returns to whatever opened it. Rows drop status, amount, type and keycaps as the dialog narrows (container queries), so it stays one line from 320px up."
+		"notes": "Keys: ⌘K / Ctrl+K toggles, ↑ ↓ move, Enter runs, Esc closes (clears the query when inline), a leading “>” narrows to actions. Search: every word must match a label, keyword, number or amount (prefix > word start > fuzzy subsequence; acronyms like “gl”, “pl”); groups re-rank by best match. Focus returns to whatever opened it. Rows drop status, amount, type and keycaps as the dialog narrows (container queries), so it stays one line from 320px up. Shortcut keycaps made of printable keys alone (\"?\", \"g i\") are hidden while the user has single-key shortcuts turned off; a printable-only `hotkey` is unbound then too."
 	},
 	{
 		"name": "ShortcutsDialog",
@@ -866,8 +866,8 @@
 		"height": 420,
 		"summary": "A searchable dialog listing every keyboard shortcut in sections, opened with “?”, plus useGoToShortcuts for two-key “g then i” navigation.",
 		"use": "Mount once in the app shell. Pass your own sections or use CYNCO_SHORTCUT_SECTIONS (Global, Go to, Create, Lists, Journal entry). Call useGoToShortcuts(CYNCO_GOTO_ROUTES, navigate) in the shell so G then I opens Invoices and C then J starts a journal entry.",
-		"provide": "ShortcutsDialog: open / defaultOpen / onOpenChange; sections ([{title, items: [{keys, label}]}], keys like \"mod+enter\", \"g i\" for a sequence, or an array of alternatives); hotkey (default \"?\", false to bind your own); title; className. useGoToShortcuts(map, navigate, {enabled, timeout = 1200 ms, leader = \"g\"}): map keys are a letter after the leader or a full sequence (\"c i\"); returns {pending} so you can show “G…” while it waits.",
-		"notes": "Keys: “?” opens (never while typing), type to filter by label, key or section, Esc closes and returns focus. Sequences are ignored while typing, inside dialogs and menus, and with ⌘/Ctrl/Alt held; any other key or the timeout cancels. Sections flow into two columns once the dialog is 36rem wide."
+		"provide": "ShortcutsDialog: open / defaultOpen / onOpenChange; sections ([{title, items: [{keys, label}]}], keys like \"mod+enter\", \"g i\" for a sequence, or an array of alternatives); hotkey (default \"?\", false to bind your own); title; className. useGoToShortcuts(map, navigate, {enabled, timeout = 1200 ms, leader = \"g\"}): map keys are a letter after the leader or a full sequence (\"c i\"); returns {pending} so you can show “G…” while it waits. Items take an optional focusScoped: true for keys that only fire inside their own field (never shown as off). KeyboardShortcutsProvider (characterKeys / defaultCharacterKeys = true / onCharacterKeysChange) and useCharacterKeyShortcuts() → [enabled, setEnabled] control the single-key switch; isCharacterKeyShortcut(keys) tells you whether your own shortcut should honour it.",
+		"notes": "Keys: “?” opens (never while typing), type to filter by label, key or section, Esc closes and returns focus. Sequences are ignored while typing, inside dialogs and menus, and with ⌘/Ctrl/Alt held; any other key or the timeout cancels. Sections flow into two columns once the dialog is 36rem wide. WCAG 2.1.4: the footer has a “Single-key shortcuts” switch. Off unbinds “?”, every useGoToShortcuts sequence and bare-letter ShortcutButtons, and marks those rows Off; ⌘/Ctrl chords and named keys are unaffected. With no provider the choice is saved in localStorage (cy-character-key-shortcuts) and syncs across tabs; pass characterKeys to store it yourself. When it is off, the dialog opens from the command palette or a button. Gate your own printable-only page shortcuts on useCharacterKeyShortcuts()."
 	},
 	{
 		"name": "SavedViewsBar",
@@ -894,9 +894,9 @@
 		"category": "Productivity",
 		"group": "Productivity",
 		"height": 380,
-		"summary": "\"Do it, then offer Undo\": a toast with the message, an Undo button (⌘/Ctrl+Z), a countdown bar and late commit — the real write runs in onCommit only if nobody undoes.",
+		"summary": "\"Do it, then offer Undo\": a toast with the message, an Undo button (⌘/Ctrl+Z), an optional countdown and late commit — the real write runs in onCommit only if nobody undoes.",
 		"use": "Mount UndoToastProvider once near the app root. On a destructive action, update the UI optimistically and call useUndoToast().show({message, onUndo, onCommit}); do the server call in onCommit. Keep real confirm dialogs only for actions that can't be held back (e.g. submitting to LHDN).",
-		"provide": "UndoToastProvider: children, max (default 3; a 4th toast commits the oldest), duration (ms, default 6000), viewport (default true; false to place <UndoToastViewport/> yourself), position (bottom-center | bottom-right | bottom-left). useUndoToast() → {show({message, onUndo, onCommit?, duration?, undoLabel?, id?}) → id, undo(id?), dismiss(id), count}. UndoToastViewport: position, className, section props. UndoToast (the presentational item): message, onUndo, onDismiss, onExpire, duration, undoLabel, showShortcut, paused, className, li props.",
+		"provide": "UndoToastProvider: children, max (default 3; a 4th toast commits the oldest), duration (ms, default Infinity: stays until dismissed, undone or pushed out, per WCAG 2.2.1), viewport (default true; false to place <UndoToastViewport/> yourself), position (bottom-center | bottom-right | bottom-left). useUndoToast() → {show({message, onUndo, onCommit?, duration?, undoLabel?, id?}) → id, undo(id?), dismiss(id), count}. UndoToastViewport: position, className, section props. UndoToast (the presentational item): message, onUndo, onDismiss, onExpire, duration, undoLabel, showShortcut, paused, className, li props.",
 		"notes": "Keyboard: ⌘/Ctrl+Z undoes the newest toast (left alone while typing in a field, where it is the field's own undo); F8 jumps to the newest Undo button; Esc on a focused toast dismisses (commits) it; focus returns to where it was. The countdown pauses on hover, on focus and while the tab is hidden; the stack is an aria-live=\"polite\" list. Each toast settles exactly once; anything pending commits when the provider unmounts or on pagehide. No toast library — the countdown is a CSS animation whose end commits. Width is min(24rem, viewport − 2rem); hidden in print."
 	},
 	{
@@ -936,7 +936,7 @@
 		"height": 600,
 		"summary": "The document kit: a sheet of paper plus the parts every business document is assembled from — Letterhead, DocumentMeta, PartyGrid, DocumentTable, TotalsBlock, PaymentBlock, EInvoiceBlock, NotesBlock, SignatureBlock, DocumentFooter, DocFields, DocCallout, DocFigureStrip, DocAmountWords.",
 		"use": "Build any printed document by composing the parts inside a DocumentPage, under a DocumentBrandProvider. Invoices, receipts, statements, payslips and reports in this group are all thin assemblies of these parts.",
-		"provide": "DocumentBrandProvider brand (company {name, registrationNo, tin, sstNo, address, phone, email, website}, logo (URL or element; typographic monogram when omitted), layout minimal (default) | classic | modern, font inter | geist | serif, locale en | ms | en-ms, labels overrides, signature, footerNote). DocumentPage: size a4 | a4-landscape | a5 | letter | receipt, stamp paid | void | draft | copy | overdue, fit, isolate, brand (override). Figures are decimal strings, printed as given.",
+		"provide": "DocumentBrandProvider brand (company {name, registrationNo, tin, sstNo, address, phone, email, website}, logo (URL or element; typographic monogram when omitted), layout minimal (default) | classic | modern, font inter | geist | serif, locale en | ms | en-ms, labels overrides, signature, footerNote). DocumentPage: size a4 | a4-landscape | a5 | letter | receipt, stamp paid | void | draft | copy | overdue, fit width | none (controlled, with onFitChange) or defaultFit, zoomControl (default true: a Fit width / Actual size toggle appears while the sheet is scaled down, so browser zoom can enlarge the text), isolate, brand (override). Figures are decimal strings, printed as given.",
 		"notes": "Black ink on white paper only — no colour, tints or filled bars; hierarchy from type, spacing and hairlines. In print: real paper size and margins, page numbers \"2 / 3\", headers repeat, rows never split, and only the document prints (isolate). On screen the sheet scales to its container. amountInWords writes Ringgit Malaysia in English or Malay; formatDocAmount and formatDocDate are exact and timezone-safe."
 	},
 	{
@@ -2194,7 +2194,7 @@
 		"category": "AI",
 		"group": "AI",
 		"height": 220,
-		"summary": "Inline citation badges with a hover card listing sources (with carousel for several).",
+		"summary": "Inline citation badges that open a card listing sources (with carousel for several) on hover, click or Enter, so keyboard users can reach every source.",
 		"use": "Citing sources inside assistant text.",
 		"provide": "`InlineCitationText`, `InlineCitationCard` › `InlineCitationCardTrigger sources`, `InlineCitationCardBody` › `InlineCitationSource` (`title`, `url`, `description`) or the carousel parts, `InlineCitationQuote`.",
 		"notes": ""

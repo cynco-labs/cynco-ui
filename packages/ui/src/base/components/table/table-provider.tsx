@@ -1,5 +1,6 @@
 import {
 	TableContext,
+	toTableContextValue,
 	type TableProps,
 } from "./table-context";
 import type { ReactNode } from "react";
@@ -21,6 +22,6 @@ export function TableProvider<T>(props: TableProviderProps<T>) {
 	}
 
 	return (
-		<TableContext.Provider value={config}>{children}</TableContext.Provider>
+		<TableContext.Provider value={toTableContextValue(config)}>{children}</TableContext.Provider>
 	);
 }

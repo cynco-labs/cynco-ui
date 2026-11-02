@@ -6,6 +6,8 @@
  */
 import * as React from "react";
 import { StatusChip, cn, type StatusTone, type StatusGlyph } from "../base";
+import { isDecimalString } from "./money";
+import { WarningCircleIcon } from "@phosphor-icons/react";
 
 const LOCALE: Record<string, string> = {
 	MYR: "en-MY", SGD: "en-SG", USD: "en-US", GBP: "en-GB", AUD: "en-AU", EUR: "en-IE", IDR: "id-ID", THB: "th-TH", PHP: "en-PH", JPY: "ja-JP", CNY: "zh-CN", HKD: "en-HK",
@@ -26,7 +28,7 @@ export function formatCurrency(amount: number | string, currency = "MYR"): strin
 	// Decimal strings ("1234.565") are formatted exactly — Intl accepts them without a float round-trip.
 	if (typeof amount === "string") {
 		const s = amount.trim();
-		return /^-?\d+(\.\d+)?$/.test(s) ? fmt(currency).format(s as unknown as number) : fmt(currency).format(0);
+		return isDecimalString(s) ? fmt(currency).format(s) : fmt(currency).format(0);
 	}
 	return fmt(currency).format(Number.isFinite(amount) ? amount : 0);
 }
@@ -71,11 +73,44 @@ export function AmountCell({ amount, baseAmount, currency = "MYR", baseCurrency 
 	);
 }
 
-/** A figure in a financial statement (cynco ReportAmount): negatives bracketed and red, zero a muted em dash. */
-export function ReportAmount({ amount, className }: { amount: number; className?: string }) {
+/**
+ * "1,234.00" or "(1,234.00)" as text. Screen readers often skip brackets, so a negative is also spoken
+ * as "−1,234.00". Use this wherever a bracketed figure is rendered.
+ */
+export function BracketedFigure({ value }: { value: number }) {
+	if (value >= 0) return <>{formatBracketed(value)}</>;
+	return (
+		<>
+			<span aria-hidden="true">{formatBracketed(value)}</span>
+			<span className="sr-only">−{formatBracketed(-value)}</span>
+		</>
+	);
+}
+
+/** A figure in a financial statement (cynco ReportAmount): negatives bracketed (and red unless `red={false}`), zero a muted em dash. */
+export function ReportAmount({ amount, red = true, className }: { amount: number; red?: boolean; className?: string }) {
 	if (amount === 0)
 		return <span className={cn("text-tertiary-foreground tabular-nums", className)}><span aria-hidden="true">—</span><span className="sr-only">0.00</span></span>;
-	return <span className={cn("tabular-nums whitespace-nowrap", amount < 0 && "text-error-text", className)}>{formatBracketed(amount)}</span>;
+	return (
+		<span className={cn("tabular-nums whitespace-nowrap", red && amount < 0 && "text-error-text", className)}>
+			<BracketedFigure value={amount} />
+		</span>
+	);
+}
+
+/** An inline field error: a warning glyph plus the words, so it never relies on colour. Point the field at it with `fieldErrorProps`. */
+export function FieldError({ className, children, ...props }: React.ComponentProps<"p"> & { id: string }) {
+	return (
+		<p className={cn("flex items-start gap-1 text-2xs text-error-text", className)} {...props}>
+			<WarningCircleIcon size={12} weight="fill" aria-hidden="true" className="mt-px shrink-0" />
+			{children}
+		</p>
+	);
+}
+
+/** `aria-invalid` + `aria-describedby` for a field while its error (with id `errorId`) is shown. */
+export function fieldErrorProps(errorId: string, shown: boolean) {
+	return shown ? { "aria-invalid": true, "aria-describedby": errorId } : {};
 }
 
 /** cynco badge variants → StatusChip tone + glyph. */

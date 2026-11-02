@@ -143,5 +143,13 @@ export const ArtifactContent = ({
 	className,
 	...props
 }: ArtifactContentProps) => (
-	<div className={cn("flex-1 overflow-auto p-4", className)} {...props} />
+	// Focusable so keyboard users can scroll content that has no focusable children.
+	<div
+		className={cn(
+			"flex-1 overflow-auto p-4 outline-none focus-ring-inset",
+			className,
+		)}
+		tabIndex={0}
+		{...props}
+	/>
 );

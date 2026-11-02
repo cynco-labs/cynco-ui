@@ -1,6 +1,7 @@
 /* Cynco UI design tokens. Light is the default; dark, modern and modern-dark switch with a class or data-theme. */
 
-:root, .light, [data-theme="light"] {
+/* `.light` / `.dark` exclude React Flow's root, which uses the same class names for its own colour mode. */
+:root, .light:not(.react-flow), [data-theme="light"] {
 	--foreground: #121212;
 	--background: #fafaf9;
 	--outer-background: #f5f5f4;
@@ -8,11 +9,17 @@
 	--interactive-secondary-hover: #fcfaff;
 	--muted-foreground: #444;
 	--tertiary-foreground: #666;
-	--subtle: #767676;
-	--placeholder: #aaa;
-	--sandbox: #8838ff;
-	--primary: #0077e6;
+	/* Secondary text: at least 4.5:1 on every surface, including muted and hover fills. */
+	--subtle: #6e6e6e;
+	--placeholder: #737373;
+	/* Dark enough that white text passes 4.5:1 on it and on the 15–20% white action fill. */
+	--sandbox: #7429dd;
+	--primary: #0067d1;
 	--primary-foreground: #ffffff;
+	/* Primary as text (text-primary): at least 4.5:1 on every surface. Light shares the fill value; dark needs a lighter blue than the fill. */
+	--primary-text: var(--primary);
+	/* Keyboard focus ring: at least 3:1 against every surface in this theme (WCAG 1.4.11). */
+	--focus-ring: var(--primary);
 	--hover-primary: #f5fbff;
 	--active-primary: #e8f5ff;
 	--radio-group-hover-primary: #f5fbff;
@@ -25,13 +32,16 @@
 	--overlay-border: #e5e5e5;
 	--overlay-separator: #efefef;
 	--overlay-hover: rgb(0 0 0 / 0.045);
+	/* Highlighted menu/list option outline: the tint alone is ~1.1:1, this ring carries the state at 3:1 (WCAG 1.4.11). */
+	--overlay-hover-ring: var(--input);
 	--table-tray: #f3f3f2;
 	--table-tray-border: #e7e7e5;
 	--table-surface: #ffffff;
 	--table-surface-border: #e5e5e5;
 	--table-row-divider: #efefee;
 	--table-row-hover: #fafaf9;
-	--input: #dddddd;
+	/* Control boundary (text fields, checkbox, radio, switch track): at least 3:1 against every surface (WCAG 1.4.11). Dividers use --border. */
+	--input: #8b8b8b;
 	--switch-thumb-on: #ffffff;
 	--icon1: #888;
 	--muted: #f2f2f2;
@@ -39,7 +49,7 @@
 	--destructive-hover: #c30000;
 	--destructive-foreground: #fafaf9;
 	--destructive-border: #940000;
-	--error-text: #e40000;
+	--error-text: #cc0000;
 	--input-background: #ffffff;
 	--card: #f8f8f7;
 	--card-foreground: oklch(0.141 0.005 285.823);
@@ -49,7 +59,7 @@
 	--secondary-foreground: oklch(0.21 0.006 285.885);
 	--accent: oklch(0.967 0.001 286.375);
 	--accent-foreground: oklch(0.21 0.006 285.885);
-	--ring: oklch(0.705 0.015 286.067);
+	--ring: oklch(0.63 0.015 286.067);
 	--chart-1: var(--primary);
 	--chart-2: #0f70e9;
 	--chart-3: #1e69ec;
@@ -76,7 +86,7 @@
 	--sidebar-accent: oklch(0.967 0.001 286.375);
 	--sidebar-accent-foreground: oklch(0.21 0.006 285.885);
 	--sidebar-border: oklch(0.92 0.004 286.32);
-	--sidebar-ring: oklch(0.705 0.015 286.067);
+	--sidebar-ring: oklch(0.63 0.015 286.067);
 	--color-panel-icon-background: #e0f2ff;
 	--color-primary-btn-hover: #1a88ef;
 	--color-primary-btn-active: #006bcf;
@@ -106,8 +116,8 @@
 	--color-purple-medium: #b07aff;
 	--color-purple-stripe: #665cff;
 	--color-purple-gradient: #6f47ff;
-	--input-border-hover: rgba(18, 18, 18, 0.18);
-	--input-border-focus: rgba(18, 18, 18, 0.28);
+	--input-border-hover: rgba(18, 18, 18, 0.6);
+	--input-border-focus: rgba(18, 18, 18, 0.78);
 	--scrollbar-thumb: rgba(18, 18, 18, 0.2);
 	--color-zinc-50: oklch(0.985 0 0);
 	--color-zinc-100: oklch(0.967 0.001 286.375);
@@ -144,6 +154,18 @@
 	--status-orange-glyph: #ffffff;
 	--status-amber: #e5a21f;
 	--status-amber-glyph: #2a1c05;
+	/* Status colours as text or icons (the fills above are for chips): at least 4.5:1 on every surface. */
+	--status-green-text: #18794e;
+	--status-amber-text: #a35a00;
+	--status-orange-text: #b54500;
+	--sandbox-text: #7429dd;
+	--sandbox-foreground: #ffffff;
+	/* Overlays: behind dialogs, behind sheets, and dimming a dialog/sheet under a nested one. */
+	--overlay-backdrop: rgb(0 0 0 / 0.5);
+	--overlay-veil: rgb(255 255 255 / 0.7);
+	--overlay-dim: rgb(0 0 0 / 0.5);
+	/* The raised pill in segmented controls. */
+	--segment-shadow: 0 1px 2px rgb(0 0 0 / 0.06);
 	--status-yellow: #e2b93b;
 	--status-yellow-glyph: #261f06;
 	--status-purple: #9a6bff;
@@ -186,7 +208,7 @@
 	--input-shadow-destructive: 0 0 0 3px rgba(228, 0, 0, 0.18);
 }
 
-.dark, [data-theme="dark"] {
+.dark:not(.react-flow), [data-theme="dark"] {
 	--foreground: #ddd;
 	--background: #161616;
 	--outer-background: #121212;
@@ -194,13 +216,18 @@
 	--interactive-secondary-hover: #292929;
 	--muted-foreground: #ccc;
 	--tertiary-foreground: #999;
-	--subtle: #767676;
-	--placeholder: #6b6b6b;
-	--primary: #0077e6;
+	/* Secondary text: at least 4.5:1 on every surface, including muted and hover fills. */
+	--subtle: #919191;
+	--placeholder: #909090;
+	--primary: #0074e3;
 	--primary-foreground: #ffffff;
-	--hover-primary: #f5fbff;
+	/* Primary as text (text-primary): at least 4.5:1 on every surface. Light shares the fill value; dark needs a lighter blue than the fill. */
+	--primary-text: #2f92ff;
+	/* Keyboard focus ring: at least 3:1 against every surface in this theme (WCAG 1.4.11). */
+	--focus-ring: var(--primary);
+	--hover-primary: var(--interactive-secondary-hover);
 	--active-primary: #292929;
-	--radio-group-hover-primary: #f5fbff;
+	--radio-group-hover-primary: var(--interactive-secondary-hover);
 	--border: #222222;
 	--border-sheet: #eaeae9;
 	--border-table: #e5e5e5;
@@ -210,13 +237,16 @@
 	--overlay-border: #2a2a2a;
 	--overlay-separator: #262626;
 	--overlay-hover: rgb(255 255 255 / 0.06);
+	/* Highlighted menu/list option outline: the tint alone is ~1.1:1, this ring carries the state at 3:1 (WCAG 1.4.11). */
+	--overlay-hover-ring: #777777;
 	--table-tray: #111111;
 	--table-tray-border: #1f1f1f;
 	--table-surface: #191919;
 	--table-surface-border: #262626;
 	--table-row-divider: #232323;
 	--table-row-hover: #1e1e1e;
-	--input: #2a2a2a;
+	/* Control boundary (text fields, checkbox, radio, switch track): at least 3:1 against every surface (WCAG 1.4.11). Dividers use --border. */
+	--input: #686868;
 	--switch-thumb-on: #161616;
 	--muted: #1c1c1d;
 	--destructive: oklch(0.396 0.141 25.723);
@@ -231,7 +261,7 @@
 	--secondary-foreground: oklch(0.985 0 0);
 	--accent: oklch(0.274 0.006 286.033);
 	--accent-foreground: oklch(0.985 0 0);
-	--ring: oklch(0.442 0.017 285.786);
+	--ring: oklch(0.52 0.017 285.786);
 	--chart-1: var(--primary);
 	--chart-2: #0f70e9;
 	--chart-3: #1e69ec;
@@ -257,15 +287,27 @@
 	--sidebar-accent: oklch(0.274 0.006 286.033);
 	--sidebar-accent-foreground: oklch(0.985 0 0);
 	--sidebar-border: oklch(0.274 0.006 286.033);
-	--sidebar-ring: oklch(0.442 0.017 285.786);
-	--input-border-hover: rgba(221, 221, 221, 0.18);
-	--input-border-focus: rgba(221, 221, 221, 0.28);
+	--sidebar-ring: oklch(0.52 0.017 285.786);
+	--input-border-hover: rgba(221, 221, 221, 0.5);
+	--input-border-focus: rgba(221, 221, 221, 0.72);
 	--scrollbar-thumb: rgba(221, 221, 221, 0.2);
 	--status-green-glyph: #0e1c15;
 	--status-blue-glyph: #0c1726;
 	--status-red-glyph: #2a0c0d;
 	--status-orange-glyph: #2a1405;
 	--status-amber-glyph: #2a1c05;
+	/* Status colours as text or icons (the fills above are for chips): at least 4.5:1 on every surface. */
+	--status-green-text: #3dd68c;
+	--status-amber-text: #ffc53d;
+	--status-orange-text: #ff8b3e;
+	--sandbox-text: #b98aff;
+	--sandbox-foreground: #ffffff;
+	/* Overlays: behind dialogs, behind sheets, and dimming a dialog/sheet under a nested one. */
+	--overlay-backdrop: rgb(0 0 0 / 0.8);
+	--overlay-veil: rgb(0 0 0 / 0.7);
+	--overlay-dim: rgb(0 0 0 / 0.6);
+	/* The raised pill in segmented controls. */
+	--segment-shadow: 0 1px 2px rgb(0 0 0 / 0.3);
 	--status-yellow-glyph: #261f06;
 	--status-purple-glyph: #1a0f33;
 	--status-pink-glyph: #2a0c1e;
@@ -288,10 +330,15 @@
 	--interactive-secondary-hover: #fcfaff;
 	--muted-foreground: #444;
 	--tertiary-foreground: #666;
-	--subtle: #767676;
-	--placeholder: #aaa;
-	--primary: #0077e6;
+	/* Secondary text: at least 4.5:1 on every surface, including muted and hover fills. */
+	--subtle: #6e6e6e;
+	--placeholder: #737373;
+	--primary: #0067d1;
 	--primary-foreground: #ffffff;
+	/* Primary as text (text-primary): at least 4.5:1 on every surface. Light shares the fill value; dark needs a lighter blue than the fill. */
+	--primary-text: var(--primary);
+	/* Keyboard focus ring: at least 3:1 against every surface in this theme (WCAG 1.4.11). */
+	--focus-ring: var(--primary);
 	--hover-primary: #f5fbff;
 	--active-primary: #e8f5ff;
 	--radio-group-hover-primary: #f5fbff;
@@ -304,18 +351,21 @@
 	--overlay-border: #e5e5e5;
 	--overlay-separator: #efefef;
 	--overlay-hover: rgb(0 0 0 / 0.045);
+	/* Highlighted menu/list option outline: the tint alone is ~1.1:1, this ring carries the state at 3:1 (WCAG 1.4.11). */
+	--overlay-hover-ring: var(--input);
 	--table-tray: var(--card);
 	--table-tray-border: var(--border);
 	--table-surface: var(--interactive-secondary);
 	--table-surface-border: var(--border);
 	--table-row-divider: var(--border);
 	--table-row-hover: var(--interactive-secondary-hover);
-	--input: #dddddd;
+	/* Control boundary (text fields, checkbox, radio, switch track): at least 3:1 against every surface (WCAG 1.4.11). Dividers use --border. */
+	--input: #8b8b8b;
 	--switch-thumb-on: #ffffff;
 	--muted: #f2f2f2;
 	--destructive: #e40000;
 	--destructive-foreground: #fafaf9;
-	--error-text: #e40000;
+	--error-text: #cc0000;
 	--input-background: #ffffff;
 	--card: #fafaf9;
 	--card-foreground: oklch(0.141 0.005 285.823);
@@ -325,7 +375,7 @@
 	--secondary-foreground: oklch(0.21 0.006 285.885);
 	--accent: oklch(0.967 0.001 286.375);
 	--accent-foreground: oklch(0.21 0.006 285.885);
-	--ring: oklch(0.705 0.015 286.067);
+	--ring: oklch(0.63 0.015 286.067);
 	--chart-1: var(--primary);
 	--chart-2: #0f70e9;
 	--chart-3: #1e69ec;
@@ -351,15 +401,27 @@
 	--sidebar-accent: oklch(0.967 0.001 286.375);
 	--sidebar-accent-foreground: oklch(0.21 0.006 285.885);
 	--sidebar-border: oklch(0.92 0.004 286.32);
-	--sidebar-ring: oklch(0.705 0.015 286.067);
-	--input-border-hover: rgba(18, 18, 18, 0.18);
-	--input-border-focus: rgba(18, 18, 18, 0.28);
+	--sidebar-ring: oklch(0.63 0.015 286.067);
+	--input-border-hover: rgba(18, 18, 18, 0.6);
+	--input-border-focus: rgba(18, 18, 18, 0.78);
 	--scrollbar-thumb: rgba(18, 18, 18, 0.2);
 	--status-green-glyph: #ffffff;
 	--status-blue-glyph: #ffffff;
 	--status-red-glyph: #ffffff;
 	--status-orange-glyph: #ffffff;
 	--status-amber-glyph: #2a1c05;
+	/* Status colours as text or icons (the fills above are for chips): at least 4.5:1 on every surface. */
+	--status-green-text: #18794e;
+	--status-amber-text: #a35a00;
+	--status-orange-text: #b54500;
+	--sandbox-text: #7429dd;
+	--sandbox-foreground: #ffffff;
+	/* Overlays: behind dialogs, behind sheets, and dimming a dialog/sheet under a nested one. */
+	--overlay-backdrop: rgb(0 0 0 / 0.5);
+	--overlay-veil: rgb(255 255 255 / 0.7);
+	--overlay-dim: rgb(0 0 0 / 0.5);
+	/* The raised pill in segmented controls. */
+	--segment-shadow: 0 1px 2px rgb(0 0 0 / 0.06);
 	--status-yellow-glyph: #261f06;
 	--status-purple-glyph: #ffffff;
 	--status-pink-glyph: #ffffff;
@@ -382,13 +444,18 @@
 	--interactive-secondary-hover: #1e1e1e;
 	--muted-foreground: #ccc;
 	--tertiary-foreground: #999;
-	--subtle: #767676;
-	--placeholder: #6b6b6b;
-	--primary: #0077e6;
+	/* Secondary text: at least 4.5:1 on every surface, including muted and hover fills. */
+	--subtle: #919191;
+	--placeholder: #909090;
+	--primary: #0074e3;
 	--primary-foreground: #ffffff;
-	--hover-primary: #f5fbff;
+	/* Primary as text (text-primary): at least 4.5:1 on every surface. Light shares the fill value; dark needs a lighter blue than the fill. */
+	--primary-text: #2f92ff;
+	/* Keyboard focus ring: at least 3:1 against every surface in this theme (WCAG 1.4.11). */
+	--focus-ring: var(--primary);
+	--hover-primary: var(--interactive-secondary-hover);
 	--active-primary: #1e1e1e;
-	--radio-group-hover-primary: #f5fbff;
+	--radio-group-hover-primary: var(--interactive-secondary-hover);
 	--border: #181818;
 	--border-sheet: #eaeae9;
 	--border-table: #e5e5e5;
@@ -398,13 +465,16 @@
 	--overlay-border: #2a2a2a;
 	--overlay-separator: #262626;
 	--overlay-hover: rgb(255 255 255 / 0.06);
+	/* Highlighted menu/list option outline: the tint alone is ~1.1:1, this ring carries the state at 3:1 (WCAG 1.4.11). */
+	--overlay-hover-ring: #777777;
 	--table-tray: var(--card);
 	--table-tray-border: var(--border);
 	--table-surface: var(--interactive-secondary);
 	--table-surface-border: var(--border);
 	--table-row-divider: var(--border);
 	--table-row-hover: var(--interactive-secondary-hover);
-	--input: #2a2a2a;
+	/* Control boundary (text fields, checkbox, radio, switch track): at least 3:1 against every surface (WCAG 1.4.11). Dividers use --border. */
+	--input: #686868;
 	--switch-thumb-on: #161616;
 	--muted: #111111;
 	--destructive: oklch(0.396 0.141 25.723);
@@ -419,7 +489,7 @@
 	--secondary-foreground: oklch(0.985 0 0);
 	--accent: oklch(0.274 0.006 286.033);
 	--accent-foreground: oklch(0.985 0 0);
-	--ring: oklch(0.442 0.017 285.786);
+	--ring: oklch(0.52 0.017 285.786);
 	--chart-1: var(--primary);
 	--chart-2: #0f70e9;
 	--chart-3: #1e69ec;
@@ -445,15 +515,27 @@
 	--sidebar-accent: oklch(0.274 0.006 286.033);
 	--sidebar-accent-foreground: oklch(0.985 0 0);
 	--sidebar-border: oklch(0.274 0.006 286.033);
-	--sidebar-ring: oklch(0.442 0.017 285.786);
-	--input-border-hover: rgba(221, 221, 221, 0.18);
-	--input-border-focus: rgba(221, 221, 221, 0.28);
+	--sidebar-ring: oklch(0.52 0.017 285.786);
+	--input-border-hover: rgba(221, 221, 221, 0.5);
+	--input-border-focus: rgba(221, 221, 221, 0.72);
 	--scrollbar-thumb: rgba(221, 221, 221, 0.2);
 	--status-green-glyph: #0e1c15;
 	--status-blue-glyph: #0c1726;
 	--status-red-glyph: #2a0c0d;
 	--status-orange-glyph: #2a1405;
 	--status-amber-glyph: #2a1c05;
+	/* Status colours as text or icons (the fills above are for chips): at least 4.5:1 on every surface. */
+	--status-green-text: #3dd68c;
+	--status-amber-text: #ffc53d;
+	--status-orange-text: #ff8b3e;
+	--sandbox-text: #b98aff;
+	--sandbox-foreground: #ffffff;
+	/* Overlays: behind dialogs, behind sheets, and dimming a dialog/sheet under a nested one. */
+	--overlay-backdrop: rgb(0 0 0 / 0.6);
+	--overlay-veil: rgb(0 0 0 / 0.6);
+	--overlay-dim: rgb(0 0 0 / 0.6);
+	/* The raised pill in segmented controls. */
+	--segment-shadow: 0 1px 2px rgb(0 0 0 / 0.3);
 	--status-yellow-glyph: #261f06;
 	--status-purple-glyph: #1a0f33;
 	--status-pink-glyph: #2a0c1e;

@@ -27,6 +27,7 @@ function AreaRadioGroupItem({
 	disabledReason,
 }: AreaRadioGroupItemProps) {
 	const id = useId();
+	const reasonId = `${id}-reason`;
 
 	const isDisabled = disabled || !!disabledReason;
 
@@ -43,6 +44,7 @@ function AreaRadioGroupItem({
 				id={id}
 				className="mt-[3px]"
 				disabled={isDisabled}
+				aria-describedby={disabledReason ? reasonId : undefined}
 			/>
 			<div className="flex-1 space-y-1">
 				<div className="flex items-center gap-2">
@@ -68,6 +70,9 @@ function AreaRadioGroupItem({
 				<TooltipContent side="top" className="max-w-60">
 					{disabledReason}
 				</TooltipContent>
+				<span id={reasonId} hidden>
+					{disabledReason}
+				</span>
 			</Tooltip>
 		);
 	}

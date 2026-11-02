@@ -7,7 +7,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import * as React from "react";
 
 const buttonVariants = cva(
-	`relative inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none cursor-pointer
+	`relative inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm disabled:pointer-events-none disabled:opacity-50 data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-ring cursor-pointer
   rounded-lg group/btn transition-colors  w-fit transform-gpu
   `,
 	{
@@ -27,7 +27,7 @@ const buttonVariants = cva(
 				shadow-sm
 				`,
 
-				secondary: `bg-interactive-secondary border border-[var(--color-input)] hover:bg-interactive-secondary-hover btn-secondary-shadow
+				secondary: `bg-interactive-secondary border border-border hover:bg-interactive-secondary-hover btn-secondary-shadow
 				focus-visible:bg-active-primary focus-visible:border-primary text-foreground
 				`,
 
@@ -46,7 +46,7 @@ const buttonVariants = cva(
 					active:border-destructive-border
 					`,
 
-				dotted: `bg-background border border-dashed border-border shadow-[0px_4px_4px_0px_rgba(0,0,0,0.02)]
+				dotted: `bg-background border border-dashed border-border shadow-hairline
 					hover:border-primary hover:border-solid
 					focus-visible:border-primary focus-visible:border-solid
 					active:border-primary active:border-solid
@@ -75,6 +75,8 @@ export interface ButtonProps
 	disableActive?: boolean;
 	hide?: boolean;
 	render?: React.ReactElement;
+	/** Keep the button in the tab order while disabled (Base UI). Set automatically while `isLoading`. */
+	focusableWhenDisabled?: boolean;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
@@ -88,6 +90,8 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 			transition = false,
 			disableActive = true,
 			hide = false,
+			focusableWhenDisabled = false,
+			disabled,
 			children,
 			render: renderProp,
 			...props
@@ -135,8 +139,12 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 					buttonVariants({ variant, size, className }),
 					getDisableActiveStyles(),
 				)}
-				disabled={isLoading || props.disabled}
+				aria-busy={isLoading || undefined}
 				{...props}
+				// After the spread, so an explicit disabled={false} can't re-enable a loading button.
+				disabled={isLoading || disabled}
+				// A loading button keeps focus (aria-disabled, not native disabled) and announces it is busy.
+				focusableWhenDisabled={isLoading || focusableWhenDisabled}
 			>
 				{effectiveRender ? undefined : (
 					<>
@@ -153,7 +161,8 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 							className={cn(
 								"inline-flex items-center gap-2",
 								variant === "primary" && "relative z-10 transition-none",
-								isLoading && "invisible",
+								// opacity, not visibility: the label stays the accessible name while the spinner shows.
+								isLoading && "opacity-0",
 							)}
 						>
 							{children}

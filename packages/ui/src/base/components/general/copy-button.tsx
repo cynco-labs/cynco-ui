@@ -1,3 +1,4 @@
+import { LiveStatus } from "./live-status";
 import {
 	IconButton,
 	type IconButtonProps,
@@ -42,6 +43,7 @@ const useCopyAnimation = ({
 	return { copied, handleCopy };
 };
 
+/** Polite live region, mounted before it has text, so "Copied" is announced. */
 /** Animated icon that transitions between copy and check */
 const AnimatedCopyIcon = ({
 	copied,
@@ -51,6 +53,7 @@ const AnimatedCopyIcon = ({
 	size?: string;
 }) => (
 	<span
+		aria-hidden="true"
 		className={cn("relative inline-flex items-center justify-center", size)}
 	>
 		<CopyIcon
@@ -123,6 +126,7 @@ export const CopyButton = ({
 					</div>
 				</TooltipContent>
 			</Tooltip>
+			<LiveStatus>{copied ? "Copied" : ""}</LiveStatus>
 		</TooltipProvider>
 	);
 };
@@ -147,6 +151,7 @@ export const CopyIconButton = ({
 				<TooltipTrigger asChild>
 					<IconButton
 						variant="skeleton"
+						aria-label="Copy"
 						{...props}
 						iconOrientation="right"
 						icon={<AnimatedCopyIcon copied={copied} />}
@@ -168,6 +173,7 @@ export const CopyIconButton = ({
 					</div>
 				</TooltipContent>
 			</Tooltip>
+			<LiveStatus>{copied ? "Copied" : ""}</LiveStatus>
 		</TooltipProvider>
 	);
 };
@@ -187,7 +193,10 @@ export const MiniCopyButton = ({
 			text={text}
 			side={side}
 			{...props}
-			className={cn("opacity-0 group-hover:opacity-100", iconClassName)}
+			className={cn(
+				"opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
+				iconClassName,
+			)}
 		/>
 	);
 

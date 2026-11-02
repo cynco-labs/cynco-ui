@@ -1,5 +1,5 @@
 import { Fragment, useState } from "react";
-import { Button, CYNCO_GOTO_ROUTES, Kbd, ShortcutsDialog, useGoToShortcuts } from "@cynco-labs/ui";
+import { Button, CYNCO_GOTO_ROUTES, Kbd, ShortcutsDialog, useCharacterKeyShortcuts, useGoToShortcuts } from "@cynco-labs/ui";
 
 const LABELS = {
 	"/dashboard": "Dashboard",
@@ -19,6 +19,8 @@ const LABELS = {
 export default function ShortcutsDialogDemo() {
 	const [open, setOpen] = useState(false);
 	const [went, setWent] = useState(null);
+	// The user's single-key switch lives in the dialog's footer; it also gates "?" and G/C sequences.
+	const [characterKeys] = useCharacterKeyShortcuts();
 	const g = useGoToShortcuts(CYNCO_GOTO_ROUTES, (path, seq) => {
 		setWent({ path, seq });
 	});
@@ -31,17 +33,23 @@ export default function ShortcutsDialogDemo() {
 						setOpen(true);
 					}}
 				>
-					{"Keyboard shortcuts "}
-					<Kbd keys="?" />
+					{"Keyboard shortcuts"}
+					{characterKeys && <Kbd keys="?" />}
 				</Button>
 				<span className="text-xs text-tertiary-foreground">
-					{"Try: "}
-					<Kbd keys="?" />
-					{" then type “journal”; or press "}
-					<Kbd keys="g" />
-					{" then "}
-					<Kbd keys="i" />
-					{" (click here first so the frame has focus)."}
+					{characterKeys ? (
+						<>
+							{"Try: "}
+							<Kbd keys="?" />
+							{" then type “journal”; or press "}
+							<Kbd keys="g" />
+							{" then "}
+							<Kbd keys="i" />
+							{" (click here first so the frame has focus)."}
+						</>
+					) : (
+						"Single-key shortcuts are off. Turn them back on at the bottom of the Keyboard shortcuts dialog."
+					)}
 				</span>
 			</div>
 			<div
@@ -63,10 +71,12 @@ export default function ShortcutsDialogDemo() {
 						<span className="font-medium text-foreground">{LABELS[went.path] || went.path}</span>
 						<span className="font-mono text-xs text-tertiary-foreground">{went.path}</span>
 					</>
-				) : (
+				) : characterKeys ? (
 					<span className="text-tertiary-foreground">
 						Waiting for a sequence: G then D, I, Q, C, V, B — or C then I, Q, J, C.
 					</span>
+				) : (
+					<span className="text-tertiary-foreground">Sequences are off.</span>
 				)}
 			</div>
 			<div className="grid gap-3 @md:grid-cols-2">

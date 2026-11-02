@@ -18,7 +18,7 @@ export default function PromptInputDemo() {
 				</PromptInputBody>
 				<PromptInputFooter>
 					<PromptInputTools>
-						<PromptInputButton>
+						<PromptInputButton aria-label="Add attachment">
 							<PlusIcon size={14} />
 						</PromptInputButton>
 					</PromptInputTools>

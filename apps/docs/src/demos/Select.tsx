@@ -12,7 +12,7 @@ export default function SelectDemo() {
 					{ label: "Yearly", value: "year" },
 				]}
 			>
-				<SelectTrigger className="w-full">
+				<SelectTrigger className="w-full" aria-label="Billing period">
 					<SelectValue />
 				</SelectTrigger>
 				<SelectContent>

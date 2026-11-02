@@ -20,7 +20,7 @@ export function FilterChip({
 				onClick={onRemove}
 				className="flex size-4 shrink-0 cursor-pointer items-center justify-center rounded-sm text-tertiary-foreground hover:bg-primary/10 hover:text-foreground"
 			>
-				<XIcon size={10} weight="bold" />
+				<XIcon aria-hidden="true" size={10} weight="bold" />
 			</button>
 		</span>
 	);

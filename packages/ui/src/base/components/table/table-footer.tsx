@@ -40,12 +40,12 @@ export const TableFooter = <TData,>({
 				<td colSpan={resolvedColSpan} className="h-8 px-4">
 					<div className="flex items-center justify-between">
 						<div className="flex items-center gap-3 text-tiny font-medium text-subtle">
-							<div className="flex items-center gap-1.5">
+							<label className="flex items-center gap-1.5">
 								<span>Rows</span>
 								<select
 									value={pageSize}
 									onChange={(e) => table.setPageSize(Number(e.target.value))}
-									className="h-5 cursor-pointer appearance-none rounded bg-transparent px-1 text-tiny font-medium text-tertiary-foreground outline-none hover:text-muted-foreground"
+									className="h-5 cursor-pointer appearance-none rounded bg-transparent px-1 text-tiny font-medium text-tertiary-foreground outline-none hover:text-muted-foreground focus-ring"
 								>
 									{pageSizeOptions.map((opt) => (
 										<option key={opt} value={opt}>
@@ -53,13 +53,15 @@ export const TableFooter = <TData,>({
 										</option>
 									))}
 								</select>
-							</div>
-							<span className="text-subtle">
+							</label>
+							{/* Announces the new range when the page or page size changes. */}
+							<span className="text-subtle" role="status">
 								{start}–{end} of {rowCount}
 							</span>
 							{leftSlot}
 						</div>
-						<div className="flex items-center gap-0.5">
+						{/* gap-1 keeps 20px buttons 24px apart, the WCAG 2.5.8 spacing minimum. */}
+						<div className="flex items-center gap-1">
 							{rightSlot}
 							<button
 								type="button"
@@ -80,7 +82,12 @@ export const TableFooter = <TData,>({
 								<ChevronLeftIcon size={14} />
 							</button>
 							<span className="min-w-10 text-center text-tiny font-medium text-tertiary-foreground">
-								{pageIndex + 1} / {pageCount}
+								<span aria-hidden="true">
+									{pageIndex + 1} / {pageCount}
+								</span>
+								<span className="sr-only">
+									Page {pageIndex + 1} of {pageCount}
+								</span>
 							</span>
 							<button
 								type="button"

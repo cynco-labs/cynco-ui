@@ -12,6 +12,7 @@ export default function PanelButtonDemo() {
 					setS(0);
 				}}
 				icon={<CoinsIcon size={20} weight="duotone" />}
+				aria-label="Pay by bank transfer"
 			/>
 			<PanelButton
 				isSelected={s === 1}
@@ -19,6 +20,7 @@ export default function PanelButtonDemo() {
 					setS(1);
 				}}
 				icon={<LightningIcon size={20} weight="duotone" />}
+				aria-label="Pay by DuitNow"
 			/>
 			<PanelButton
 				isSelected={s === 2}
@@ -26,6 +28,7 @@ export default function PanelButtonDemo() {
 					setS(2);
 				}}
 				icon={<CreditCardIcon size={20} weight="duotone" />}
+				aria-label="Pay by card"
 			/>
 		</div>
 	);

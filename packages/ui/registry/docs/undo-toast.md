@@ -1,6 +1,6 @@
 # UndoToast
 
-"Do it, then offer Undo": a toast with the message, an Undo button (⌘/Ctrl+Z), a countdown bar and late commit — the real write runs in onCommit only if nobody undoes.
+"Do it, then offer Undo": a toast with the message, an Undo button (⌘/Ctrl+Z), an optional countdown and late commit — the real write runs in onCommit only if nobody undoes.
 
 ```tsx
 import { UndoToast } from "@cynco-labs/ui";
@@ -152,7 +152,7 @@ function Demo() {
 				getKey={(x) => x.id}
 				caption="Invoices"
 				dense
-				rowClassName={(x) => (pending.indexOf(x.id) >= 0 ? "opacity-50" : undefined)}
+				rowClassName={(x) => (pending.indexOf(x.id) >= 0 ? "line-through decoration-tertiary-foreground" : undefined)}
 				trailing={(x) =>
 					x.status === "voided" || pending.indexOf(x.id) >= 0 ? null : (
 						<Button
@@ -192,7 +192,7 @@ Mount UndoToastProvider once near the app root. On a destructive action, update 
 
 ## Props
 
-UndoToastProvider: children, max (default 3; a 4th toast commits the oldest), duration (ms, default 6000), viewport (default true; false to place <UndoToastViewport/> yourself), position (bottom-center | bottom-right | bottom-left). useUndoToast() → {show({message, onUndo, onCommit?, duration?, undoLabel?, id?}) → id, undo(id?), dismiss(id), count}. UndoToastViewport: position, className, section props. UndoToast (the presentational item): message, onUndo, onDismiss, onExpire, duration, undoLabel, showShortcut, paused, className, li props.
+UndoToastProvider: children, max (default 3; a 4th toast commits the oldest), duration (ms, default Infinity: stays until dismissed, undone or pushed out, per WCAG 2.2.1), viewport (default true; false to place <UndoToastViewport/> yourself), position (bottom-center | bottom-right | bottom-left). useUndoToast() → {show({message, onUndo, onCommit?, duration?, undoLabel?, id?}) → id, undo(id?), dismiss(id), count}. UndoToastViewport: position, className, section props. UndoToast (the presentational item): message, onUndo, onDismiss, onExpire, duration, undoLabel, showShortcut, paused, className, li props.
 
 ## Notes
 

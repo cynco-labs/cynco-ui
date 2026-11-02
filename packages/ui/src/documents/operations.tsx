@@ -41,6 +41,7 @@ import {
 	DocFields,
 	DocFigureStrip,
 	DocAmountWords,
+	DocSignedFigure,
 	type DocFieldItem,
 	type DocText,
 	type DocFigure,
@@ -128,15 +129,18 @@ export function DocRemittanceSlip({ payTo, fields, amountDue, currency = "MYR", 
 	const sym = currencySymbol(currency);
 	return (
 		<section data-slot="cy-doc-remittance" className={cn("cy-doc-break-avoid mt-[7mm]", className)}>
-			<div aria-hidden className="flex items-center gap-[2mm] text-[6.5pt] text-[var(--doc-subtle)]">
-				<ScissorsIcon size={11} weight="regular" className="shrink-0 -scale-x-100" />
-				<div className="h-0 flex-1 border-t border-dashed border-[var(--doc-subtle)]" />
+			{/* The cut line is decoration; the instruction on it is content. */}
+			<div className="flex items-center gap-[2mm] text-[6.5pt] text-[var(--doc-subtle)]">
+				<ScissorsIcon size={11} weight="regular" className="shrink-0 -scale-x-100" aria-hidden="true" />
+				<div aria-hidden="true" className="h-0 flex-1 border-t border-dashed border-[var(--doc-subtle)]" />
 				<span className="shrink-0 tracking-[0.04em]">{L("detachAndReturn")}</span>
-				<div className="h-0 w-[10mm] border-t border-dashed border-[var(--doc-subtle)]" />
+				<div aria-hidden="true" className="h-0 w-[10mm] border-t border-dashed border-[var(--doc-subtle)]" />
 			</div>
 			<div className="mt-[4.5mm] grid grid-cols-[1.25fr_1fr] gap-[8mm]">
 				<div className="min-w-0">
-					<DocLabel>{L("remittanceAdvice")}</DocLabel>
+					<h2>
+						<DocLabel>{L("remittanceAdvice")}</DocLabel>
+					</h2>
 					<div className="mt-[1.5mm] text-[7.5pt] text-[var(--doc-muted)]">
 						{L("payTo")} <span className="font-semibold text-[var(--doc-ink)]">{payTo ?? company.name}</span>
 					</div>
@@ -417,7 +421,7 @@ function PaymentVoucherBody({ voucher }: { voucher: PaymentVoucherData }) {
 				</div>
 			),
 		},
-		{ key: "amt", header: L("amount"), numeric: true, width: "27mm", cell: (r) => formatDocAmount(r.amount, { brackets: true }) },
+		{ key: "amt", header: L("amount"), numeric: true, width: "27mm", cell: (r) => <DocSignedFigure text={formatDocAmount(r.amount, { brackets: true })} /> },
 	];
 
 	const bank = voucher.payeeBank;
@@ -530,7 +534,12 @@ function StatementOfAccountBody({ statement: s }: { statement: StatementOfAccoun
 		{ key: "desc", header: L("description"), cell: (r) => (r.opening ? <span className="text-[var(--doc-muted)] italic">{L("balanceBroughtForward")}</span> : <span className="text-[var(--doc-muted)]">{r.description}</span>) },
 		{ key: "dr", header: L("debit"), numeric: true, width: "19mm", cell: (r) => amt(r.debit) },
 		{ key: "cr", header: L("credit"), numeric: true, width: "19mm", cell: (r) => amt(r.credit) },
-		{ key: "bal", header: L("balance"), numeric: true, width: "21mm", cell: (r) => <span className="font-medium">{formatDocAmount(r.balance, { brackets: true })}</span> },
+		{ key: "bal", header: L("balance"), numeric: true, width: "21mm", cell: (r) => (
+				<span className="font-medium">
+					<DocSignedFigure text={formatDocAmount(r.balance, { brackets: true })} />
+				</span>
+			),
+		},
 	];
 
 	const lines: StatementLine[] = [{ opening: true, date: s.periodFrom, type: "", balance: s.openingBalance }, ...s.transactions];
@@ -570,7 +579,9 @@ function StatementOfAccountBody({ statement: s }: { statement: StatementOfAccoun
 											{L("asAt")} {formatDocDate(s.periodTo, locale)}
 										</span>
 									</span>
-									<span className="cy-doc-num">{formatDocAmount(s.closingBalance, { brackets: true })}</span>
+									<span className="cy-doc-num">
+										<DocSignedFigure text={formatDocAmount(s.closingBalance, { brackets: true })} />
+									</span>
 								</div>
 							),
 						},
@@ -772,7 +783,9 @@ function PayslipBody({ payslip: p, size }: { payslip: PayslipDocumentData; size:
 					// A5: pay details join the employee particulars; employer numbers on one quiet line.
 					<section className="min-w-0">
 						<div className="flex items-baseline justify-between gap-4">
-							<DocLabel className="shrink-0">{L("employee")}</DocLabel>
+							<h2 className="shrink-0">
+								<DocLabel>{L("employee")}</DocLabel>
+							</h2>
 							{employerLine}
 						</div>
 						<div className="mt-1 text-[9.5pt] leading-tight font-semibold">{e.name}</div>
@@ -789,13 +802,17 @@ function PayslipBody({ payslip: p, size }: { payslip: PayslipDocumentData; size:
 						/>
 						<div className={cn("grid gap-x-[8mm] gap-y-[4mm]", hasEmployer ? "grid-cols-[1fr_46mm]" : "grid-cols-1")}>
 							<section className="min-w-0">
-								<DocLabel>{L("employee")}</DocLabel>
+								<h2>
+									<DocLabel>{L("employee")}</DocLabel>
+								</h2>
 								<div className="mt-1.5 text-[10pt] leading-tight font-semibold">{e.name}</div>
 								<DocFields variant="grid" className="mt-[3mm]" columns={4} items={employeeFields} />
 							</section>
 							{hasEmployer && (
 								<section className="min-w-0 border-l border-[var(--doc-rule)] pl-[6mm]">
-									<DocLabel>{L("employer")}</DocLabel>
+									<h2>
+										<DocLabel>{L("employer")}</DocLabel>
+									</h2>
 									<DocFields variant="grid" className="mt-[2mm]" columns={1} items={employerFields} />
 								</section>
 							)}

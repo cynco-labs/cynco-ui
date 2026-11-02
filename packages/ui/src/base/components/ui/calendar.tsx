@@ -34,7 +34,10 @@ const MONTHS = [
 /** Fixed-width month and year triggers keep the popover from resizing, so the arrows never move under the cursor. */
 function CalendarCaption({ displayMonth, id }: CaptionProps) {
 	const { goToMonth, previousMonth, nextMonth } = useNavigation();
-	const { fromYear, toYear } = useDayPicker();
+	const { fromYear, toYear, labels, formatters, locale } = useDayPicker();
+	// react-day-picker's own labels, so a localised DayPicker stays localised here.
+	const monthLabel = labels.labelMonthDropdown().replace(/:\s*$/, "");
+	const yearLabel = labels.labelYearDropdown().replace(/:\s*$/, "");
 
 	const monthValue = String(displayMonth.getMonth());
 	const yearValue = String(displayMonth.getFullYear());
@@ -46,11 +49,16 @@ function CalendarCaption({ displayMonth, id }: CaptionProps) {
 
 	return (
 		<div className="flex items-center justify-between gap-1">
+			{/* The month grid is labelled by this id; announces the new month after paging. */}
+			<div id={id} className="sr-only" aria-live="polite">
+				{formatters.formatCaption(displayMonth, { locale })}
+			</div>
 			<button
 				type="button"
+				aria-label={labels.labelPrevious(previousMonth, { locale })}
 				disabled={!previousMonth}
 				onClick={() => previousMonth && goToMonth(previousMonth)}
-				className="inline-flex items-center justify-center size-7 rounded-md text-tertiary-foreground hover:bg-accent hover:text-foreground transition-colors p-0 disabled:opacity-30 disabled:pointer-events-none"
+				className="inline-flex items-center justify-center size-7 rounded-md text-tertiary-foreground hover:bg-accent hover:text-foreground transition-colors p-0 outline-none focus-ring disabled:opacity-30 disabled:pointer-events-none"
 			>
 				<ChevronLeft className="size-4" />
 			</button>
@@ -61,7 +69,7 @@ function CalendarCaption({ displayMonth, id }: CaptionProps) {
 					onValueChange={(v) => goToMonth(setMonth(displayMonth, Number(v)))}
 					items={MONTHS.map((name, i) => ({ value: String(i), label: name }))}
 				>
-					<SelectTrigger className="h-7 w-[7.25rem] justify-between border-none shadow-none px-2 text-sm font-medium text-foreground hover:bg-accent gap-1">
+					<SelectTrigger aria-label={monthLabel} className="h-7 w-[7.25rem] justify-between border-none shadow-none px-2 text-sm font-medium text-foreground hover:bg-accent gap-1">
 						<SelectValue />
 					</SelectTrigger>
 					<SelectContent>
@@ -77,7 +85,7 @@ function CalendarCaption({ displayMonth, id }: CaptionProps) {
 					value={yearValue}
 					onValueChange={(v) => goToMonth(setYear(displayMonth, Number(v)))}
 				>
-					<SelectTrigger className="h-7 w-[4.5rem] justify-between border-none shadow-none px-2 text-sm font-medium text-foreground hover:bg-accent gap-1">
+					<SelectTrigger aria-label={yearLabel} className="h-7 w-[4.5rem] justify-between border-none shadow-none px-2 text-sm font-medium text-foreground hover:bg-accent gap-1">
 						<SelectValue />
 					</SelectTrigger>
 					<SelectContent>
@@ -92,9 +100,10 @@ function CalendarCaption({ displayMonth, id }: CaptionProps) {
 
 			<button
 				type="button"
+				aria-label={labels.labelNext(nextMonth, { locale })}
 				disabled={!nextMonth}
 				onClick={() => nextMonth && goToMonth(nextMonth)}
-				className="inline-flex items-center justify-center size-7 rounded-md text-tertiary-foreground hover:bg-accent hover:text-foreground transition-colors p-0 disabled:opacity-30 disabled:pointer-events-none"
+				className="inline-flex items-center justify-center size-7 rounded-md text-tertiary-foreground hover:bg-accent hover:text-foreground transition-colors p-0 outline-none focus-ring disabled:opacity-30 disabled:pointer-events-none"
 			>
 				<ChevronRight className="size-4" />
 			</button>
@@ -128,10 +137,11 @@ function Calendar({
 					hasDropdown && "hidden",
 				),
 				caption_dropdowns: "flex items-center gap-2",
-				vhidden: "hidden",
+				// Visually hidden, not display:none: it carries the month name and live updates for screen readers.
+				vhidden: "sr-only",
 				nav: "flex items-center gap-1",
 				nav_button:
-					"inline-flex items-center justify-center size-7 rounded-md text-tertiary-foreground hover:bg-accent hover:text-foreground transition-colors p-0",
+					"inline-flex items-center justify-center size-7 rounded-md text-tertiary-foreground hover:bg-accent hover:text-foreground transition-colors p-0 outline-none focus-ring",
 				nav_button_previous: "absolute left-1",
 				nav_button_next: "absolute right-1",
 				table: "w-full border-collapse space-x-1",
@@ -145,7 +155,7 @@ function Calendar({
 						? "[&:has(>.day-range-end)]:rounded-r-md [&:has(>.day-range-start)]:rounded-l-md first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md"
 						: "[&:has([aria-selected])]:rounded-md",
 				),
-				day: "inline-flex items-center justify-center size-8 p-0 font-normal text-muted-foreground rounded-md cursor-pointer hover:bg-accent hover:text-accent-foreground transition-colors aria-selected:opacity-100",
+				day: "inline-flex items-center justify-center size-8 p-0 font-normal text-muted-foreground rounded-md cursor-pointer outline-none focus-ring hover:bg-accent hover:text-accent-foreground transition-colors aria-selected:opacity-100",
 				day_range_start:
 					"day-range-start aria-selected:bg-primary aria-selected:text-primary-foreground",
 				day_range_end:

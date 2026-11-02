@@ -141,7 +141,7 @@ function Demo() {
 				getKey={(x) => x.id}
 				caption="Invoices"
 				dense
-				rowClassName={(x) => (pending.indexOf(x.id) >= 0 ? "opacity-50" : undefined)}
+				rowClassName={(x) => (pending.indexOf(x.id) >= 0 ? "line-through decoration-tertiary-foreground" : undefined)}
 				trailing={(x) =>
 					x.status === "voided" || pending.indexOf(x.id) >= 0 ? null : (
 						<Button

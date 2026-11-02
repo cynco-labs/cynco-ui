@@ -28,6 +28,7 @@ import {
 	DocumentTable,
 	DocLabel,
 	DocStack,
+	DocSignedFigure,
 	NotesBlock,
 	currencySymbol,
 	formatDocAmount,
@@ -117,7 +118,9 @@ export function ReportHeader({ title, period, basis = "accrual", currency = "MYR
 		locale === "en-ms" ? (
 			<>
 				<span className="block">{periodText(period, "en")}</span>
-				<span className="block text-[0.86em] italic opacity-75">{periodText(period, "ms")}</span>
+				<span lang="ms" className="block text-[0.86em] italic opacity-75">
+					{periodText(period, "ms")}
+				</span>
 			</>
 		) : (
 			periodText(period, locale === "ms" ? "ms" : "en")
@@ -352,7 +355,7 @@ export function StatementTable({ columns, rows, codes, notes, labelHeader, ruled
 					{columns.map((c) => (
 						<th key={c.key} scope="col" className={cn(thBase, "text-right", colPad(c), !modern && "text-[var(--doc-muted)]", !modern && c.emphasis && "text-[var(--doc-ink)]")}>
 							<span className="block">{label(t, c.header, true)}</span>
-							{c.sublabel != null && <span className="mt-[0.3mm] block font-medium tracking-[0.06em] normal-case opacity-70">{c.sublabel}</span>}
+							{c.sublabel != null && <span className="mt-[0.3mm] block font-medium tracking-[0.06em] normal-case">{c.sublabel}</span>}
 						</th>
 					))}
 				</tr>
@@ -414,20 +417,26 @@ export function StatementTable({ columns, rows, codes, notes, labelHeader, ruled
 									{r.code}
 								</td>
 							)}
-							<td
-								className={cn(strong ? strongPad : pad, r.kind === "subtotal" && "font-semibold", r.kind === "total" && "font-bold", firstLead === "label" ? "" : "pl-[3mm]")}
+							{/* The line's label heads its row, so each figure is announced with the line it belongs to (WCAG 1.3.1). */}
+							<th
+								scope="row"
+								className={cn("text-left", strong ? strongPad : pad, r.kind === "subtotal" ? "font-semibold" : r.kind === "total" ? "font-bold" : "font-normal", firstLead === "label" ? "" : "pl-[3mm]")}
 								style={firstLead === "label" ? leadPad(r.indent) : { paddingLeft: `${3 + (r.indent ?? 0) * 4}mm` }}
 							>
 								{label(t, r.label, false)}
 								{r.kind === "line" && r.detail && <div className="mt-[0.3mm] text-[7.25pt] leading-snug font-normal text-[var(--doc-muted)]">{r.detail}</div>}
-							</td>
+							</th>
 							{showNotes && <td className={cn(strong ? strongPad : pad, "cy-doc-num text-center text-[7.5pt] text-[var(--doc-muted)]")}>{r.note}</td>}
 							{columns.map((c, ci) => {
 								const v = r.values[ci];
 								const fmt = r.format ?? c.format ?? "amount";
 								const text = formatStatementValue(v, fmt, c.zero ?? "—");
 								const zero = v != null && isZero(v);
-								const fig = <span className={cn(zero && "text-[var(--doc-subtle)]", c.muted && !strong && "text-[var(--doc-muted)]")}>{text}</span>;
+								const fig = (
+									<span className={cn(zero && "text-[var(--doc-subtle)]", c.muted && !strong && "text-[var(--doc-muted)]")}>
+										<DocSignedFigure text={text} />
+									</span>
+								);
 								return (
 									<td
 										key={c.key}
@@ -449,7 +458,7 @@ export function StatementTable({ columns, rows, codes, notes, labelHeader, ruled
 													r.kind === "total" && (c.muted ? "[border-bottom-color:var(--doc-subtle)]" : "[border-bottom-color:var(--doc-rule-strong)]"),
 												)}
 											>
-												{text ? fig : <span className="opacity-0">0</span>}
+												{text ? fig : <span aria-hidden="true" className="opacity-0">0</span>}
 											</div>
 										) : (
 											fig
@@ -791,12 +800,17 @@ type LedgerRow = { kind: "line"; line: GeneralLedgerLine } | { kind: "closing"; 
 function LedgerBalance({ value, style }: { value: string; style: "drcr" | "brackets" }) {
 	const { locale } = useDocumentBrand();
 	if (isZero(value)) return <span className="text-[var(--doc-subtle)]">—</span>;
-	if (style === "brackets") return <>{formatDocAmount(value, { brackets: true })}</>;
+	if (style === "brackets") return <DocSignedFigure text={formatDocAmount(value, { brackets: true })} />;
 	const credit = value.trim().startsWith("-");
+	const lang = locale === "ms" ? 1 : 0;
+	// "Dr" / "Cr" print as abbreviations; screen readers hear the word ("Dr" is otherwise read as "Doctor").
 	return (
 		<>
 			{formatDocAmount(value.replace(/^-/, ""))}
-			<span className="ml-[1mm] inline-block w-[4mm] text-left text-[7pt] font-normal text-[var(--doc-subtle)]">{(credit ? DOC_LABELS.cr : DOC_LABELS.dr)[locale === "ms" ? 1 : 0]}</span>
+			<span aria-hidden="true" className="ml-[1mm] inline-block w-[4mm] text-left text-[7pt] font-normal text-[var(--doc-subtle)]">
+				{(credit ? DOC_LABELS.cr : DOC_LABELS.dr)[lang]}
+			</span>
+			<span className="sr-only"> {(credit ? DOC_LABELS.credit : DOC_LABELS.debit)[lang]}</span>
 		</>
 	);
 }
@@ -867,21 +881,26 @@ function AgeingSummary({ totals, percentages }: { totals: AgeingBuckets; percent
 	const t = useDocLabel();
 	const { layout } = useDocumentBrand();
 	return (
-		<div className={cn("cy-doc-break-avoid grid grid-cols-5 gap-x-[5mm]", layout === "modern" && "border-y border-[var(--doc-rule)] py-[3.5mm]", layout === "classic" && "border-y border-[var(--doc-rule)] py-[3mm]")}>
+		<dl className={cn("cy-doc-break-avoid grid grid-cols-5 gap-x-[5mm]", layout === "modern" && "border-y border-[var(--doc-rule)] py-[3.5mm]", layout === "classic" && "border-y border-[var(--doc-rule)] py-[3mm]")}>
 			{BUCKETS.map((b, i) => {
 				const p = Math.max(0, Math.min(100, Number(percentages[b]) || 0));
 				return (
 					<div key={b} className="min-w-0">
-						<DocLabel>{t(b)}</DocLabel>
-						<div className="cy-doc-num mt-[1.2mm] text-[10pt] leading-none font-semibold">{formatDocAmount(totals[b])}</div>
-						<div className="mt-[2mm] h-[1.4mm] overflow-hidden rounded-full bg-[var(--doc-rule)]">
-							<div className="h-full rounded-full" style={{ width: `${p}%`, background: `color-mix(in srgb, var(--doc-ink) ${22 + i * 16}%, #fff)` }} />
-						</div>
-						<div className="cy-doc-num mt-[1mm] text-[7pt] text-[var(--doc-muted)]">{formatStatementValue(percentages[b], "percent", "0%")}</div>
+						<dt>
+							<DocLabel>{t(b)}</DocLabel>
+						</dt>
+						<dd className="cy-doc-num mt-[1.2mm] text-[10pt] leading-none font-semibold">{formatDocAmount(totals[b])}</dd>
+						<dd>
+							{/* The bar repeats the percentage printed under it. */}
+							<div aria-hidden="true" className="mt-[2mm] h-[1.4mm] overflow-hidden rounded-full bg-[var(--doc-rule)]">
+								<div className="h-full rounded-full" style={{ width: `${p}%`, background: `color-mix(in srgb, var(--doc-ink) ${22 + i * 16}%, #fff)` }} />
+							</div>
+							<div className="cy-doc-num mt-[1mm] text-[7pt] text-[var(--doc-muted)]">{formatStatementValue(percentages[b], "percent", "0%")}</div>
+						</dd>
 					</div>
 				);
 			})}
-		</div>
+		</dl>
 	);
 }
 

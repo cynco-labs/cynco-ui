@@ -27,8 +27,8 @@
  * - Text labels come from a dictionary (English, Bahasa Melayu, or bilingual) and can be overridden.
  */
 import * as React from "react";
-import { cn } from "../base";
-import { toSen, fromSen, parseAmount, sumAmounts } from "../lib/money";
+import { GroupedTabButton, cn, useControllableState } from "../base";
+import { toSen, fromSen, isDecimalString, parseAmount, sumAmounts } from "../lib/money";
 import { DOC_LABELS, type DocLabelKey, type DocText } from "./labels";
 
 export { DOC_LABELS, type DocLabelKey, type DocText };
@@ -104,15 +104,21 @@ function renderPair(pair: readonly [string, string], locale: DocLocale, stacked?
 	if (locale === "en") return pair[0];
 	if (locale === "ms") return pair[1];
 	if (pair[0] === pair[1]) return pair[0];
+	// Bilingual documents are lang="en" at the root; the Malay half carries its own lang (WCAG 3.1.2).
 	return stacked ? (
 		<>
 			<span className="block">{pair[0]}</span>
-			<span className="block text-[0.82em] font-normal italic opacity-70">{pair[1]}</span>
+			<span lang="ms" className="block text-[0.82em] font-normal italic">
+				{pair[1]}
+			</span>
 		</>
 	) : (
 		<>
 			{pair[0]}
-			<span className="font-normal opacity-60"> / {pair[1]}</span>
+			<span className="font-normal opacity-60">
+				{" / "}
+				<span lang="ms">{pair[1]}</span>
+			</span>
 		</>
 	);
 }
@@ -179,8 +185,28 @@ export function formatDocAmount(value: string | number | undefined | null, opts:
 	const s = fromSen(toSen(value));
 	if (opts.zero !== undefined && toSen(s) === 0n) return opts.zero;
 	const neg = s.startsWith("-");
-	const out = NUM.format((neg ? s.slice(1) : s) as unknown as number);
+	const abs = neg ? s.slice(1) : s;
+	const out = isDecimalString(abs) ? NUM.format(abs) : abs;
 	return neg ? (opts.brackets ? `(${out})` : `-${out}`) : out;
+}
+
+/**
+ * A formatted figure as printed, with bracketed negatives made audible: "(1,234.00)" prints as is, and a screen
+ * reader hears "minus 1,234.00" (most screen readers skip parentheses at their default punctuation level, which
+ * would read a negative as positive). Any other text renders unchanged.
+ */
+export function DocSignedFigure({ text }: { text: string }) {
+	const { locale } = useDocumentBrand();
+	const m = /^\((.+)\)$/.exec(text);
+	if (!m) return <>{text}</>;
+	return (
+		<>
+			<span aria-hidden="true">(</span>
+			<span className="sr-only">{docLabelText("minus", locale === "ms" ? "ms" : "en")} </span>
+			{m[1]}
+			<span aria-hidden="true">)</span>
+		</>
+	);
 }
 
 /** "RM" for MYR, the ISO code otherwise. */
@@ -324,14 +350,28 @@ function PrintPage({ size, isolate }: { size: PaperSize; isolate: boolean }) {
 
 export type DocumentStamp = "paid" | "void" | "draft" | "copy" | "overdue";
 
+export type DocumentFit = "width" | "none";
+
 export type DocumentPageProps = Omit<React.ComponentProps<"article">, "title"> & {
 	/** Overrides the provider's brand (merged over it). */
 	brand?: Partial<DocBrand>;
 	size?: PaperSize;
 	/** A diagonal stamp across the page: Paid, Void, Draft, Copy, Overdue. */
 	stamp?: DocumentStamp;
-	/** On screen: scale the sheet down to fit its container (default) or keep 100% and scroll. */
-	fit?: "width" | "none";
+	/**
+	 * On screen: scale the sheet down to fit its container ("width") or keep 100% and scroll ("none").
+	 * Controlled; pair with `onFitChange`. Leave unset to let the zoom control switch it.
+	 */
+	fit?: DocumentFit;
+	/** Uncontrolled starting fit. Default "width". */
+	defaultFit?: DocumentFit;
+	onFitChange?: (fit: DocumentFit) => void;
+	/**
+	 * Show "Fit width / Actual size" above the sheet while it is scaled down. Default true. Fit-to-width
+	 * cancels browser zoom, so readers need a way back to 100% to enlarge the text (WCAG 1.4.4).
+	 * Hidden in print, and when `fit` is controlled without `onFitChange`.
+	 */
+	zoomControl?: boolean;
 	/** When printing, hide the rest of the app and print only this page. Default true. */
 	isolate?: boolean;
 };
@@ -343,7 +383,22 @@ const usePage = () => React.useContext(PageContext);
  * One sheet of paper. On screen: a white sheet scaled to its container. In print: the page itself,
  * with paper size, margins and page numbers ("2 / 3") from a named @page rule.
  */
-export function DocumentPage({ brand: brandOverride, size = "a4", stamp, fit = "width", isolate = true, className, style, children, ...props }: DocumentPageProps) {
+export function DocumentPage({
+	brand: brandOverride,
+	size = "a4",
+	stamp,
+	fit: fitProp,
+	defaultFit = "width",
+	onFitChange,
+	zoomControl = true,
+	isolate = true,
+	className,
+	style,
+	children,
+	...props
+}: DocumentPageProps) {
+	const [fitValue, setFit] = useControllableState<DocumentFit>({ prop: fitProp, defaultProp: defaultFit, onChange: onFitChange });
+	const fit = fitValue ?? "width";
 	const ctx = useDocumentBrand();
 	const brand = React.useMemo(() => {
 		const merged = { ...ctx, ...brandOverride, company: brandOverride?.company ?? ctx.company };
@@ -357,7 +412,7 @@ export function DocumentPage({ brand: brandOverride, size = "a4", stamp, fit = "
 
 	React.useLayoutEffect(() => {
 		const el = wrap.current;
-		if (!el || fit !== "width" || typeof ResizeObserver === "undefined") return;
+		if (!el || typeof ResizeObserver === "undefined") return;
 		const measure = () => {
 			const z = Math.min(1, el.clientWidth / paper.px);
 			setZoom((p) => (Math.abs(p - z) < 0.002 ? p : Math.floor(z * 1000) / 1000));
@@ -366,7 +421,10 @@ export function DocumentPage({ brand: brandOverride, size = "a4", stamp, fit = "
 		const ro = new ResizeObserver(measure);
 		ro.observe(el);
 		return () => ro.disconnect();
-	}, [fit, paper.px]);
+	}, [paper.px]);
+
+	// Offered only while the sheet is (or would be) scaled down, and only when a choice can take effect.
+	const showZoom = zoomControl && zoom < 1 && (fitProp === undefined || onFitChange !== undefined);
 
 	const vars = {
 		// Monochrome by design. The accent variables remain as aliases of ink so any part keeps working.
@@ -377,7 +435,8 @@ export function DocumentPage({ brand: brandOverride, size = "a4", stamp, fit = "
 		"--doc-tint-strong": "#ededef",
 		"--doc-ink": "#16181d",
 		"--doc-muted": "#596070",
-		"--doc-subtle": "#8a909c",
+		// Secondary labels are text: at least 4.5:1 on white and on the tint panels.
+		"--doc-subtle": "#656b78",
 		"--doc-rule": "#e7e8ec",
 		"--doc-rule-strong": "#16181d",
 		"--doc-font": font.body,
@@ -390,7 +449,26 @@ export function DocumentPage({ brand: brandOverride, size = "a4", stamp, fit = "
 	return (
 		<BrandContext.Provider value={brand}>
 			<PageContext.Provider value={{ size }}>
-				<div ref={wrap} data-slot="cy-document" className={cn("w-full min-w-0 print:overflow-visible", fit === "width" ? "overflow-hidden" : "overflow-x-auto")}>
+				{showZoom && (
+					<div className="mb-2 flex justify-end print:hidden">
+						<GroupedTabButton
+							aria-label="Zoom"
+							value={fit}
+							onValueChange={(v) => setFit(v === "none" ? "none" : "width")}
+							options={[
+								{ value: "width", label: "Fit width" },
+								{ value: "none", label: "Actual size" },
+							]}
+						/>
+					</div>
+				)}
+				<div
+					ref={wrap}
+					data-slot="cy-document"
+					// At 100% the sheet scrolls sideways in narrow containers: make that scroller reachable by keyboard (WCAG 2.1.1).
+					{...(fit === "none" ? { role: "region", tabIndex: 0, "aria-label": docLabelText("document", brand.locale === "ms" ? "ms" : "en") } : {})}
+					className={cn("w-full min-w-0 print:overflow-visible", fit === "width" ? "overflow-hidden" : "overflow-x-auto")}
+				>
 					<DocStyles />
 					<PrintPage size={size} isolate={isolate} />
 					<article
@@ -418,11 +496,13 @@ export function DocumentPage({ brand: brandOverride, size = "a4", stamp, fit = "
 
 function Stamp({ kind }: { kind: DocumentStamp }) {
 	const t = useDocLabel();
-	const tone = "#5a5f6a";
+	// Exposed to assistive tech: Paid / Void / Draft / Overdue is the document's status, not decoration (WCAG 1.3.1).
+	// So it is text and must be legible: --doc-subtle ink at full strength is 3.2:1 on white (large text, WCAG 1.4.3).
+	const tone = "var(--doc-subtle)";
 	return (
-		<div aria-hidden className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center">
+		<div data-slot="cy-doc-stamp" className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center">
 			<div
-				className="-rotate-[18deg] rounded-[6px] border-[3px] px-[0.5em] py-[0.05em] text-[64pt] leading-none font-semibold tracking-[0.14em] uppercase opacity-[0.09] [font-family:var(--doc-display)]"
+				className="-rotate-[18deg] rounded-[6px] border-[3px] px-[0.5em] py-[0.05em] text-[64pt] leading-none font-semibold tracking-[0.14em] uppercase [font-family:var(--doc-display)]"
 				style={{ color: tone, borderColor: tone }}
 			>
 				{t(kind)}
@@ -438,19 +518,19 @@ function Monogram({ name }: { name: string }) {
 	const initials = name.replace(/\b(sdn|bhd|berhad|enterprise|plt|trading|the)\b/gi, "").trim().split(/\s+/).slice(0, 2).map((w) => w[0]).join("").toUpperCase() || "·";
 	if (layout === "classic")
 		return (
-			<div className="flex size-[12mm] shrink-0 items-center justify-center rounded-full border border-[var(--doc-ink)] text-[13pt] font-normal tracking-[0.04em] text-[var(--doc-ink)] [font-family:var(--doc-display)]">
+			<div aria-hidden="true" className="flex size-[12mm] shrink-0 items-center justify-center rounded-full border border-[var(--doc-ink)] text-[13pt] font-normal tracking-[0.04em] text-[var(--doc-ink)] [font-family:var(--doc-display)]">
 				{initials}
 			</div>
 		);
 	if (layout === "minimal")
 		return (
-			<div className="flex size-[11mm] shrink-0 items-end justify-start text-[17pt] leading-none font-semibold tracking-[-0.04em] text-[var(--doc-ink)] [font-family:var(--doc-display)]">
+			<div aria-hidden="true" className="flex size-[11mm] shrink-0 items-end justify-start text-[17pt] leading-none font-semibold tracking-[-0.04em] text-[var(--doc-ink)] [font-family:var(--doc-display)]">
 				{initials}
 				<span className="text-[var(--doc-subtle)]">.</span>
 			</div>
 		);
 	return (
-		<div className="flex size-[12mm] shrink-0 items-center justify-center border-[1.5px] border-[var(--doc-ink)] text-[12pt] font-semibold tracking-[-0.02em] text-[var(--doc-ink)] [font-family:var(--doc-display)]">
+		<div aria-hidden="true" className="flex size-[12mm] shrink-0 items-center justify-center border-[1.5px] border-[var(--doc-ink)] text-[12pt] font-semibold tracking-[-0.02em] text-[var(--doc-ink)] [font-family:var(--doc-display)]">
 			{initials}
 		</div>
 	);
@@ -508,7 +588,7 @@ export function Letterhead({ title, number, subtitle, hideCompany, className, ..
 				<div className="mt-1 text-[10pt] font-semibold">{company.name}</div>
 				<CompanyIds party={company} className="justify-center text-[7pt] text-[var(--doc-muted)]" />
 				{lines.length > 0 && <div className="text-[7pt] leading-snug text-[var(--doc-muted)]">{lines.join(", ")}</div>}
-				<div className="mt-2 text-[9pt] font-semibold tracking-[0.12em] uppercase">{titleNode}</div>
+				<h1 className="mt-2 text-[9pt] font-semibold tracking-[0.12em] uppercase">{titleNode}</h1>
 				{number && <div className="font-medium tracking-[0.02em]">{number}</div>}
 			</header>
 		);
@@ -579,14 +659,9 @@ export function Letterhead({ title, number, subtitle, hideCompany, className, ..
 
 /* ═════════════ Small building blocks ═════════════ */
 
-/** Uppercase micro-label used above every block. */
+/** Uppercase micro-label used above every block. A block-level span, so it is valid inside a heading or a `<dt>`. */
 export function DocLabel({ children, className }: { children: React.ReactNode; className?: string }) {
-	const { layout } = useDocumentBrand();
-	return (
-		<div className={cn("text-[6.75pt] leading-tight font-semibold tracking-[0.12em] uppercase", "text-[var(--doc-subtle)]", className)}>
-			{children}
-		</div>
-	);
+	return <span className={cn("block text-[6.75pt] leading-tight font-semibold tracking-[0.12em] uppercase", "text-[var(--doc-subtle)]", className)}>{children}</span>;
 }
 
 /** A titled block with consistent spacing. */
@@ -594,7 +669,11 @@ export function DocSection({ title, children, className, ...props }: Omit<React.
 	const t = useDocLabel();
 	return (
 		<section className={cn("cy-doc-break-avoid", className)} {...props}>
-			{title != null && <DocLabel className="mb-1.5">{typeof title === "string" ? t(title) : title}</DocLabel>}
+			{title != null && (
+				<h2 className="mb-1.5">
+					<DocLabel>{typeof title === "string" ? t(title) : title}</DocLabel>
+				</h2>
+			)}
 			{children}
 		</section>
 	);
@@ -638,7 +717,9 @@ export function PartyBlock({ heading, party, className, ...props }: Omit<React.C
 	const contact = [party.phone, party.email].filter(Boolean).join("  ·  ");
 	return (
 		<div data-slot="cy-doc-party" className={cn("min-w-0", className)} {...props}>
-			<DocLabel>{typeof heading === "string" ? t(heading) : heading}</DocLabel>
+			<h2>
+				<DocLabel>{typeof heading === "string" ? t(heading) : heading}</DocLabel>
+			</h2>
 			<div className="mt-1.5 text-[9.5pt] leading-tight font-semibold">{party.name}</div>
 			<CompanyIds party={party} className="mt-1 text-[7.5pt] text-[var(--doc-muted)]" />
 			{(party.attention || lines.length > 0 || contact) && (
@@ -743,9 +824,10 @@ export function DocumentTable<T>({ columns, rows, sections, getKey, numbered, em
 				<tbody key={gi}>
 					{g.title && (
 						<tr>
-							<td colSpan={span} className="pt-[3.5mm] pb-[1mm]">
+							{/* Each group is its own tbody, so its title is a header for exactly that row group (WCAG 1.3.1). */}
+							<th scope="rowgroup" colSpan={span} className="pt-[3.5mm] pb-[1mm] text-left font-normal">
 								<DocLabel>{g.title}</DocLabel>
-							</td>
+							</th>
 						</tr>
 					)}
 					{g.rows.map((r, i) => {
@@ -863,7 +945,7 @@ export function TotalsBlock({ rows, currency = "MYR", words, aside, className, .
 							)}
 						>
 							{isGrand && <span className="mr-1 text-[8pt] font-medium text-[var(--doc-muted)]">{sym}</span>}
-							{formatDocAmount(r.value, { brackets: r.kind === "discount" || r.kind === "paid" })}
+							<DocSignedFigure text={formatDocAmount(r.value, { brackets: r.kind === "discount" || r.kind === "paid" })} />
 						</dd>
 					</div>
 				);
@@ -881,7 +963,11 @@ export function TotalsBlock({ rows, currency = "MYR", words, aside, className, .
 				<div className={cn("mt-[3mm] text-[7.5pt] leading-snug", size === "receipt" ? "" : "ml-auto max-w-[110mm] text-right")}>
 					<DocLabel className="mb-0.5">{t("amountInWords")}</DocLabel>
 					<div className="text-[var(--doc-ink)] italic">{amountInWords(grand.value, { currency, lang: locale === "ms" ? "ms" : "en" })}</div>
-					{locale === "en-ms" && <div className="text-[var(--doc-muted)] italic">{amountInWords(grand.value, { currency, lang: "ms" })}</div>}
+					{locale === "en-ms" && (
+						<div lang="ms" className="text-[var(--doc-muted)] italic">
+							{amountInWords(grand.value, { currency, lang: "ms" })}
+						</div>
+					)}
 				</div>
 			)}
 		</div>
@@ -904,6 +990,7 @@ export type PaymentBlockProps = Omit<React.ComponentProps<"div">, "children"> & 
 /** Where and how to pay. */
 export function PaymentBlock({ bankName, accountName, accountNumber, swiftCode, reference, qr, note, className, ...props }: PaymentBlockProps) {
 	const t = useDocLabel();
+	const { locale } = useDocumentBrand();
 	const rows = [
 		[t("bank", { stacked: true }), bankName],
 		[t("accountName", { stacked: true }), accountName],
@@ -914,7 +1001,11 @@ export function PaymentBlock({ bankName, accountName, accountNumber, swiftCode, 
 	return (
 		<DocSection title="paymentDetails" className={className} {...props}>
 			<div className="flex items-start gap-4">
-				{qr && <div className="size-[20mm] shrink-0 [&>svg]:size-full">{qr}</div>}
+				{qr && (
+					<div role="img" aria-label={docLabelText("paymentQr", locale === "ms" ? "ms" : "en")} className="size-[20mm] shrink-0 [&>svg]:size-full">
+						{qr}
+					</div>
+				)}
 				<div className="min-w-0">
 					<dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-0.5">
 						{rows.map(([k, v], i) => (
@@ -943,12 +1034,19 @@ export type EInvoiceBlockProps = Omit<React.ComponentProps<"div">, "children"> &
 /** LHDN MyInvois validation: QR + UUID when validated; an unmistakable placeholder while pending. */
 export function EInvoiceBlock({ status, uuid, validatedAt, url, qr, className, ...props }: EInvoiceBlockProps) {
 	const t = useDocLabel();
+	const { locale } = useDocumentBrand();
 	const validated = status === "validated";
 	return (
 		<div data-slot="cy-doc-einvoice" className={cn("cy-doc-break-avoid flex items-start gap-3", className)} {...props}>
 			{validated && (
 				<div className={cn("flex size-[20mm] shrink-0 items-center justify-center", !qr && "border border-dashed border-[var(--doc-rule)] text-center text-[6pt] leading-tight text-[var(--doc-subtle)]")}>
-					{qr ? <div className="size-full [&>svg]:size-full">{qr}</div> : <span className="px-1">MyInvois QR</span>}
+					{qr ? (
+							<div role="img" aria-label={docLabelText("eInvoiceQr", locale === "ms" ? "ms" : "en")} className="size-full [&>svg]:size-full">
+								{qr}
+							</div>
+						) : (
+							<span className="px-1">MyInvois QR</span>
+						)}
 				</div>
 			)}
 			<div className="min-w-0 text-[7.5pt] leading-[1.55]">
@@ -985,11 +1083,12 @@ export function NotesBlock({ title = "notes", children, className, ...props }: O
 /** Signature lines: authorised signatory, received by, prepared/approved by. */
 export function SignatureBlock({ signatories, className, ...props }: Omit<React.ComponentProps<"div">, "children"> & { signatories: DocSignatory[] }) {
 	const t = useDocLabel();
+	const { locale } = useDocumentBrand();
 	return (
 		<div data-slot="cy-doc-signatures" className={cn("cy-doc-break-avoid grid gap-10", signatories.length >= 3 ? "grid-cols-3" : "grid-cols-2", className)} {...props}>
 			{signatories.map((s, i) => (
 				<div key={i} className="min-w-0">
-					<div className="flex h-[16mm] items-end">{s.image && <img src={s.image} alt="" className="max-h-[15mm] w-auto object-contain" />}</div>
+					<div className="flex h-[16mm] items-end">{s.image && <img src={s.image} alt={docLabelText("signed", locale === "ms" ? "ms" : "en")} className="max-h-[15mm] w-auto object-contain" />}</div>
 					<div className="border-t border-[var(--doc-rule-strong)] pt-[1.5mm]">
 						<div className="text-[7pt] font-semibold tracking-[0.08em] text-[var(--doc-muted)] uppercase">{typeof s.label === "string" ? t(s.label) : s.label ?? t("authorisedSignature")}</div>
 						{s.name && <div className="mt-0.5 font-medium">{s.name}</div>}
@@ -1166,7 +1265,7 @@ export function DocFigureStrip({ items, currency = "MYR", quiet, zero, className
 				{items.map((f, i) => (
 					<div key={i} className={cn("flex min-w-0 flex-col justify-between pt-[2.2mm]", i > 0 && "border-l border-[var(--doc-rule)] pl-[3mm]", layout === "classic" && "text-center")}>
 						<dt className="text-[7pt] leading-tight text-[var(--doc-subtle)]">{label(f)}</dt>
-						<dd className={cn("cy-doc-num mt-[0.8mm] text-[8.5pt] whitespace-nowrap", f.emphasis ? "font-semibold" : "font-medium text-[var(--doc-muted)]")}>{formatDocAmount(f.value, { brackets: true, zero })}</dd>
+						<dd className={cn("cy-doc-num mt-[0.8mm] text-[8.5pt] whitespace-nowrap", f.emphasis ? "font-semibold" : "font-medium text-[var(--doc-muted)]")}><DocSignedFigure text={formatDocAmount(f.value, { brackets: true, zero })} /></dd>
 					</div>
 				))}
 			</dl>
@@ -1215,7 +1314,7 @@ export function DocFigureStrip({ items, currency = "MYR", quiet, zero, className
 							)}
 						>
 							{strong && <span className="mr-1 text-[7.5pt] font-medium text-[var(--doc-muted)]">{sym}</span>}
-							{formatDocAmount(f.value, { brackets: true, zero: strong ? undefined : zero })}
+							<DocSignedFigure text={formatDocAmount(f.value, { brackets: true, zero: strong ? undefined : zero })} />
 						</dd>
 					</div>
 				);
@@ -1232,7 +1331,11 @@ export function DocAmountWords({ amount, currency = "MYR", label = "amountInWord
 		<div data-slot="cy-doc-words" className={cn("cy-doc-break-avoid text-[7.5pt] leading-snug", align === "right" && "ml-auto max-w-[115mm] text-right", className)}>
 			<DocLabel className="mb-0.5">{L(label)}</DocLabel>
 			<div className="text-[var(--doc-ink)] italic">{amountInWords(amount, { currency, lang: locale === "ms" ? "ms" : "en" })}</div>
-			{locale === "en-ms" && <div className="text-[var(--doc-muted)] italic">{amountInWords(amount, { currency, lang: "ms" })}</div>}
+			{locale === "en-ms" && (
+				<div lang="ms" className="text-[var(--doc-muted)] italic">
+					{amountInWords(amount, { currency, lang: "ms" })}
+				</div>
+			)}
 		</div>
 	);
 }

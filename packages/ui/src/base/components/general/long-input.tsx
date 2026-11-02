@@ -10,11 +10,11 @@ function LongInput({ className, ...props }: React.ComponentProps<"textarea">) {
 			onBlur={() => setIsFocused(false)}
 			data-state={isFocused ? "open" : "closed"}
 			className={cn(
-				"selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input w-full min-w-0 rounded-lg border text-base px-2 py-1 shadow-sm outline-none disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm resize-y min-h-[70px]",
+				"selection:bg-primary selection:text-primary-foreground dark:bg-input-background border-input w-full min-w-0 rounded-lg border text-base px-2 py-1 shadow-sm outline-none disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm resize-y min-h-[70px]",
 				"aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
 
 				// Custom classes
-				"placeholder:text-placeholder placeholder:select-none input-base input-shadow form-input bg-input-background transition-none",
+				"placeholder:text-placeholder placeholder:select-none input-base input-shadow input-state-focus form-input bg-input-background transition-none",
 				className,
 			)}
 			{...props}

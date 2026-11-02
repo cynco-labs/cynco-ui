@@ -24,7 +24,7 @@ export default function IconButtonDemo() {
 			<IconButton variant="secondary" rightIcon={<CaretDownIcon size={12} />}>
 				Actions
 			</IconButton>
-			<IconButton variant="skeleton" icon={<TrashIcon size={14} />} />
+			<IconButton variant="skeleton" icon={<TrashIcon size={14} />} aria-label="Delete" />
 			<IconButton variant="destructive" icon={<TrashIcon size={14} />}>
 				Remove
 			</IconButton>

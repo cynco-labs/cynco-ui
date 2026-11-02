@@ -61,11 +61,24 @@ export function brandFromCyncoTemplate(
 
 /* ═════════════ Small controls ═════════════ */
 
-function Field({ label, children, hint }: { label: string; children: React.ReactNode; hint?: React.ReactNode }) {
+/**
+ * A labelled control. `htmlFor` makes the label a real `<label>` for a single input; otherwise the label carries
+ * `labelId` so a group of buttons can point at it with `aria-labelledby`.
+ */
+function Field({ label, labelId, htmlFor, children, hint }: { label: string; labelId?: string; htmlFor?: string; children: React.ReactNode; hint?: React.ReactNode }) {
+	const labelClass = "text-xs font-medium text-muted-foreground";
 	return (
 		<div className="flex min-w-0 flex-col gap-1.5">
 			<div className="flex items-baseline justify-between gap-2">
-				<span className="text-xs font-medium text-muted-foreground">{label}</span>
+				{htmlFor ? (
+					<label id={labelId} htmlFor={htmlFor} className={labelClass}>
+						{label}
+					</label>
+				) : (
+					<span id={labelId} className={labelClass}>
+						{label}
+					</span>
+				)}
 				{hint && <span className="text-2xs text-tertiary-foreground">{hint}</span>}
 			</div>
 			{children}
@@ -73,12 +86,26 @@ function Field({ label, children, hint }: { label: string; children: React.React
 	);
 }
 
-/** Thumbnail of a layout: a tiny sheet that shows where colour and weight sit. */
+/**
+ * Arrow-key movement for a group with one tab stop (APG radio group and tabs): arrows move focus and select,
+ * wrapping at the ends; Home / End jump to the first / last. The selected item is the group's only tab stop.
+ */
+function onRovingKeyDown<T extends string>(e: React.KeyboardEvent<HTMLElement>, role: "radio" | "tab", values: readonly T[], current: T, select: (v: T) => void) {
+	const step = e.key === "ArrowRight" || e.key === "ArrowDown" ? 1 : e.key === "ArrowLeft" || e.key === "ArrowUp" ? -1 : 0;
+	const at = values.indexOf(current);
+	const next = e.key === "Home" ? 0 : e.key === "End" ? values.length - 1 : step ? (at + step + values.length) % values.length : -1;
+	if (next < 0 || values.length === 0) return;
+	e.preventDefault();
+	select(values[next]);
+	e.currentTarget.parentElement?.querySelectorAll<HTMLElement>(`[role="${role}"]`)[next]?.focus();
+}
+
+/** Thumbnail of a layout: a tiny sheet that shows where colour and weight sit. Decorative: the option's name is its label. */
 function LayoutThumb({ layout }: { layout: DocLayout }) {
 	const accent = "#1a1a1a";
 	const line = (w: string, cls = "") => <div className={cn("h-[3px] rounded-full bg-black/15", cls)} style={{ width: w }} />;
 	return (
-		<div className="relative flex h-[58px] w-full flex-col gap-[5px] overflow-hidden rounded-[4px] bg-white p-[7px] shadow-[0_0_0_1px_rgba(0,0,0,.08)]">
+		<div aria-hidden="true" className="relative flex h-[58px] w-full flex-col gap-[5px] overflow-hidden rounded-[4px] bg-white p-[7px] shadow-[0_0_0_1px_rgba(0,0,0,.08)]">
 			{layout === "modern" && (
 				<>
 										<div className="flex items-start justify-between">
@@ -134,6 +161,8 @@ const FONT_SAMPLES: Array<{ value: DocFont; label: string; family: string }> = [
 
 const STAMP_LABEL: Record<DocumentStamp, string> = { paid: "Paid", void: "Void", draft: "Draft", copy: "Copy", overdue: "Overdue" };
 const SIZE_LABEL: Record<PaperSize, string> = { a4: "A4", "a4-landscape": "A4 landscape", a5: "A5", letter: "Letter", receipt: "80mm" };
+const LAYOUTS: readonly DocLayout[] = ["minimal", "classic", "modern"];
+const FONT_VALUES: readonly DocFont[] = FONT_SAMPLES.map((f) => f.value);
 
 /* ═════════════ Studio ═════════════ */
 
@@ -162,6 +191,10 @@ export function DocumentStudio({ brand: brandProp, defaultBrand, onBrandChange, 
 	const font: DocFont = brand.font ?? (layout === "classic" ? "serif" : "inter");
 	const locale: DocLocale = brand.locale ?? "en";
 	const fileRef = React.useRef<HTMLInputElement>(null);
+	const uid = React.useId();
+	const ids = { logo: `${uid}-logo`, layout: `${uid}-layout`, font: `${uid}-font`, language: `${uid}-language`, footer: `${uid}-footer`, panel: `${uid}-panel`, tab: (id: string) => `${uid}-tab-${id}` };
+	const docIds = documents.map((d) => d.id);
+	const setLayout = (l: DocLayout) => update({ layout: l, font: l === "classic" ? "serif" : brand.font === "serif" ? "inter" : brand.font });
 
 	const onLogo = (file: File | undefined) => {
 		if (!file) return;
@@ -186,10 +219,11 @@ export function DocumentStudio({ brand: brandProp, defaultBrand, onBrandChange, 
 						</Button>
 					</div>
 
-					<Field label="Logo" hint={typeof brand.logo === "string" ? "Image" : "Monogram"}>
-						<div className="flex items-center gap-2">
-							<input ref={fileRef} type="file" accept="image/png,image/jpeg,image/svg+xml,image/webp" className="sr-only" onChange={(e) => onLogo(e.target.files?.[0])} aria-label="Upload logo" />
-							<Button variant="secondary" size="sm" onClick={() => fileRef.current?.click()} className="gap-1.5">
+					<Field label="Logo" labelId={ids.logo} hint={typeof brand.logo === "string" ? "Image" : "Monogram"}>
+						<div role="group" aria-labelledby={ids.logo} className="flex items-center gap-2">
+							{/* Hidden, not visually hidden: the button below is the one keyboard stop, so focus never lands on an invisible input. */}
+							<input ref={fileRef} type="file" accept="image/png,image/jpeg,image/svg+xml,image/webp" hidden onChange={(e) => onLogo(e.target.files?.[0])} />
+							<Button variant="secondary" size="sm" onClick={() => fileRef.current?.click()} aria-label={brand.logo ? "Replace logo" : "Upload logo"} className="gap-1.5">
 								<ImageSquareIcon size={14} aria-hidden />
 								{brand.logo ? "Replace" : "Upload"}
 							</Button>
@@ -202,17 +236,19 @@ export function DocumentStudio({ brand: brandProp, defaultBrand, onBrandChange, 
 						</div>
 					</Field>
 
-					<Field label="Layout">
-						<div role="radiogroup" aria-label="Layout" className="grid grid-cols-3 gap-2">
-							{(["minimal", "classic", "modern"] as DocLayout[]).map((l) => (
+					<Field label="Layout" labelId={ids.layout}>
+						<div role="radiogroup" aria-labelledby={ids.layout} className="grid grid-cols-3 gap-2">
+							{LAYOUTS.map((l) => (
 								<button
 									key={l}
 									type="button"
 									role="radio"
 									aria-checked={layout === l}
-									onClick={() => update({ layout: l, font: l === "classic" ? "serif" : brand.font === "serif" ? "inter" : brand.font })}
+									tabIndex={layout === l ? 0 : -1}
+									onKeyDown={(e) => onRovingKeyDown(e, "radio", LAYOUTS, layout, setLayout)}
+									onClick={() => setLayout(l)}
 									className={cn(
-										"flex cursor-pointer flex-col gap-1.5 rounded-lg border p-1.5 text-left outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring",
+										"flex cursor-pointer flex-col gap-1.5 rounded-lg border p-1.5 text-left outline-none transition-colors focus-ring",
 										layout === l ? "border-primary bg-active-primary" : "border-border hover:bg-interactive-secondary-hover",
 									)}
 								>
@@ -223,21 +259,23 @@ export function DocumentStudio({ brand: brandProp, defaultBrand, onBrandChange, 
 						</div>
 					</Field>
 
-					<Field label="Typeface">
-						<div role="radiogroup" aria-label="Typeface" className="grid grid-cols-3 gap-2">
+					<Field label="Typeface" labelId={ids.font}>
+						<div role="radiogroup" aria-labelledby={ids.font} className="grid grid-cols-3 gap-2">
 							{FONT_SAMPLES.map((f) => (
 								<button
 									key={f.value}
 									type="button"
 									role="radio"
 									aria-checked={font === f.value}
+									tabIndex={font === f.value ? 0 : -1}
+									onKeyDown={(e) => onRovingKeyDown(e, "radio", FONT_VALUES, font, (v) => update({ font: v }))}
 									onClick={() => update({ font: f.value })}
 									className={cn(
-										"flex cursor-pointer flex-col items-start gap-0.5 rounded-lg border px-2.5 py-2 outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring",
+										"flex cursor-pointer flex-col items-start gap-0.5 rounded-lg border px-2.5 py-2 outline-none transition-colors focus-ring",
 										font === f.value ? "border-primary bg-active-primary" : "border-border hover:bg-interactive-secondary-hover",
 									)}
 								>
-									<span className="text-lg leading-none text-foreground" style={{ fontFamily: f.family }}>
+									<span aria-hidden="true" className="text-lg leading-none text-foreground" style={{ fontFamily: f.family }}>
 										Aa
 									</span>
 									<span className="text-2xs text-tertiary-foreground">{f.label}</span>
@@ -246,45 +284,72 @@ export function DocumentStudio({ brand: brandProp, defaultBrand, onBrandChange, 
 						</div>
 					</Field>
 
-					<Field label="Language">
-						<GroupedTabButton
-							value={locale}
-							onValueChange={(v) => update({ locale: v as DocLocale })}
-							options={[
-								{ value: "en", label: "English" },
-								{ value: "ms", label: "Melayu" },
-								{ value: "en-ms", label: "Both" },
-							]}
-						/>
+					<Field label="Language" labelId={ids.language}>
+						<div role="group" aria-labelledby={ids.language}>
+							<GroupedTabButton
+								value={locale}
+								onValueChange={(v) => update({ locale: v as DocLocale })}
+								options={[
+									{ value: "en", label: "English" },
+									{ value: "ms", label: <span lang="ms">Melayu</span> },
+									{ value: "en-ms", label: "Both" },
+								]}
+							/>
+						</div>
 					</Field>
 
-					<Field label="Footer note">
-						<Input value={typeof brand.footerNote === "string" ? brand.footerNote : ""} placeholder="Thank you for your business." onChange={(e) => update({ footerNote: e.target.value || undefined })} />
+					<Field label="Footer note" htmlFor={ids.footer}>
+						<Input id={ids.footer} value={typeof brand.footerNote === "string" ? brand.footerNote : ""} placeholder="Thank you for your business." onChange={(e) => update({ footerNote: e.target.value || undefined })} />
 					</Field>
 				</aside>
 
 				{/* ── Preview ── */}
 				<section aria-label="Preview" className="flex min-w-0 flex-col gap-3">
 					<ScrollRow role="tablist" aria-label="Document">
-						{documents.map((d) => (
-							<Button key={d.id} role="tab" aria-selected={d.id === doc?.id} variant={d.id === doc?.id ? "secondary" : "skeleton"} size="sm" onClick={() => setDocId(d.id)} className="shrink-0">
-								{d.label}
-							</Button>
-						))}
+						{documents.map((d) => {
+							const selected = d.id === doc?.id;
+							return (
+								<Button
+									key={d.id}
+									id={ids.tab(d.id)}
+									role="tab"
+									aria-selected={selected}
+									aria-controls={ids.panel}
+									tabIndex={selected ? 0 : -1}
+									onKeyDown={(e) => doc && onRovingKeyDown(e, "tab", docIds, doc.id, setDocId)}
+									variant={selected ? "secondary" : "skeleton"}
+									size="sm"
+									onClick={() => setDocId(d.id)}
+									className="shrink-0"
+								>
+									{d.label}
+								</Button>
+							);
+						})}
 					</ScrollRow>
 					<div className="flex flex-wrap items-center gap-2">
 						{sizes.length > 1 && (
-							<GroupedTabButton value={size} onValueChange={(v) => doc && setSizeByDoc((m) => ({ ...m, [doc.id]: v as PaperSize }))} options={sizes.map((s) => ({ value: s, label: SIZE_LABEL[s] }))} />
+								<GroupedTabButton aria-label="Paper size" value={size} onValueChange={(v) => doc && setSizeByDoc((m) => ({ ...m, [doc.id]: v as PaperSize }))} options={sizes.map((s) => ({ value: s, label: SIZE_LABEL[s] }))} />
 						)}
 						{doc?.stamps && doc.stamps.length > 0 && (
-							<GroupedTabButton value={stamp} onValueChange={(v) => setStamp(v as DocumentStamp | "none")} options={[{ value: "none", label: "No stamp" }, ...doc.stamps.map((s) => ({ value: s, label: STAMP_LABEL[s] }))]} />
+								<GroupedTabButton aria-label="Stamp" value={stamp} onValueChange={(v) => setStamp(v as DocumentStamp | "none")} options={[{ value: "none", label: "No stamp" }, ...doc.stamps.map((s) => ({ value: s, label: STAMP_LABEL[s] }))]} />
 						)}
 						<Button variant="secondary" size="sm" className="ml-auto gap-1.5" onClick={() => (onPrint ? onPrint() : window.print())}>
 							<PrinterIcon size={14} aria-hidden />
 							Print / PDF
 						</Button>
 					</div>
-					<div className={cn("min-w-0 rounded-xl bg-[color-mix(in_srgb,var(--muted)_70%,transparent)] p-[clamp(8px,3cqi,28px)]", size === "receipt" && "flex justify-center")}>
+					{/* The sheet brings its own Fit width / Actual size control (DocumentPage). */}
+					<div
+						id={ids.panel}
+						role="tabpanel"
+						aria-labelledby={doc ? ids.tab(doc.id) : undefined}
+						tabIndex={0}
+						className={cn(
+							"min-w-0 rounded-xl bg-[color-mix(in_srgb,var(--muted)_70%,transparent)] p-[clamp(8px,3cqi,28px)] outline-none focus-ring-inset",
+							size === "receipt" && "flex justify-center",
+						)}
+					>
 						<div className={cn("min-w-0", size === "receipt" && "w-full max-w-[340px]")}>
 							<DocumentBrandProvider brand={brand}>{doc?.render({ stamp: stamp === "none" ? undefined : stamp, size })}</DocumentBrandProvider>
 						</div>

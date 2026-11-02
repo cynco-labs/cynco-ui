@@ -1,7 +1,8 @@
 import { cn } from "../../lib/utils";
+import { SelectedMark } from "./selected-mark";
 import type * as React from "react";
 
-interface StackBadgeProps {
+interface StackBadgeProps extends Omit<React.HTMLAttributes<HTMLElement>, "onClick"> {
 	stack: string;
 	asset?: string;
 	icon?: React.ReactNode;
@@ -19,8 +20,11 @@ export function StackBadge({
 	onClick,
 	onSelectedChange,
 	className,
+	...props
 }: StackBadgeProps) {
 	const isClickable = !!(onClick || onSelectedChange);
+	// A toggle exposes its state through aria-pressed; anything else says it in text.
+	const isToggle = !!onSelectedChange;
 
 	const handleClick = () => {
 		if (!isClickable) return;
@@ -32,31 +36,36 @@ export function StackBadge({
 
 	return (
 		<Component
+			{...props}
 			type={isClickable ? "button" : undefined}
-			onClick={handleClick}
+			onClick={isClickable ? handleClick : undefined}
+			aria-pressed={isToggle ? isSelected : undefined}
 			data-state={isSelected ? "selected" : "unselected"}
 			className={cn(
-				"pr-2 rounded-md shadow-[0px_4px_4px_0px_rgba(0,0,0,0.02)] shadow-[inset_0px_-3px_4px_0px_rgba(0,0,0,0.04)] outline outline-1 outline-offset-[-1px] inline-flex justify-start items-center gap-1.5 transition-none",
+				"relative pr-2 rounded-md shadow-bevel outline outline-1 outline-offset-[-1px] inline-flex justify-start items-center gap-1.5 transition-none",
 				isSelected
 					? "bg-interactive-secondary outline-primary"
 					: "bg-interactive-secondary outline-border",
 				isClickable && !isSelected && "hover:outline-primary cursor-pointer",
-				isClickable && "focus-visible:outline-primary focus-visible:outline-2",
+				isClickable && "focus-ring",
 				className,
 			)}
 		>
 			<div
 				className={cn(
-					"size-auto p-1 rounded-tl rounded-bl shadow-[inset_0px_-3px_4px_0px_rgba(0,0,0,0.06)] shadow-[inset_0px_3px_4px_0px_rgba(255,255,255,0.10)] outline outline-1 outline-offset-[-1px] flex justify-center items-center gap-2.5",
+					"size-auto p-1 rounded-tl rounded-bl shadow-bevel-pressed outline outline-1 outline-offset-[-1px] flex justify-center items-center gap-2.5",
 					isSelected
 						? "bg-interactive-secondary outline-primary"
 						: "bg-interactive-secondary outline-border",
 				)}
 			>
 				{asset ? (
-					<img className="w-4 h-4" src={asset} alt={stack} />
+					// Decorative: the stack name is the visible text beside it.
+					<img className="w-4 h-4" src={asset} alt="" />
 				) : (
-					<div className="w-4 h-4 flex items-center justify-center">{icon}</div>
+					<div aria-hidden="true" className="w-4 h-4 flex items-center justify-center">
+						{icon}
+					</div>
 				)}
 			</div>
 			<div
@@ -66,7 +75,9 @@ export function StackBadge({
 				)}
 			>
 				{stack}
+				{isSelected && !isToggle && <span className="sr-only"> (selected)</span>}
 			</div>
+			{isSelected && <SelectedMark />}
 		</Component>
 	);
 }

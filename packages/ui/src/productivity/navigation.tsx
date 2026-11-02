@@ -36,8 +36,13 @@ import {
 	InputGroup,
 	InputGroupAddon,
 	InputGroupInput,
+	Label,
+	Switch,
 	cn,
+	useCharacterKeyShortcuts,
+	useShortcutAllowed,
 	useControllableState,
+	LiveStatus,
 } from "../base";
 import {
 	ArrowCounterClockwiseIcon,
@@ -74,7 +79,7 @@ import {
 	UserPlusIcon,
 	UsersThreeIcon,
 } from "@phosphor-icons/react";
-import { ActionBar, DocStatus, INVOICE_STATUS, Kbd, Money, ScrollRow, parseAmount, useHotkey } from "../lib/shared";
+import { ActionBar, DocStatus, FieldError, INVOICE_STATUS, Kbd, Money, ScrollRow, parseAmount, useHotkey } from "../lib/shared";
 
 /* ───────────── Small local helpers ───────────── */
 
@@ -108,6 +113,14 @@ function KeySeq({ keys, className }: { keys: string | string[]; className?: stri
 			))}
 		</span>
 	);
+}
+
+/**
+ * The alternatives that can fire right now: printable-only ones ("?", "g i") drop out while the
+ * user has single-key shortcuts turned off (WCAG 2.1.4). Chords with ⌘/Ctrl/Alt always stay.
+ */
+function liveKeys(keys: string | string[], allowed: (keys: string) => boolean): string[] {
+	return (Array.isArray(keys) ? keys : [keys]).filter(allowed);
 }
 
 /** Readable text for a shortcut, used for search ("alt b", "g then i"). */
@@ -290,8 +303,10 @@ function recordToItem(r: CommandPaletteRecord): CommandPaletteItem {
 }
 
 /** One row: icon, label, hint and keycaps — or, for records, number, name, status and amount. */
-function PaletteRow({ item }: { item: CommandPaletteItem }) {
+/** `allowed` comes from the palette (read once there, not per row). */
+function PaletteRow({ item, allowed }: { item: CommandPaletteItem; allowed: (keys: string) => boolean }) {
 	const r = item.record;
+	const shortcut = item.shortcut ? liveKeys(item.shortcut, allowed) : [];
 	return (
 		<>
 			<span aria-hidden="true" className="flex size-4 shrink-0 items-center justify-center text-tertiary-foreground [&_svg]:size-4">
@@ -315,7 +330,7 @@ function PaletteRow({ item }: { item: CommandPaletteItem }) {
 				) : (
 					item.hint && <span className="hidden truncate text-xs text-tertiary-foreground @md:inline">{item.hint}</span>
 				)}
-				{item.shortcut && <KeySeq keys={item.shortcut} className="hidden @sm:inline-flex" />}
+				{shortcut.length > 0 && <KeySeq keys={shortcut} className="hidden @sm:inline-flex" />}
 			</span>
 		</>
 	);
@@ -370,6 +385,8 @@ export function CommandPalette({
 	const [open, setOpen] = useControlled(openProp, defaultOpen, onOpenChange);
 	const [query, setQuery] = React.useState("");
 
+	const allowed = useShortcutAllowed();
+	// useHotkey drops printable-only keys itself while single-key shortcuts are off.
 	useHotkey(hotkey || "mod+k", () => setOpen(!open), { enabled: hotkey !== false && !inline, allowInInputs: true });
 
 	const actionsOnly = query.trimStart().startsWith(">");
@@ -400,6 +417,7 @@ export function CommandPalette({
 		const rank = (g: string) => (GROUP_ORDER.indexOf(g) + 1 || GROUP_ORDER.length + 1);
 		return out.sort((a, b) => (q ? b.best - a.best : 0) || rank(a.group) - rank(b.group));
 	}, [items, recent, q, actionsOnly, recentLimit]);
+	const resultCount = groups.reduce((n, g) => n + g.items.length, 0);
 
 	const run = (item: CommandPaletteItem) => {
 		if (item.disabled) return;
@@ -421,7 +439,7 @@ export function CommandPalette({
 					<CommandGroup key={g.group} heading={g.group}>
 						{g.items.map((item) => (
 							<CommandItem key={item.id} value={item.id} disabled={item.disabled} onSelect={() => run(item)}>
-								<PaletteRow item={item} />
+								<PaletteRow item={item} allowed={allowed} />
 							</CommandItem>
 						))}
 					</CommandGroup>
@@ -438,6 +456,10 @@ export function CommandPalette({
 				</div>
 				<CommandHint className="shrink-0"><Kbd keys="esc" /><span className="hidden @sm:inline">{inline ? "Clear" : "Close"}</span></CommandHint>
 			</CommandFooter>
+			{/* cmdk's empty state isn't announced; this stable region reports the result count as you type. */}
+			<LiveStatus>
+				{q ? (resultCount === 0 ? `No results for “${q}”` : `${resultCount} ${resultCount === 1 ? "result" : "results"}`) : ""}
+			</LiveStatus>
 		</>
 	);
 
@@ -486,6 +508,8 @@ export type CommandPaletteTriggerProps = React.ComponentProps<"button"> & {
 
 /** A search-field-looking button for headers that opens the palette (wire `onClick`). */
 export function CommandPaletteTrigger({ label = "Search or jump to…", shortcut = "mod+k", className, ...props }: CommandPaletteTriggerProps) {
+	const allowed = useShortcutAllowed();
+	const showKeys = !!shortcut && allowed(shortcut);
 	return (
 		<button
 			type="button"
@@ -494,14 +518,14 @@ export function CommandPaletteTrigger({ label = "Search or jump to…", shortcut
 			aria-keyshortcuts={shortcut === "mod+k" ? "Meta+K Control+K" : undefined}
 			className={cn(
 				"flex h-input w-full max-w-xs min-w-0 cursor-pointer items-center gap-2 rounded-lg border border-[var(--color-input)] bg-interactive-secondary px-2 text-sm text-tertiary-foreground btn-secondary-shadow transition-colors",
-				"outline-none hover:bg-interactive-secondary-hover hover:text-muted-foreground focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-ring/40",
+				"outline-none hover:bg-interactive-secondary-hover hover:text-muted-foreground focus-visible:border-primary focus-ring",
 				className,
 			)}
 			{...props}
 		>
 			<MagnifyingGlassIcon aria-hidden="true" className="size-3.5 shrink-0" />
 			<span className="min-w-0 flex-1 truncate text-left">{label}</span>
-			{shortcut && <Kbd keys={shortcut} className="shrink-0" />}
+			{showKeys && <Kbd keys={shortcut} className="shrink-0" />}
 		</button>
 	);
 }
@@ -512,6 +536,11 @@ export type ShortcutsDialogItem = {
 	/** "mod+k", "g i" (sequence), "?"; an array lists alternatives. */
 	keys: string | string[];
 	label: string;
+	/**
+	 * Fires only while its own component has focus (e.g. "=" inside an amount cell), so the
+	 * single-key switch doesn't apply and the row is never shown as off.
+	 */
+	focusScoped?: boolean;
 };
 export type ShortcutsDialogSection = { title: string; items: ShortcutsDialogItem[] };
 
@@ -566,7 +595,7 @@ export const CYNCO_SHORTCUT_SECTIONS: ShortcutsDialogSection[] = [
 			{ keys: "Tab", label: "Next cell" },
 			{ keys: "enter", label: "New line" },
 			{ keys: "alt+b", label: "Balance this line" },
-			{ keys: "=", label: "Start a formula (=1200*1.08)" },
+			{ keys: "=", label: "Start a formula (=1200*1.08)", focusScoped: true },
 			{ keys: "mod+enter", label: "Post entry" },
 			{ keys: "mod+s", label: "Save draft" },
 		],
@@ -598,6 +627,9 @@ export function ShortcutsDialog({
 	const [open, setOpen] = useControlled(openProp, defaultOpen, onOpenChange);
 	const [query, setQuery] = React.useState("");
 	const searchId = React.useId();
+	const switchDescId = React.useId();
+	const [characterKeys, setCharacterKeys] = useCharacterKeyShortcuts();
+	const allowed = useShortcutAllowed();
 
 	useHotkey(hotkey || "?", () => setOpen(true), { enabled: hotkey !== false && !open });
 
@@ -613,6 +645,7 @@ export function ShortcutsDialog({
 				: s.items,
 		}))
 		.filter((s) => s.items.length > 0);
+	const shownCount = shown.reduce((n, s) => n + s.items.length, 0);
 
 	return (
 		<Dialog
@@ -638,26 +671,56 @@ export function ShortcutsDialog({
 						<InputGroupInput id={searchId} value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search shortcuts…" autoComplete="off" />
 					</InputGroup>
 				</div>
-				<div className="min-h-0 flex-1 overflow-y-auto border-t border-border px-4 pt-3 pb-4" aria-live="polite">
+				{/* A short count instead of a live list: re-reading every matching row on each keystroke is noise. */}
+				<LiveStatus>
+					{q ? (shownCount === 0 ? `No shortcuts match “${query.trim()}”` : `${shownCount} ${shownCount === 1 ? "shortcut" : "shortcuts"}`) : ""}
+				</LiveStatus>
+				{/* Text only, so it takes a tab stop of its own for keyboard scrolling. */}
+				<div
+					tabIndex={0}
+					role="group"
+					aria-label={title}
+					className="min-h-0 flex-1 overflow-y-auto border-t border-border px-4 pt-3 pb-4 outline-none focus-ring-inset"
+				>
 					{shown.length === 0 ? (
 						<p className="py-8 text-center text-sm text-tertiary-foreground">No shortcuts match “{query.trim()}”.</p>
 					) : (
 						<div className="gap-x-8 @xl:columns-2">
 							{shown.map((s) => (
-								<section key={s.title} aria-label={s.title} className="mb-5 min-w-0 break-inside-avoid last:mb-0">
+								<section key={s.title} className="mb-5 min-w-0 break-inside-avoid last:mb-0">
 									<h3 className="mb-1 text-xs font-medium text-tertiary-foreground">{s.title}</h3>
 									<ul className="divide-y divide-table-row-divider">
-										{s.items.map((it) => (
-											<li key={it.label + String(it.keys)} className="flex items-center justify-between gap-3 py-1.5 text-sm text-foreground">
-												<span className="min-w-0">{it.label}</span>
-												<KeySeq keys={it.keys} />
-											</li>
-										))}
+										{s.items.map((it) => {
+											const live = it.focusScoped ? [it.keys].flat() : liveKeys(it.keys, allowed);
+											const off = live.length === 0;
+											return (
+												<li
+													key={it.label + String(it.keys)}
+													data-off={off || undefined}
+													className={cn("flex items-center justify-between gap-3 py-1.5 text-sm", off ? "text-tertiary-foreground" : "text-foreground")}
+												>
+													<span className="min-w-0">{it.label}</span>
+													<span className="flex shrink-0 items-center gap-2">
+														{off && <span className="text-2xs">Off</span>}
+														<KeySeq keys={off ? it.keys : live} className={cn(off && "opacity-50")} />
+													</span>
+												</li>
+											);
+										})}
 									</ul>
 								</section>
 							))}
 						</div>
 					)}
+				</div>
+				<div className="border-t border-border px-4 py-3">
+					<Label>
+						<Switch checked={characterKeys} onCheckedChange={setCharacterKeys} aria-describedby={switchDescId} />
+						Single-key shortcuts
+					</Label>
+					<p id={switchDescId} className="mt-1.5 pl-11 text-xs text-muted-foreground">
+						Shortcuts made of letters or symbols alone, like <Kbd keys="?" /> or <Kbd keys="g" /> then <Kbd keys="i" />. Turn off if you use speech input or switch control.
+					</p>
 				</div>
 			</DialogContent>
 		</Dialog>
@@ -688,15 +751,19 @@ export const CYNCO_GOTO_ROUTES: Record<string, string> = {
 /**
  * Two-key sequences, Linear/GitHub style: press G, then I within `timeout` ms to go to Invoices.
  * `map` keys are a single letter (after the "g" leader) or a full sequence ("c i"). Ignored while
- * typing, inside dialogs and menus, and with Ctrl/⌘/Alt held. Returns the pending leader key so a
- * UI can show "G…" while it waits.
+ * typing, inside dialogs and menus, with Ctrl/⌘/Alt held, and while the user has single-key
+ * shortcuts turned off (useCharacterKeyShortcuts). Returns the pending leader key so a UI can show
+ * "G…" while it waits.
  */
 export function useGoToShortcuts<T = string>(
 	map: Record<string, T>,
 	navigate: (target: T, sequence: string) => void,
 	opts: { enabled?: boolean; timeout?: number; leader?: string } = {},
 ): { pending: string | null } {
-	const { enabled = true, timeout = 1200, leader = "g" } = opts;
+	const { enabled: enabledOpt = true, timeout = 1200, leader = "g" } = opts;
+	// Every sequence here is printable keys only, so the user's single-key switch turns them all off.
+	const [characterKeys] = useCharacterKeyShortcuts();
+	const enabled = enabledOpt && characterKeys;
 	const [pending, setPending] = React.useState<string | null>(null);
 	const navRef = React.useRef(navigate);
 	navRef.current = navigate;
@@ -751,7 +818,7 @@ export function useGoToShortcuts<T = string>(
 		};
 	}, [sig, enabled, timeout, leader]);
 
-	return { pending };
+	return { pending: enabled ? pending : null };
 }
 
 /* ───────────── Saved views ───────────── */
@@ -852,9 +919,19 @@ export function SavedViewsBar({
 		selectView(copy);
 		focusTab(copy.id);
 	};
+	const [nameError, setNameError] = React.useState(false);
+	const nameInput = React.useRef<HTMLInputElement>(null);
+	const nameErrorId = React.useId();
 	const submitDialog = () => {
-		if (!dialog || !dialog.name.trim()) return;
+		if (!dialog) return;
 		const name = dialog.name.trim();
+		// Validate on submit (the button stays enabled): mark the field and move focus to it.
+		if (!name) {
+			setNameError(true);
+			nameInput.current?.focus();
+			return;
+		}
+		setNameError(false);
 		if (dialog.mode === "rename" && dialog.viewId) {
 			update(dialog.viewId, { name, shared: dialog.shared });
 			returnTo.current = dialog.viewId;
@@ -892,7 +969,7 @@ export function SavedViewsBar({
 								key={v.id}
 								className={cn(
 									"flex shrink-0 items-center rounded-md border border-transparent",
-									isActive && "border-table-surface-border bg-table-surface shadow-[0_1px_2px_rgb(0_0_0/0.06)] dark:shadow-[0_1px_2px_rgb(0_0_0/0.3)]",
+									isActive && "border-table-surface-border bg-table-surface shadow-segment",
 								)}
 							>
 								<button
@@ -909,7 +986,7 @@ export function SavedViewsBar({
 									onKeyDown={(e) => onTabKeyDown(e, i)}
 									className={cn(
 										"relative flex h-6 cursor-pointer items-center gap-1.5 rounded-md px-2 text-sm font-medium whitespace-nowrap text-tertiary-foreground outline-none transition-colors",
-										"hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
+										"hover:text-foreground focus-ring-inset",
 										isActive && "text-foreground",
 									)}
 								>
@@ -937,7 +1014,7 @@ export function SavedViewsBar({
 								{isActive && (
 									<DropdownMenu>
 										<DropdownMenuTrigger
-											render={<Button variant="skeleton" size="icon" aria-label={`Options for ${v.name} view`} className="mr-0.5 !size-5 justify-center !p-0 text-tertiary-foreground focus-visible:ring-2 focus-visible:ring-ring" />}
+											render={<Button variant="skeleton" size="icon" aria-label={`Options for ${v.name} view`} className="mx-0.5 !size-5 justify-center !p-0 text-tertiary-foreground focus-ring" />}
 										>
 											<DotsThreeIcon weight="bold" className="size-3.5" />
 										</DropdownMenuTrigger>
@@ -985,9 +1062,12 @@ export function SavedViewsBar({
 						Clear all
 					</Button>
 				)}
+				{/* Mounted before it has text, so the change is announced reliably. */}
+				<LiveStatus>
+					{modified ? `View “${active?.name}” has unsaved changes` : ""}
+				</LiveStatus>
 				{modified && (
 					<div className="ml-auto flex flex-wrap items-center gap-1.5" role="group" aria-label="Unsaved view changes">
-						<span className="sr-only" aria-live="polite">View “{active?.name}” has unsaved changes</span>
 						<IconButton variant="skeleton" size="sm" icon={<ArrowCounterClockwiseIcon />} onClick={() => active && selectView(active)}>
 							Reset
 						</IconButton>
@@ -1003,7 +1083,14 @@ export function SavedViewsBar({
 				)}
 			</ActionBar>
 
-			<Dialog open={!!dialog} onOpenChange={(o) => !o && setDialog(null)}>
+			<Dialog
+				open={!!dialog}
+				onOpenChange={(o) => {
+					if (o) return;
+					setDialog(null);
+					setNameError(false);
+				}}
+			>
 				<DialogContent
 					finalFocus={() => {
 						const id = returnTo.current ?? activeRef.current;
@@ -1024,23 +1111,45 @@ export function SavedViewsBar({
 								{dialog?.mode === "rename" ? "Views keep their filters; only the name changes." : `Saves the ${filters.length || "no"} filter${filters.length === 1 ? "" : "s"} applied now.`}
 							</DialogDescription>
 						</DialogHeader>
-						<Input
-							autoFocus
-							aria-label="View name"
-							placeholder="e.g. Overdue over RM 10k"
-							value={dialog?.name ?? ""}
-							onChange={(e) => setDialog((d) => (d ? { ...d, name: e.target.value } : d))}
-						/>
+						<div className="flex flex-col gap-1">
+							<Input
+								ref={nameInput}
+								autoFocus
+								aria-label="View name"
+								aria-invalid={nameError || undefined}
+								aria-describedby={nameError ? nameErrorId : undefined}
+								variant={nameError ? "destructive" : "default"}
+								placeholder="e.g. Overdue over RM 10k"
+								value={dialog?.name ?? ""}
+								onChange={(e) => {
+									const name = e.target.value;
+									setDialog((d) => (d ? { ...d, name } : d));
+									if (name.trim()) setNameError(false);
+								}}
+							/>
+							{nameError && (
+								<FieldError id={nameErrorId} className="text-xs">
+									Enter a name for the view.
+								</FieldError>
+							)}
+						</div>
 						<label className="flex cursor-pointer items-center gap-2 text-sm text-foreground">
 							<Checkbox checked={!!dialog?.shared} onCheckedChange={(c) => setDialog((d) => (d ? { ...d, shared: !!c } : d))} />
 							Share with team
 							<span className="text-xs text-tertiary-foreground">(everyone in the company sees it)</span>
 						</label>
 						<DialogFooter>
-							<Button type="button" variant="secondary" onClick={() => setDialog(null)}>
+							<Button
+								type="button"
+								variant="secondary"
+								onClick={() => {
+									setDialog(null);
+									setNameError(false);
+								}}
+							>
 								Cancel
 							</Button>
-							<Button type="submit" variant="primary" disabled={!dialog?.name.trim()}>
+							<Button type="submit" variant="primary">
 								{dialog?.mode === "rename" ? "Rename" : "Save view"}
 							</Button>
 						</DialogFooter>

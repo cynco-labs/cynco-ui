@@ -43,7 +43,8 @@ function HeaderContent<T>({
 		return null;
 	}
 
-	if (!header.column.getCanSort()) {
+	// Without table-level sorting there is nothing to activate, so no button.
+	if (!(enableSorting && header.column.getCanSort())) {
 		return (
 			<span className="truncate w-full">
 				{flexRender(header.column.columnDef.header, header.getContext())}
@@ -53,30 +54,30 @@ function HeaderContent<T>({
 
 	return (
 		<button
-			className={cn(
-				"flex min-w-0 select-none items-center gap-1",
-				enableSorting && "cursor-pointer",
-			)}
-			onClick={
-				enableSorting ? header.column.getToggleSortingHandler() : undefined
-			}
+			className="flex min-w-0 select-none items-center gap-1 cursor-pointer"
+			onClick={header.column.getToggleSortingHandler()}
 			type="button"
 		>
 			<span className="truncate">
 				{flexRender(header.column.columnDef.header, header.getContext())}
 			</span>
-			{enableSorting && (
-				<SortIcon sortDirection={header.column.getIsSorted()} />
-			)}
+			<SortIcon sortDirection={header.column.getIsSorted()} />
 		</button>
 	);
 }
+
+const ARIA_SORT = { asc: "ascending", desc: "descending" } as const;
+
+/** Partly selected: the box shows a bar instead of the check its indicator would draw. */
+const INDETERMINATE_CLASS =
+	"data-indeterminate:border-primary data-indeterminate:bg-primary data-indeterminate:[&_svg]:hidden data-indeterminate:before:h-0.5 data-indeterminate:before:w-2 data-indeterminate:before:rounded-full data-indeterminate:before:bg-primary-foreground";
 
 export function TableHeader({ className }: { className?: string }) {
 	const {
 		table,
 		enableSelection,
 		enableColumnVisibility,
+		enableSorting,
 		flexibleTableColumns,
 	} = useTableContext();
 	const headerGroups = table.getHeaderGroups();
@@ -84,8 +85,10 @@ export function TableHeader({ className }: { className?: string }) {
 
 	return (
 		<ShadcnTableHeader className={cn("sticky top-0 z-20 bg-card", className)}>
-			{headerGroups.map((headerGroup) => (
+			{headerGroups.map((headerGroup, headerGroupIndex) => (
 				<TableRow
+					// Virtualized bodies number their rows after the header rows.
+					aria-rowindex={headerGroupIndex + 1}
 					className={cn(
 						"bg-card text-subtle border-b",
 						!rows.length && "border-dashed",
@@ -97,6 +100,8 @@ export function TableHeader({ className }: { className?: string }) {
 							<Checkbox
 								aria-label="Select all rows"
 								checked={table.getIsAllPageRowsSelected()}
+								indeterminate={table.getIsSomePageRowsSelected()}
+								className={INDETERMINATE_CLASS}
 								onCheckedChange={(checked) =>
 									table.toggleAllPageRowsSelected(!!checked)
 								}
@@ -105,6 +110,15 @@ export function TableHeader({ className }: { className?: string }) {
 					)}
 					{headerGroup.headers.map((header, index, arr) => {
 						const isLast = index === arr.length - 1;
+						const sortDirection = header.column.getIsSorted();
+						const ariaSort =
+							enableSorting &&
+							header.column.getCanSort() &&
+							!header.isPlaceholder
+								? sortDirection
+									? ARIA_SORT[sortDirection]
+									: "none"
+								: undefined;
 						const headerStyle = getColumnWidthStyle({
 							size: header.getSize(),
 							flexible: flexibleTableColumns,
@@ -118,6 +132,7 @@ export function TableHeader({ className }: { className?: string }) {
 									isLast && enableColumnVisibility && "pr-8",
 								)}
 								key={header.id}
+								aria-sort={ariaSort}
 								style={headerStyle}
 							>
 								<div className="flex items-center justify-between w-full">

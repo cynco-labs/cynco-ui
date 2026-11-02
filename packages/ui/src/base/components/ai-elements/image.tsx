@@ -14,7 +14,8 @@ export const Image = ({
 }: ImageProps) => (
 	<img
 		{...props}
-		alt={props.alt}
+		// Without alt, screen readers read out the base64 data URL.
+		alt={props.alt ?? "Generated image"}
 		className={cn(
 			"h-auto max-w-full overflow-hidden rounded-md",
 			props.className,

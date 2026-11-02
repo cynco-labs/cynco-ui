@@ -62,14 +62,18 @@ export const ChainOfThought = memo(
 			[isOpen, setIsOpen],
 		);
 
+		// One Collapsible root for header and content, so the trigger's
+		// aria-controls points at the panel that actually renders.
 		return (
 			<ChainOfThoughtContext.Provider value={chainOfThoughtContext}>
-				<div
+				<Collapsible
 					className={cn("not-prose max-w-prose space-y-4", className)}
+					onOpenChange={setIsOpen}
+					open={isOpen}
 					{...props}
 				>
 					{children}
-				</div>
+				</Collapsible>
 			</ChainOfThoughtContext.Provider>
 		);
 	},
@@ -81,29 +85,27 @@ export type ChainOfThoughtHeaderProps = ComponentProps<
 
 export const ChainOfThoughtHeader = memo(
 	({ className, children, ...props }: ChainOfThoughtHeaderProps) => {
-		const { isOpen, setIsOpen } = useChainOfThought();
+		const { isOpen } = useChainOfThought();
 
 		return (
-			<Collapsible onOpenChange={setIsOpen} open={isOpen}>
-				<CollapsibleTrigger
+			<CollapsibleTrigger
+				className={cn(
+					"flex w-full items-center gap-2 text-muted-foreground text-sm transition-colors hover:text-foreground",
+					className,
+				)}
+				{...props}
+			>
+				<BrainIcon className="size-4" />
+				<span className="flex-1 text-left">
+					{children ?? "Chain of Thought"}
+				</span>
+				<ChevronDownIcon
 					className={cn(
-						"flex w-full items-center gap-2 text-muted-foreground text-sm transition-colors hover:text-foreground",
-						className,
+						"size-4 transition-transform",
+						isOpen ? "rotate-180" : "rotate-0",
 					)}
-					{...props}
-				>
-					<BrainIcon className="size-4" />
-					<span className="flex-1 text-left">
-						{children ?? "Chain of Thought"}
-					</span>
-					<ChevronDownIcon
-						className={cn(
-							"size-4 transition-transform",
-							isOpen ? "rotate-180" : "rotate-0",
-						)}
-					/>
-				</CollapsibleTrigger>
-			</Collapsible>
+				/>
+			</CollapsibleTrigger>
 		);
 	},
 );
@@ -125,10 +127,16 @@ export const ChainOfThoughtStep = memo(
 		children,
 		...props
 	}: ChainOfThoughtStepProps) => {
+		// Weight marks the active step without relying on tint; the word reaches screen readers.
 		const statusStyles = {
 			complete: "text-muted-foreground",
-			active: "text-foreground",
-			pending: "text-muted-foreground/50",
+			active: "text-foreground font-medium",
+			pending: "text-tertiary-foreground",
+		};
+		const statusLabels = {
+			complete: "Completed",
+			active: "In progress",
+			pending: "Pending",
 		};
 
 		return (
@@ -139,6 +147,7 @@ export const ChainOfThoughtStep = memo(
 					"fade-in-0 slide-in-from-top-2 animate-in",
 					className,
 				)}
+				aria-current={status === "active" ? "step" : undefined}
 				{...props}
 			>
 				<div className="relative mt-0.5">
@@ -146,7 +155,10 @@ export const ChainOfThoughtStep = memo(
 					<div className="-mx-px absolute top-7 bottom-0 left-1/2 w-px bg-border" />
 				</div>
 				<div className="flex-1 space-y-2 overflow-hidden">
-					<div>{label}</div>
+					<div>
+						{label}
+						<span className="sr-only"> ({statusLabels[status]})</span>
+					</div>
 					{description && (
 						<div className="text-muted-foreground text-xs">{description}</div>
 					)}
@@ -188,21 +200,17 @@ export type ChainOfThoughtContentProps = ComponentProps<
 
 export const ChainOfThoughtContent = memo(
 	({ className, children, ...props }: ChainOfThoughtContentProps) => {
-		const { isOpen } = useChainOfThought();
-
 		return (
-			<Collapsible open={isOpen}>
-				<CollapsibleContent
-					className={cn(
-						"mt-2 space-y-3",
-						"data-[state=closed]:fade-out-0 data-[state=closed]:slide-out-to-top-2 data-[state=open]:slide-in-from-top-2 text-popover-foreground outline-none data-[state=closed]:animate-out data-[state=open]:animate-in",
-						className,
-					)}
-					{...props}
-				>
-					{children}
-				</CollapsibleContent>
-			</Collapsible>
+			<CollapsibleContent
+				className={cn(
+					"mt-2 space-y-3",
+					"data-[state=closed]:fade-out-0 data-[state=closed]:slide-out-to-top-2 data-[state=open]:slide-in-from-top-2 text-popover-foreground outline-none data-[state=closed]:animate-out data-[state=open]:animate-in",
+					className,
+				)}
+				{...props}
+			>
+				{children}
+			</CollapsibleContent>
 		);
 	},
 );

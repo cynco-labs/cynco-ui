@@ -9,6 +9,8 @@ import {
 	createContext,
 	type ReactNode,
 	useContext,
+	useEffect,
+	useRef,
 } from "react";
 
 type ToolUIPartApproval =
@@ -69,13 +71,38 @@ export const Confirmation = ({
 	state,
 	...props
 }: ConfirmationProps) => {
+	const rootRef = useRef<HTMLDivElement>(null);
+	const previousState = useRef(state);
+
+	// Approve/Reject unmount once the request is answered. If one of them had
+	// focus, the browser drops it on <body>; move it to the result instead.
+	useEffect(() => {
+		const wasRequested = previousState.current === "approval-requested";
+		previousState.current = state;
+		const root = rootRef.current;
+		if (
+			wasRequested &&
+			state !== "approval-requested" &&
+			root &&
+			(document.activeElement === null ||
+				document.activeElement === document.body)
+		) {
+			root.focus();
+		}
+	}, [state]);
+
 	if (!approval || state === "input-streaming" || state === "input-available") {
 		return null;
 	}
 
 	return (
 		<ConfirmationContext.Provider value={{ approval, state }}>
-			<Alert className={cn("flex flex-col gap-2", className)} {...props} />
+			<Alert
+				className={cn("flex flex-col gap-2", className)}
+				ref={rootRef}
+				tabIndex={-1}
+				{...props}
+			/>
 		</ConfirmationContext.Provider>
 	);
 };

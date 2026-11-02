@@ -3,7 +3,8 @@
  *
  * - BulkActionBar: what you can do with the rows you ticked (count, money total, actions, Esc to clear).
  * - UndoToast (+ UndoToastProvider, UndoToastViewport, useUndoToast): "do it, then offer Undo" instead of
- *   "are you sure?" dialogs. The real write happens late, in onCommit, when the toast expires.
+ *   "are you sure?" dialogs. The real write happens late, in onCommit, when the toast is dismissed,
+ *   pushed out of the stack or (only with an explicit `duration`) times out.
  * - DensityToggle: Compact / Default / Comfortable rows, feeding DensityProvider.
  * - PrintButton: prints the document on screen (documents themselves live in the document kit, ./documents).
  */
@@ -16,6 +17,9 @@ import {
 	DropdownMenuShortcut,
 	DropdownMenuTrigger,
 	cn,
+	toAriaKeyShortcuts,
+	useShortcutAllowed,
+	LiveStatus,
 } from "../base";
 import { ArrowCounterClockwiseIcon, DotsThreeIcon, PrinterIcon, XIcon } from "@phosphor-icons/react";
 import { Kbd, formatCurrency, formatDate, parseAmount, sumAmounts, useHotkey, type Density } from "../lib/shared";
@@ -43,20 +47,6 @@ function matchesCombo(e: KeyboardEvent, combo: string) {
 	return e.key.toLowerCase() === key && mod === parts.includes("mod") && e.altKey === parts.includes("alt") && e.shiftKey === parts.includes("shift");
 }
 
-/** "mod+e" → "Control+E" / "Meta+E" for aria-keyshortcuts. */
-function ariaShortcut(combo: string) {
-	return combo
-		.split("+")
-		.map((k) => {
-			const l = k.toLowerCase();
-			if (l === "mod") return isMacPlatform() ? "Meta" : "Control";
-			if (l === "esc" || l === "escape") return "Escape";
-			if (l === "shift") return "Shift";
-			if (l === "alt") return "Alt";
-			return k.length === 1 ? k.toUpperCase() : k;
-		})
-		.join("+");
-}
 
 /** value/defaultValue/onValueChange in one place. */
 function useControlledValue<T>(value: T | undefined, defaultValue: T, onChange?: (v: T) => void): [T, (v: T) => void] {
@@ -151,15 +141,27 @@ export type BulkActionBarProps = Omit<React.ComponentProps<"div">, "children"> &
 
 /** Floating toolbar for ticked rows: "3 selected · RM 34,890.00", Select all / Clear, actions and a ⋯ menu. */
 export function BulkActionBar(props: BulkActionBarProps) {
-	if (props.count <= 0) return null;
-	return <BulkActionBarInner {...props} />;
+	const { count, total, currency = "MYR" } = props;
+	// Stays mounted at 0 so the first "1 selected" is announced; a live region inserted with its text often isn't.
+	const status = count > 0 ? `${count} selected${total != null ? `, ${formatCurrency(total, currency)}` : ""}` : "";
+	return (
+		<>
+			<LiveStatus>
+				{status}
+			</LiveStatus>
+			{count > 0 && <BulkActionBarInner {...props} />}
+		</>
+	);
 }
 
 function BulkActionBarInner({ count, total, currency = "MYR", totalCount, onSelectAll, onClear, actions, maxVisible = 3, sticky = true, label = "Bulk actions", className, ...props }: BulkActionBarProps) {
 	const [menuOpen, setMenuOpen] = React.useState(false);
 	const { ref, onFocusCapture } = useFocusReturn<HTMLDivElement>();
-	const latest = React.useRef({ actions, onClear });
-	latest.current = { actions, onClear };
+	const allowed = useShortcutAllowed();
+	const latest = React.useRef({ actions, onClear, allowed });
+	latest.current = { actions, onClear, allowed };
+	/** The shortcut to advertise, or undefined while the user has single-key shortcuts off. */
+	const liveShortcut = (k?: string) => (k && allowed(k) ? k : undefined);
 
 	// Esc clears; action shortcuts run. Paused while the ⋯ menu is open (it owns Esc then).
 	React.useEffect(() => {
@@ -175,6 +177,8 @@ function BulkActionBarInner({ count, total, currency = "MYR", totalCount, onSele
 			}
 			for (const a of latest.current.actions) {
 				if (!a.shortcut || a.disabled || !matchesCombo(e, a.shortcut)) continue;
+				// Bare-letter shortcuts honour the user's "Single-key shortcuts" switch (WCAG 2.1.4).
+				if (!latest.current.allowed(a.shortcut)) continue;
 				if (typing && !a.shortcut.toLowerCase().includes("mod")) return;
 				e.preventDefault();
 				a.onSelect();
@@ -214,7 +218,7 @@ function BulkActionBarInner({ count, total, currency = "MYR", totalCount, onSele
 				className="pointer-events-auto flex w-full max-w-full flex-wrap items-center gap-x-1 gap-y-1.5 rounded-xl border border-overlay-border bg-overlay p-1.5 shadow-overlay @3xl:w-fit"
 			>
 				<div className="flex min-w-0 flex-1 basis-full flex-wrap items-center gap-1 @3xl:basis-auto">
-					<p className="mr-auto min-w-0 basis-full px-1.5 py-0.5 text-sm @sm:basis-auto @sm:py-0 text-foreground tabular-nums" aria-live="polite" aria-atomic="true">
+					<p className="mr-auto min-w-0 basis-full px-1.5 py-0.5 text-sm @sm:basis-auto @sm:py-0 text-foreground tabular-nums">
 						<span className="font-medium whitespace-nowrap">{count} selected</span>
 						{total != null && (
 							<>
@@ -242,13 +246,13 @@ function BulkActionBarInner({ count, total, currency = "MYR", totalCount, onSele
 							variant="secondary"
 							disabled={a.disabled}
 							onClick={a.onSelect}
-							aria-keyshortcuts={a.shortcut ? ariaShortcut(a.shortcut) : undefined}
-							title={a.shortcut ? `${a.label} (${a.shortcut.toUpperCase()})` : undefined}
+							aria-keyshortcuts={liveShortcut(a.shortcut) ? toAriaKeyShortcuts(a.shortcut) : undefined}
+							title={liveShortcut(a.shortcut) ? `${a.label} (${a.shortcut.toUpperCase()})` : undefined}
 							className={cn("gap-1.5", a.destructive && "text-error-text hover:!text-error-text")}
 						>
 							{a.icon && <span aria-hidden="true" className="flex size-3.5 items-center justify-center">{a.icon}</span>}
 							{a.label}
-							{a.shortcut && <Kbd keys={a.shortcut} aria-hidden="true" className="hidden @3xl:inline-flex" />}
+							{liveShortcut(a.shortcut) && <Kbd keys={a.shortcut} aria-hidden="true" className="hidden @3xl:inline-flex" />}
 						</Button>
 					))}
 					{more.length > 0 && (
@@ -262,12 +266,12 @@ function BulkActionBarInner({ count, total, currency = "MYR", totalCount, onSele
 										key={a.id}
 										disabled={a.disabled}
 										onClick={a.onSelect}
-										aria-keyshortcuts={a.shortcut ? ariaShortcut(a.shortcut) : undefined}
+										aria-keyshortcuts={liveShortcut(a.shortcut) ? toAriaKeyShortcuts(a.shortcut) : undefined}
 										className={cn(a.destructive && "text-error-text focus:text-error-text data-highlighted:text-error-text [&_svg]:text-current")}
 									>
 										{a.icon && <span aria-hidden="true" className="flex size-3.5 items-center justify-center">{a.icon}</span>}
 										{a.label}
-										{a.shortcut && (
+										{liveShortcut(a.shortcut) && (
 											<DropdownMenuShortcut>
 												<Kbd keys={a.shortcut} aria-hidden="true" />
 											</DropdownMenuShortcut>
@@ -291,7 +295,7 @@ export type UndoToastOptions = {
 	onUndo: () => void;
 	/** Do the real (irreversible) write: runs once, when the toast expires, is dismissed or is pushed out of the stack. */
 	onCommit?: () => void;
-	/** Milliseconds before it commits. Default 6000 (the provider's `duration`). 0 or Infinity = never auto-commit. */
+	/** Milliseconds before it commits. Default: the provider's `duration` (never). 0 or Infinity = never auto-commit. */
 	duration?: number;
 	undoLabel?: string;
 	/** Reuse an id to replace nothing — ids just need to be unique; one is generated when omitted. */
@@ -319,7 +323,10 @@ export type UndoToastProviderProps = {
 	children: React.ReactNode;
 	/** Toasts on screen at once; a new one commits the oldest. Default 3. */
 	max?: number;
-	/** Default auto-commit delay in ms. Default 6000. */
+	/**
+	 * Default auto-commit delay in ms. Default Infinity: a toast stays until it is dismissed, undone or pushed
+	 * out, so nobody loses Undo for being slow (WCAG 2.2.1). Pass a number only for low-stakes actions.
+	 */
 	duration?: number;
 	/** Render the viewport automatically. Set false and place <UndoToastViewport /> yourself. */
 	viewport?: boolean;
@@ -330,7 +337,7 @@ export type UndoToastProviderProps = {
  * Mount once near the app root. Holds the toast stack, owns ⌘/Ctrl+Z (undo newest) and F8 (focus the
  * newest toast), and commits anything still pending when it unmounts or the page is hidden for good.
  */
-export function UndoToastProvider({ children, max = 3, duration = 6000, viewport = true, position }: UndoToastProviderProps) {
+export function UndoToastProvider({ children, max = 3, duration = Number.POSITIVE_INFINITY, viewport = true, position }: UndoToastProviderProps) {
 	const [toasts, setToasts] = React.useState<UndoEntry[]>([]);
 	const list = React.useRef<UndoEntry[]>([]);
 	const seq = React.useRef(0);
@@ -471,7 +478,7 @@ export type UndoToastProps = Omit<React.ComponentProps<"li">, "children"> & {
 	onDismiss?: () => void;
 	/** The countdown ran out. */
 	onExpire?: () => void;
-	/** ms; 0 or Infinity = no countdown. Default 6000. */
+	/** ms; 0 or Infinity = no countdown. Default Infinity (stays until dismissed). */
 	duration?: number;
 	undoLabel?: string;
 	/** Show the ⌘/Ctrl+Z keycap on the Undo button (the newest toast). Default true. */
@@ -483,13 +490,28 @@ export type UndoToastProps = Omit<React.ComponentProps<"li">, "children"> & {
 };
 
 /** One toast: message, Undo (⌘/Ctrl+Z), dismiss, and a countdown bar that pauses on hover or focus. */
-export function UndoToast({ message, onUndo, onDismiss, onExpire, duration = 6000, undoLabel = "Undo", showShortcut = true, paused: pausedProp, returnFocusTo, className, ...props }: UndoToastProps) {
+export function UndoToast({ message, onUndo, onDismiss, onExpire, duration = Number.POSITIVE_INFINITY, undoLabel = "Undo", showShortcut = true, paused: pausedProp, returnFocusTo, className, ...props }: UndoToastProps) {
 	const [hover, setHover] = React.useState(false);
 	const [focused, setFocused] = React.useState(false);
 	const [hidden, setHidden] = React.useState(() => typeof document !== "undefined" && document.visibilityState === "hidden");
 	const ref = React.useRef<HTMLLIElement>(null);
 	const paused = !!pausedProp || hover || focused || hidden;
 	const timed = duration > 0 && Number.isFinite(duration);
+
+	// The countdown is a timer, not the bar's animationend: a reduced-motion rule that shortens or
+	// removes animations must never make the toast expire (and commit) early.
+	const remaining = React.useRef(duration);
+	const expire = React.useRef(onExpire);
+	expire.current = onExpire;
+	React.useEffect(() => {
+		if (!timed || paused) return;
+		const started = Date.now();
+		const t = setTimeout(() => expire.current?.(), remaining.current);
+		return () => {
+			clearTimeout(t);
+			remaining.current = Math.max(0, remaining.current - (Date.now() - started));
+		};
+	}, [timed, paused]);
 
 	React.useEffect(() => {
 		const onVis = () => setHidden(document.visibilityState === "hidden");
@@ -537,7 +559,7 @@ export function UndoToast({ message, onUndo, onDismiss, onExpire, duration = 600
 			{...props}
 		>
 			<div className="min-w-0 flex-1 py-0.5">{message}</div>
-			<Button variant="secondary" data-cy-undo-button="" onClick={onUndo} aria-keyshortcuts={showShortcut ? ariaShortcut("mod+z") : undefined} className="shrink-0 gap-1.5">
+			<Button variant="secondary" data-cy-undo-button="" onClick={onUndo} aria-keyshortcuts={showShortcut ? toAriaKeyShortcuts("mod+z") : undefined} className="shrink-0 gap-1.5">
 				<ArrowCounterClockwiseIcon size={14} aria-hidden="true" />
 				{undoLabel}
 				{showShortcut && <Kbd keys="mod+z" aria-hidden="true" />}
@@ -552,9 +574,6 @@ export function UndoToast({ message, onUndo, onDismiss, onExpire, duration = 600
 					<div
 						className="h-full origin-left bg-primary"
 						style={{ animation: `cy-undo-countdown ${duration}ms linear forwards`, animationPlayState: paused ? "paused" : "running" }}
-						onAnimationEnd={(e) => {
-							if (e.animationName === "cy-undo-countdown") onExpire?.();
-						}}
 					/>
 				</div>
 			)}
@@ -652,8 +671,8 @@ export function DensityToggle({ value, defaultValue = "default", onValueChange, 
 						onKeyDown={(e) => onKeyDown(e, i)}
 						className={cn(
 							"flex h-6 min-w-0 cursor-pointer items-center justify-center gap-1.5 whitespace-nowrap rounded-md border border-transparent px-2 text-tertiary-foreground outline-none transition-colors duration-150",
-							"hover:text-foreground focus-visible:text-foreground focus-visible:ring-2 focus-visible:ring-ring",
-							active && "border-table-surface-border bg-table-surface text-foreground shadow-[0_1px_2px_rgb(0_0_0/0.06)] dark:shadow-[0_1px_2px_rgb(0_0_0/0.3)]",
+							"hover:text-foreground focus-visible:text-foreground focus-ring",
+							active && "border-table-surface-border bg-table-surface text-foreground shadow-segment",
 						)}
 					>
 						<DensityGlyph lines={d.lines} />
@@ -684,7 +703,7 @@ export function PrintButton({ onPrint, bindShortcut, showShortcut = true, varian
 	}, [onPrint]);
 	useHotkey("mod+p", print, { enabled: bindShortcut ?? !!onPrint });
 	return (
-		<Button variant={variant} onClick={print} aria-keyshortcuts={ariaShortcut("mod+p")} className={cn("gap-1.5 print:hidden", className)} {...props}>
+		<Button variant={variant} onClick={print} aria-keyshortcuts={toAriaKeyShortcuts("mod+p")} className={cn("gap-1.5 print:hidden", className)} {...props}>
 			<PrinterIcon size={14} aria-hidden="true" />
 			{children ?? "Print"}
 			{showShortcut && <Kbd keys="mod+p" aria-hidden="true" />}

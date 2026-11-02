@@ -1,5 +1,6 @@
 "use client";
 
+import { LiveStatus } from "../general/live-status";
 import { Button } from "../ui/button";
 import {
 	Command,
@@ -58,6 +59,7 @@ import {
 	useCallback,
 	useContext,
 	useEffect,
+	useId,
 	useMemo,
 	useRef,
 	useState,
@@ -301,10 +303,11 @@ export function PromptInputAttachment({
 					{...props}
 				>
 					<div className="relative size-5 shrink-0">
-						<div className="absolute inset-0 flex size-5 items-center justify-center overflow-hidden rounded bg-background transition-opacity group-hover:opacity-0">
+						<div className="absolute inset-0 flex size-5 items-center justify-center overflow-hidden rounded bg-background transition-opacity group-hover:opacity-0 group-has-[:focus-visible]:opacity-0">
 							{isImage ? (
+								// Decorative: the file name is printed beside it.
 								<img
-									alt={filename || "attachment"}
+									alt=""
 									className="size-5 object-cover"
 									height={20}
 									src={data.url}
@@ -317,24 +320,30 @@ export function PromptInputAttachment({
 							)}
 						</div>
 						<Button
-							aria-label="Remove attachment"
-							className="absolute inset-0 size-5 cursor-pointer rounded p-0 opacity-0 transition-opacity group-hover:pointer-events-auto group-hover:opacity-100 [&>svg]:size-2.5"
+							aria-label={`Remove ${attachmentLabel}`}
+							className="absolute inset-0 size-5 cursor-pointer rounded p-0 opacity-0 transition-opacity group-hover:pointer-events-auto group-hover:opacity-100 focus-visible:opacity-100 [&>svg]:size-2.5"
 							onClick={(e) => {
 								e.stopPropagation();
+								// This button unmounts with its attachment; keep focus in the composer.
+								e.currentTarget
+									.closest("form")
+									?.querySelector<HTMLTextAreaElement>("textarea")
+									?.focus();
 								attachments.remove(data.id);
 							}}
 							type="button"
 							variant="skeleton"
 						>
 							<XIcon />
-							<span className="sr-only">Remove</span>
 						</Button>
 					</div>
 
 					<span className="flex-1 truncate">{attachmentLabel}</span>
+					{/* The hover preview only enlarges this chip; its one extra fact, the type, is read here instead. */}
+					{data.mediaType && <span className="sr-only">, {data.mediaType}</span>}
 				</div>
 			</HoverCardTrigger>
-			<PromptInputHoverCardContent className="w-auto p-2">
+			<PromptInputHoverCardContent aria-hidden="true" className="w-auto p-2">
 				<div className="w-auto space-y-3">
 					{isImage && (
 						<div className="flex max-h-96 w-96 items-center justify-center overflow-hidden rounded-md border">
@@ -476,6 +485,44 @@ export const PromptInput = ({
 	// Keep a ref to files for cleanup on unmount (avoids stale closure)
 	const filesRef = useRef(files);
 	filesRef.current = files;
+
+	// Announce attachments added or removed by any path (picker, drop, paste,
+	// remove button, Backspace), except the clear that follows a send.
+	const [attachmentStatus, setAttachmentStatus] = useState("");
+	const announcedFilesRef = useRef(files);
+	const silentClearRef = useRef(false);
+
+	useEffect(() => {
+		const previous = announcedFilesRef.current;
+		announcedFilesRef.current = files;
+		if (previous === files) {
+			return;
+		}
+		// Only an actual clear to nothing is silenced; if the clear changed nothing, the flag must
+		// not swallow the next real change.
+		if (silentClearRef.current) {
+			silentClearRef.current = false;
+			if (files.length === 0) {
+				return;
+			}
+		}
+		const previousIds = new Set(previous.map((file) => file.id));
+		const nextIds = new Set(files.map((file) => file.id));
+		const describe = (list: typeof files) =>
+			list.map((file) => file.filename || "attachment").join(", ");
+		const added = files.filter((file) => !previousIds.has(file.id));
+		const removed = previous.filter((file) => !nextIds.has(file.id));
+		const parts: string[] = [];
+		if (added.length > 0) {
+			parts.push(`Attached ${describe(added)}`);
+		}
+		if (removed.length > 0) {
+			parts.push(`Removed ${describe(removed)}`);
+		}
+		if (parts.length > 0) {
+			setAttachmentStatus(parts.join(". "));
+		}
+	}, [files]);
 
 	const openFileDialogLocal = useCallback(() => {
 		inputRef.current?.click();
@@ -739,6 +786,7 @@ export const PromptInput = ({
 					if (result instanceof Promise) {
 						result
 							.then(() => {
+								silentClearRef.current = true;
 								clear();
 								if (usingProvider) {
 									controller.textInput.clear();
@@ -749,6 +797,7 @@ export const PromptInput = ({
 							});
 					} else {
 						// Sync function completed without throwing, clear attachments
+						silentClearRef.current = true;
 						clear();
 						if (usingProvider) {
 							controller.textInput.clear();
@@ -776,6 +825,9 @@ export const PromptInput = ({
 				title="Upload files"
 				type="file"
 			/>
+			<LiveStatus>
+				{attachmentStatus}
+			</LiveStatus>
 			<form
 				className={cn("w-full", className)}
 				onSubmit={handleSubmit}
@@ -784,7 +836,7 @@ export const PromptInput = ({
 			>
 				<div
 					data-slot="prompt-input"
-					className="group/input-group relative flex w-full flex-col overflow-hidden rounded-2xl border border-border/60 dark:border-white/15 bg-interactive-secondary/70 shadow-md outline-none cursor-text input-state-focus-within"
+					className="group/input-group relative flex w-full flex-col overflow-hidden rounded-2xl border border-border/60 dark:border-foreground/15 bg-interactive-secondary/70 shadow-md outline-none cursor-text input-state-focus-within"
 					onClick={(e) => {
 						if ((e.target as HTMLElement).closest("button")) return;
 						const el = e.currentTarget.querySelector("input, textarea") as
@@ -824,11 +876,18 @@ export const PromptInputTextarea = ({
 	onChange,
 	className,
 	placeholder = "What would you like to know?",
+	"aria-describedby": ariaDescribedBy,
 	...props
 }: PromptInputTextareaProps) => {
 	const controller = useOptionalPromptInputController();
 	const attachments = usePromptInputAttachments();
 	const [isComposing, setIsComposing] = useState(false);
+	const hintId = useId();
+	// A placeholder vanishes on input; keep a stable name unless the caller labels it.
+	const hasExternalLabel =
+		props["aria-label"] !== undefined ||
+		props["aria-labelledby"] !== undefined ||
+		props.id !== undefined;
 
 	const handleKeyDown: KeyboardEventHandler<HTMLTextAreaElement> = (e) => {
 		if (e.key === "Enter") {
@@ -903,21 +962,28 @@ export const PromptInputTextarea = ({
 			};
 
 	return (
-		<textarea
-			data-slot="input-group-control"
-			className={cn(
-				"field-sizing-content max-h-48 min-h-16 w-full flex-1 resize-none bg-transparent py-3 px-3 text-sm text-foreground outline-none placeholder:text-subtle placeholder:select-none disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",
-				className,
-			)}
-			name="message"
-			onCompositionEnd={() => setIsComposing(false)}
-			onCompositionStart={() => setIsComposing(true)}
-			onKeyDown={handleKeyDown}
-			onPaste={handlePaste}
-			placeholder={placeholder}
-			{...props}
-			{...controlledProps}
-		/>
+		<>
+			<textarea
+				aria-describedby={[hintId, ariaDescribedBy].filter(Boolean).join(" ")}
+				aria-label={hasExternalLabel ? undefined : "Message"}
+				data-slot="input-group-control"
+				className={cn(
+					"field-sizing-content max-h-48 min-h-16 w-full flex-1 resize-none bg-transparent py-3 px-3 text-sm text-foreground outline-none placeholder:text-subtle placeholder:select-none disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",
+					className,
+				)}
+				name="message"
+				onCompositionEnd={() => setIsComposing(false)}
+				onCompositionStart={() => setIsComposing(true)}
+				onKeyDown={handleKeyDown}
+				onPaste={handlePaste}
+				placeholder={placeholder}
+				{...props}
+				{...controlledProps}
+			/>
+			<span hidden id={hintId}>
+				Press Enter to send. Press Shift+Enter for a new line.
+			</span>
+		</>
 	);
 };
 
@@ -990,7 +1056,11 @@ export const PromptInputActionMenuTrigger = ({
 	...props
 }: PromptInputActionMenuTriggerProps) => (
 	<DropdownMenuTrigger asChild>
-		<PromptInputButton className={className} {...props}>
+		<PromptInputButton
+			aria-label={children ? undefined : "Add files and more"}
+			className={className}
+			{...props}
+		>
 			{children ?? <PlusIcon className="size-4" />}
 		</PromptInputButton>
 	</DropdownMenuTrigger>
@@ -1032,6 +1102,8 @@ export const PromptInputSubmit = ({
 	...props
 }: PromptInputSubmitProps) => {
 	let Icon = <CornerDownLeftIcon className="size-4" />;
+	// The icon alone carries the state; name the action it will take.
+	const isGenerating = status === "submitted" || status === "streaming";
 
 	if (status === "submitted") {
 		Icon = <Loader2Icon className="size-4 animate-spin" />;
@@ -1043,7 +1115,7 @@ export const PromptInputSubmit = ({
 
 	return (
 		<Button
-			aria-label="Submit"
+			aria-label={children ? undefined : isGenerating ? "Stop" : "Submit"}
 			type="submit"
 			variant={variant}
 			size={size}
@@ -1206,6 +1278,8 @@ export const PromptInputSpeechButton = ({
 				isListening && "animate-pulse bg-accent text-accent-foreground",
 				className,
 			)}
+			aria-label="Voice input"
+			aria-pressed={isListening}
 			disabled={!recognition}
 			onClick={toggleListening}
 			{...props}

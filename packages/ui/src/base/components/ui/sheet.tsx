@@ -73,7 +73,7 @@ function SheetOverlay({ className, ...props }: SheetPrimitive.Backdrop.Props) {
 		<SheetPrimitive.Backdrop
 			data-slot="sheet-overlay"
 			className={cn(
-				"fixed inset-0 z-[150] bg-white/70 dark:bg-black/70 transition-opacity duration-300 data-[starting-style]:opacity-0 data-[ending-style]:opacity-0",
+				"fixed inset-0 z-[150] bg-overlay-veil transition-opacity duration-300 data-[starting-style]:opacity-0 data-[ending-style]:opacity-0",
 				className,
 			)}
 			{...props}
@@ -115,7 +115,7 @@ function SheetContent({
 				className={cn(
 					"bg-card fixed z-[150] flex flex-col gap-0 overflow-hidden transition-transform duration-300 ease-in-out",
 					// Base UI skips a nested dialog's backdrop, so dim the sheet itself.
-					"after:pointer-events-none after:absolute after:inset-0 after:z-10 after:bg-black/50 after:opacity-0 after:transition-opacity after:duration-200 after:content-[''] data-nested-dialog-open:after:opacity-100 dark:after:bg-black/60",
+					"after:pointer-events-none after:absolute after:inset-0 after:z-10 after:bg-overlay-dim after:opacity-0 after:transition-opacity after:duration-200 after:content-[''] data-nested-dialog-open:after:opacity-100",
 					SIDE_STYLES[side],
 					className,
 				)}
@@ -123,7 +123,7 @@ function SheetContent({
 			>
 				{children}
 				{!hideCloseButton && (
-					<SheetPrimitive.Close className="ring-offset-background focus:ring-ring data-open:bg-secondary absolute top-3 right-3 md:top-4 md:right-4 flex items-center justify-center size-10 md:size-auto rounded-sm md:rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none">
+					<SheetPrimitive.Close className="data-open:bg-secondary absolute top-3 right-3 md:top-4 md:right-4 flex items-center justify-center size-10 md:size-auto rounded-sm md:rounded-xs opacity-70 transition-opacity hover:opacity-100 focus-visible:opacity-100 outline-none focus-ring disabled:pointer-events-none">
 						<XIcon className="size-5 md:size-4" />
 						<span className="sr-only">Close</span>
 					</SheetPrimitive.Close>

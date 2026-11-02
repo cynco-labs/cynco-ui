@@ -36,20 +36,25 @@ export function CompactPromptInput({
 
 	return (
 		<form onSubmit={handleSubmit} className={cn("w-full", className)}>
-			<div className="flex items-center gap-2 rounded-xl border bg-white dark:bg-card px-3 py-2 dark:border-white/15 shadow-lg">
+			{/* The input drops its outline, so the frame shows focus instead. */}
+			<div className="flex items-center gap-2 rounded-xl border bg-interactive-secondary dark:bg-card px-3 py-2 dark:border-foreground/15 shadow-lg focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-focus-ring">
 				<input
 					type="text"
+					aria-label="Message"
 					value={value}
 					onChange={(e) => onChange(e.target.value)}
 					onKeyDown={handleKeyDown}
 					placeholder={placeholder}
-					disabled={isLoading}
+					// readOnly, not disabled: disabling the focused input drops focus to <body>.
+					readOnly={isLoading}
+					aria-busy={isLoading || undefined}
 					className="flex-1 bg-transparent text-sm outline-none placeholder:text-subtle"
 				/>
 				<InputGroupButton
 					type="submit"
 					variant="primary"
 					size="icon-sm"
+					aria-label={isLoading ? "Submitting" : "Submit"}
 					disabled={!value.trim() || isLoading}
 				>
 					{isLoading ? (

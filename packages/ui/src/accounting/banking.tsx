@@ -75,6 +75,7 @@ function signedByType(amount: number, type: "credit" | "debit", currency = "MYR"
 	return `${type === "credit" ? "+" : "−"}${formatCurrency(Math.abs(amount), currency)}`;
 }
 
+
 function countOf(n: number, word: string) {
 	return `${n.toLocaleString()} ${word}${n === 1 ? "" : "s"}`;
 }
@@ -104,7 +105,7 @@ export function BankLifecycleSpine({ status, className, ...props }: With<{ statu
 		<span role="img" aria-label={LIFECYCLE_LABELS[status]} title={LIFECYCLE_LABELS[status]} className={cn("flex flex-col-reverse gap-0.5", className)} {...props}>
 			{[0, 1, 2, 3].map((i) => {
 				const filled = stage > 0 && i < stage;
-				return <span key={i} className={cn("size-1 rounded-full", filled ? (settled ? "bg-[var(--status-green)]" : "bg-primary") : "bg-foreground/15")} />;
+				return <span key={i} className={cn("size-1 rounded-full", filled ? (settled ? "bg-status-green" : "bg-primary") : "bg-foreground/15")} />;
 			})}
 		</span>
 	);
@@ -120,10 +121,10 @@ function SettledMeter({ counts, className }: { counts: Partial<Record<BankFeedSt
 	if (total === 0) return null;
 	const pct = Math.round((reconciled / total) * 100);
 	const bands = [
-		{ key: "reconciled", n: reconciled, cls: "bg-[var(--status-green)]" },
+		{ key: "reconciled", n: reconciled, cls: "bg-status-green" },
 		{ key: "posted", n: posted, cls: "bg-primary" },
 		{ key: "categorized", n: categorized, cls: "bg-primary/40" },
-		{ key: "imported", n: imported, cls: "bg-[var(--status-amber)]/70" },
+		{ key: "imported", n: imported, cls: "bg-status-amber/70" },
 	].filter((b) => b.n > 0);
 	return (
 		<span
@@ -176,7 +177,7 @@ export function BankConfidenceMeter({
 }: With<{ confidence: number | null | undefined; variant?: "badge" | "ring" | "inline"; showTier?: boolean; className?: string }, "span">) {
 	if (confidence == null || !Number.isFinite(confidence)) return null;
 	if (variant === "ring") return <ConfidenceRing value={confidence} className={className} {...props} />;
-	if (variant === "inline") return <span className={cn("shrink-0 text-sm tabular-nums text-primary/80", className)} {...props}>{pctOf(confidence)}</span>;
+	if (variant === "inline") return <span className={cn("shrink-0 text-sm tabular-nums text-primary", className)} {...props}>{pctOf(confidence)}</span>;
 	const t = TIER[tierOf(confidence)];
 	return (
 		<StatusChip tone={t.tone} glyph={t.glyph} className={cn("tabular-nums", className)} title={`${t.word} confidence`} {...props}>
@@ -225,7 +226,7 @@ export function BankCategoryCell({
 	let body: React.ReactNode = null;
 	if (picking) {
 		body = (
-			<Button variant="secondary" size="sm" className="w-44 max-w-full justify-start gap-1.5 font-normal text-tertiary-foreground" aria-label="Search chart of accounts" onClick={onPick}>
+			<Button variant="secondary" size="sm" className="w-44 max-w-full justify-start gap-1.5 font-normal text-tertiary-foreground" aria-label="Account…: search chart of accounts" onClick={onPick}>
 				<MagnifyingGlassIcon size={12} className="size-3" aria-hidden="true" />
 				Account…
 			</Button>
@@ -250,10 +251,11 @@ export function BankCategoryCell({
 			<>
 				<Button variant="dotted" size="sm" onClick={onAccept} title={`Accept AI suggestion: ${suggestion.accountName}`} className={SUGGEST}>
 					<SparkleIcon size={11} weight="fill" className="size-3 shrink-0" aria-hidden="true" />
+					<span className="sr-only">Accept AI suggestion: </span>
 					<span className="truncate">{suggestion.accountName}</span>
 					{suggestion.confidence != null && <span className="shrink-0 tabular-nums opacity-75">{pctOf(suggestion.confidence)}</span>}
 				</Button>
-				<Button variant="skeleton" size="sm" onClick={onPick} aria-label="Choose a different category" className="h-6 shrink-0 px-1 text-2xs font-normal text-tertiary-foreground">
+				<Button variant="skeleton" size="sm" onClick={onPick} aria-label="edit: choose a different category" className="h-6 shrink-0 px-1 text-2xs font-normal text-tertiary-foreground">
 					edit
 				</Button>
 			</>
@@ -310,11 +312,11 @@ function MatchCard({ match, pending, onAccept, onReject }: { match: BankMatch; p
 				</div>
 				{!confirmed && (
 					<div className="flex shrink-0 items-center gap-1 pl-5 @md:pl-0">
-						<Button size="sm" className="gap-1" disabled={pending} onClick={() => onAccept?.(match.id)} aria-label={`Accept match to ${match.targetLabel} ${match.targetReference}`}>
+						<Button size="sm" className="gap-1" disabled={pending} focusableWhenDisabled onClick={() => onAccept?.(match.id)} aria-label={`${pending ? "Accepting" : "Accept"} match to ${match.targetLabel} ${match.targetReference}`}>
 							<CheckIcon size={12} className="size-3" aria-hidden="true" />
 							{pending ? "Accepting…" : "Accept"}
 						</Button>
-						<Button variant="skeleton" size="sm" className="gap-1 text-tertiary-foreground hover:!text-error-text" disabled={pending} onClick={() => onReject?.(match.id)} aria-label={`Reject match to ${match.targetLabel} ${match.targetReference}`}>
+						<Button variant="skeleton" size="sm" className="gap-1 text-tertiary-foreground hover:!text-error-text" disabled={pending} focusableWhenDisabled onClick={() => onReject?.(match.id)} aria-label={`Reject match to ${match.targetLabel} ${match.targetReference}`}>
 							<XIcon size={12} className="size-3" aria-hidden="true" />
 							Reject
 						</Button>
@@ -398,6 +400,7 @@ function FlagChip({ icon, children, title }: { icon: React.ReactNode; children: 
 		<span title={title} className="inline-flex h-4.5 shrink-0 items-center gap-1 rounded-md border border-foreground/6 bg-foreground/4 px-1 text-2xs whitespace-nowrap text-muted-foreground">
 			{icon}
 			{children}
+			<span className="sr-only">: {title}</span>
 		</span>
 	);
 }
@@ -414,10 +417,10 @@ export function BankFeedRow({ tx, selected = false, showAccount = false, classNa
 	return (
 		<div className={cn("@container border-b border-table-row-divider last:border-b-0", className)} {...props}>
 			<div className={cn("group/row flex items-start gap-2.5 px-3 py-2 transition-colors @lg:items-center", selected ? "bg-active-primary" : "hover:bg-table-row-hover")}>
-				<Checkbox checked={selected} aria-label="Select transaction" className={cn("mt-1 @lg:mt-0", !selected && "opacity-50 group-hover/row:opacity-100")} />
+				<Checkbox checked={selected} aria-label={`Select ${primary || "transaction"}, ${formatDate(tx.date)}, ${signedByType(tx.amount, tx.type, tx.currency)}`} className={cn("mt-1 @lg:mt-0", !selected && "opacity-50 group-hover/row:opacity-100")} />
 				<BankLifecycleSpine status={tx.status} className="mt-1 shrink-0 @lg:mt-0" />
 				<div className="flex min-w-0 flex-1 flex-col gap-1 @lg:flex-row @lg:items-center @lg:gap-3">
-					<div className={cn("min-w-0 flex-1", excluded && "opacity-60")}>
+					<div className={cn("min-w-0 flex-1", excluded && "text-tertiary-foreground")}>
 						<div className="flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-0.5 @lg:flex-nowrap">
 							<span className={cn(FG, "line-clamp-2 min-w-0 font-medium break-words @lg:line-clamp-none @lg:truncate", excluded && "line-through decoration-tertiary-foreground/60")}>{primary}</span>
 							{tx.isTransfer && (
@@ -500,10 +503,11 @@ export function BankFeedList({
 					<Input aria-label="Search transactions" placeholder="Search payee, description, reference…" defaultValue={search} className="!pl-7" />
 				</div>
 				<Button variant="secondary" className="gap-1.5">
+					<span className="sr-only">Status filter: </span>
 					{statusLabel}
 					<CaretDownIcon size={12} className="size-3" aria-hidden="true" />
 				</Button>
-				<span className={cn(TINY, "ml-auto tabular-nums")}>{countOf(total, "transaction")}</span>
+				<span role="status" className={cn(TINY, "ml-auto tabular-nums")}>{countOf(total, "transaction")}</span>
 				{postAll && (
 					<Button title={postAll} className="gap-1.5">
 						Post all
@@ -569,7 +573,7 @@ export function BankTransactionTimeline({ events, className, ...props }: With<{ 
 				const { Icon } = meta;
 				return (
 					<li key={`${e.at}-${i}`} className="flex gap-2 text-2xs">
-						<Icon size={14} weight={e.actor === "ai" ? "fill" : "regular"} className={cn("mt-px shrink-0", meta.cls)} aria-label={meta.label} />
+						<Icon size={14} weight={e.actor === "ai" ? "fill" : "regular"} className={cn("mt-px shrink-0", meta.cls)} role="img" aria-label={meta.label} />
 						<div className="min-w-0 flex-1">
 							<p className="flex flex-wrap items-baseline gap-x-1.5 text-foreground">
 								<span className="font-medium">{e.reasoning ?? ACTION_LABEL[e.action] ?? e.action}</span>
@@ -644,6 +648,7 @@ export function BankReviewCard({
 				) : suggestion ? (
 					<Button variant="dotted" size="sm" className={cn(SUGGEST, "max-w-full gap-1.5 px-2")}>
 						<SparkleIcon size={12} className="size-3" weight="fill" aria-hidden="true" />
+						<span className="sr-only">Accept AI suggestion: </span>
 						{suggestion.accountCode && <span className="text-tiny-id opacity-80">{suggestion.accountCode}</span>}
 						<span className="truncate">{suggestion.accountName}</span>
 						{suggestion.confidence != null && <ConfidenceRing value={suggestion.confidence} />}
@@ -704,15 +709,25 @@ export function BankPostingSummary({
 			key: "account",
 			header: "Account",
 			mobile: "title",
-			cell: (t) =>
-				t.accountCode ? (
-					<span className="flex min-w-0 items-baseline gap-2">
-						<span className="text-tiny-id shrink-0 text-tertiary-foreground">{t.accountCode}</span>
-						<span className="min-w-0 break-words">{t.accountName}</span>
-					</span>
-				) : (
-					<span className="font-normal italic text-tertiary-foreground">Account no longer in the chart</span>
-				),
+			cell: (t) => (
+				<span className="flex min-w-0 items-baseline gap-2">
+					{/* The selected row filters the feed: a glyph and a word, not the row tint alone. */}
+					{postingKey(t) === activeKey && (
+						<>
+							<CheckIcon size={12} weight="bold" className="size-3 shrink-0 self-center text-primary" aria-hidden="true" />
+							<span className="sr-only">Selected, filtering the feed: </span>
+						</>
+					)}
+					{t.accountCode ? (
+						<>
+							<span className="text-tiny-id shrink-0 text-tertiary-foreground">{t.accountCode}</span>
+							<span className="min-w-0 break-words">{t.accountName}</span>
+						</>
+					) : (
+						<span className="font-normal italic text-tertiary-foreground">Account no longer in the chart</span>
+					)}
+				</span>
+			),
 		},
 		{ key: "direction", header: "Direction", mobile: "badge", cell: (t) => <span className="text-2xs text-tertiary-foreground">{t.type === "credit" ? "money in" : "money out"}</span> },
 		{ key: "lines", header: "Lines", mobile: "badge", align: "right", cell: (t) => <span className="text-2xs text-tertiary-foreground">{countOf(t.count, "line")}</span> },
@@ -764,8 +779,13 @@ function solveEquation(terms: readonly BankEquationTerm[], check?: BankEquationC
 	return { result, verdict: Math.abs(diff) < 0.005 ? { kind: "ties" } : { kind: "off", difference: diff } };
 }
 
-function Shimmer({ className }: { className?: string }) {
-	return <span className={cn("inline-block animate-pulse rounded bg-foreground/8", className)} />;
+/** A loading placeholder; `label` is what a screen reader hears in its place. */
+function Shimmer({ className, label = "Loading" }: { className?: string; label?: string }) {
+	return (
+		<span className={cn("inline-block animate-pulse rounded bg-foreground/8", className)}>
+			<span className="sr-only">{label}</span>
+		</span>
+	);
 }
 
 function EqCell({ label, amount, hint, currency, size, emphasis }: { label: string; amount: BankEquationAmount; hint?: string; currency?: string; size: "sm" | "md"; emphasis?: boolean }) {
@@ -773,7 +793,7 @@ function EqCell({ label, amount, hint, currency, size, emphasis }: { label: stri
 		<div className="flex min-w-0 flex-col">
 			<span className="text-2xs leading-4 text-tertiary-foreground">{label}</span>
 			{amount === undefined ? (
-				<Shimmer className={cn("my-1 w-24", size === "md" ? "h-4" : "h-3")} />
+				<Shimmer label="Working out" className={cn("my-1 w-24", size === "md" ? "h-4" : "h-3")} />
 			) : (
 				<span
 					className={cn(
@@ -822,7 +842,7 @@ function EqVerdict({ verdict, currency, tiesLabel, unknownLabel }: { verdict: Ve
 		case "unknown":
 			return <VerdictChip tone="neutral" glyph="minus">{unknownLabel}</VerdictChip>;
 		case "pending":
-			return <Shimmer className="my-0.5 h-5.5 w-20 rounded-md" />;
+			return <Shimmer label="Checking" className="my-0.5 h-5.5 w-20 rounded-md" />;
 		default:
 			return null;
 	}
@@ -870,7 +890,8 @@ export function BankBalanceEquation({
 			{check && (
 				<div className="flex min-w-0 max-w-full flex-wrap items-start gap-x-3 gap-y-1 border-l border-border pl-3">
 					<EqCell label={check.label} amount={check.amount} currency={currency} size={size} />
-					<div className="flex min-w-0 max-w-full flex-col">
+					{/* Mounted with the equation, so a change to Ties / Off by is announced politely. */}
+					<div role="status" className="flex min-w-0 max-w-full flex-col">
 						<span aria-hidden="true" className="invisible text-2xs leading-4">
 							.
 						</span>
@@ -1048,7 +1069,7 @@ export function BankMonthProof({
 				</Button>
 			)}
 			{link.kind === "linked" && (
-				<a href="#ledger" className="inline-flex w-fit max-w-full items-center gap-1 rounded-sm text-sm text-primary underline-offset-4 hover:underline focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:outline-none">
+				<a href="#ledger" className="inline-flex w-fit max-w-full items-center gap-1 rounded-sm text-sm text-primary underline-offset-4 hover:underline focus-ring">
 					Open {ledgerLabel} in the ledger
 					<ArrowSquareOutIcon size={12} className="size-3 shrink-0" aria-hidden="true" />
 				</a>
@@ -1107,7 +1128,7 @@ export function BankMonthClose({
 	if (signedOffLabel && standing === "holds") {
 		signOff = (
 			<div className="flex items-start gap-2">
-				<SealCheckIcon size={16} weight="fill" className="size-4 mt-0.5 shrink-0 text-[var(--status-green)]" aria-hidden="true" />
+				<SealCheckIcon size={16} weight="fill" className="size-4 mt-0.5 shrink-0 text-status-green-text" aria-hidden="true" />
 				<div className="min-w-0">
 					<p className={cn(FG, "font-semibold")}>{signedOffLabel}</p>
 					<p className={MUTED}>The bank side of {monthName} is proven.</p>
@@ -1158,7 +1179,7 @@ export function BankMonthClose({
 						{fiscalStatus ? FISCAL_LABEL[fiscalStatus] : "No period yet"}
 					</span>
 				</div>
-				{checks === undefined && <Shimmer className="h-12 w-full rounded-lg" />}
+				{checks === undefined && <Shimmer label="Loading checks" className="h-12 w-full rounded-lg" />}
 				{checks && (
 					<ul className="flex flex-col gap-2.5">
 						{checks.map((c) => {
@@ -1185,7 +1206,7 @@ export function BankMonthClose({
 					</ul>
 				)}
 				{checks !== undefined && <p className={MUTED}>These checks cover every bank account for {monthName}.</p>}
-				<a href="#periods" className="inline-flex w-fit items-center gap-1 rounded-sm text-sm text-primary underline-offset-4 hover:underline focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:outline-none">
+				<a href="#periods" className="inline-flex w-fit items-center gap-1 rounded-sm text-sm text-primary underline-offset-4 hover:underline focus-ring">
 					{state === "closed" ? "Open Periods" : `Close ${monthName} in Periods`}
 					<ArrowRightIcon size={12} className="size-3" aria-hidden="true" />
 				</a>
@@ -1226,9 +1247,9 @@ type Look = Exclude<BankCloseMonthState, "no_statement"> | "missing" | "quiet";
 const lookOf = (m: BankCloseMonth): Look => (m.state !== "no_statement" ? m.state : m.missing ? "missing" : "quiet");
 const BAR: Record<Look, string> = {
 	closed: "bg-muted-foreground",
-	ready: "bg-[var(--status-green)]",
-	needs_work: "bg-[var(--status-amber)]",
-	missing: "border border-dashed border-[var(--status-amber)] bg-transparent",
+	ready: "bg-status-green",
+	needs_work: "bg-status-amber",
+	missing: "border border-dashed border-status-amber bg-transparent",
 	quiet: "bg-foreground/8",
 	covered: "border border-tertiary-foreground bg-transparent",
 	in_progress: "bg-tertiary-foreground/40",
@@ -1255,6 +1276,16 @@ function CellDetail({ m }: { m: BankCloseMonth }) {
 	if (open > 0) return <>{open}</>;
 	if (m.state === "needs_work") return <>{m.untied ? "Off" : "—"}</>;
 	if (lookOf(m) === "missing") return <>Missing</>;
+	return null;
+}
+
+/** CellDetail in words, for the month button's accessible name. */
+function cellDetailText(m: BankCloseMonth): string | null {
+	if (m.state === "closed") return null;
+	if (m.signedOff === "holds") return "signed off";
+	const open = m.state === "needs_work" || m.state === "covered" ? (m.openLines ?? 0) : 0;
+	if (open > 0) return `${countOf(open, "line")} open`;
+	if (m.state === "needs_work" && m.untied) return "off against the ledger";
 	return null;
 }
 
@@ -1300,7 +1331,7 @@ export function BankReconciliationYearStrip({
 					<CaretRightIcon size={14} className="size-3.5" aria-hidden="true" />
 				</Button>
 			</div>
-			<div role="tablist" aria-label={`Months of ${yearLabel} for ${accountName}`} className={cn(surfaces.tray, "grid grid-cols-4 gap-0.5 @sm:grid-cols-6 @2xl:grid-cols-12")}>
+			<div role="group" aria-label={`Months of ${yearLabel} for ${accountName}`} className={cn(surfaces.tray, "grid grid-cols-4 gap-0.5 @sm:grid-cols-6 @2xl:grid-cols-12")}>
 				{months.map((m) => {
 					const isSel = m.period === selected;
 					const look = lookOf(m);
@@ -1308,11 +1339,10 @@ export function BankReconciliationYearStrip({
 						<button
 							key={m.period}
 							type="button"
-							role="tab"
-							aria-selected={isSel}
-							aria-label={`${MONTHS_LONG[monthIdx(m.period)]} ${m.period.slice(0, 4)}, ${look === "quiet" ? "no activity" : STATE_LABEL[m.state]}`}
+							aria-current={isSel || undefined}
+							aria-label={[`${MONTHS_LONG[monthIdx(m.period)]} ${m.period.slice(0, 4)}`, look === "quiet" ? "no activity" : look === "missing" ? "statement missing" : STATE_LABEL[m.state], cellDetailText(m)].filter(Boolean).join(", ")}
 							className={cn(
-								"relative flex min-h-14 min-w-0 cursor-pointer flex-col items-stretch gap-1.5 rounded-lg border px-1.5 pt-2 pb-2.5 text-left transition-colors focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:outline-none",
+								"relative flex min-h-14 min-w-0 cursor-pointer flex-col items-stretch gap-1.5 rounded-lg border px-1.5 pt-2 pb-2.5 text-left transition-colors focus-ring",
 								isSel ? "border-table-surface-border bg-table-surface shadow-xs" : "border-transparent hover:bg-table-surface/60",
 							)}
 						>
@@ -1361,12 +1391,22 @@ const TYPE_ICON: Record<string, Icon> = { checking: BankIcon, savings: BankIcon,
 const RAIL_GROUP: Record<string, string> = { checking: "Banks", savings: "Banks", credit_card: "Credit cards", payment_provider: "Payment providers" };
 const RAIL_ORDER = ["Banks", "Credit cards", "Payment providers", "Other"];
 
-/** Pick dark or light ink for an institution's brand colour (EntityLogo auto-contrast). */
+/** Relative luminance (WCAG 2.x) of a #rrggbb colour. */
+function luminance(h: string) {
+	const [r, g, b] = [0, 2, 4].map((i) => {
+		const c = parseInt(h.slice(i, i + 2), 16) / 255;
+		return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+	});
+	return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+
+/** The ink (black or white) with the higher WCAG contrast on a brand colour from data; one of them always reaches 4.5:1. */
 function inkOn(hex?: string | null) {
 	if (!hex || !/^#?[0-9a-f]{6}$/i.test(hex)) return undefined;
-	const h = hex.replace("#", "");
-	const [r, g, b] = [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16));
-	return (r * 299 + g * 587 + b * 114) / 1000 > 150 ? "#111" : "#fff";
+	const bg = luminance(hex.replace("#", ""));
+	const onWhite = 1.05 / (bg + 0.05);
+	const onBlack = (bg + 0.05) / 0.05;
+	return onBlack >= onWhite ? "#000" : "#fff";
 }
 
 /**
@@ -1403,7 +1443,13 @@ function NetFlowSpark({ data }: { data: { month: string; net: number }[] }) {
 	const max = Math.max(1, ...data.map((d) => Math.abs(d.net)));
 	const w = 100 / data.length;
 	return (
-		<svg viewBox="0 0 100 32" preserveAspectRatio="none" className="h-8 w-full" role="img" aria-label="Net flow, last 6 months">
+		<svg
+			viewBox="0 0 100 32"
+			preserveAspectRatio="none"
+			className="h-8 w-full"
+			role="img"
+			aria-label={`Net flow, last 6 months: ${data.map((d) => `${d.month} ${formatCurrency(d.net)}`).join(", ")}`}
+		>
 			<line x1="0" x2="100" y1="16" y2="16" stroke="var(--chart-grid-stroke)" strokeWidth="0.5" vectorEffect="non-scaling-stroke" />
 			{data.map((d, i) => {
 				const hgt = (Math.abs(d.net) / max) * 15;
@@ -1417,7 +1463,7 @@ function NetFlowSpark({ data }: { data: { month: string; net: number }[] }) {
 	);
 }
 
-const RAIL_HIT = "w-full cursor-pointer rounded-lg text-left transition-colors focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:outline-none";
+const RAIL_HIT = "w-full cursor-pointer rounded-lg text-left transition-colors focus-ring";
 
 /**
  * PositionRail — accounts as instruments: the all-accounts net position,
@@ -1443,6 +1489,7 @@ export function BankAccountRail({
 }>) {
 	const groups = RAIL_ORDER.map((label) => ({ label, list: accounts.filter((a) => (RAIL_GROUP[a.accountType] ?? "Other") === label) })).filter((g) => g.list.length > 0);
 	const multi = net.length > 1;
+	const railId = React.useId();
 	return (
 		<div className={cn("flex w-full min-w-0 flex-col", surfaces.card, className)} {...props}>
 			<div className="border-b border-border p-2">
@@ -1465,8 +1512,10 @@ export function BankAccountRail({
 			</div>
 			<nav aria-label="Bank accounts" className="flex flex-col gap-3 p-2">
 				{groups.map((g) => (
-					<div key={g.label}>
-						<p className="mb-1.5 px-2.5 text-2xs font-medium text-tertiary-foreground">{g.label}</p>
+					<div key={g.label} role="group" aria-labelledby={`${railId}-${g.label}`}>
+						<p id={`${railId}-${g.label}`} className="mb-1.5 px-2.5 text-2xs font-medium text-tertiary-foreground">
+							{g.label}
+						</p>
 						<div className="flex flex-col gap-0.5">
 							{g.list.map((a) => {
 								const sel = selectedId === a.id;
@@ -1478,14 +1527,23 @@ export function BankAccountRail({
 											<span className="min-w-0 flex-1">
 												<span className="flex items-center gap-1">
 													<span className={cn("block truncate text-sm font-medium", sel ? "text-foreground" : "text-muted-foreground")}>{a.accountName}</span>
-													{a.feed && (a.feed.health === "ok" ? <LightningIcon size={11} className="size-3 shrink-0 text-tertiary-foreground" aria-label={a.feed.summary} /> : <StatusChipIcon tone={a.feed.health === "failed" ? "red" : "amber"} glyph="alert" className="size-3" />)}
-													{a.hasChainIssue && <WarningIcon size={12} weight="fill" className="size-3 shrink-0 text-[var(--status-amber)]" aria-label="Statement gap: coverage is broken" />}
+													{a.feed &&
+														(a.feed.health === "ok" ? (
+															<LightningIcon size={11} className="size-3 shrink-0 text-tertiary-foreground" role="img" aria-label={a.feed.summary} />
+														) : (
+															<>
+																<StatusChipIcon tone={a.feed.health === "failed" ? "red" : "amber"} glyph="alert" className="size-3" />
+																<span className="sr-only">{a.feed.summary}</span>
+															</>
+														))}
+													{a.hasChainIssue && <WarningIcon size={12} weight="fill" className="size-3 shrink-0 text-status-amber-text" role="img" aria-label="Statement gap: coverage is broken" />}
 												</span>
 												<span className="mt-0.5 block text-2xs tabular-nums text-tertiary-foreground">{formatCurrencyCompact(a.balance, a.currency || "MYR")}</span>
 											</span>
 											{attention > 0 && (
 												<StatusChip tone="amber" glyph="alert" className="tabular-nums" title={`${attention} to categorize`}>
-													{String(attention)}
+													{attention}
+													<span className="sr-only"> to categorize</span>
 												</StatusChip>
 											)}
 										</span>
@@ -1547,7 +1605,8 @@ const SOURCE: Record<BankRuleRow["source"], { label: string; tone: StatusTone; g
 export function BankRulesTable({ rules, search = "", status = "all", className, ...props }: With<{ rules: BankRuleRow[]; search?: string; status?: "all" | "active" | "inactive"; className?: string }>) {
 	const [filter, setFilter] = React.useState(status);
 	const shown = rules.filter((r) => (filter === "active" ? r.isActive : filter === "inactive" ? !r.isActive : true));
-	const dim = (r: BankRuleRow) => (!r.isActive ? "opacity-60" : undefined);
+	// Inactive rules read quieter through colour that still passes 4.5:1; the Status column says "Inactive".
+	const dim = (r: BankRuleRow) => (!r.isActive ? "text-tertiary-foreground" : undefined);
 	const columns: DataColumn<BankRuleRow>[] = [
 		{
 			key: "rule",
@@ -1616,16 +1675,16 @@ export function BankRulesTable({ rules, search = "", status = "all", className, 
 						<MagnifyingGlassIcon size={13} className="size-3 pointer-events-none absolute top-1/2 left-2 -translate-y-1/2 text-tertiary-foreground" aria-hidden="true" />
 						<Input aria-label="Search rules" placeholder="Search by match or pattern" defaultValue={search} className="!pl-7" />
 					</div>
-					<GroupedTabButton
-						className="w-auto"
-						value={filter}
-						onValueChange={(v) => setFilter(v as typeof filter)}
-						options={[
-							{ value: "all", label: "All" },
-							{ value: "active", label: "Active" },
-							{ value: "inactive", label: "Inactive" },
-						]}
-					/>
+						<GroupedTabButton aria-label="Filter rules by status"
+							className="w-auto"
+							value={filter}
+							onValueChange={(v) => setFilter(v as typeof filter)}
+							options={[
+								{ value: "all", label: "All" },
+								{ value: "active", label: "Active" },
+								{ value: "inactive", label: "Inactive" },
+							]}
+						/>
 				</ActionBar>
 				<ActionBar>
 					<Button variant="secondary">Apply to unposted lines</Button>
@@ -1641,8 +1700,12 @@ export function BankRulesTable({ rules, search = "", status = "all", className, 
 				columns={columns}
 				rows={shown}
 				getKey={(r) => r.id}
-				trailing={() => <ToolbarButton aria-label="Rule actions" />}
-				footer={<span className="text-2xs tabular-nums text-tertiary-foreground">{countOf(shown.length, "rule")}</span>}
+				trailing={(r) => <ToolbarButton aria-label={`Actions for rule ${MATCH_LABEL[r.matchType] ?? r.matchType} ${r.pattern}`} />}
+				footer={
+					<span role="status" className="text-2xs tabular-nums text-tertiary-foreground">
+						{countOf(shown.length, "rule")}
+					</span>
+				}
 				empty="No rules yet. Rules auto-categorize matching transactions on import."
 			/>
 		</div>
@@ -1697,6 +1760,28 @@ export function BankCashFlowChart({ data, currency = "MYR", title = "Cash flow",
 					<Line dataKey="net" type="monotone" stroke="var(--color-net)" strokeWidth={2} dot={{ r: 2.5, fill: "var(--color-net)" }} isAnimationActive={false} />
 				</ComposedChart>
 			</ChartContainer>
+			{/* The chart's figures for screen readers: the SVG and its hover tooltip expose none of them. */}
+			<table className="sr-only">
+				<caption>{`${title}, ${currency}`}</caption>
+				<thead>
+					<tr>
+						<th scope="col">Month</th>
+						<th scope="col">{config.credits.label}</th>
+						<th scope="col">{config.debits.label}</th>
+						<th scope="col">{config.net.label}</th>
+					</tr>
+				</thead>
+				<tbody>
+					{data.map((p) => (
+						<tr key={p.label}>
+							<th scope="row">{p.label}</th>
+							<td>{formatCurrency(p.credits, currency)}</td>
+							<td>{formatCurrency(p.debits, currency)}</td>
+							<td>{formatCurrency(p.net, currency)}</td>
+						</tr>
+					))}
+				</tbody>
+			</table>
 		</SectionPanel>
 	);
 }

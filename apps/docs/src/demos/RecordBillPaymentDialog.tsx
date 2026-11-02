@@ -3,7 +3,6 @@ import { RecordBillPaymentDialog } from "@cynco-labs/ui";
 export default function RecordBillPaymentDialogDemo() {
 	return (
 		<RecordBillPaymentDialog
-			defaultOpen
 			billAmount={8450}
 			paidAmount={3000}
 			currency="MYR"

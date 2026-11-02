@@ -37,7 +37,18 @@ const cols = [
 		cell: (r) => <span className="font-mono text-xs text-primary">{r.no}</span>,
 	},
 	{ key: "customer", header: "Customer", cell: (r) => r.customer },
-	{ key: "date", header: "Date", nowrap: true, cell: (r) => formatDate(r.date) },
+	{
+		key: "date",
+		header: (
+			<>
+				Date <span aria-hidden="true">↓</span>
+			</>
+		),
+		stackedLabel: "Date",
+		nowrap: true,
+		sortDirection: "descending",
+		cell: (r) => formatDate(r.date),
+	},
 	{
 		key: "status",
 		header: "Status",

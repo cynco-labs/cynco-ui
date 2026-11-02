@@ -7,7 +7,7 @@
  * full page, a side sheet or a 360px phone.
  */
 import * as React from "react";
-import { cn } from "../base";
+import { cn, useMergedRef, useShortcutAllowed } from "../base";
 
 /* ───────────── Surfaces ───────────── */
 
@@ -67,6 +67,9 @@ const ROW_PAD: Record<Density, string> = { compact: "py-1", default: "py-2.5", c
 
 const isMac = () => typeof navigator !== "undefined" && /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent);
 
+/** Spoken names for keycap glyphs: screen readers read "⌘" or "↵" as symbol names, or skip them. */
+const KEY_NAME: Record<string, string> = { "⌘": "Command", "⌥": "Option", "⇧": "Shift", "↵": "Enter", "↑": "Up arrow", "↓": "Down arrow", "←": "Left arrow", "→": "Right arrow", "⌫": "Backspace" };
+
 /** A keycap. `mod` renders ⌘ on Mac and Ctrl elsewhere. */
 export function Kbd({ keys, className, ...props }: Omit<React.ComponentProps<"kbd">, "children"> & { keys: string | string[] }) {
 	const list = (Array.isArray(keys) ? keys : keys.split("+")).map((k) => {
@@ -85,9 +88,12 @@ export function Kbd({ keys, className, ...props }: Omit<React.ComponentProps<"kb
 	return (
 		<kbd data-slot="cy-kbd" className={cn("inline-flex items-center gap-0.5 font-sans", className)} {...props}>
 			{list.map((k, i) => (
-				<span key={i} className="inline-flex h-[18px] min-w-[18px] items-center justify-center rounded border border-border bg-interactive-secondary px-1 text-2xs font-medium text-muted-foreground shadow-[0_1px_0_var(--border)]">
-					{k}
-				</span>
+				<React.Fragment key={i}>
+					<span aria-hidden={KEY_NAME[k] ? true : undefined} className="inline-flex h-[18px] min-w-[18px] items-center justify-center rounded border border-border bg-interactive-secondary px-1 text-2xs font-medium text-muted-foreground shadow-[0_1px_0_var(--border)]">
+						{k}
+					</span>
+					{KEY_NAME[k] && <span className="sr-only">{KEY_NAME[k]}</span>}
+				</React.Fragment>
 			))}
 		</kbd>
 	);
@@ -100,9 +106,13 @@ export function Kbd({ keys, className, ...props }: Omit<React.ComponentProps<"kb
 export function useHotkey(combo: string | string[], handler: (e: KeyboardEvent) => void, opts: { enabled?: boolean; allowInInputs?: boolean } = {}) {
 	const ref = React.useRef(handler);
 	ref.current = handler;
-	const combos = (Array.isArray(combo) ? combo : [combo]).join("|");
+	const allowed = useShortcutAllowed();
+	const combos = (Array.isArray(combo) ? combo : [combo])
+		// Printable-only keys honour the user's "Single-key shortcuts" switch (WCAG 2.1.4).
+		.filter(allowed)
+		.join("|");
 	React.useEffect(() => {
-		if (opts.enabled === false) return;
+		if (opts.enabled === false || !combos) return;
 		const list = combos.split("|").map((c) => {
 			const parts = c.toLowerCase().split("+");
 			const key = parts.pop() as string;
@@ -133,12 +143,53 @@ export function ActionBar({ className, ...props }: React.ComponentProps<"div">) 
 	return <div data-slot="cy-action-bar" className={cn("flex min-w-0 flex-wrap items-center gap-2", className)} {...props} />;
 }
 
-/** A single row that scrolls sideways when it doesn't fit (tabs, chips, steppers). */
-export function ScrollRow({ className, ...props }: React.ComponentProps<"div">) {
+const FOCUSABLE = 'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"]),[contenteditable="true"]';
+const SCROLL_STOP_RING = "outline-none focus-ring-inset";
+
+/**
+ * True while `ref` overflows and holds nothing focusable. Such a scroller needs its own tab stop,
+ * or keyboard users (Safari, older Chrome) can't scroll to the hidden part. Re-checked when the
+ * scroller resizes or its content is added or removed, not on every render.
+ */
+export function useNeedsScrollStop<E extends HTMLElement>(ref: React.RefObject<E | null>) {
+	const [needs, setNeeds] = React.useState(false);
+	React.useLayoutEffect(() => {
+		const el = ref.current;
+		if (!el) return;
+		const check = () => {
+			const overflows = el.scrollWidth > el.clientWidth + 1 || el.scrollHeight > el.clientHeight + 1;
+			setNeeds(overflows && !el.querySelector(FOCUSABLE));
+		};
+		check();
+		const resize = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(check);
+		resize?.observe(el);
+		const content = new MutationObserver(check);
+		content.observe(el, { childList: true, subtree: true });
+		return () => {
+			resize?.disconnect();
+			content.disconnect();
+		};
+	}, [ref]);
+	return needs;
+}
+
+/**
+ * A single row that scrolls sideways when it doesn't fit (tabs, chips, steppers). When it overflows
+ * with nothing focusable inside, it becomes a tab stop so the keyboard can scroll it — pass
+ * `aria-label` so that stop has a name.
+ */
+export function ScrollRow({ className, ref, role, tabIndex, ...props }: React.ComponentProps<"div">) {
+	const inner = React.useRef<HTMLDivElement>(null);
+	const setRef = useMergedRef(inner, ref);
+	const needsStop = useNeedsScrollStop(inner);
+	const named = props["aria-label"] != null || props["aria-labelledby"] != null;
 	return (
 		<div
+			ref={setRef}
 			data-slot="cy-scroll-row"
-			className={cn("flex min-w-0 items-center gap-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden", className)}
+			role={role ?? (needsStop && named ? "group" : undefined)}
+			tabIndex={tabIndex ?? (needsStop ? 0 : undefined)}
+			className={cn("flex min-w-0 items-center gap-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden", SCROLL_STOP_RING, className)}
 			{...props}
 		/>
 	);
@@ -161,15 +212,17 @@ const STAT_MIN = {
 } as const;
 
 /** Tiles that fill the row and wrap — 4-up on a page, 2-up in a sheet, 1-up on a phone. */
-export function StatGrid({ min = "md", mode = "fit", className, ...props }: StatGridProps) {
-	return <div data-slot="cy-stat-grid" className={cn("grid gap-3", STAT_MIN[mode][min], className)} {...props} />;
+export function StatGrid({ min = "md", mode = "fit", className, role, ...props }: StatGridProps) {
+	// A labelled grid is announced as a named group of figures.
+	const named = props["aria-label"] != null || props["aria-labelledby"] != null;
+	return <div data-slot="cy-stat-grid" role={role ?? (named ? "group" : undefined)} className={cn("grid gap-3", STAT_MIN[mode][min], className)} {...props} />;
 }
 
 export type StatusToneName = "green" | "blue" | "red" | "orange" | "amber" | "yellow" | "purple" | "pink" | "fuchsia" | "neutral";
 /** Background class for each status tone (dots, bars, legend keys). */
 export const toneBg: Record<StatusToneName, string> = {
-	green: "bg-[var(--status-green)]", blue: "bg-[var(--status-blue)]", red: "bg-[var(--status-red)]", orange: "bg-[var(--status-orange)]", amber: "bg-[var(--status-amber)]",
-	yellow: "bg-[var(--status-yellow)]", purple: "bg-[var(--status-purple)]", pink: "bg-[var(--status-pink)]", fuchsia: "bg-[var(--status-fuchsia)]", neutral: "bg-[var(--status-neutral)]",
+	green: "bg-status-green", blue: "bg-status-blue", red: "bg-status-red", orange: "bg-status-orange", amber: "bg-status-amber",
+	yellow: "bg-status-yellow", purple: "bg-status-purple", pink: "bg-status-pink", fuchsia: "bg-status-fuchsia", neutral: "bg-status-neutral",
 };
 
 export type ToneDotProps = Omit<React.ComponentProps<"span">, "children"> & {
@@ -249,6 +302,14 @@ export type DataColumn<T> = {
 	stackedCell?: (row: T, index: number) => React.ReactNode;
 	/** Label for the stacked "label value" line, when the table header is interactive (e.g. a sort button). */
 	stackedLabel?: React.ReactNode;
+	/**
+	 * The column that names the row: rendered as its row header (`<th scope="row">`) and, with
+	 * `onRowClick`, as the row's button. Default: the first table column. The stacked layout uses
+	 * the `title` column instead.
+	 */
+	primary?: boolean;
+	/** The list's current sort on this column, announced as `aria-sort` on its header. DataList doesn't sort; set it on the sorted column only. */
+	sortDirection?: "ascending" | "descending" | "none";
 };
 
 export type DataListProps<T> = {
@@ -257,6 +318,10 @@ export type DataListProps<T> = {
 	getKey: (row: T, index: number) => string;
 	/** Container width below which rows stack. Default `xl` (36rem). `never` keeps the table (it scrolls sideways). */
 	stackBelow?: "sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "never";
+	/**
+	 * Opens a row. The primary cell (table) or title (stacked) becomes a real button, so the row is
+	 * reachable with Tab and announced as actionable; a click anywhere else on the row does the same.
+	 */
 	onRowClick?: (row: T) => void;
 	isRowSelected?: (row: T) => boolean;
 	/** Extra classes per row, in both layouts (e.g. dim inactive rows). */
@@ -289,6 +354,12 @@ export type DataListProps<T> = {
 const SHOW_TABLE = { sm: "hidden @sm:block", md: "hidden @md:block", lg: "hidden @lg:block", xl: "hidden @xl:block", "2xl": "hidden @2xl:block", "3xl": "hidden @3xl:block", never: "block" } as const;
 const SHOW_LIST = { sm: "@sm:hidden", md: "@md:hidden", lg: "@lg:hidden", xl: "@xl:hidden", "2xl": "@2xl:hidden", "3xl": "@3xl:hidden", never: "hidden" } as const;
 const ALIGN = { left: "text-left", right: "text-right", center: "text-center" } as const;
+/** Controls a click on a table row must leave alone (they act on their own). */
+const ROW_CONTROLS = "a[href],button,input,select,textarea,label,summary,[role=button],[role=checkbox],[role=switch],[role=menuitem],[role=link],[contenteditable=true]";
+/** The stacked title button: its ::after covers the row so the whole row stays clickable, and carries the focus ring. */
+const STRETCHED_TARGET = "cursor-pointer text-left outline-none after:absolute after:inset-0 focus-visible:after:outline-2 focus-visible:after:-outline-offset-2 focus-visible:after:outline-focus-ring";
+/** Lifts controls rendered inside stacked cells above that ::after, so they stay clickable. */
+const ABOVE_STRETCHED = "[&_:is(a[href],button,input,select,textarea,summary,[role=button],[role=checkbox],[role=switch],[role=link]):not([data-row-title])]:relative [&_:is(a[href],button,input,select,textarea,summary,[role=button],[role=checkbox],[role=switch],[role=link]):not([data-row-title])]:z-10";
 
 /**
  * The one way to show rows of records. Wide container: Cynco UI's tray table. Narrow container:
@@ -309,38 +380,53 @@ export function DataList<T>({
 	const badges = stackedCols.filter((c) => slot(c) === "badge");
 	const metas = stackedCols.filter((c) => c !== title && c !== value && !badges.includes(c));
 	const stackedRender = (c: DataColumn<T>, r: T, i: number) => (c.stackedCell ?? c.cell)(r, i);
-	const clickable = onRowClick ? "cursor-pointer outline-none focus-visible:bg-table-row-hover focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring" : undefined;
-	/** Clickable rows are reachable and operable from the keyboard (Tab, then Enter or Space). */
-	const rowProps = (r: T) =>
-		onRowClick
-			? {
-					onClick: () => onRowClick(r),
-					tabIndex: 0,
-					onKeyDown: (e: React.KeyboardEvent) => {
-						if (e.target !== e.currentTarget) return;
-						if (e.key === "Enter" || e.key === " ") {
-							e.preventDefault();
-							onRowClick(r);
-						}
-					},
-				}
-			: {};
+	/**
+	 * A clickable row is never itself the focus stop (it holds other controls). Its primary cell
+	 * renders a real button for keyboard and screen-reader users; in the table, a click elsewhere on
+	 * the row is a mouse shortcut to the same thing, skipped when it lands on a control in the row.
+	 */
+	const openFromRow = (e: React.MouseEvent<HTMLTableRowElement>, r: T) => {
+		if (e.target instanceof Element && e.target.closest(ROW_CONTROLS)) return;
+		onRowClick?.(r);
+	};
+	/**
+	 * Selection without a leading checkbox is otherwise only a tint: expose it as the current row
+	 * (on the row's button when it has one) and add a bar at the row's start so it doesn't rest on
+	 * colour alone.
+	 */
+	const markCurrent = !!isRowSelected && !leading;
+	// One isRowSelected call per row per render; both layouts and both attributes read the set.
+	const selected = isRowSelected ? new Set(rows.filter(isRowSelected)) : null;
+	const isSelected = (r: T) => !!selected?.has(r);
+	const current = (r: T) => (markCurrent && isSelected(r) ? ("true" as const) : undefined);
 	const rowPad = ROW_PAD[density];
 	const firstKey = tableCols[0]?.key;
+	const primaryKey = (tableCols.find((c) => c.primary) ?? tableCols[0])?.key;
+	const tableScroll = React.useRef<HTMLDivElement>(null);
+	const listScroll = React.useRef<HTMLUListElement>(null);
+	const tableStop = useNeedsScrollStop(tableScroll);
+	const listStop = useNeedsScrollStop(listScroll);
 
 	return (
 		<div data-slot="cy-data-list" className={cn("@container min-w-0", className)} {...props}>
 			<div className={surfaces.tray}>
 				{/* Table */}
 				<div className={SHOW_TABLE[stackBelow]}>
-					<div className={cn(surfaces.surface, maxHeight ? "overflow-auto overscroll-contain" : "overflow-x-auto")} style={maxHeight ? { maxHeight } : undefined}>
+					<div
+						ref={tableScroll}
+						role={tableStop && caption ? "group" : undefined}
+						aria-label={tableStop ? caption : undefined}
+						tabIndex={tableStop ? 0 : undefined}
+						className={cn(surfaces.surface, SCROLL_STOP_RING, maxHeight ? "overflow-auto overscroll-contain" : "overflow-x-auto", stick && "scroll-pt-10", stick && totals && "scroll-pb-11")}
+						style={maxHeight ? { maxHeight } : undefined}
+					>
 						<table className="w-full border-collapse text-sm">
 							{caption && <caption className="sr-only">{caption}</caption>}
 							<thead>
 								<tr className={cn("border-b border-table-row-divider", stick && "[&>th]:sticky [&>th]:top-0 [&>th]:z-10 [&>th]:bg-table-surface [&>th]:shadow-[inset_0_-1px_0_var(--table-row-divider)]")}>
 									{leading && <th scope="col" className="w-9 py-2 pl-3 text-left font-normal">{leadingHeader}</th>}
 									{tableCols.map((c) => (
-										<th key={c.key} scope="col" className={cn("px-3 py-2 text-xs font-medium whitespace-nowrap text-tertiary-foreground", ALIGN[c.align ?? "left"], c.className)}>
+										<th key={c.key} scope="col" aria-sort={c.sortDirection} className={cn("px-3 py-2 text-xs font-medium whitespace-nowrap text-tertiary-foreground", ALIGN[c.align ?? "left"], c.className)}>
 											{c.header}
 										</th>
 									))}
@@ -351,16 +437,30 @@ export function DataList<T>({
 								{rows.map((r, i) => (
 									<tr
 										key={getKey(r, i)}
-										{...rowProps(r)}
-										data-selected={isRowSelected?.(r) || undefined}
-										className={cn("border-b border-table-row-divider last:border-0 hover:bg-table-row-hover data-[selected]:bg-active-primary", clickable, rowClassName?.(r))}
+										onClick={onRowClick ? (e) => openFromRow(e, r) : undefined}
+										data-selected={isSelected(r) || undefined}
+										aria-current={onRowClick ? undefined : current(r)}
+										className={cn("border-b border-table-row-divider last:border-0 hover:bg-table-row-hover data-[selected]:bg-active-primary", markCurrent && "data-[selected]:[&>:first-child]:shadow-[inset_2px_0_0_var(--color-primary)]", onRowClick && "cursor-pointer has-[:focus-visible]:bg-table-row-hover", rowClassName?.(r))}
 									>
 										{leading && <td className={cn("pl-3 align-middle", rowPad)} onClick={(e) => e.stopPropagation()}><div className="flex items-center">{leading(r)}</div></td>}
-										{tableCols.map((c) => (
-											<td key={c.key} className={cn("px-3 text-foreground", rowPad, ALIGN[c.align ?? "left"], (c.align === "right" || c.nowrap) && "whitespace-nowrap", c.align === "right" && "tabular-nums", c.className)}>
-												{c.cell(r, i)}
-											</td>
-										))}
+										{tableCols.map((c) => {
+											const align = ALIGN[c.align ?? "left"];
+											const text = cn("text-foreground", align, (c.align === "right" || c.nowrap) && "whitespace-nowrap", c.align === "right" && "tabular-nums");
+											if (c.key !== primaryKey) {
+												return <td key={c.key} className={cn("px-3", rowPad, text, c.className)}>{c.cell(r, i)}</td>;
+											}
+											return (
+												<th key={c.key} scope="row" className={cn("font-normal", !onRowClick && ["px-3", rowPad], text, c.className)}>
+													{onRowClick ? (
+														<button type="button" aria-current={current(r)} onClick={() => onRowClick(r)} className={cn("block w-full cursor-pointer px-3 outline-none focus-ring-inset", rowPad, align)}>
+															{c.cell(r, i)}
+														</button>
+													) : (
+														c.cell(r, i)
+													)}
+												</th>
+											);
+										})}
 										{trailing && <td className={cn("pr-2 text-right", rowPad)} onClick={(e) => e.stopPropagation()}>{trailing(r)}</td>}
 									</tr>
 								))}
@@ -384,18 +484,33 @@ export function DataList<T>({
 				</div>
 
 				{/* Stacked list */}
-				<ul className={cn(SHOW_LIST[stackBelow], surfaces.surface, "divide-y divide-table-row-divider", maxHeight && "overflow-y-auto overscroll-contain")} style={maxHeight ? { maxHeight } : undefined} aria-label={caption}>
+				<ul
+					ref={listScroll}
+					tabIndex={listStop ? 0 : undefined}
+					className={cn(SHOW_LIST[stackBelow], surfaces.surface, SCROLL_STOP_RING, "divide-y divide-table-row-divider", maxHeight && "overflow-y-auto overscroll-contain")}
+					style={maxHeight ? { maxHeight } : undefined}
+					aria-label={caption}
+				>
 					{rows.map((r, i) => (
 						<li
 							key={getKey(r, i)}
-							{...rowProps(r)}
-							data-selected={isRowSelected?.(r) || undefined}
-							className={cn("flex gap-3 px-3 data-[selected]:bg-active-primary", density === "compact" ? "py-2" : density === "comfortable" ? "py-4" : "py-3", clickable, rowClassName?.(r))}
+							data-selected={isSelected(r) || undefined}
+							aria-current={onRowClick ? undefined : current(r)}
+							className={cn("flex gap-3 px-3 data-[selected]:bg-active-primary", markCurrent && "data-[selected]:shadow-[inset_2px_0_0_var(--color-primary)]", density === "compact" ? "py-2" : density === "comfortable" ? "py-4" : "py-3", onRowClick && ["relative isolate has-[:focus-visible]:bg-table-row-hover", ABOVE_STRETCHED], rowClassName?.(r))}
 						>
-							{leading && <div className="flex shrink-0 items-start pt-0.5" onClick={(e) => e.stopPropagation()}>{leading(r)}</div>}
+							{/* Above the title button's stretched ::after, so they stay operable. */}
+							{leading && <div className={cn("flex shrink-0 items-start pt-0.5", onRowClick && "relative z-10")} onClick={(e) => e.stopPropagation()}>{leading(r)}</div>}
 							<div className="min-w-0 flex-1">
 								<div className="flex items-start justify-between gap-3">
-									<div className="min-w-0 text-sm font-medium text-foreground">{stackedRender(title, r, i)}</div>
+									<div className="min-w-0 text-sm font-medium text-foreground">
+										{onRowClick ? (
+											<button type="button" data-row-title="" aria-current={current(r)} onClick={() => onRowClick(r)} className={STRETCHED_TARGET}>
+												{stackedRender(title, r, i)}
+											</button>
+										) : (
+											stackedRender(title, r, i)
+										)}
+									</div>
 									{value && <div className="shrink-0 text-sm font-medium tabular-nums text-foreground">{stackedRender(value, r, i)}</div>}
 								</div>
 								{badges.length > 0 && <div className="mt-1.5 flex flex-wrap items-center gap-1.5">{badges.map((c) => <React.Fragment key={c.key}>{stackedRender(c, r, i)}</React.Fragment>)}</div>}
@@ -410,7 +525,7 @@ export function DataList<T>({
 									</dl>
 								)}
 							</div>
-							{trailing && <div className="-mr-1" onClick={(e) => e.stopPropagation()}>{trailing(r)}</div>}
+							{trailing && <div className={cn("-mr-1", onRowClick && "relative z-10")} onClick={(e) => e.stopPropagation()}>{trailing(r)}</div>}
 						</li>
 					))}
 					{rows.length === 0 && empty && <li className="px-4 py-8 text-center text-sm text-tertiary-foreground">{empty}</li>}

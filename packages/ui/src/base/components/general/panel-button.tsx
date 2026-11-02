@@ -1,7 +1,10 @@
 import { cn } from "../../lib/utils";
-import type { ReactNode } from "react";
+import { SelectedMark } from "./selected-mark";
+import type { ComponentProps, ReactNode } from "react";
 
-interface PanelButtonProps {
+/** Native button props (e.g. `aria-label`, required for this icon-only button) go on the root. */
+interface PanelButtonProps
+	extends Omit<ComponentProps<"button">, "onClick" | "className" | "children"> {
 	isSelected: boolean;
 	onClick: () => void;
 	icon: ReactNode;
@@ -13,54 +16,61 @@ export function PanelButton({
 	onClick,
 	icon,
 	className = "",
+	...props
 }: PanelButtonProps) {
 	return (
 		<button
 			type="button"
+			aria-pressed={isSelected}
+			{...props}
 			onClick={onClick}
 			data-state={isSelected ? "open" : "closed"}
 			className={cn(
 				// Fixed dimensions
-				"w-[124px] h-[72px] relative flex items-center justify-center overflow-hidden flex-shrink-0 cursor-pointer ",
+				"w-[124px] h-[72px] relative flex items-center justify-center flex-shrink-0 cursor-pointer ",
 
 				// Thicker border for panel effect
 				"!rounded-[0.5rem] !border-[0.09375rem]",
 				// Custom panel shadows
-				"shadow-[inset_0px_-8px_22px_0px_rgba(0,0,0,0.04)]",
+				"shadow-panel-inset",
 
 				// Design system classes (following Select pattern)
-				"input-base input-shadow-default input-state-open outline-none !bg-background",
+				// No outline-none: selected and focused share the primary border, so keyboard
+				// focus keeps the browser ring to stay distinguishable from selection.
+				"input-base input-shadow-default input-state-open !bg-background",
 				"hover:!border-primary focus-visible:!border-primary data-[state=open]:!border-primary",
 				className,
 			)}
 		>
+			{isSelected && <SelectedMark />}
+
 			{/* Screws in corners */}
 			<div
 				className={`absolute top-1.5 left-1.5 w-1.5 h-1.5 rounded-full ${
 					isSelected
 						? "bg-primary/20 dark:bg-primary/40"
-						: "bg-neutral-200 dark:bg-neutral-800"
+						: "bg-border"
 				}`}
 			/>
 			<div
 				className={`absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full ${
 					isSelected
 						? "bg-primary/20 dark:bg-primary/40"
-						: "bg-neutral-200 dark:bg-neutral-800"
+						: "bg-border"
 				}`}
 			/>
 			<div
 				className={`absolute bottom-1.5 left-1.5 w-1.5 h-1.5 rounded-full ${
 					isSelected
 						? "bg-primary/20 dark:bg-primary/40"
-						: "bg-neutral-200 dark:bg-neutral-800"
+						: "bg-border"
 				}`}
 			/>
 			<div
 				className={`absolute bottom-1.5 right-1.5 w-1.5 h-1.5 rounded-full ${
 					isSelected
 						? "bg-primary/20 dark:bg-primary/40"
-						: "bg-neutral-200 dark:bg-neutral-800"
+						: "bg-border"
 				}`}
 			/>
 
@@ -71,6 +81,7 @@ export function PanelButton({
 
 			{/* Centered icon */}
 			<div
+				aria-hidden="true"
 				className={cn(
 					"size-9 rounded-xl flex items-center justify-center relative bg-interactive-secondary-hover border",
 				)}

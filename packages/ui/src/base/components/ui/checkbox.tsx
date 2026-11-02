@@ -39,7 +39,8 @@ function Checkbox({
 			disabled={disabled}
 			style={{ cursor: disabled ? undefined : "pointer", ...style }}
 			className={cn(
-				"peer inline-flex items-center justify-center align-middle border-input dark:bg-input/30 data-checked:bg-primary data-checked:text-primary-foreground dark:data-checked:bg-primary data-checked:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive  shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50",
+				// The after: layer extends the hit area to at least 24×24 without changing layout (WCAG 2.5.8).
+				"peer relative inline-flex items-center justify-center align-middle after:absolute after:-inset-[5px] border-input dark:bg-input-background data-checked:bg-primary data-checked:text-primary-foreground dark:data-checked:bg-primary data-checked:border-primary aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive  shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-ring disabled:cursor-not-allowed disabled:opacity-50",
 
 				!disabled && "hover:bg-hover-primary hover:border-primary",
 				size === "sm" && "size-3.5",

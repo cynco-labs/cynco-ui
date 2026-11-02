@@ -25,9 +25,11 @@ function Select({
 	SelectPrimitive.Root.Props<string>,
 	"onValueChange" | "onOpenChange"
 > & {
-	onValueChange?: (value: string) => void;
+	/** `null` when the selection is cleared. */
+	onValueChange?: (value: string | null) => void;
 	onOpenChange?: (open: boolean) => void;
-	value?: string;
+	/** `null` means nothing is selected (the placeholder shows) while staying controlled. */
+	value?: string | null;
 	defaultValue?: string;
 	items?:
 		| Record<string, string>
@@ -40,9 +42,7 @@ function Select({
 			value={value}
 			defaultValue={defaultValue}
 			items={items}
-			onValueChange={
-				onValueChange ? (val) => onValueChange(val as string) : undefined
-			}
+			onValueChange={onValueChange}
 			onOpenChange={onOpenChange ? (open) => onOpenChange(open) : undefined}
 			{...props}
 		/>
@@ -76,7 +76,7 @@ function SelectTrigger({
 			data-slot="select-trigger"
 			data-size={size}
 			className={cn(
-				"[&_svg:not([class*='text-'])]:text-muted-foreground rounded-lg flex items-center justify-between gap-2 text-sm outline-none disabled:cursor-not-allowed disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 cursor-pointer min-w-0 whitespace-nowrap",
+				"[&_svg:not([class*='text-'])]:text-muted-foreground rounded-lg flex items-center justify-between gap-2 text-sm outline-none focus-ring disabled:cursor-not-allowed disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 cursor-pointer min-w-0 whitespace-nowrap",
 				`input-base input-shadow-default input-state-open`,
 				className,
 			)}

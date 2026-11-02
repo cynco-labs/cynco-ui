@@ -6,13 +6,13 @@ import { cva, type VariantProps } from "class-variance-authority";
 import * as React from "react";
 
 const TRIGGER_BASE =
-	"inline-flex items-center justify-center whitespace-nowrap rounded-md px-2 py-1 text-sm font-medium ring-offset-background transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[active]:text-primary hover:bg-interactive-secondary-hover dark:focus-visible:ring-zinc-300 dark:data-[active]:bg-zinc-950 dark:data-[active]:text-zinc-50";
+	"inline-flex items-center justify-center whitespace-nowrap rounded-md px-2 py-1 text-sm font-medium transition-all cursor-pointer outline-none focus-ring disabled:pointer-events-none disabled:opacity-50 data-[active]:text-primary data-[active]:bg-interactive-secondary data-[active]:shadow-sm hover:bg-interactive-secondary-hover dark:data-[active]:bg-background dark:data-[active]:text-foreground";
 
 const tabsListVariants = cva("", {
 	variants: {
 		variant: {
 			default:
-				"inline-flex h-9 items-center justify-center rounded-lg bg-transparent text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400 px-1",
+				"inline-flex h-9 items-center justify-center rounded-lg bg-transparent text-muted-foreground dark:bg-muted px-1",
 			underline: "flex w-full items-center gap-5 border-b border-border",
 		},
 	},
@@ -25,10 +25,10 @@ const tabsTriggerVariants = cva("", {
 			default: TRIGGER_BASE,
 			onboarding: cn(
 				TRIGGER_BASE,
-				"data-[active]:bg-stone-200 data-[active]:text-muted-foreground data-[active]:font-medium",
+				"data-[active]:bg-muted data-[active]:text-foreground data-[active]:font-medium",
 			),
 			underline:
-				"-mb-px inline-flex items-center whitespace-nowrap border-b-2 border-transparent pb-2 text-sm font-medium text-tertiary-foreground outline-none transition-colors cursor-pointer hover:text-foreground focus-visible:text-foreground data-[active]:border-foreground data-[active]:text-foreground",
+				"-mb-px inline-flex items-center whitespace-nowrap border-b-2 border-transparent pb-2 text-sm font-medium text-tertiary-foreground outline-none focus-ring transition-colors cursor-pointer hover:text-foreground focus-visible:text-foreground data-[active]:border-foreground data-[active]:text-foreground",
 		},
 	},
 	defaultVariants: { variant: "default" },
@@ -67,7 +67,7 @@ const TabsContent = React.forwardRef<HTMLDivElement, TabsPrimitive.Panel.Props>(
 		<TabsPrimitive.Panel
 			ref={ref}
 			className={cn(
-				"mt-2 mb-4 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+				"mt-2 mb-4 outline-none focus-ring",
 				className,
 			)}
 			{...props}

@@ -27,6 +27,7 @@ import {
 	formatDocAmount,
 	currencySymbol,
 	amountInWords,
+	docLabelText,
 	DocumentPage,
 	Letterhead,
 	DocLabel,
@@ -90,14 +91,17 @@ export type AcceptanceBlockProps = Omit<React.ComponentProps<"div">, "title"> & 
  */
 export function AcceptanceBlock({ title, statement, signatureLabel = "customerSignature", signatureImage, fields = [], stamp, className, ...props }: AcceptanceBlockProps) {
 	const t = useDocLabel();
+	const { locale } = useDocumentBrand();
 	const tx = (v: unknown) => (typeof v === "string" ? t(v) : (v as React.ReactNode));
 	return (
 		<div data-slot="cy-doc-acceptance" className={cn("cy-doc-break-avoid flex min-w-0 flex-col", className)} {...props}>
-			<DocLabel>{tx(title)}</DocLabel>
+			<h2>
+				<DocLabel>{tx(title)}</DocLabel>
+			</h2>
 			<div className="mt-1.5 min-h-[8mm] text-[7.75pt] leading-[1.5] text-[var(--doc-muted)]">{statement}</div>
 			<div className="mt-auto flex items-end gap-[5mm]">
 				<div className="min-w-0 flex-1">
-					<div className="flex h-[17mm] items-end">{signatureImage && <img src={signatureImage} alt="" className="max-h-[15mm] w-auto object-contain" />}</div>
+					<div className="flex h-[17mm] items-end">{signatureImage && <img src={signatureImage} alt={docLabelText("signed", locale === "ms" ? "ms" : "en")} className="max-h-[15mm] w-auto object-contain" />}</div>
 					<div className="border-t border-[var(--doc-rule-strong)] pt-[1.5mm] text-[7pt] font-semibold tracking-[0.08em] text-[var(--doc-muted)] uppercase">{tx(signatureLabel)}</div>
 				</div>
 				{stamp && (
@@ -143,24 +147,28 @@ export function ForeignCurrencyNote({ currency, rate, rateDate, source, rows, cl
 	return (
 		<div data-slot="cy-doc-fx" className={cn("cy-doc-break-avoid text-[7.75pt]", className)} {...props}>
 			<div className={cn("rounded-[2mm] px-[3.5mm] py-[2.5mm]", "border border-[var(--doc-rule)]")}>
-				<div className="flex items-baseline justify-between gap-3">
-					<DocLabel>{t("exchangeRate")}</DocLabel>
-					<span className="cy-doc-num font-medium whitespace-nowrap">
-						1 {currency} = {rate} MYR
-					</span>
-				</div>
+				<dl>
+					<div className="flex items-baseline justify-between gap-3">
+						<dt>
+							<DocLabel>{t("exchangeRate")}</DocLabel>
+						</dt>
+						<dd className="cy-doc-num font-medium whitespace-nowrap">
+							1 {currency} = {rate} MYR
+						</dd>
+					</div>
+				</dl>
 				{(source || rateDate) && <div className="mt-0.5 text-right text-[7pt] text-[var(--doc-subtle)]">{[source, formatDocDate(rateDate, locale)].filter(Boolean).join(" · ")}</div>}
-				<div className="mt-[1.5mm] border-t border-[var(--doc-rule)] pt-[1mm]">
+				<dl className="mt-[1.5mm] border-t border-[var(--doc-rule)] pt-[1mm]">
 					{rows.map((r, i) => (
 						<div key={i} className={cn("flex items-baseline justify-between gap-3 py-[0.6mm]", r.strong && "font-semibold")}>
-							<span className={r.strong ? "" : "text-[var(--doc-muted)]"}>{typeof r.label === "string" ? t(r.label) : r.label}</span>
-							<span className="cy-doc-num whitespace-nowrap">
+							<dt className={r.strong ? "" : "text-[var(--doc-muted)]"}>{typeof r.label === "string" ? t(r.label) : r.label}</dt>
+							<dd className="cy-doc-num whitespace-nowrap">
 								<span className="mr-1 text-[0.85em] font-medium text-[var(--doc-muted)]">RM</span>
 								{formatDocAmount(r.value)}
-							</span>
+							</dd>
 						</div>
 					))}
-				</div>
+				</dl>
 			</div>
 		</div>
 	);
@@ -603,7 +611,9 @@ function AdjustmentNoteBody({ n }: { n: AdjustmentNoteData }) {
 				<div className="grid grid-cols-2 items-start gap-8">
 					<PartyBlock heading="customer" party={n.customer} />
 					<DocCallout>
-						<DocLabel>{t("reason")}</DocLabel>
+						<h2>
+							<DocLabel>{t("reason")}</DocLabel>
+						</h2>
 						{n.reason.category && <div className="mt-1.5 text-[9pt] leading-tight font-semibold">{n.reason.category}</div>}
 						<div className="mt-1 text-[7.75pt] leading-[1.55] text-[var(--doc-muted)]">{n.reason.text}</div>
 					</DocCallout>
@@ -732,7 +742,7 @@ function ReceiptBody({ r, size }: { r: ReceiptData; size: "a4" | "a5" }) {
 					<div className="flex min-w-0 flex-col gap-[4mm]">
 						<PartyBlock heading="receivedFrom" party={r.receivedFrom} />
 					</div>
-					<div
+					<dl
 						className={cn(
 							"flex flex-col justify-center text-right",
 							a5 ? "min-w-[46mm]" : "min-w-[64mm]",
@@ -741,25 +751,33 @@ function ReceiptBody({ r, size }: { r: ReceiptData; size: "a4" | "a5" }) {
 							layout === "minimal" && "border-t border-[var(--doc-rule-strong)] pt-[3mm]",
 						)}
 					>
-						<DocLabel>{t("amountReceived")}</DocLabel>
-						<div className={cn("cy-doc-num mt-[1.5mm] leading-none font-semibold tracking-[-0.02em] whitespace-nowrap", a5 ? "text-[15pt]" : "text-[20pt]", layout === "classic" && "font-medium [font-family:var(--doc-display)]", layout !== "classic" && "text-[var(--doc-accent-text)]")}>
+						<dt>
+							<DocLabel>{t("amountReceived")}</DocLabel>
+						</dt>
+						<dd className={cn("cy-doc-num mt-[1.5mm] leading-none font-semibold tracking-[-0.02em] whitespace-nowrap", a5 ? "text-[15pt]" : "text-[20pt]", layout === "classic" && "font-medium [font-family:var(--doc-display)]", layout !== "classic" && "text-[var(--doc-accent-text)]")}>
 							<span className="mr-1.5 align-[0.2em] text-[0.45em] font-medium text-[var(--doc-muted)]">{sym}</span>
 							{formatDocAmount(r.amountReceived)}
-						</div>
-					</div>
+						</dd>
+					</dl>
 				</div>
-				<div className={cn("grid gap-x-8 gap-y-3", a5 ? "grid-cols-2" : "grid-cols-[repeat(auto-fit,minmax(30mm,1fr))]", "border-y border-[var(--doc-rule)] py-[3mm]")}>
+				<dl className={cn("grid gap-x-8 gap-y-3", a5 ? "grid-cols-2" : "grid-cols-[repeat(auto-fit,minmax(30mm,1fr))]", "border-y border-[var(--doc-rule)] py-[3mm]")}>
 					{[{ label: t("receiptDate"), value: formatDocDate(r.date, locale) }, ...payLines].map((f, i) => (
 						<div key={i} className="min-w-0">
-							<DocLabel>{f.label as React.ReactNode}</DocLabel>
-							<div className="mt-1 font-medium">{f.value}</div>
+							<dt>
+								<DocLabel>{f.label as React.ReactNode}</DocLabel>
+							</dt>
+							<dd className="mt-1 font-medium">{f.value}</dd>
 						</div>
 					))}
-				</div>
+				</dl>
 				<div className="text-[8pt] leading-[1.55]">
 					<DocLabel className="mb-1">{t("theSumOf")}</DocLabel>
 					<div className="text-[var(--doc-ink)] italic">{amountInWords(r.amountReceived, { currency, lang: locale === "ms" ? "ms" : "en" })}</div>
-					{locale === "en-ms" && <div className="text-[var(--doc-muted)] italic">{amountInWords(r.amountReceived, { currency, lang: "ms" })}</div>}
+					{locale === "en-ms" && (
+						<div lang="ms" className="text-[var(--doc-muted)] italic">
+							{amountInWords(r.amountReceived, { currency, lang: "ms" })}
+						</div>
+					)}
 				</div>
 				{allocations.length > 0 && (
 					<DocSection title={t("paymentFor")}>
@@ -793,7 +811,7 @@ function ThermalReceiptBody({ r }: { r: ReceiptData }) {
 					<>
 						<DocRule dashed />
 						<div>
-							<div className="mb-[1mm] text-[7pt] font-semibold tracking-[0.1em] uppercase">{t("paymentFor")}</div>
+							<h2 className="mb-[1mm] text-[7pt] font-semibold tracking-[0.1em] uppercase">{t("paymentFor")}</h2>
 							{allocations.map((a, i) => (
 								<div key={i} className="flex items-baseline justify-between gap-3 py-[0.6mm]">
 									<span className="min-w-0">
@@ -925,7 +943,9 @@ function DeliveryOrderBody({ o }: { o: DeliveryOrderData }) {
 					<div className="cy-doc-break-avoid grid grid-cols-[1.25fr_1fr] items-start gap-8">
 						{hasLogistics ? (
 							<DocCallout>
-								<DocLabel className="mb-[2mm]">{t("deliveryDetails")}</DocLabel>
+								<h2 className="mb-[2mm]">
+									<DocLabel>{t("deliveryDetails")}</DocLabel>
+								</h2>
 								<DocFields variant="columns" className="grid-cols-2 gap-y-[2.5mm]" items={logistics.map((l) => ({ ...l, label: <span className="text-[var(--doc-subtle)]">{l.label as React.ReactNode}</span> }))} />
 							</DocCallout>
 						) : (

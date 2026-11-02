@@ -71,18 +71,23 @@ export type QueueItemContentProps = ComponentProps<"span"> & {
 export const QueueItemContent = ({
 	completed = false,
 	className,
+	children,
 	...props
 }: QueueItemContentProps) => (
 	<span
 		className={cn(
 			"line-clamp-1 grow break-words",
 			completed
-				? "text-muted-foreground/50 line-through"
+				? "text-tertiary-foreground line-through"
 				: "text-muted-foreground",
 			className,
 		)}
 		{...props}
-	/>
+	>
+		{children}
+		{/* Strikethrough is not announced; say it. */}
+		{completed && <span className="sr-only"> (completed)</span>}
+	</span>
 );
 
 export type QueueItemDescriptionProps = ComponentProps<"div"> & {
@@ -126,7 +131,7 @@ export const QueueItemAction = ({
 }: QueueItemActionProps) => (
 	<Button
 		className={cn(
-			"size-auto rounded p-1 text-muted-foreground opacity-0 transition-opacity hover:bg-muted-foreground/10 hover:text-foreground group-hover:opacity-100",
+			"size-auto rounded p-1 text-muted-foreground opacity-0 transition-opacity hover:bg-muted-foreground/10 hover:text-foreground group-hover:opacity-100 focus-visible:opacity-100",
 			className,
 		)}
 		size="icon"

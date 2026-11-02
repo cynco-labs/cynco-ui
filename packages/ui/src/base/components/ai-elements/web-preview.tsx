@@ -107,6 +107,7 @@ export const WebPreviewNavigationButton = ({
 		<Tooltip>
 			<TooltipTrigger asChild>
 				<Button
+					aria-label={tooltip}
 					className="h-8 w-8 p-0 hover:text-foreground"
 					disabled={disabled}
 					onClick={onClick}
@@ -155,6 +156,7 @@ export const WebPreviewUrl = ({
 
 	return (
 		<Input
+			aria-label="URL"
 			className="h-8 flex-1 text-sm"
 			onChange={onChange ?? handleChange}
 			onKeyDown={handleKeyDown}
@@ -234,7 +236,11 @@ export const WebPreviewConsole = ({
 					"data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 outline-none data-[state=closed]:animate-out data-[state=open]:animate-in",
 				)}
 			>
-				<div className="max-h-48 space-y-1 overflow-y-auto">
+				{/* Focusable so keyboard users can scroll long output. */}
+				<div
+					className="max-h-48 space-y-1 overflow-y-auto outline-none focus-ring-inset"
+					tabIndex={0}
+				>
 					{logs.length === 0 ? (
 						<p className="text-muted-foreground">No console output</p>
 					) : (
@@ -243,7 +249,7 @@ export const WebPreviewConsole = ({
 								className={cn(
 									"text-xs",
 									log.level === "error" && "text-destructive",
-									log.level === "warn" && "text-yellow-600",
+									log.level === "warn" && "text-status-amber-text",
 									log.level === "log" && "text-foreground",
 								)}
 								key={`${log.timestamp.getTime()}-${index}`}
@@ -251,6 +257,10 @@ export const WebPreviewConsole = ({
 								<span className="text-muted-foreground">
 									{log.timestamp.toLocaleTimeString()}
 								</span>{" "}
+								{/* Level as text, not only colour. */}
+								{log.level !== "log" && (
+									<span className="font-medium uppercase">{log.level} </span>
+								)}
 								{log.message}
 							</div>
 						))

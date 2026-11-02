@@ -10,7 +10,7 @@ import { useControllableState } from "../../hooks/use-controllable-state";
 import { cn } from "../../lib/utils";
 import { BrainIcon, ChevronDownIcon } from "lucide-react";
 import type { ComponentProps, ReactNode } from "react";
-import { createContext, memo, useContext, useEffect, useState } from "react";
+import { createContext, memo, useContext, useEffect, useRef, useState } from "react";
 import { Streamdown } from "streamdown";
 
 type ReasoningContextValue = {
@@ -63,6 +63,9 @@ export const Reasoning = memo(
 		});
 
 		const [hasAutoClosed, setHasAutoClosed] = useState(false);
+		// Once the reader opens/closes it or works inside it, it never collapses on its own (WCAG 3.2 / 2.2.1).
+		const userTookOver = useRef(false);
+		const root = useRef<HTMLDivElement>(null);
 		const [startTime, setStartTime] = useState<number | null>(null);
 
 		// Track duration when streaming starts and ends
@@ -79,9 +82,14 @@ export const Reasoning = memo(
 
 		// Auto-open when streaming starts, auto-close when streaming ends (once only)
 		useEffect(() => {
-			if (defaultOpen && !isStreaming && isOpen && !hasAutoClosed) {
+			if (defaultOpen && !isStreaming && isOpen && !hasAutoClosed && !userTookOver.current) {
 				// Add a small delay before closing to allow user to see the content
 				const timer = setTimeout(() => {
+					const el = root.current;
+					if (userTookOver.current || (el && (el.contains(document.activeElement) || el.matches(":hover")))) {
+						setHasAutoClosed(true);
+						return;
+					}
 					setIsOpen(false);
 					setHasAutoClosed(true);
 				}, AUTO_CLOSE_DELAY);
@@ -91,6 +99,7 @@ export const Reasoning = memo(
 		}, [isStreaming, isOpen, defaultOpen, setIsOpen, hasAutoClosed]);
 
 		const handleOpenChange = (newOpen: boolean) => {
+			userTookOver.current = true;
 			setIsOpen(newOpen);
 		};
 
@@ -99,6 +108,7 @@ export const Reasoning = memo(
 				value={{ isStreaming, isOpen: isOpen ?? false, setIsOpen, duration }}
 			>
 				<Collapsible
+					ref={root}
 					className={cn("not-prose mb-4", className)}
 					onOpenChange={handleOpenChange}
 					open={isOpen}

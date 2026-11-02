@@ -63,7 +63,7 @@ function DialogOverlay({
 		<DialogPrimitive.Backdrop
 			data-slot="dialog-overlay"
 			className={cn(
-				"data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 fixed inset-0 z-[170] bg-black/50 dark:bg-black/80",
+				"data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 fixed inset-0 z-[170] bg-overlay-backdrop",
 				className,
 			)}
 			{...props}
@@ -75,7 +75,7 @@ function DialogCloseButton() {
 	return (
 		<DialogPrimitive.Close
 			data-slot="dialog-close"
-			className="absolute top-3 right-3 grid size-6 place-items-center rounded-md text-tertiary-foreground transition-colors duration-150 hover:bg-overlay-hover hover:text-foreground focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5"
+			className="absolute top-3 right-3 grid size-6 place-items-center rounded-md text-tertiary-foreground transition-colors duration-150 hover:bg-overlay-hover hover:text-foreground outline-none focus-ring disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5"
 		>
 			<XIcon />
 			<span className="sr-only">Close</span>
@@ -103,7 +103,7 @@ const DialogContent = React.forwardRef<
 					"data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-[0.97] data-open:zoom-in-[0.97] fixed top-[50%] left-[50%] z-[180] grid translate-x-[-50%] translate-y-[-50%] duration-150",
 					"w-[calc(100%-2rem)] max-w-[400px] gap-3 rounded-2xl border border-overlay-border bg-overlay-dialog text-muted-foreground shadow-overlay-dialog preset:border-border preset:bg-background",
 					// Dims this dialog while a nested dialog is open on top of it.
-					"after:pointer-events-none after:absolute after:inset-0 after:rounded-[inherit] after:bg-black/50 after:opacity-0 after:transition-opacity after:duration-200 after:content-[''] data-nested-dialog-open:after:opacity-100 dark:after:bg-black/60",
+					"after:pointer-events-none after:absolute after:inset-0 after:rounded-[inherit] after:bg-overlay-dim after:opacity-0 after:transition-opacity after:duration-200 after:content-[''] data-nested-dialog-open:after:opacity-100",
 					"p-4",
 					className,
 				)}

@@ -167,7 +167,7 @@ Build any printed document by composing the parts inside a DocumentPage, under a
 
 ## Props
 
-DocumentBrandProvider brand (company {name, registrationNo, tin, sstNo, address, phone, email, website}, logo (URL or element; typographic monogram when omitted), layout minimal (default) | classic | modern, font inter | geist | serif, locale en | ms | en-ms, labels overrides, signature, footerNote). DocumentPage: size a4 | a4-landscape | a5 | letter | receipt, stamp paid | void | draft | copy | overdue, fit, isolate, brand (override). Figures are decimal strings, printed as given.
+DocumentBrandProvider brand (company {name, registrationNo, tin, sstNo, address, phone, email, website}, logo (URL or element; typographic monogram when omitted), layout minimal (default) | classic | modern, font inter | geist | serif, locale en | ms | en-ms, labels overrides, signature, footerNote). DocumentPage: size a4 | a4-landscape | a5 | letter | receipt, stamp paid | void | draft | copy | overdue, fit width | none (controlled, with onFitChange) or defaultFit, zoomControl (default true: a Fit width / Actual size toggle appears while the sheet is scaled down, so browser zoom can enlarge the text), isolate, brand (override). Figures are decimal strings, printed as given.
 
 ## Notes
 

@@ -1,15 +1,11 @@
 "use client";
 
 import { Button } from "../ui/button";
-import {
-	HoverCard,
-	HoverCardContent,
-	HoverCardTrigger,
-} from "../ui/hover-card";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Progress } from "../ui/progress";
 import { cn } from "../../lib/utils";
 import type { LanguageModelUsage } from "ai";
-import { type ComponentProps, createContext, useContext } from "react";
+import { type ComponentProps, createContext, isValidElement, useContext } from "react";
 import { getUsage } from "tokenlens";
 
 const PERCENT_MAX = 100;
@@ -39,7 +35,11 @@ const useContextValue = () => {
 	return context;
 };
 
-export type ContextProps = ComponentProps<typeof HoverCard> & ContextSchema;
+/**
+ * A popover that also opens on hover: Enter/Space on the trigger opens it and moves focus inside, so the
+ * token and cost breakdown is reachable by keyboard and screen reader (WCAG 2.1.1).
+ */
+export type ContextProps = ComponentProps<typeof Popover> & ContextSchema;
 
 export const Context = ({
 	usedTokens,
@@ -56,7 +56,7 @@ export const Context = ({
 			modelId,
 		}}
 	>
-		<HoverCard closeDelay={0} openDelay={0} {...props} />
+		<Popover {...props} />
 	</ContextContext.Provider>
 );
 
@@ -112,27 +112,32 @@ export const ContextTrigger = ({ children, ...props }: ContextTriggerProps) => {
 	}).format(usedPercent);
 
 	return (
-		<HoverCardTrigger asChild>
-			{children ?? (
-				<Button type="button" variant="skeleton" {...props}>
-					<span className="font-medium text-muted-foreground">
-						{renderedPercent}
-					</span>
-					<ContextIcon />
-				</Button>
-			)}
-		</HoverCardTrigger>
+		<PopoverTrigger
+			openOnHover
+			render={
+				isValidElement(children) ? (
+					children
+				) : (
+					<Button type="button" variant="skeleton" {...props}>
+						<span className="font-medium text-muted-foreground">
+							{renderedPercent}
+						</span>
+						<ContextIcon />
+					</Button>
+				)
+			}
+		/>
 	);
 };
 
-export type ContextContentProps = ComponentProps<typeof HoverCardContent>;
+export type ContextContentProps = ComponentProps<typeof PopoverContent>;
 
 export const ContextContent = ({
 	className,
 	...props
 }: ContextContentProps) => (
-	<HoverCardContent
-		className={cn("min-w-60 divide-y overflow-hidden p-0", className)}
+	<PopoverContent
+		className={cn("w-auto min-w-60 divide-y overflow-hidden p-0", className)}
 		{...props}
 	/>
 );
@@ -168,7 +173,7 @@ export const ContextContentHeader = ({
 						</p>
 					</div>
 					<div className="space-y-2">
-						<Progress className="bg-muted" value={usedPercent * PERCENT_MAX} />
+						<Progress aria-label="Context used" className="bg-muted" value={usedPercent * PERCENT_MAX} />
 					</div>
 				</>
 			)}

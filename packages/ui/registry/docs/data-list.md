@@ -48,7 +48,18 @@ const cols = [
 		cell: (r) => <span className="font-mono text-xs text-primary">{r.no}</span>,
 	},
 	{ key: "customer", header: "Customer", cell: (r) => r.customer },
-	{ key: "date", header: "Date", nowrap: true, cell: (r) => formatDate(r.date) },
+	{
+		key: "date",
+		header: (
+			<>
+				Date <span aria-hidden="true">↓</span>
+			</>
+		),
+		stackedLabel: "Date",
+		nowrap: true,
+		sortDirection: "descending",
+		cell: (r) => formatDate(r.date),
+	},
 	{
 		key: "status",
 		header: "Status",
@@ -106,10 +117,10 @@ Any list of documents, accounts, transactions or lines. Don't hand-build <table>
 
 ## Props
 
-columns (key, header, cell, align, className, mobile: title | value | badge | meta | hidden | table | stacked, stackedAs, stackedCell, stackedLabel), rows, getKey; optional stackBelow (sm…3xl or never, default xl = 36rem of container width), column nowrap (keep IDs and dates on one line in the table), onRowClick (rows become keyboard-focusable; Enter/Space activates), isRowSelected, rowClassName, leading / leadingHeader (checkbox), trailing (row menu), totals ({label, [columnKey]: node} — a column-aligned tfoot in the table, a bold summary card when stacked), footer, empty, caption, dense / density (compact | default | comfortable; defaults from DensityProvider), stickyHeader + maxHeight (rows scroll, headers and totals stay put), className and any div props.
+columns (key, header, cell, align, className, mobile: title | value | badge | meta | hidden | table | stacked, stackedAs, stackedCell, stackedLabel), rows, getKey; optional stackBelow (sm…3xl or never, default xl = 36rem of container width), column nowrap (keep IDs and dates on one line in the table), onRowClick (the primary cell, or the title when stacked, becomes the row's button; a click anywhere else on the row opens it too), column primary (the row header and button cell; default the first table column), column sortDirection (ascending | descending | none, announced as aria-sort on the header; DataList doesn't sort), isRowSelected, rowClassName, leading / leadingHeader (checkbox), trailing (row menu), totals ({label, [columnKey]: node} — a column-aligned tfoot in the table, a bold summary card when stacked), footer, empty, caption, dense / density (compact | default | comfortable; defaults from DensityProvider), stickyHeader + maxHeight (rows scroll, headers and totals stay put), className and any div props.
 
 ## Notes
 
-Responds to its own container (CSS container queries), so the same list works in a page, a side sheet and on a phone. Leading/trailing cells stop click propagation so a checkbox or menu doesn't open the row.
+Responds to its own container (CSS container queries), so the same list works in a page, a side sheet and on a phone. The primary column renders as the row header (th scope=row). Rows are never focus stops themselves: with onRowClick the primary cell holds a real button (focus-ring-inset), so screen readers announce it and the row's checkbox and menu aren't nested inside a focusable row. Selection without a leading checkbox is aria-current on that button. Leading/trailing cells and any control inside a row keep their clicks; keep a clickable row's primary cell free of links and buttons.
 
 Category: Layout · Primitives. Source: `packages/ui/src/layout/index.tsx`.

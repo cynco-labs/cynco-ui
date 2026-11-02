@@ -27,6 +27,7 @@ import {
 	Textarea,
 	ToolbarButton,
 	cn,
+	LiveStatus,
 } from "../base";
 import {
 	ArrowDownIcon,
@@ -53,6 +54,8 @@ import {
 	XIcon,
 } from "@phosphor-icons/react";
 import {
+	FieldError,
+	fieldErrorProps,
 	ActionBar,
 	DataList,
 	DocStatus,
@@ -158,7 +161,7 @@ function SortHeader({ id, label, sortField, sortDirection, onSort }: { id: strin
 			variant="skeleton"
 			size="sm"
 			onClick={() => onSort?.(id)}
-			aria-label={`Sort by ${label}${active ? (sortDirection === "asc" ? ", ascending" : ", descending") : ""}`}
+			aria-label={`Sort by ${label}`}
 			className={cn("-mx-1 h-5 gap-1 !px-1 text-xs font-medium", active ? "text-foreground" : "text-tertiary-foreground")}
 		>
 			{label}
@@ -192,12 +195,14 @@ export function InvoiceListTable({
 	const selected = new Set(selectedIds);
 	const all = invoices.length > 0 && invoices.every((i) => selected.has(i.id));
 	const sh = (id: string, label: string) => <SortHeader id={id} label={label} sortField={sortField} sortDirection={sortDirection} onSort={onSort} />;
+	// The direction is announced once, by aria-sort on the header cell.
+	const sort = (id: string) => (sortField === id ? (sortDirection === "asc" ? "ascending" : "descending") : undefined);
 	const columns: DataColumn<SalesInvoiceRow>[] = [
-		{ key: "invoice_number", header: sh("invoice_number", "Invoice #"), mobile: "meta", cell: (r) => <span className="text-tiny-id text-primary">{r.invoiceNumber || "—"}</span> },
-		{ key: "customer_name", header: sh("customer_name", "Customer"), mobile: "title", className: "min-w-0", cell: (r) => <span className="line-clamp-1 break-all">{r.customerName || "—"}</span> },
-		{ key: "invoice_date", header: sh("invoice_date", "Date"), mobile: "meta", className: "whitespace-nowrap", cell: (r) => <span className="text-xs tabular-nums text-tertiary-foreground">{formatDate(r.invoiceDate)}</span> },
-		{ key: "due_date", header: sh("due_date", "Due Date"), mobile: "meta", className: "whitespace-nowrap", cell: (r) => <span className="text-xs tabular-nums text-tertiary-foreground">{r.dueDate ? formatDate(r.dueDate) : "—"}</span> },
-		{ key: "total", header: sh("total", "Amount"), align: "right", mobile: "value", cell: (r) => formatCurrency(r.total, r.currency || "MYR") },
+		{ key: "invoice_number", sortDirection: sort("invoice_number"), header: sh("invoice_number", "Invoice #"), mobile: "meta", cell: (r) => <span className="text-tiny-id text-primary">{r.invoiceNumber || "—"}</span> },
+		{ key: "customer_name", sortDirection: sort("customer_name"), header: sh("customer_name", "Customer"), mobile: "title", className: "min-w-0", cell: (r) => <span className="line-clamp-1 break-all">{r.customerName || "—"}</span> },
+		{ key: "invoice_date", sortDirection: sort("invoice_date"), header: sh("invoice_date", "Date"), mobile: "meta", className: "whitespace-nowrap", cell: (r) => <span className="text-xs tabular-nums text-tertiary-foreground">{formatDate(r.invoiceDate)}</span> },
+		{ key: "due_date", sortDirection: sort("due_date"), header: sh("due_date", "Due Date"), mobile: "meta", className: "whitespace-nowrap", cell: (r) => <span className="text-xs tabular-nums text-tertiary-foreground">{r.dueDate ? formatDate(r.dueDate) : "—"}</span> },
+		{ key: "total", sortDirection: sort("total"), header: sh("total", "Amount"), align: "right", mobile: "value", cell: (r) => formatCurrency(r.total, r.currency || "MYR") },
 		{ key: "status", header: "Status", mobile: "badge", className: "whitespace-nowrap", cell: (r) => <InvoiceStatusSignals invoice={r} /> },
 	];
 	return (
@@ -253,6 +258,7 @@ export function salesLineAmount(item: SalesLineItem, taxCodes: SalesTaxCode[] = 
 }
 
 const MARGIN_TONE = { healthy: "green", below_target: "amber", below_cost: "red" } as const;
+const MARGIN_GLYPH = { healthy: "check", below_target: "alert", below_cost: "x" } as const;
 
 /** Wide-container (48rem+) grid: description | qty | unit price | disc. | tax | amount | remove. */
 const LINE_GRID = "@3xl:grid-cols-[minmax(0,1fr)_4.5rem_6.5rem_5rem_7rem_7.5rem_1.75rem]";
@@ -294,6 +300,14 @@ export function InvoiceLineItems({
 		onChange?.(next);
 	};
 	const remove = (i: number) => onChange?.(items.filter((_, j) => j !== i));
+	// The Qty field being edited holds its raw text, so it can be cleared and retyped freely. Whole numbers of 1 or
+	// more are applied as typed; anything else is flagged inline and reverts to the last valid quantity on blur.
+	const [qtyDraft, setQtyDraft] = React.useState<{ i: number; text: string } | null>(null);
+	const parseQty = (text: string) => {
+		const t = text.trim();
+		const n = Number(t);
+		return t !== "" && Number.isInteger(n) && n >= 1 ? n : null;
+	};
 	const total = items.reduce((s, it) => s + salesLineAmount(it, taxCodes), 0);
 	const grid = readOnly ? LINE_GRID_RO : LINE_GRID;
 	const ro = "flex h-input items-center justify-end tabular-nums text-sm @3xl:justify-end";
@@ -320,7 +334,10 @@ export function InvoiceLineItems({
 					</div>
 					{items.map((it, i) => {
 						const id = `${uid}-${i}`;
-						const label = it.name || "item";
+						const label = it.name || `line ${i + 1}`;
+						const nameMissing = !it.name;
+						const qtyText = qtyDraft?.i === i ? qtyDraft.text : String(it.quantity);
+						const qtyInvalid = qtyDraft?.i === i && parseQty(qtyDraft.text) === null;
 						return (
 							<div role="row" key={i} className={cn("grid grid-cols-2 gap-x-2 gap-y-2 border-b border-table-row-divider px-3 py-2.5 last:border-b-0 @md:grid-cols-4 @3xl:items-start @3xl:py-2", grid)}>
 								{/* Description */}
@@ -332,15 +349,58 @@ export function InvoiceLineItems({
 										</div>
 									) : (
 										<div className="flex flex-col gap-0.5">
-											<Input aria-label="Item name" value={it.name} placeholder="Item name" onChange={(e) => update(i, { name: e.target.value })} variant={it.name ? "default" : "destructive"} />
-											<Input aria-label="Description" value={it.description ?? ""} placeholder="Description (optional)" onChange={(e) => update(i, { description: e.target.value })} variant="headless" className="h-5 !px-2 text-2xs text-tertiary-foreground" />
+											<Input
+												aria-label={`Item name, line ${i + 1}`}
+												aria-invalid={nameMissing || undefined}
+												aria-describedby={nameMissing ? `${id}-name-error` : undefined}
+												value={it.name}
+												placeholder="Item name"
+												onChange={(e) => update(i, { name: e.target.value })}
+												variant={nameMissing ? "destructive" : "default"}
+											/>
+											{nameMissing && (
+												<FieldError id={`${id}-name-error`} className="px-2">
+													Enter an item name
+												</FieldError>
+											)}
+											<Input aria-label={`Description, line ${i + 1}`} value={it.description ?? ""} placeholder="Description (optional)" onChange={(e) => update(i, { description: e.target.value })} variant="headless" className="h-5 !px-2 text-2xs text-tertiary-foreground" />
 										</div>
 									)}
 								</div>
 								{/* Qty */}
 								<div role="cell" className="flex min-w-0 flex-col gap-1">
 									<LineLabel htmlFor={`${id}-q`}>Qty</LineLabel>
-									{readOnly ? <div className={ro}>{it.quantity}</div> : <Input id={`${id}-q`} aria-label={`Quantity for ${label}`} type="number" min={1} step={1} value={it.quantity} onChange={(e) => update(i, { quantity: Math.max(1, Math.round(+e.target.value || 1)) })} className={NUM} />}
+									{readOnly ? (
+										<div className={ro}>{it.quantity}</div>
+									) : (
+										<>
+											<Input
+												id={`${id}-q`}
+												aria-label={`Qty for ${label}`}
+												type="number"
+												inputMode="numeric"
+												min={1}
+												step={1}
+												value={qtyText}
+												aria-invalid={qtyInvalid || undefined}
+												aria-describedby={qtyInvalid ? `${id}-q-error` : undefined}
+												variant={qtyInvalid ? "destructive" : "default"}
+												onChange={(e) => {
+													const text = e.target.value;
+													setQtyDraft({ i, text });
+													const n = parseQty(text);
+													if (n !== null && n !== it.quantity) update(i, { quantity: n });
+												}}
+												onBlur={() => setQtyDraft(null)}
+												className={NUM}
+											/>
+											{qtyInvalid && (
+												<FieldError id={`${id}-q-error`}>
+													{Number(qtyDraft?.text) >= 1 ? "Enter a whole number." : "Enter 1 or more."}
+												</FieldError>
+											)}
+										</>
+									)}
 								</div>
 								{/* Unit price */}
 								<div role="cell" className="flex min-w-0 flex-col gap-1">
@@ -354,8 +414,8 @@ export function InvoiceLineItems({
 										<div className={ro}>{it.discount ? (it.discountType === "fixed" ? formatCurrency(it.discount, currency) : `${it.discount}%`) : "—"}</div>
 									) : (
 										<div className="relative">
-											<Input id={`${id}-d`} aria-label={`Discount for ${label}`} type="number" min={0} value={it.discount ?? 0} onChange={(e) => update(i, { discount: Math.max(0, +e.target.value || 0) })} className={cn(NUM, "!pr-6")} />
-											<span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-2xs text-subtle">{it.discountType === "fixed" ? "RM" : "%"}</span>
+											<Input id={`${id}-d`} aria-label={`Discount for ${label}`} aria-describedby={`${id}-du`} type="number" min={0} value={it.discount ?? 0} onChange={(e) => update(i, { discount: Math.max(0, +e.target.value || 0) })} className={cn(NUM, "!pr-6")} />
+											<span id={`${id}-du`} className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-2xs text-subtle">{it.discountType === "fixed" ? "RM" : "%"}</span>
 										</div>
 									)}
 								</div>
@@ -375,7 +435,11 @@ export function InvoiceLineItems({
 								<div role="cell" className="col-span-2 flex items-center justify-between gap-2 border-t border-dashed border-table-row-divider pt-2 @md:col-span-4 @3xl:col-span-1 @3xl:h-7 @3xl:justify-end @3xl:border-0 @3xl:pt-0">
 									<span className="text-2xs text-tertiary-foreground @3xl:hidden">Amount</span>
 									<span className="flex items-center gap-1.5 whitespace-nowrap text-sm tabular-nums text-foreground">
-										{it.margin && <span role="img" aria-label={`Estimated profit: ${it.margin.replace("_", " ")}`} className="inline-flex"><ToneDot tone={MARGIN_TONE[it.margin]} /></span>}
+										{it.margin && (
+											<span role="img" aria-label={`Estimated profit: ${it.margin.replace("_", " ")}`} title={`Estimated profit: ${it.margin.replace("_", " ")}`} className="inline-flex">
+												<StatusChipIcon tone={MARGIN_TONE[it.margin]} glyph={MARGIN_GLYPH[it.margin]} />
+											</span>
+										)}
 										{formatCurrency(salesLineAmount(it, taxCodes), currency)}
 										{!readOnly && (
 											<Button variant="skeleton" size="icon" aria-label={`Remove ${label}`} onClick={() => remove(i)} className="size-6 text-tertiary-foreground hover:!text-error-text @3xl:hidden"><TrashIcon size={14} aria-hidden="true" /></Button>
@@ -486,7 +550,7 @@ export function InvoiceMetricTiles({
 					/>
 				);
 				return overdue && onShowOverdue ? (
-					<button key={t.title} type="button" onClick={onShowOverdue} aria-label={`${t.title}: ${formatCurrency(t.value ?? 0, currency)}, ${t.badge}. Show these invoices`} className="min-w-0 cursor-pointer rounded-xl text-left outline-none focus-visible:ring-2 focus-visible:ring-ring">{tile}</button>
+					<button key={t.title} type="button" onClick={onShowOverdue} aria-label={`${t.title}: ${formatCurrency(t.value ?? 0, currency)}, ${t.badge}. Show these invoices`} className="min-w-0 cursor-pointer rounded-xl text-left outline-none focus-ring">{tile}</button>
 				) : (
 					<React.Fragment key={t.title}>{tile}</React.Fragment>
 				);
@@ -516,7 +580,14 @@ export function InvoiceCreateSteps({ currentStep, completed = [], children, clas
 					<li key={n} aria-current={active ? "step" : undefined} className="relative flex gap-3.5">
 						<div className="flex flex-col items-center">
 							<div className={cn("z-10 flex size-6 shrink-0 items-center justify-center rounded-full text-2xs tabular-nums", done ? "bg-active-primary text-primary ring-1 ring-primary/25" : active ? "bg-primary text-primary-foreground ring-[3px] ring-primary/15" : "bg-muted text-subtle ring-1 ring-border")}>
-								{done ? <CheckIcon size={12} weight="bold" aria-label="Completed" /> : n}
+								{done ? (
+									<>
+										<CheckIcon size={12} weight="bold" aria-hidden="true" />
+										<span className="sr-only">Completed:</span>
+									</>
+								) : (
+									n
+								)}
 							</div>
 							{!last && <div className={cn("mt-2 w-px flex-1 rounded-full", done ? "bg-primary/30" : "bg-border")} />}
 						</div>
@@ -573,7 +644,7 @@ export function InvoiceSummaryRail({
 			<div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-4 py-2">
 				{hasItems ? (
 					// Raw button: the trigger carries the whole figures row; it keeps a focus ring and its visible text is the name.
-					<button type="button" aria-expanded={open} onClick={() => setOpen(!open)} className="group/rail -mx-2 flex min-w-0 flex-[1_1_14rem] cursor-pointer items-center gap-4 rounded-lg px-2 py-1 text-left outline-none transition-colors hover:bg-interactive-secondary-hover focus-visible:ring-2 focus-visible:ring-ring">
+					<button type="button" aria-expanded={open} onClick={() => setOpen(!open)} className="group/rail -mx-2 flex min-w-0 flex-[1_1_14rem] cursor-pointer items-center gap-4 rounded-lg px-2 py-1 text-left outline-none transition-colors hover:bg-interactive-secondary-hover focus-ring">
 						<span className="hidden min-w-0 items-center gap-3 whitespace-nowrap text-2xs tabular-nums text-tertiary-foreground @xl:flex">
 							<span>Subtotal <span className="text-foreground">{formatCurrency(subtotal, currency)}</span></span>
 							{discount > 0 && <span>Discount <span className="text-foreground">−{formatCurrency(discount, currency)}</span></span>}
@@ -680,11 +751,35 @@ export function MarkAsPaidDialog({
 	const [method, setMethod] = React.useState(methodProp ?? "bank_transfer");
 	const [account, setAccount] = React.useState(accountProp ?? "");
 	const [note, setNote] = React.useState(noteProp ?? "");
-	const accountMissing = bankAccounts.length > 0 && account === "";
+	// Errors show only after "Mark as paid" is pressed, then clear on their own as each field is fixed.
+	const [attempted, setAttempted] = React.useState(false);
+	const errors = {
+		date: paymentDate ? null : "Choose a payment date.",
+		account: bankAccounts.length > 0 && account === "" ? "Choose a bank account." : null,
+	};
+	const errorProps = (k: keyof typeof errors) => fieldErrorProps(`${uid}-${k}-error`, attempted && !!errors[k]);
+	const fieldError = (k: keyof typeof errors) => (attempted && errors[k] ? <FieldError id={`${uid}-${k}-error`}>{errors[k]}</FieldError> : null);
+	const confirm = () => {
+		if (isSubmitting) return;
+		const firstInvalid = (["date", "account"] as const).find((k) => errors[k]);
+		if (firstInvalid) {
+			setAttempted(true);
+			document.getElementById(`${uid}-${firstInvalid}`)?.focus();
+			return;
+		}
+		onConfirm?.({ method, bankAccount: account, note });
+	};
+	const changeOpen = (o: boolean) => {
+		setAttempted(false);
+		onOpenChange?.(o);
+	};
 	const pad = "px-4 py-2.5";
 	return (
-		<Dialog open={open} defaultOpen={defaultOpen} modal={modal} onOpenChange={(o) => { if (!isSubmitting && !showSuccess) onOpenChange?.(o); }}>
+		<Dialog open={open} defaultOpen={defaultOpen} modal={modal} onOpenChange={(o) => { if (!isSubmitting && !showSuccess) changeOpen(o); }}>
 			<DialogContent className={cn("@container max-h-[calc(100dvh-2rem)] max-w-md gap-0 overflow-y-auto p-0", className)}>
+				<LiveStatus>
+					{showSuccess ? `Payment recorded. Invoice ${invoice.invoiceNumber} marked as paid` : ""}
+				</LiveStatus>
 				{showSuccess ? (
 					<div className="flex flex-col items-center justify-center px-6 py-14 text-center">
 						<DialogTitle className="sr-only">Mark as paid</DialogTitle>
@@ -721,17 +816,17 @@ export function MarkAsPaidDialog({
 							<label className="text-2xs text-tertiary-foreground" htmlFor={`${uid}-date`}>Payment date</label>
 							<div className="relative">
 								<CalendarBlankIcon size={14} className="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-tertiary-foreground" aria-hidden="true" />
-								<Input id={`${uid}-date`} readOnly value={paymentDate ? formatDate(paymentDate) : ""} placeholder="Pick a date" className="!pl-7" />
+								<Input id={`${uid}-date`} readOnly value={paymentDate ? formatDate(paymentDate) : ""} placeholder="Pick a date" {...errorProps("date")} className="!pl-7" />
 							</div>
+							{fieldError("date")}
 						</div>
 						<div className={cn(pad, "flex flex-col gap-1.5 border-t border-table-row-divider")}>
 							<span id={`${uid}-method`} className="text-2xs text-tertiary-foreground">Payment method</span>
-							<ActionBar role="radiogroup" aria-labelledby={`${uid}-method`} className="gap-1.5">
+							<ActionBar role="group" aria-labelledby={`${uid}-method`} className="gap-1.5">
 								{PAYMENT_METHODS.map((m) => (
 									<Button
 										key={m.value}
-										role="radio"
-										aria-checked={method === m.value}
+										aria-pressed={method === m.value}
 										variant="secondary"
 										size="sm"
 										onClick={() => setMethod(m.value)}
@@ -745,10 +840,11 @@ export function MarkAsPaidDialog({
 						{bankAccounts.length > 0 && (
 							<div className={cn(pad, "flex flex-col gap-1.5 border-t border-table-row-divider")}>
 								<span className="text-2xs text-tertiary-foreground">Deposited to</span>
-								<Select value={account || (null as unknown as string)} onValueChange={setAccount} items={bankAccounts.map((a) => ({ value: a.accountCode, label: `${a.accountCode} · ${a.accountName}` }))}>
-									<SelectTrigger className="h-input w-full px-2 text-sm" aria-label="Deposited to"><SelectValue placeholder="Choose a bank account" /></SelectTrigger>
+																<Select value={account || null} onValueChange={(v) => setAccount(v ?? "")} items={bankAccounts.map((a) => ({ value: a.accountCode, label: `${a.accountCode} · ${a.accountName}` }))}>
+									<SelectTrigger id={`${uid}-account`} className="h-input w-full px-2 text-sm" aria-label="Deposited to" aria-required="true" {...errorProps("account")}><SelectValue placeholder="Choose a bank account" /></SelectTrigger>
 									<SelectContent>{bankAccounts.map((a) => <SelectItem key={a.accountCode} value={a.accountCode}><span className="mr-1.5 text-tiny-id">{a.accountCode}</span>{a.accountName}</SelectItem>)}</SelectContent>
 								</Select>
+								{fieldError("account")}
 							</div>
 						)}
 						<div className={cn(pad, "flex flex-col gap-1.5 border-t border-table-row-divider")}>
@@ -762,8 +858,9 @@ export function MarkAsPaidDialog({
 							</Alert>
 						</div>
 						<DialogFooter className="border-t border-table-row-divider px-4 py-2.5">
-							<Button variant="secondary" onClick={() => onOpenChange?.(false)}>Cancel</Button>
-							<Button variant="primary" isLoading={isSubmitting} disabled={!paymentDate || accountMissing} onClick={() => onConfirm?.({ method, bankAccount: account, note })} className="gap-1.5">
+							<Button variant="secondary" onClick={() => changeOpen(false)}>Cancel</Button>
+							{/* Always enabled: pressing it names each problem and focuses the first one. isLoading keeps focus (aria-disabled). */}
+							<Button variant="primary" isLoading={isSubmitting} onClick={confirm} className="gap-1.5">
 								<CheckCircleIcon size={14} weight="bold" aria-hidden="true" />
 								Mark as paid
 							</Button>
@@ -814,11 +911,11 @@ export function InvoiceBulkBar({
 		>
 			<span className="mr-auto whitespace-nowrap pr-1.5 text-sm tabular-nums text-foreground" aria-live="polite">{count} selected</span>
 			<div className="flex items-center gap-1">
-				<Button variant="skeleton" title={downloadBlocked ?? undefined} aria-label={downloadBlocked ? `Download PDFs — ${downloadBlocked}` : undefined} aria-disabled={downloadBlocked ? true : undefined} disabled={downloading} onClick={() => !downloadBlocked && onDownload?.()} className={cn("gap-1.5", downloadBlocked && "opacity-50")}>
+				<Button variant="skeleton" title={downloadBlocked ?? undefined} aria-label={downloadBlocked ? `Download PDFs — ${downloadBlocked}` : undefined} aria-disabled={downloadBlocked || downloading ? true : undefined} onClick={() => !downloadBlocked && !downloading && onDownload?.()} className={cn("gap-1.5", downloadBlocked && "opacity-50")}>
 					<DownloadSimpleIcon size={14} aria-hidden="true" />
 					{downloading ? "Preparing…" : "Download PDFs"}
 				</Button>
-				<Button variant="skeleton" title={deleteBlocked ?? undefined} aria-label={deleteBlocked ? `Delete — ${deleteBlocked}` : undefined} aria-disabled={deleteBlocked ? true : undefined} disabled={deleting} onClick={() => !deleteBlocked && onDelete?.()} className={cn("gap-1.5 text-error-text hover:!text-error-text", deleteBlocked && "opacity-50")}>
+				<Button variant="skeleton" title={deleteBlocked ?? undefined} aria-label={deleteBlocked ? `Delete — ${deleteBlocked}` : undefined} aria-disabled={deleteBlocked || deleting ? true : undefined} onClick={() => !deleteBlocked && !deleting && onDelete?.()} className={cn("gap-1.5 text-error-text hover:!text-error-text", deleteBlocked && "opacity-50")}>
 					<TrashIcon size={14} aria-hidden="true" />
 					{deleting ? "Deleting…" : "Delete"}
 				</Button>
@@ -985,8 +1082,7 @@ export function QuotationBoardCard({ quotation, now, onOpen, className, ...props
 		<button
 			type="button"
 			onClick={() => onOpen?.(quotation.id)}
-			aria-label={`${quotation.quotationNumber || "Quotation"}, ${quotation.customerName}, ${formatCurrency(quotation.totalAmount ?? 0, quotation.currency || "MYR")}`}
-			className={cn("@container w-full min-w-0 cursor-pointer rounded-xl border bg-card p-3 text-left shadow-sm outline-none transition-colors hover:bg-interactive-secondary-hover focus-visible:ring-2 focus-visible:ring-ring", className)}
+			className={cn("@container w-full min-w-0 cursor-pointer rounded-xl border bg-card p-3 text-left shadow-sm outline-none transition-colors hover:bg-interactive-secondary-hover focus-ring", className)}
 			{...props}
 		>
 			<div className="flex flex-wrap items-start justify-between gap-x-2 gap-y-1.5">
@@ -1049,7 +1145,7 @@ export function QuotationBoardColumn({ column, quotations, currency = "MYR", now
 /** Quotation KPI row (cynco QuotationStats): Total quoted, Sent, Accepted, Conversion rate. */
 export function QuotationStats({ stats, className, ...props }: React.ComponentProps<"div"> & { stats: { totalQuotedAmount: number; currency?: string; sentCount: number; acceptedCount: number; conversionRate: number } }) {
 	return (
-		<StatGrid role="group" aria-label="Quotation statistics" min="sm" className={className} {...props}>
+		<StatGrid aria-label="Quotation statistics" min="sm" className={className} {...props}>
 			<StatTile label="Total quoted" value={formatCurrency(stats.totalQuotedAmount || 0, stats.currency || "MYR")} className="shadow-sm" />
 			<StatTile label="Sent" value={String(stats.sentCount || 0)} dot="var(--chart-series-4)" className="shadow-sm" />
 			<StatTile label="Accepted" value={String(stats.acceptedCount || 0)} dot="var(--chart-series-3)" className="shadow-sm" />

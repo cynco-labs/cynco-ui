@@ -8,14 +8,14 @@ const alertVariants = cva(
 		variants: {
 			variant: {
 				default:
-					"border-zinc-500/15 bg-zinc-500/[0.04] text-foreground/80 *:[svg]:text-tertiary-foreground",
-				note: "border-sky-500/15 bg-sky-500/[0.04] text-foreground/80 *:[svg]:text-sky-500/80",
+					"border-status-neutral/15 bg-status-neutral/[0.04] text-foreground/80 *:[svg]:text-tertiary-foreground",
+				note: "border-status-blue/15 bg-status-blue/[0.04] text-foreground/80 *:[svg]:text-primary",
 				success:
-					"border-emerald-500/15 bg-emerald-500/[0.04] text-foreground/80 *:[svg]:text-emerald-500/80",
+					"border-status-green/15 bg-status-green/[0.04] text-foreground/80 *:[svg]:text-status-green-text",
 				warning:
-					"border-amber-500/15 bg-amber-500/[0.04] text-foreground/80 *:[svg]:text-amber-500/80",
+					"border-status-amber/15 bg-status-amber/[0.04] text-foreground/80 *:[svg]:text-status-amber-text",
 				destructive:
-					"border-red-500/15 bg-red-500/[0.04] text-foreground/80 *:[svg]:text-red-500/80",
+					"border-status-red/15 bg-status-red/[0.04] text-foreground/80 *:[svg]:text-error-text",
 			},
 		},
 		defaultVariants: {
@@ -32,7 +32,8 @@ function Alert({
 	return (
 		<div
 			data-slot="alert"
-			role="alert"
+			// Only errors interrupt; notes, successes and warnings are polite. Pass `role` to override.
+			role={variant === "destructive" ? "alert" : "status"}
 			className={cn(alertVariants({ variant }), className)}
 			{...props}
 		/>

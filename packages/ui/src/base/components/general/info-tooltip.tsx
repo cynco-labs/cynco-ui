@@ -3,7 +3,9 @@ import {
 	TooltipContent,
 	TooltipTrigger,
 } from "../ui/tooltip";
+import { cn } from "../../lib/utils";
 import { InfoIcon } from "@phosphor-icons/react";
+import { useId } from "react";
 
 export const InfoTooltip = ({
 	children,
@@ -16,18 +18,26 @@ export const InfoTooltip = ({
 	align?: "start" | "center" | "end";
 	sideOffset?: number;
 }) => {
+	const descriptionId = useId();
 	return (
 		<Tooltip>
+			{/* A real button: keyboard focus opens the tooltip, Escape closes it. The tooltip
+				popup is not linked to the trigger, so the text is also exposed as its description. */}
 			<TooltipTrigger
-				asChild
-				className={className}
-				tabIndex={-1}
-				onFocus={(e) => e.preventDefault()}
+				type="button"
+				aria-label="More information"
+				aria-describedby={descriptionId}
+				className={cn(
+					// 12px icon, 24px hit area.
+					"relative inline-flex items-center cursor-pointer after:absolute after:-inset-1.5",
+					className,
+				)}
 			>
-				<span className="outline-none inline-flex items-center cursor-pointer">
-					<InfoIcon className="text-tertiary-foreground/50 size-3" />
-				</span>
+				<InfoIcon aria-hidden="true" className="text-tertiary-foreground size-3" />
 			</TooltipTrigger>
+			<span id={descriptionId} hidden>
+				{children}
+			</span>
 			<TooltipContent sideOffset={10} {...props} className="">
 				{children}
 			</TooltipContent>

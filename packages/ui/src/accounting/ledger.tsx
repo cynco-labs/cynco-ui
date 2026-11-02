@@ -37,6 +37,7 @@ import {
 	cn,
 	type StatusGlyph,
 	type StatusTone,
+	LiveStatus,
 } from "../base";
 import {
 	ArrowDownIcon,
@@ -66,6 +67,7 @@ import {
 	XIcon,
 } from "@phosphor-icons/react";
 import {
+	FieldError,
 	ActionBar,
 	DataList,
 	DocStatus,
@@ -110,6 +112,12 @@ function typeLabel(type: string) {
 function TypeDot({ type, className }: { type: string; className?: string }) {
 	return <ToneDot tone={ACCOUNT_TYPE_TONE[type] ?? "neutral"} title={typeLabel(type)} className={className} />;
 }
+
+/**
+ * For the one `aria-disabled` button that must keep its hover title (Button's own `focusableWhenDisabled`
+ * turns pointer events off): it stays focusable and the handler ignores activation.
+ */
+const UNAVAILABLE = "aria-disabled:cursor-not-allowed aria-disabled:opacity-50";
 
 /** "50,000.00" — the journal's plain two-decimal figure (journal/types formatCurrency). */
 function plain(n: number) {
@@ -291,7 +299,8 @@ function AccountPickerList({
 				})}
 			</CommandList>
 			<CommandSeparator />
-			<div className="p-1">
+			{/* Pinned below the scrolling list, so it needs its own listbox for the option role to be valid. */}
+			<div className="p-1" role="listbox" aria-label="Account actions">
 				<CommandItem value="__create_new__" forceMount onSelect={() => onCreate?.(query.trim())}>
 					<PlusIcon size={14} className="text-tertiary-foreground" aria-hidden="true" />
 					<span className="text-sm">{query.trim() ? `Create “${query.trim()}”` : "Create new account"}</span>
@@ -301,10 +310,15 @@ function AccountPickerList({
 	);
 }
 
-function PickerTriggerLabel({ account, placeholder = "Select account..." }: { account?: LedgerPickerAccount | null; placeholder?: string }) {
-	if (!account) return <span className="truncate text-tertiary-foreground">{placeholder}</span>;
+function PickerTriggerLabel({ account, placeholder = "Select account...", id }: { account?: LedgerPickerAccount | null; placeholder?: string; id?: string }) {
+	if (!account)
+		return (
+			<span id={id} className="truncate text-tertiary-foreground">
+				{placeholder}
+			</span>
+		);
 	return (
-		<span className="flex min-w-0 items-center gap-1.5 overflow-hidden">
+		<span id={id} className="flex min-w-0 items-center gap-1.5 overflow-hidden">
 			<span className="shrink-0 text-tiny-id text-tertiary-foreground">{account.accountCode}</span>
 			<span className="min-w-0 truncate text-foreground">{account.accountName}</span>
 		</span>
@@ -326,14 +340,23 @@ export function AccountPickerField({ accounts, recentIds, selectedId, defaultOpe
 	const [open, setOpen] = React.useState(!!defaultOpen);
 	const [value, setValue] = React.useState(selectedId);
 	const selected = accounts.find((a) => a.id === value) ?? null;
+	const id = React.useId();
 	return (
 		<div className={cn("flex w-full max-w-md min-w-0 flex-col gap-1", className)} {...props}>
-			{label && <span className="text-form-label">{label}</span>}
+			{label && (
+				<span id={`${id}-label`} className="text-form-label">
+					{label}
+				</span>
+			)}
 			<Popover open={open} onOpenChange={setOpen}>
 				<PopoverTrigger
 					render={
-						<Button variant="secondary" className="w-full min-w-0 font-normal [&>span]:w-full [&>span]:min-w-0 [&>span]:justify-between">
-							<PickerTriggerLabel account={selected} />
+						<Button
+							variant="secondary"
+							aria-labelledby={label ? `${id}-label ${id}-value` : undefined}
+							className="w-full min-w-0 font-normal [&>span]:w-full [&>span]:min-w-0 [&>span]:justify-between"
+						>
+							<PickerTriggerLabel account={selected} id={`${id}-value`} />
 							<CaretDownIcon size={12} className="shrink-0 text-tertiary-foreground" aria-hidden="true" />
 						</Button>
 					}
@@ -376,14 +399,14 @@ function toAmountString(raw: string) {
 }
 
 /** Raw number while editing, grouped (50,000.00) otherwise. */
-function AmountInput({ value, onValueChange, placeholder, className }: { value: string; onValueChange: (v: string) => void; placeholder: string; className?: string }) {
+function AmountInput({ value, onValueChange, placeholder, label, className }: { value: string; onValueChange: (v: string) => void; placeholder: string; label?: string; className?: string }) {
 	const [editing, setEditing] = React.useState(false);
 	const n = Number(value);
 	const display = editing || value === "" || !Number.isFinite(n) ? value : plain(n);
 	return (
 		<Input
 			inputMode="decimal"
-			aria-label={placeholder}
+			aria-label={label ?? placeholder}
 			placeholder={placeholder}
 			value={display}
 			onFocus={() => setEditing(true)}
@@ -418,8 +441,23 @@ export function JournalLineEditor({ lines: initial, accounts = [], recentIds, fi
 		onLinesChange?.(next);
 	};
 	const counter = React.useRef(0);
+	const id = React.useId();
+	const listRef = React.useRef<HTMLDivElement>(null);
+	/** Index of a removed line: its Remove button unmounts, so focus moves to the line that takes its place. */
+	const refocus = React.useRef<number | null>(null);
+	React.useEffect(() => {
+		const i = refocus.current;
+		if (i === null) return;
+		refocus.current = null;
+		const buttons = listRef.current?.querySelectorAll<HTMLElement>("[data-line-remove]");
+		if (buttons && buttons.length > 0) buttons[Math.min(i, buttons.length - 1)]?.focus();
+	}, [lines]);
 	const addLine = () => setLines([...lines, { key: `new_${++counter.current}`, debitAmount: "", creditAmount: "", description: "" }]);
-	const removeLine = (key: string) => lines.length > 2 && setLines(lines.filter((l) => l.key !== key));
+	const removeLine = (key: string) => {
+		if (lines.length <= 2) return;
+		refocus.current = lines.findIndex((l) => l.key === key);
+		setLines(lines.filter((l) => l.key !== key));
+	};
 	const update = (key: string, field: keyof JournalEditorLine, value: string) =>
 		setLines(
 			lines.map((l) => {
@@ -442,19 +480,22 @@ export function JournalLineEditor({ lines: initial, accounts = [], recentIds, fi
 					Add line
 				</IconButton>
 			</div>
-			<div className={cn("mb-1.5 hidden gap-2 px-0.5 text-2xs text-tertiary-foreground @xl:grid", LINE_GRID_WIDE)}>
+			{/* Visual column heads only: every field carries its own "…, line N" name. */}
+			<div aria-hidden="true" className={cn("mb-1.5 hidden gap-2 px-0.5 text-2xs text-tertiary-foreground @xl:grid", LINE_GRID_WIDE)}>
 				<span>Account</span>
 				<span>Description</span>
 				<span className="text-right">Debit</span>
 				<span className="text-right">Credit</span>
 				<span />
 			</div>
-			<div className="flex flex-col gap-2 @xl:gap-1.5">
+			<div ref={listRef} className="flex flex-col gap-2 @xl:gap-1.5">
 				{lines.map((line, i) => {
 					const warn = !line.accountId && !!line.accountCode;
 					const err = fieldErrors[`${line.key}.accountId`];
 					const account = line.accountId ? accounts.find((a) => a.id === line.accountId) : undefined;
 					const shown: LedgerPickerAccount | null = account ?? (line.accountCode ? { id: "", accountCode: line.accountCode, accountName: line.accountName ?? "", accountType: "", normalBalance: "debit" } : null);
+					const n = i + 1;
+					const errId = `${id}-${line.key}-error`;
 					return (
 						<div key={line.key} className="flex flex-col gap-0.5">
 							<div
@@ -468,6 +509,9 @@ export function JournalLineEditor({ lines: initial, accounts = [], recentIds, fi
 											render={
 												<Button
 													variant="secondary"
+													aria-label={`Account, line ${n}${warn ? ", unconfirmed AI suggestion" : ""}: ${shown ? `${shown.accountCode} ${shown.accountName}` : "Select account..."}`}
+													aria-invalid={err ? true : undefined}
+													aria-describedby={err ? errId : undefined}
 													title={warn ? `AI suggested ${line.accountCode}: confirm via picker` : undefined}
 													className={cn("w-full min-w-0 justify-start font-normal [&>span]:min-w-0 [&>span]:gap-1.5 [&>span]:overflow-hidden", (warn || err) && "border-dashed")}
 												>
@@ -490,26 +534,31 @@ export function JournalLineEditor({ lines: initial, accounts = [], recentIds, fi
 									</Popover>
 								</div>
 								<Input
-									aria-label="Line description"
+									aria-label={`Description, line ${n}`}
 									placeholder="Line description..."
 									value={line.description ?? ""}
 									onChange={(e) => update(line.key, "description", e.target.value)}
 									className="col-span-3 @xl:col-span-1"
 								/>
-								<AmountInput placeholder="Debit" value={line.debitAmount ?? ""} onValueChange={(v) => update(line.key, "debitAmount", v)} />
-								<AmountInput placeholder="Credit" value={line.creditAmount ?? ""} onValueChange={(v) => update(line.key, "creditAmount", v)} />
+								<AmountInput placeholder="Debit" label={`Debit, line ${n}`} value={line.debitAmount ?? ""} onValueChange={(v) => update(line.key, "debitAmount", v)} />
+								<AmountInput placeholder="Credit" label={`Credit, line ${n}`} value={line.creditAmount ?? ""} onValueChange={(v) => update(line.key, "creditAmount", v)} />
 								<IconButton
 									variant="skeleton"
 									size="icon"
-									aria-label="Remove line item"
-									disabled={lines.length <= 2}
+									data-line-remove=""
+									aria-label={`Remove line ${n}`}
+									aria-disabled={lines.length <= 2 || undefined}
 									title={lines.length <= 2 ? "Minimum 2 lines required for double-entry" : undefined}
-									className="justify-self-center transition-opacity @xl:opacity-40 @xl:group-hover:opacity-100 focus-visible:opacity-100"
+									className={cn("justify-self-center transition-opacity @xl:opacity-40 @xl:group-hover:opacity-100 focus-visible:opacity-100", UNAVAILABLE)}
 									icon={<TrashIcon />}
 									onClick={() => removeLine(line.key)}
 								/>
 							</div>
-							{err && <p className={cn("pl-0.5 text-2xs", surfaces.negative)}>{err}</p>}
+							{err && (
+								<FieldError id={errId} className="pl-0.5">
+									{err}
+								</FieldError>
+							)}
 						</div>
 					);
 				})}
@@ -541,12 +590,18 @@ export function JournalBalanceBar({ totalDebit, totalCredit, currency = "MYR", h
 	const any = hasAmounts ?? (totalDebit > 0 || totalCredit > 0);
 	return (
 		<div className={cn("flex min-w-0 flex-col overflow-hidden", surfaces.card, className)} {...props}>
-			{autoSave && (
-				<div className="flex items-center gap-1.5 border-b px-4 py-1 text-2xs text-tertiary-foreground">
-					<ToneDot tone={autoSave === "saving" ? "amber" : "green"} className={autoSave === "saving" ? "animate-pulse" : undefined} />
-					{autoSave === "saving" ? "Saving draft…" : "Draft saved"}
-				</div>
-			)}
+			{/* Live regions stay mounted, so "Draft saved" and the balance state are announced when they change. */}
+			<div role="status">
+				{autoSave && (
+					<div className="flex items-center gap-1.5 border-b px-4 py-1 text-2xs text-tertiary-foreground">
+						<ToneDot tone={autoSave === "saving" ? "amber" : "green"} className={autoSave === "saving" ? "animate-pulse" : undefined} />
+						{autoSave === "saving" ? "Saving draft…" : "Draft saved"}
+					</div>
+				)}
+			</div>
+			<LiveStatus>
+				{any ? (isBalanced ? "Balanced" : `Off by ${currency} ${plain(Math.abs(difference))}`) : ""}
+			</LiveStatus>
 			{!any ? (
 				<div className="m-1 flex items-center justify-center gap-2 rounded-lg border border-dashed px-4 py-2.5 text-sm text-tertiary-foreground">
 					<InfoIcon size={16} aria-hidden="true" />
@@ -581,7 +636,11 @@ export function JournalBalanceBar({ totalDebit, totalCredit, currency = "MYR", h
 							</StatusChip>
 						)}
 					</div>
-					{showError && !isBalanced && <p className={cn("mt-1 text-2xs", surfaces.negative)}>Entry must be balanced before posting</p>}
+					{showError && !isBalanced && (
+						<p role="alert" className={cn("mt-1 text-2xs", surfaces.negative)}>
+							Entry must be balanced before posting
+						</p>
+					)}
 				</div>
 			)}
 		</div>
@@ -595,7 +654,7 @@ export type JournalDraftRecoveryBannerProps = React.ComponentProps<"div"> & { sa
 /** journal/JournalDraftStatus.tsx DraftRecoveryBanner — offer to restore an unsaved local draft. */
 export function JournalDraftRecoveryBanner({ savedAgo, onRecover, onDismiss, className, ...props }: JournalDraftRecoveryBannerProps) {
 	return (
-		<Alert variant="warning" className={cn("flex flex-wrap items-center justify-between gap-2 py-2", className)} {...props}>
+		<Alert variant="warning" role="status" className={cn("flex flex-wrap items-center justify-between gap-2 py-2", className)} {...props}>
 			<span className="flex min-w-0 items-center gap-2 text-sm text-foreground">
 				<ClockCounterClockwiseIcon size={16} className={cn("shrink-0", STATUS_TONES.amber)} aria-hidden="true" />
 				You have an unsaved draft from {savedAgo}.
@@ -651,11 +710,14 @@ export function JournalLinesTable({ lines, currency = "MYR", className, ...props
 			header: "Account",
 			className: "w-2/5",
 			mobile: "title",
+			// The row header: a line is named by its account, not its line number.
+			primary: true,
 			cell: (l) => (
 				<span className="flex min-w-0 items-center gap-2">
 					<span className="shrink-0 text-tiny-id text-tertiary-foreground">{l.accountCode}</span>
 					<span className="min-w-0 break-words">{l.accountName}</span>
 					<TypeDot type={l.accountType} />
+					<span className="sr-only">{typeLabel(l.accountType)}</span>
 				</span>
 			),
 		},
@@ -855,17 +917,22 @@ function CoaRow({
 	level,
 	expanded,
 	selectedId,
+	tabId,
 	currency,
 	onToggle,
 	onSelect,
+	onFocusItem,
 }: {
 	node: CoaTreeNode;
 	level: number;
 	expanded: Set<string>;
 	selectedId?: string;
+	/** The one treeitem in the tab order (roving tabindex). */
+	tabId?: string;
 	currency: string;
 	onToggle: (id: string) => void;
 	onSelect: (id: string) => void;
+	onFocusItem: (id: string) => void;
 }) {
 	const kids = node.children ?? [];
 	const open = expanded.has(node.id);
@@ -875,21 +942,16 @@ function CoaRow({
 		<>
 			<div
 				role="treeitem"
-				tabIndex={selected ? 0 : -1}
+				data-tree-id={node.id}
+				tabIndex={tabId === node.id ? 0 : -1}
 				aria-level={level}
 				aria-expanded={kids.length ? open : undefined}
 				aria-selected={selected}
 				aria-label={[`${node.accountCode} ${node.accountName}`, typeLabel(node.accountType), balance, node.isActive === false && "inactive"].filter(Boolean).join(", ")}
 				onClick={() => onSelect(node.id)}
-				onKeyDown={(e) => {
-					if (e.key === "Enter" || e.key === " ") {
-						e.preventDefault();
-						onSelect(node.id);
-					} else if (e.key === "ArrowRight" && kids.length && !open) onToggle(node.id);
-					else if (e.key === "ArrowLeft" && kids.length && open) onToggle(node.id);
-				}}
+				onFocus={(e) => e.target === e.currentTarget && onFocusItem(node.id)}
 				className={cn(
-					"group flex min-h-8 cursor-pointer items-center gap-2 rounded-md py-1 pr-2 text-sm outline-none transition-colors hover:bg-table-row-hover focus-visible:ring-2 focus-visible:ring-ring/50",
+					"group flex min-h-8 cursor-pointer items-center gap-2 rounded-md py-1 pr-2 text-sm outline-none transition-colors hover:bg-table-row-hover focus-ring",
 					selected && "bg-active-primary hover:bg-active-primary",
 				)}
 				// Indent is data-driven: one step per tree level.
@@ -926,7 +988,10 @@ function CoaRow({
 					balance={<span className={cn(balance ? "text-foreground" : "text-tertiary-foreground", negativeClass((node.balance ?? 0) < 0 && !node.isHeaderAccount))}>{balance ?? "—"}</span>}
 				/>
 			</div>
-			{open && kids.map((c) => <CoaRow key={c.id} node={c} level={level + 1} expanded={expanded} selectedId={selectedId} currency={currency} onToggle={onToggle} onSelect={onSelect} />)}
+			{open &&
+				kids.map((c) => (
+					<CoaRow key={c.id} node={c} level={level + 1} expanded={expanded} selectedId={selectedId} tabId={tabId} currency={currency} onToggle={onToggle} onSelect={onSelect} onFocusItem={onFocusItem} />
+				))}
 		</>
 	);
 }
@@ -950,13 +1015,74 @@ export function ChartOfAccountsTree({ nodes, currency = "MYR", defaultExpandedId
 			else next.add(id);
 			return next;
 		});
+	const select = (id: string) => {
+		setSelected(id);
+		onSelect?.(id);
+	};
+	/** Visible rows in order, with their parents: what the arrow keys move through. */
+	const visible: { id: string; parentId: string | null; hasKids: boolean }[] = [];
+	const walk = (list: CoaTreeNode[], parentId: string | null) => {
+		for (const n of list) {
+			const hasKids = (n.children?.length ?? 0) > 0;
+			visible.push({ id: n.id, parentId, hasKids });
+			if (hasKids && expanded.has(n.id)) walk(n.children!, n.id);
+		}
+	};
+	walk(nodes, null);
+	const [focusId, setFocusId] = React.useState<string | undefined>(undefined);
+	const isVisible = (id?: string) => !!id && visible.some((v) => v.id === id);
+	// Exactly one row is tabbable: the last one focused, else the selected one, else the first.
+	const tabId = isVisible(focusId) ? focusId : isVisible(selectedId) ? selectedId : visible[0]?.id;
+	const treeRef = React.useRef<HTMLDivElement>(null);
+	const focusRow = (id: string) => {
+		setFocusId(id);
+		treeRef.current?.querySelector<HTMLElement>(`[data-tree-id="${CSS.escape(id)}"]`)?.focus();
+	};
+	/** APG tree keys: Up/Down/Home/End move, Right opens or enters, Left closes or climbs, Enter/Space select. */
+	const onKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+		const id = (e.target as HTMLElement).dataset.treeId;
+		const i = visible.findIndex((v) => v.id === id);
+		const row = visible[i];
+		if (!id || !row) return;
+		let next: string | null | undefined;
+		switch (e.key) {
+			case "ArrowDown":
+				next = visible[i + 1]?.id;
+				break;
+			case "ArrowUp":
+				next = visible[i - 1]?.id;
+				break;
+			case "Home":
+				next = visible[0]?.id;
+				break;
+			case "End":
+				next = visible[visible.length - 1]?.id;
+				break;
+			case "ArrowRight":
+				if (row.hasKids && !expanded.has(id)) toggle(id);
+				else if (row.hasKids) next = visible[i + 1]?.id;
+				break;
+			case "ArrowLeft":
+				if (row.hasKids && expanded.has(id)) toggle(id);
+				else next = row.parentId;
+				break;
+			case "Enter":
+			case " ":
+				select(id);
+				break;
+			default:
+				return;
+		}
+		e.preventDefault();
+		if (next) focusRow(next);
+	};
 	return (
 		<div className={cn("@container min-w-0", surfaces.tray, className)} {...props}>
 			{/* Column headers reuse the row's cell layout so they line up at every width. */}
 			<div aria-hidden="true" className="flex h-7 items-center gap-2 py-1 pr-3 pl-2 text-xs text-tertiary-foreground">
 				<CoaCells caret={<span className="size-5 shrink-0" />} dot={<span className="size-1.5 shrink-0" />} code="Code" name="Account" type="Type" balance="Balance" />
 			</div>
-			<div role="tree" aria-label="Chart of accounts" className={cn(surfaces.surface, "p-1")}>
+			<div ref={treeRef} role="tree" aria-label="Chart of accounts" onKeyDown={onKeyDown} className={cn(surfaces.surface, "p-1")}>
 				{nodes.map((n) => (
 					<CoaRow
 						key={n.id}
@@ -964,12 +1090,11 @@ export function ChartOfAccountsTree({ nodes, currency = "MYR", defaultExpandedId
 						level={1}
 						expanded={expanded}
 						selectedId={selectedId}
+						tabId={tabId}
 						currency={currency}
 						onToggle={toggle}
-						onSelect={(id) => {
-							setSelected(id);
-							onSelect?.(id);
-						}}
+						onSelect={select}
+						onFocusItem={setFocusId}
 					/>
 				))}
 			</div>
@@ -1033,6 +1158,12 @@ export function CoaAccountPanel({
 }: CoaAccountPanelProps) {
 	const [editing, setEditing] = React.useState(!!defaultEditing);
 	const [active, setActive] = React.useState(account.isActive);
+	const editRef = React.useRef<HTMLButtonElement>(null);
+	/** Save and Cancel unmount with the form, so focus returns to the Edit button that opened it. */
+	const closeEditor = () => {
+		setEditing(false);
+		editRef.current?.focus();
+	};
 	const flags = [
 		account.isSystemAccount && "System",
 		account.isBankAccount && "Bank",
@@ -1054,7 +1185,7 @@ export function CoaAccountPanel({
 					</p>
 				</div>
 				<div className="flex items-center gap-1">
-					{!account.isSystemAccount && <IconButton variant="skeleton" size="icon" aria-label="Edit account" aria-expanded={editing} icon={<PencilSimpleIcon weight="bold" />} onClick={() => setEditing(!editing)} />}
+					{!account.isSystemAccount && <IconButton ref={editRef} variant="skeleton" size="icon" aria-label="Edit account" aria-expanded={editing} icon={<PencilSimpleIcon weight="bold" />} onClick={() => setEditing(!editing)} />}
 					<IconButton variant="skeleton" size="icon" aria-label="Close detail panel" icon={<XIcon weight="bold" />} onClick={onClose} />
 				</div>
 			</div>
@@ -1076,10 +1207,10 @@ export function CoaAccountPanel({
 				/>
 
 				{editing && (
-					<form className="flex flex-col gap-3 rounded-lg border bg-background p-3" onSubmit={(e) => (e.preventDefault(), setEditing(false))}>
+					<form className="flex flex-col gap-3 rounded-lg border bg-background p-3" onSubmit={(e) => (e.preventDefault(), closeEditor())}>
 						<div className="text-sm font-semibold text-foreground">Edit account</div>
 						{transactionCount > 0 && (
-							<Alert variant="warning" className="px-2.5 py-1.5 text-2xs">
+							<Alert variant="warning" role="note" className="px-2.5 py-1.5 text-2xs">
 								This account has {transactionCount} transaction{transactionCount !== 1 ? "s" : ""}. Changing the code or name will affect existing reports. Account type cannot be changed.
 							</Alert>
 						)}
@@ -1099,7 +1230,7 @@ export function CoaAccountPanel({
 							<IconButton type="submit" variant="primary" icon={<CheckIcon weight="bold" />}>
 								Save
 							</IconButton>
-							<Button type="button" variant="skeleton" onClick={() => setEditing(false)}>
+							<Button type="button" variant="skeleton" onClick={closeEditor}>
 								Cancel
 							</Button>
 						</ActionBar>
@@ -1330,7 +1461,12 @@ export function GeneralLedgerTable({ rows, baseCurrency = "MYR", showAccount, op
 		},
 		{
 			key: "rec",
-			header: "Rec.",
+			header: (
+				<>
+					<span aria-hidden="true">Rec.</span>
+					<span className="sr-only">Reconciled</span>
+				</>
+			),
 			align: "center",
 			className: "w-12",
 			cell: (r) =>
@@ -1481,9 +1617,11 @@ export function BankLedgerHeader({
 			</dl>
 			<div className="flex flex-wrap items-center justify-between gap-2 border-t pt-3">
 				<div className="flex items-center gap-1">
-					<IconButton variant="secondary" size="icon" aria-label="Previous month" disabled={!canPrev} icon={<CaretLeftIcon weight="bold" />} onClick={() => onMonthChange?.(-1)} />
-					<span className="min-w-28 text-center text-sm text-foreground">{periodLabel(month)}</span>
-					<IconButton variant="secondary" size="icon" aria-label="Next month" disabled={!canNext} icon={<CaretRightIcon weight="bold" />} onClick={() => onMonthChange?.(1)} />
+					<IconButton variant="secondary" size="icon" aria-label="Previous month" disabled={!canPrev} focusableWhenDisabled icon={<CaretLeftIcon weight="bold" />} onClick={() => onMonthChange?.(-1)} />
+					<span role="status" className="min-w-28 text-center text-sm text-foreground">
+						{periodLabel(month)}
+					</span>
+					<IconButton variant="secondary" size="icon" aria-label="Next month" disabled={!canNext} focusableWhenDisabled icon={<CaretRightIcon weight="bold" />} onClick={() => onMonthChange?.(1)} />
 				</div>
 				<div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-2xs tabular-nums">
 					<span className="text-tertiary-foreground">
@@ -1646,7 +1784,7 @@ function CloseAttention({ card, note, onNote, className, ...props }: { card: Clo
 					<ul className="flex flex-wrap gap-x-4 gap-y-1">
 						{card.fixes.map((f) => (
 							<li key={f.label}>
-								<a href="#" className="inline-flex items-center gap-1 text-sm text-primary hover:underline focus-visible:rounded-sm focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-none" onClick={(e) => e.preventDefault()}>
+								<a href="#" className="inline-flex items-center gap-1 text-sm text-primary hover:underline focus-visible:rounded-sm focus-ring" onClick={(e) => e.preventDefault()}>
 									{f.label}
 									<ArrowSquareOutIcon size={12} aria-hidden="true" />
 									<span className="sr-only">(opens in a new tab)</span>
@@ -1715,7 +1853,7 @@ export function PeriodCloseChecklist({ items, runningTask, busy, onRunTask, onCl
 					return (
 						<Collapsible key={status} open={open} onOpenChange={setPassedOpen} className="overflow-hidden rounded-xl border bg-table-tray">
 							<h3>
-								<CollapsibleTrigger className="flex w-full cursor-pointer items-center justify-between gap-2 rounded-xl px-4 py-3 text-left text-sm font-semibold text-foreground outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring/50">
+								<CollapsibleTrigger className="flex w-full cursor-pointer items-center justify-between gap-2 rounded-xl px-4 py-3 text-left text-sm font-semibold text-foreground outline-none focus-ring-inset">
 									<span className="flex items-center gap-2">
 										Passed
 										<CountChip status="pass" count={group.length} />
@@ -1905,7 +2043,11 @@ export type WorkbenchStat = {
 	href?: string;
 	status?: "success" | "warning" | "danger";
 };
-const STAT_TONE = { success: "green", warning: "amber", danger: "red" } as const;
+const STAT_STATUS: Record<NonNullable<WorkbenchStat["status"]>, { tone: StatusTone; glyph: StatusGlyph; word: string }> = {
+	success: { tone: "green", glyph: "check", word: "OK" },
+	warning: { tone: "amber", glyph: "alert", word: "Warning" },
+	danger: { tone: "red", glyph: "x", word: "Problem" },
+};
 /** auto-fit (not auto-fill) so a short row of tiles stretches across the header, as Cynco's StatGrid does. */
 
 export type AccountingWorkbenchHeaderProps = Omit<React.ComponentProps<"div">, "title"> & {
@@ -1931,7 +2073,8 @@ export function AccountingWorkbenchHeader({ title, meta, actions, stats = [], cl
 					{stats.map((s) => {
 						const value = s.status ? (
 							<span className="inline-flex items-center gap-1.5">
-								<ToneDot tone={STAT_TONE[s.status]} />
+								<StatusChipIcon tone={STAT_STATUS[s.status].tone} glyph={STAT_STATUS[s.status].glyph} />
+								<span className="sr-only">{STAT_STATUS[s.status].word}: </span>
 								{s.value}
 							</span>
 						) : (
@@ -1947,7 +2090,7 @@ export function AccountingWorkbenchHeader({ title, meta, actions, stats = [], cl
 							/>
 						);
 						return s.href ? (
-							<a key={s.key} href={s.href} onClick={(e) => e.preventDefault()} className="group block min-w-0 rounded-xl focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-none">
+							<a key={s.key} href={s.href} onClick={(e) => e.preventDefault()} className="group block min-w-0 rounded-xl focus-ring">
 								{tile}
 							</a>
 						) : (

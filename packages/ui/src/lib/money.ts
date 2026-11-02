@@ -9,6 +9,14 @@
 const WORK = 6; // working decimals inside expressions
 const W = 10n ** BigInt(WORK);
 
+/**
+ * True for a plain decimal string ("-1234.50"). Intl.NumberFormat formats such strings exactly, with no
+ * float round-trip, so the guard narrows to the string form `format()` accepts.
+ */
+export function isDecimalString(s: string): s is `${number}` {
+	return /^-?\d+(\.\d+)?$/.test(s);
+}
+
 /** "1234.5" | 1234.5 → 123450n (sen). Invalid → 0n. */
 export function toSen(amount: string | number | bigint | null | undefined): bigint {
 	if (amount == null || amount === "") return 0n;

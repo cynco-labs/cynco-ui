@@ -16,6 +16,7 @@ import {
 	overlaySurfaceClassName,
 } from "../../lib/overlay-classes";
 import { cn } from "../../lib/utils";
+import { useMergedRef } from "../../hooks/use-merged-ref";
 import { Menu as MenuPrimitive } from "@base-ui/react/menu";
 import { cva, type VariantProps } from "class-variance-authority";
 import { Check, ChevronRight } from "lucide-react";
@@ -38,7 +39,7 @@ const dropdownMenuItemVariants = cva(
 			variant: {
 				default: overlayItemHighlightClassName,
 				destructive:
-					"text-red-600 focus:bg-red-500/10 focus:text-red-600 dark:text-red-400 dark:focus:text-red-400 [&_svg:not([class*='text-'])]:text-current",
+					"text-error-text focus:bg-destructive/10 focus:text-error-text [&_svg:not([class*='text-'])]:text-current",
 			},
 			inset: {
 				true: "pl-8",
@@ -56,9 +57,22 @@ type DropdownMenuItemVariantProps = VariantProps<
 	typeof dropdownMenuItemVariants
 >;
 
-function DropdownMenu(props: MenuPrimitive.Root.Props) {
-	const isOpen = props.open ?? false;
-	const { shortcuts, close } = useMenuShortcuts(isOpen, props.onOpenChange);
+function DropdownMenu({ actionsRef: actionsRefProp, onOpenChange, ...props }: MenuPrimitive.Root.Props) {
+	// Track open state for uncontrolled menus too, so item shortcuts work either way.
+	const [openState, setOpenState] = React.useState(props.defaultOpen ?? false);
+	const isOpen = props.open ?? openState;
+	const localActions = React.useRef<MenuPrimitive.Root.Actions | null>(null);
+	const actionsRef = actionsRefProp ?? localActions;
+	// Base UI closes the menu and reports it through onOpenChange with real event details.
+	const close = React.useCallback(() => actionsRef.current?.close(), [actionsRef]);
+	const handleOpenChange = React.useCallback<NonNullable<MenuPrimitive.Root.Props["onOpenChange"]>>(
+		(open, details) => {
+			setOpenState(open);
+			onOpenChange?.(open, details);
+		},
+		[onOpenChange],
+	);
+	const { shortcuts } = useMenuShortcuts(isOpen, close);
 
 	const ctx = React.useMemo(
 		() => ({ isOpen, shortcuts, close }),
@@ -67,7 +81,7 @@ function DropdownMenu(props: MenuPrimitive.Root.Props) {
 
 	return (
 		<DropdownMenuContext.Provider value={ctx}>
-			<MenuPrimitive.Root data-slot="dropdown-menu" {...props} />
+			<MenuPrimitive.Root data-slot="dropdown-menu" actionsRef={actionsRef} onOpenChange={handleOpenChange} {...props} />
 		</DropdownMenuContext.Provider>
 	);
 }
@@ -185,7 +199,8 @@ type DropdownMenuContentProps = MenuPrimitive.Popup.Props & {
 	sideOffset?: number;
 	side?: "top" | "bottom" | "left" | "right";
 	align?: "start" | "center" | "end";
-	onCloseAutoFocus?: (e: any) => void;
+	/** Radix compatibility; ignored (Base UI returns focus to the trigger itself). */
+	onCloseAutoFocus?: (event: Event) => void;
 	keepMounted?: boolean;
 };
 
@@ -254,14 +269,15 @@ const DropdownMenuItem = React.forwardRef<
 		...rest
 	} = props;
 	const { shortcuts } = React.useContext(DropdownMenuContext);
-	const onClickRef = React.useRef(onClick);
-	onClickRef.current = onClick;
+	const itemRef = React.useRef<HTMLDivElement | null>(null);
+	const setRef = useMergedRef(itemRef, ref);
 
 	React.useEffect(() => {
 		if (!shortcut || props.disabled) return;
+		// A real click, so onClick gets a genuine event and Base UI runs its own item handling.
 		const entry: ShortcutEntry = {
 			key: shortcut,
-			handler: () => onClickRef.current?.({} as any),
+			handler: () => itemRef.current?.click(),
 		};
 		shortcuts.current.push(entry);
 		return () => {
@@ -272,7 +288,7 @@ const DropdownMenuItem = React.forwardRef<
 	if (asChild && React.isValidElement(children)) {
 		return (
 			<MenuPrimitive.Item
-				ref={ref}
+				ref={setRef}
 				data-slot="dropdown-menu-item"
 				render={children}
 				closeOnClick={closeOnClick}
@@ -290,7 +306,7 @@ const DropdownMenuItem = React.forwardRef<
 
 	return (
 		<MenuPrimitive.Item
-			ref={ref}
+			ref={setRef}
 			data-slot="dropdown-menu-item"
 			closeOnClick={closeOnClick}
 			className={cn(
