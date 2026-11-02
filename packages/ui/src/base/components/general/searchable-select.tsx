@@ -163,6 +163,7 @@ export function SearchableSelect<T>({
 				{open && (
 					<PopoverContent
 						align="start"
+						aria-label={placeholder}
 						className={cn(
 							"w-(--anchor-width) p-0 z-200 rounded-md overflow-hidden",
 							contentClassName,

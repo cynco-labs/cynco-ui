@@ -91,7 +91,7 @@ export const InlineCitationCardBody = ({
 	className,
 	...props
 }: InlineCitationCardBodyProps) => (
-	<PopoverContent className={cn("relative w-80 p-0", className)} {...props} />
+	<PopoverContent aria-label="Citation" className={cn("relative w-80 p-0", className)} {...props} />
 );
 
 const CarouselApiContext = createContext<CarouselApi | undefined>(undefined);

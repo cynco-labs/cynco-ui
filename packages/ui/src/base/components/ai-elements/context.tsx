@@ -137,6 +137,7 @@ export const ContextContent = ({
 	...props
 }: ContextContentProps) => (
 	<PopoverContent
+		aria-label="Context usage"
 		className={cn("w-auto min-w-60 divide-y overflow-hidden p-0", className)}
 		{...props}
 	/>

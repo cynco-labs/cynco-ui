@@ -209,7 +209,7 @@ export const DateInputUnix = ({
 					)}
 				</button>
 			</PopoverTrigger>
-			<PopoverContent className="w-auto p-0">
+			<PopoverContent aria-label={withTime ? "Choose date and time" : "Choose date"} className="w-auto p-0">
 				<Calendar
 					mode="single"
 					selected={dateObj}

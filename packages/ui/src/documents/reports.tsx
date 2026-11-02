@@ -402,6 +402,9 @@ export function StatementTable({ columns, rows, codes, notes, labelHeader, ruled
 					}
 					const strong = r.kind === "subtotal" || r.kind === "total";
 					const muted = r.kind === "line" && r.muted;
+					const rowLabel = label(t, r.label, false);
+					// A row with no label (a spacer or a bare figure) has nothing to head it, so it gets a plain cell.
+					const LabelCell = rowLabel == null || rowLabel === "" ? "td" : "th";
 					return (
 						<tr
 							key={key}
@@ -418,14 +421,14 @@ export function StatementTable({ columns, rows, codes, notes, labelHeader, ruled
 								</td>
 							)}
 							{/* The line's label heads its row, so each figure is announced with the line it belongs to (WCAG 1.3.1). */}
-							<th
-								scope="row"
+							<LabelCell
+								scope={LabelCell === "th" ? "row" : undefined}
 								className={cn("text-left", strong ? strongPad : pad, r.kind === "subtotal" ? "font-semibold" : r.kind === "total" ? "font-bold" : "font-normal", firstLead === "label" ? "" : "pl-[3mm]")}
 								style={firstLead === "label" ? leadPad(r.indent) : { paddingLeft: `${3 + (r.indent ?? 0) * 4}mm` }}
 							>
-								{label(t, r.label, false)}
+								{rowLabel}
 								{r.kind === "line" && r.detail && <div className="mt-[0.3mm] text-[7.25pt] leading-snug font-normal text-[var(--doc-muted)]">{r.detail}</div>}
-							</th>
+							</LabelCell>
 							{showNotes && <td className={cn(strong ? strongPad : pad, "cy-doc-num text-center text-[7.5pt] text-[var(--doc-muted)]")}>{r.note}</td>}
 							{columns.map((c, ci) => {
 								const v = r.values[ci];

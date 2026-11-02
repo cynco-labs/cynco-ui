@@ -362,7 +362,7 @@ export function AccountPickerField({ accounts, recentIds, selectedId, defaultOpe
 						</Button>
 					}
 				/>
-				<PopoverContent align="start" className={PICKER_POPUP}>
+				<PopoverContent align="start" aria-label="Choose account" className={PICKER_POPUP}>
 					<AccountPickerList
 						accounts={accounts}
 						recentIds={recentIds}
@@ -521,7 +521,7 @@ export function JournalLineEditor({ lines: initial, accounts = [], recentIds, fi
 												</Button>
 											}
 										/>
-										<PopoverContent align="start" className={PICKER_POPUP}>
+										<PopoverContent align="start" aria-label="Choose account" className={PICKER_POPUP}>
 											<AccountPickerList
 												accounts={accounts}
 												recentIds={recentIds}

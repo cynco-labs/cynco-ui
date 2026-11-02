@@ -424,8 +424,8 @@ export function DataList<T>({
 						<table className="w-full border-collapse text-sm">
 							{caption && <caption className="sr-only">{caption}</caption>}
 							<thead>
-								<tr className={cn("border-b border-table-row-divider", stick && "[&>th]:sticky [&>th]:top-0 [&>th]:z-10 [&>th]:bg-table-surface [&>th]:shadow-[inset_0_-1px_0_var(--table-row-divider)]")}>
-									{leading && <th scope="col" className="w-9 py-2 pl-3 text-left font-normal">{leadingHeader}</th>}
+								<tr className={cn("border-b border-table-row-divider", stick && "[&>*]:sticky [&>*]:top-0 [&>*]:z-10 [&>*]:bg-table-surface [&>*]:shadow-[inset_0_-1px_0_var(--table-row-divider)]")}>
+									{leading && (leadingHeader == null ? <td className="w-9 py-2 pl-3" /> : <th scope="col" className="w-9 py-2 pl-3 text-left font-normal">{leadingHeader}</th>)}
 									{tableCols.map((c) => (
 										<th key={c.key} scope="col" aria-sort={c.sortDirection} className={cn("px-3 py-2 text-xs font-medium whitespace-nowrap text-tertiary-foreground", ALIGN[c.align ?? "left"], c.className)}>
 											{c.header}
