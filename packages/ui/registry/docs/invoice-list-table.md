@@ -78,6 +78,15 @@ The Invoicing page's main list, above which InvoiceBulkBar appears once rows are
 
 invoices (invoiceNumber, customerName, invoiceDate, dueDate, total, currency, status, journalEntryId, emailStatus), selectedIds, onToggleRow, onToggleAll, sortField, sortDirection, onSort, optional footer; className.
 
+- `invoices`: `SalesInvoiceRow[]`
+- `selectedIds?`: `string[]`. Default `[]`.
+- `onToggleRow?`: `(id: string) => void`
+- `onToggleAll?`: `() => void`
+- `sortField?`: `string`. Default `"invoice_date"`.
+- `sortDirection?`: `"asc" | "desc"`. Default `"desc"`.
+- `onSort?`: `(field: string) => void`
+- `footer?`: `ReactNode`
+
 ## Notes
 
 Invoice numbers use text-tiny-id in primary and amounts are right-aligned tabular-nums. Responsive: Built on DataList: a tray table from 48rem of container width, a stacked card per invoice below that (customer and amount, then status and signals, then Invoice #, Date and Due Date).

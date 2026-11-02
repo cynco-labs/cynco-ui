@@ -90,6 +90,13 @@ Customers page list.
 
 customers [{name, email, phone, location, isActive, currency, creditLimit, receivables {outstanding, overdue, openInvoiceCount, extraCurrencies, nextAction {label, tone}}, margin {percent, revenue, belowCostLines}}], defaultSelectedIds, marginWindowDays; selectedIds / onSelectedChange (controlled), onRowClick, className.
 
+- `customers`: `CyncoCustomerRow[]`
+- `selectedIds?`: `string[]`
+- `onSelectedChange?`: `(ids: string[]) => void`
+- `defaultSelectedIds?`: `string[]`
+- `marginWindowDays?`: `number`. Default `90`.
+- `onRowClick?`: `(row: CyncoCustomerRow) => void`
+
 ## Notes
 
 Responsive by container: DataList: stacked customer cards below a 42rem container, avatar hidden under 28rem.

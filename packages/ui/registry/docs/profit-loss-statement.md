@@ -54,6 +54,13 @@ The P&L report page, monthly or YTD; pass priorPeriod for the Current | Prior | 
 
 period, rows (StatementRow: {key, kind: heading|section-header|account|section-total|line|subtotal|grand-total, label, accountCode?, values [current, prior?], negate?, variance?, variancePct?}); optional priorPeriod, description, currency; plus className and native element props (spread on the root).
 
+- `period`: `string`. Current period label, e.g. "October 2026" or "Jan – Oct 2026".
+- `rows`: `StatementRow[]`
+- `priorPeriod?`: `string`. Set to render the comparative (Current | Prior | Variance | %) layout.
+- `description?`: `ReactNode`
+- `currency?`: `string`. Default `"MYR"`.
+- Also accepts `ComponentProps<"section">`.
+
 ## Notes
 
 Prior column in text-tertiary-foreground. Responsive: bespoke container-query ladder on surfaces.tray; Variance/% drop below 32rem and the (MYR) suffix below 28rem, account names wrap.

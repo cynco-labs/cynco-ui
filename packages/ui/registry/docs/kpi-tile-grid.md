@@ -65,6 +65,10 @@ Financial pulse on the reports overview, aging and dashboard pages.
 
 tiles [{label, value, delta?, badge?, badgeTone?, sub?, subTone: up|down|warn|muted, sparkline?: number[], accent?}], columns 2–5; plus className and native element props (spread on the root).
 
+- `tiles`: `KpiTileData[]`
+- `columns?`: `2 | 5 | 3 | 4`. Kept for compatibility; tiles auto-fit the container (min 9rem each). Default `4`.
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 Tiles are bg-card rounded-xl with the figure in foreground; the accent colour goes to the sparkline (chart-series tokens) and the change is a neutral StatusChip with a green or red arrow. The meta line sits under the figure. Responsive: StatGrid/StatTile auto-fit (min 9rem), 4-up to 2-up; money wraps, never truncates.

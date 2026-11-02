@@ -44,4 +44,7 @@ export default function OpenInDemo() {
 
 `query`; `OpenInTrigger`, `OpenInContent` › `OpenInChatGPT`, `OpenInClaude`, `OpenInCursor`, `OpenInT3`, `OpenInScira`, `OpenInv0`.
 
+- `query`: `string`
+- Also accepts `MenuPrimitive.Root.Props`.
+
 Category: AI. Source: `packages/ui/src/base/components/ai-elements/open-in-chat.tsx`.

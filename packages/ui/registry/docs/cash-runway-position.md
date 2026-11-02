@@ -40,6 +40,14 @@ Top of Cynco numbers panel, answering 'how much cash, how long does it last'.
 
 cash, runwayMonths (null when unknown); optional accounts, cashPositive, trail [{label, cash}], currency; plus className and native element props (spread on the root).
 
+- `cash`: `number | null`
+- `runwayMonths`: `number | null`. Months at the last 3 months' burn; null when it can't be computed.
+- `accounts?`: `number | null`
+- `cashPositive?`: `boolean`. No burn to divide by — earns a full bar.
+- `trail?`: `{ label: string; cash: number }[]`. Implied month-end cash, oldest → newest.
+- `currency?`: `string`. Default `"MYR"`.
+- Also accepts `ComponentProps<"section">`.
+
 ## Notes
 
 Responsive: runway block drops under the cash figure below 28rem; trail caption moves under the chart.

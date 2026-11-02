@@ -45,6 +45,11 @@ Beside any AI proposal: categories, matches, changeset reviews.
 
 confidence (0–1), variant ('badge' | 'ring' | 'inline'), showTier, className and native props (spread on the root).
 
+- `confidence`: `number | null`
+- `variant?`: `"badge" | "ring" | "inline"`. Default `"badge"`.
+- `showTier?`: `boolean`. Default `false`.
+- Also accepts `ComponentProps<"span">`.
+
 ## Notes
 
 Inline at any width.

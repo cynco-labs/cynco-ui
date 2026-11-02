@@ -32,4 +32,12 @@ Reasoning models' thinking text.
 
 `isStreaming`, `duration`, `defaultOpen`; `ReasoningTrigger` (`getThinkingMessage`), `ReasoningContent` (string, Markdown).
 
+- `open?`: `boolean`. Whether the collapsible panel is currently open. To render an uncontrolled collapsible, use the `defaultOpen` prop instead.
+- `defaultOpen?`: `boolean`. Whether the collapsible panel is initially open. To render a controlled collapsible, use the `open` prop instead. Default `false`.
+- `onOpenChange?`: `(open: boolean) => void`. Event handler called when the panel is opened or closed.
+- `asChild?`: `boolean`
+- `isStreaming?`: `boolean`. Default `false`.
+- `duration?`: `number`
+- Also accepts `CollapsiblePrimitive.Root.Props`.
+
 Category: AI. Source: `packages/ui/src/base/components/ai-elements/reasoning.tsx`.

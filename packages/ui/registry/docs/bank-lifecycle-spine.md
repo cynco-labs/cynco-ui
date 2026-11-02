@@ -40,6 +40,9 @@ At the start of every feed row; its horizontal aggregate is the settled meter in
 
 status ('imported' | 'categorized' | 'posted' | 'reconciled' | 'excluded'), className and native props (spread on the root).
 
+- `status`: `"posted" | "imported" | "categorized" | "reconciled" | "excluded"`
+- Also accepts `ComponentProps<"span">`.
+
 ## Notes
 
 Fixed 4×4px glyph, width-independent.

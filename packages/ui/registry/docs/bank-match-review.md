@@ -77,6 +77,14 @@ Under a feed row with matches, or standalone with the bank line as its header.
 
 matches [{id, targetLabel, targetReference, confidence, status, evidence[], consequence}], line? {date, payee, description, amount, type}, pendingId, error, onAccept, onReject, className and native props (spread on the root).
 
+- `matches`: `BankMatch[]`
+- `line?`: `BankLineSummary`
+- `pendingId?`: `string | null`
+- `error?`: `string | null`
+- `onAccept?`: `(id: string) => void`
+- `onReject?`: `(id: string) => void`
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 Responsive by container: Accept / Reject drop under the evidence below 28rem; the bank-line header wraps.

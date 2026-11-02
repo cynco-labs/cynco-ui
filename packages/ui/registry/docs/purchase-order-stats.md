@@ -33,6 +33,10 @@ Top of the purchase orders list.
 
 `stats` [{status, count, total}]; optional `currency`; optional `className` and native div props on the root.
 
+- `stats`: `{ status: string; count: number; total: Num }[]`
+- `currency?`: `string`. Default `"MYR"`.
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 Responsive by container: StatGrid tiles auto-fit.

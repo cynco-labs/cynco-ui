@@ -40,6 +40,15 @@ Bottom-centre of the Invoicing page while rows are selected.
 
 selected ({id, status, hasPayments}), onClear, onDownload, onDelete, downloading, deleting, floating (pins it to the viewport); className and native div props.
 
+- `selected`: `{ id: string; status: string; hasPayments?: boolean }[]`
+- `onClear?`: `() => void`
+- `onDownload?`: `() => void`
+- `onDelete?`: `() => void`
+- `downloading?`: `boolean`. Default `false`.
+- `deleting?`: `boolean`. Default `false`.
+- `floating?`: `boolean`. Pin to the bottom of the viewport, as in the app; off for inline previews. Default `false`.
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 A bg-card rounded-xl bar with a shadow and skeleton Buttons. Delete uses the destructive text tone. Responsive: The bar wraps: the count goes on its own line in a narrow container, and it never overflows.

@@ -9,46 +9,7 @@ import { PaymentVoucherDocument } from "@cynco-labs/ui";
 ## Usage
 
 ```tsx
-import { useState } from "react";
-import { DocumentBrandProvider, GroupedTabButton, PaymentVoucherDocument } from "@cynco-labs/ui";
-
-const LAYOUTS = [
-	{ value: "minimal", label: "Minimal" },
-	{ value: "classic", label: "Classic" },
-	{ value: "modern", label: "Modern" },
-];
-
-const LOCALES = [
-	{ value: "en", label: "EN" },
-	{ value: "ms", label: "BM" },
-	{ value: "en-ms", label: "EN + BM" },
-];
-
-function Tabs(p) {
-	return (
-		<div style={{ width: p.w }}>
-			<GroupedTabButton value={p.value} onValueChange={p.onChange} options={p.options} />
-		</div>
-	);
-}
-
-function Shell(p) {
-	const [l, setL] = useState("minimal"),
-		[g, setG] = useState("en"),
-		[z, setZ] = useState(p.sizes ? p.sizes[0].value : "a4");
-	return (
-		<div className="flex flex-col gap-3">
-			<div className="flex flex-wrap items-center gap-2">
-				<Tabs w="270px" value={l} onChange={setL} options={LAYOUTS} />
-				<Tabs w="210px" value={g} onChange={setG} options={LOCALES} />
-				{p.sizes ? <Tabs w="130px" value={z} onChange={setZ} options={p.sizes} /> : null}
-			</div>
-			<DocumentBrandProvider brand={Object.assign({}, p.brand, { layout: l, locale: g })}>
-				{p.render(z)}
-			</DocumentBrandProvider>
-		</div>
-	);
-}
+import { DocumentBrandProvider, PaymentVoucherDocument } from "@cynco-labs/ui";
 
 const BRAND = {
 	company: {
@@ -125,8 +86,33 @@ const PV = {
 	receivedBy: { name: "", title: "Payee (name, IC & date)" },
 };
 
-export default function PaymentVoucherDocumentDemo() {
-	return <Shell brand={BRAND} render={() => <PaymentVoucherDocument voucher={PV} />} />;
+export const controls = {
+	layout: {
+		label: "Layout",
+		options: [
+			{ value: "minimal", label: "Minimal" },
+			{ value: "classic", label: "Classic" },
+			{ value: "modern", label: "Modern" },
+		],
+		default: "minimal",
+	},
+	locale: {
+		label: "Language",
+		options: [
+			{ value: "en", label: "EN" },
+			{ value: "ms", label: "BM" },
+			{ value: "en-ms", label: "EN + BM" },
+		],
+		default: "en",
+	},
+};
+
+export default function PaymentVoucherDocumentDemo({ layout = "minimal", locale = "en" }) {
+	return (
+		<DocumentBrandProvider brand={{ ...BRAND, layout, locale }}>
+			<PaymentVoucherDocument voucher={PV} />
+		</DocumentBrandProvider>
+	);
 }
 ```
 
@@ -137,6 +123,13 @@ Supporting document for every bill payment, expense claim reimbursement or petty
 ## Props
 
 voucher: PaymentVoucherData { number, date, method: {kind: bank_transfer | cheque | cash | duitnow | card, chequeNo?, bank?, reference?}, paidFrom?: string | {name, accountNumber?}, currency?, payee: DocParty, payeeBank? {bankName?, accountName?, accountNumber?, swiftCode?}, memo?, lines: {reference?, date?, description, detail?, accountCode?, accountName?, amount}[], totals: {subtotal?, taxes?, total, …}, notes?, preparedBy?, checkedBy?, approvedBy?, receivedBy? }; plus brand?, size?, stamp?, fit?, isolate?, className.
+
+- `voucher`: `PaymentVoucherData`
+- `brand?`: `Partial<DocBrand>`. Overrides the provider's brand (merged over it).
+- `stamp?`: `"paid" | "void" | "draft" | "copy" | "overdue"`
+- `fit?`: `"width" | "none"`
+- `isolate?`: `boolean`
+- `size?`: `"a4" | "letter"`. Default `"a4"`.
 
 ## Notes
 

@@ -9,8 +9,7 @@ import { DeliveryOrderDocument } from "@cynco-labs/ui";
 ## Usage
 
 ```tsx
-import { useState } from "react";
-import { DeliveryOrderDocument, DocumentBrandProvider, GroupedTabButton } from "@cynco-labs/ui";
+import { DeliveryOrderDocument, DocumentBrandProvider } from "@cynco-labs/ui";
 
 const BRAND = {
 	company: {
@@ -47,43 +46,6 @@ const NUSA_SITE = {
 	attention: "En. Hafiz Zainal, Facilities",
 	phone: "+60 12-334 8821",
 };
-
-function Ctl(groups) {
-	return (
-		<div className="flex flex-wrap items-center gap-2">
-			{groups.map((g, i) => (
-				<div key={i} className="flex-auto" style={{ minWidth: g[2].length * 64 }}>
-					<GroupedTabButton value={g[0]} onValueChange={g[1]} options={g[2]} />
-				</div>
-			))}
-		</div>
-	);
-}
-
-const LAYOUTS = [
-	{ value: "minimal", label: "Minimal" },
-	{ value: "classic", label: "Classic" },
-	{ value: "modern", label: "Modern" },
-];
-
-const LANGS = [
-	{ value: "en", label: "EN" },
-	{ value: "ms", label: "BM" },
-	{ value: "en-ms", label: "EN + BM" },
-];
-
-function Shell(p) {
-	return (
-		<div className="flex flex-col gap-3">
-			{Ctl(p.groups)}
-			<DocumentBrandProvider
-				brand={Object.assign({}, BRAND, { layout: p.layout, locale: p.locale })}
-			>
-				<div className={p.center ? "flex justify-center" : ""}>{p.children}</div>
-			</DocumentBrandProvider>
-		</div>
-	);
-}
 
 const DO = {
 	number: "DO-2026-0087",
@@ -153,20 +115,32 @@ const DO = {
 		"Please inspect all items on delivery. Report any shortage or damage within 3 working days. Panels must be stored flat and covered.",
 };
 
-export default function DeliveryOrderDocumentDemo() {
-	const [l, setL] = useState("minimal"),
-		[g, setG] = useState("en");
+export const controls = {
+	layout: {
+		label: "Layout",
+		options: [
+			{ value: "minimal", label: "Minimal" },
+			{ value: "classic", label: "Classic" },
+			{ value: "modern", label: "Modern" },
+		],
+		default: "minimal",
+	},
+	locale: {
+		label: "Language",
+		options: [
+			{ value: "en", label: "EN" },
+			{ value: "ms", label: "BM" },
+			{ value: "en-ms", label: "EN + BM" },
+		],
+		default: "en",
+	},
+};
+
+export default function DeliveryOrderDocumentDemo({ layout = "minimal", locale = "en" }) {
 	return (
-		<Shell
-			layout={l}
-			locale={g}
-			groups={[
-				[l, setL, LAYOUTS],
-				[g, setG, LANGS],
-			]}
-		>
+		<DocumentBrandProvider brand={{ ...BRAND, layout, locale }}>
 			<DeliveryOrderDocument order={DO} />
-		</Shell>
+		</DocumentBrandProvider>
 	);
 }
 ```
@@ -178,6 +152,13 @@ Sending with the goods for the customer to sign on receipt, including partial de
 ## Props
 
 order: DeliveryOrderData { number, status, date, deliveryDate?, reference? (PO), salesOrder?, invoiceNo?, billTo, shipTo, vehicleNo?, driver?, lines [{code?, description, detail?, unit?, ordered, delivered, backOrdered?}], packages?, weight?, notes?, signature?, received? {name, icNo, date, signatureImage} } + size ('a4'|'a5'|'letter') and presentation props.
+
+- `order`: `DeliveryOrderData`
+- `brand?`: `Partial<DocBrand>`. Overrides the provider's brand (merged over it).
+- `stamp?`: `"paid" | "void" | "draft" | "copy" | "overdue" | null`. Overrides the stamp derived from the document status. `null` hides it.
+- `fit?`: `"width" | "none"`
+- `isolate?`: `boolean`
+- `size?`: `"a4" | "a5" | "letter"`. Default `"a4"`.
 
 ## Notes
 

@@ -51,6 +51,9 @@ Page- or section-level messages that stay visible.
 
 `variant`; an optional leading 16px icon, `AlertTitle`, `AlertDescription`, `AlertAction`.
 
+- `variant?`: `"default" | "destructive" | "note" | "success" | "warning"`. Default `"default"`.
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 Tinted at 4% fill and 15% border; text stays `foreground` at 80%. Tone hues come from Tailwind (sky, emerald, amber, red), not tokens.

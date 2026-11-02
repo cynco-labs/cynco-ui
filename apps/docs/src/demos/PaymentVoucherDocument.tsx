@@ -1,43 +1,4 @@
-import { useState } from "react";
-import { DocumentBrandProvider, GroupedTabButton, PaymentVoucherDocument } from "@cynco-labs/ui";
-
-const LAYOUTS = [
-	{ value: "minimal", label: "Minimal" },
-	{ value: "classic", label: "Classic" },
-	{ value: "modern", label: "Modern" },
-];
-
-const LOCALES = [
-	{ value: "en", label: "EN" },
-	{ value: "ms", label: "BM" },
-	{ value: "en-ms", label: "EN + BM" },
-];
-
-function Tabs(p) {
-	return (
-		<div style={{ width: p.w }}>
-			<GroupedTabButton value={p.value} onValueChange={p.onChange} options={p.options} />
-		</div>
-	);
-}
-
-function Shell(p) {
-	const [l, setL] = useState("minimal"),
-		[g, setG] = useState("en"),
-		[z, setZ] = useState(p.sizes ? p.sizes[0].value : "a4");
-	return (
-		<div className="flex flex-col gap-3">
-			<div className="flex flex-wrap items-center gap-2">
-				<Tabs w="270px" value={l} onChange={setL} options={LAYOUTS} />
-				<Tabs w="210px" value={g} onChange={setG} options={LOCALES} />
-				{p.sizes ? <Tabs w="130px" value={z} onChange={setZ} options={p.sizes} /> : null}
-			</div>
-			<DocumentBrandProvider brand={Object.assign({}, p.brand, { layout: l, locale: g })}>
-				{p.render(z)}
-			</DocumentBrandProvider>
-		</div>
-	);
-}
+import { DocumentBrandProvider, PaymentVoucherDocument } from "@cynco-labs/ui";
 
 const BRAND = {
 	company: {
@@ -114,6 +75,31 @@ const PV = {
 	receivedBy: { name: "", title: "Payee (name, IC & date)" },
 };
 
-export default function PaymentVoucherDocumentDemo() {
-	return <Shell brand={BRAND} render={() => <PaymentVoucherDocument voucher={PV} />} />;
+export const controls = {
+	layout: {
+		label: "Layout",
+		options: [
+			{ value: "minimal", label: "Minimal" },
+			{ value: "classic", label: "Classic" },
+			{ value: "modern", label: "Modern" },
+		],
+		default: "minimal",
+	},
+	locale: {
+		label: "Language",
+		options: [
+			{ value: "en", label: "EN" },
+			{ value: "ms", label: "BM" },
+			{ value: "en-ms", label: "EN + BM" },
+		],
+		default: "en",
+	},
+};
+
+export default function PaymentVoucherDocumentDemo({ layout = "minimal", locale = "en" }) {
+	return (
+		<DocumentBrandProvider brand={{ ...BRAND, layout, locale }}>
+			<PaymentVoucherDocument voucher={PV} />
+		</DocumentBrandProvider>
+	);
 }

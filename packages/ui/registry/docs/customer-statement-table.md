@@ -102,6 +102,13 @@ Customer statement of account page and its send/print preview.
 
 transactions [{date, transactionType, details, currency, amount, payment, balance}], currency, isSingleCurrency, balanceDue, page, totalPages; className.
 
+- `transactions`: `StatementTransaction[]`
+- `currency?`: `string`. Default `"MYR"`.
+- `isSingleCurrency?`: `boolean`. Default `true`.
+- `balanceDue?`: `number`. Shown on the last page in single-currency mode.
+- `page?`: `number`
+- `totalPages?`: `number`
+
 ## Notes
 
 A tray table: zero debits and credits render as em dashes (ReportAmount) and balances are bracketed when negative; Balance Due and the page count sit on the tray footer; the currency code is mono. Responsive: built on DataList: each line becomes a stacked card with its running balance below a 42rem container.

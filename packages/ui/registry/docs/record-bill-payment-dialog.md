@@ -36,6 +36,16 @@ Recording a full or partial payment against an approved bill.
 
 billAmount, paidAmount, currency, bankAccounts {id, accountCode, accountName}, defaultOpen, defaultDate, disabled, onSubmit; className (trigger button), contentClassName (sheet panel).
 
+- `billAmount`: `number`
+- `bankAccounts`: `CyncoBankAccount[]`
+- `paidAmount?`: `number`. Default `0`.
+- `currency?`: `string`. Default `"MYR"`.
+- `defaultOpen?`: `boolean`. Default `false`.
+- `defaultDate?`: `string`. YYYY-MM-DD; defaults to today.
+- `disabled?`: `boolean`
+- `onSubmit?`: `(data: { paymentDate: string; paymentAmount: string; paymentMethod?: string; paymentReference?: string; bankAccountId: string; notes?: string }) => void`
+- `contentClassName?`: `string`. Classes for the sheet panel.
+
 ## Notes
 
 Fields use text-form-label with Input, Select and Textarea, and a ShortcutButton (⌘/Ctrl ↵) submits, following the long-form-in-a-Sheet rule. Account codes show in mono inside the select. Responsive: the sheet goes full width on phones; the summary uses KeyValueList.

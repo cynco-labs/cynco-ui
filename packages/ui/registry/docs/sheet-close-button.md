@@ -28,6 +28,8 @@ Custom inline sheets that do not use SheetContent's built-in close.
 
 `onClose`.
 
+- `onClose`: `() => void`
+
 ## Notes
 
 Positions itself absolutely; the parent must be `relative`.

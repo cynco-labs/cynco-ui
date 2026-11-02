@@ -41,6 +41,20 @@ Any action whose icon helps scanning: "New invoice", "Filter". Icon-only for com
 
 All Button props plus `icon`, `rightIcon` and `iconOrientation` (`left` · `center` · `right`).
 
+- `variant?`: `"primary" | "secondary" | "skeleton" | "muted" | "destructive" | "dotted"`. Default `"primary"`.
+- `size?`: `"sm" | "default" | "mini" | "icon"`. Default `"default"`.
+- `icon?`: `ReactNode`
+- `asChild?`: `boolean`. Default `false`.
+- `isLoading?`: `boolean`
+- `transition?`: `boolean`
+- `disableActive?`: `boolean`
+- `hide?`: `boolean`
+- `render?`: `ReactElement`
+- `focusableWhenDisabled?`: `boolean`. Keep the button in the tab order while disabled (Base UI). Set automatically while `isLoading`.
+- `iconOrientation?`: `"center" | "left" | "right"`. Default `"left"`.
+- `rightIcon?`: `ReactNode`
+- Also accepts `ComponentProps<"button">`.
+
 ## Notes
 
 Use `skeleton` for icon-only actions inside rows.

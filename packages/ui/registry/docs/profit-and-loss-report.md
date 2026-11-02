@@ -341,6 +341,14 @@ Monthly management accounts, year-to-date and annual P&L packs, board papers —
 
 report: ProfitAndLossData — period {kind, end, start?, months?}, basis?, currency?, filters?, title?, columns [{label, sublabel?}], variance?, codes?, revenue[], totalRevenue, costOfSales[], totalCostOfSales, grossProfit, operatingExpenses [{label, lines[], total, totalLabel?}], totalOperatingExpenses, operatingProfit, otherIncome?, otherExpenses?, profitBeforeTax, tax[], netProfit, preparedBy?, preparedOn?, notes? (lines are {label, code?, note?, values[], variance?, variancePct?}); plus brand?, size?, stamp?, fit?, isolate?, className.
 
+- `report`: `ProfitAndLossData`
+- `size?`: `"a4" | "a4-landscape" | "a5" | "letter" | "receipt"`
+- `brand?`: `Partial<DocBrand>`. Overrides the provider's brand (merged over it).
+- `stamp?`: `"paid" | "void" | "draft" | "copy" | "overdue"`. A diagonal stamp across the page: Paid, Void, Draft, Copy, Overdue.
+- `fit?`: `"width" | "none"`. On screen: scale the sheet down to fit its container ("width") or keep 100% and scroll ("none"). Controlled; pair with `onFitChange`. Leave unset to let the zoom control switch it.
+- `isolate?`: `boolean`. When printing, hide the rest of the app and print only this page. Default true.
+- Also accepts `ComponentProps<"article">`.
+
 ## Notes
 
 Built from ReportHeader + StatementTable + ReportFooter on the kit's DocumentPage. Minimal / classic / modern in black ink only, any font, EN / BM / EN+BM (row and column labels stacked bilingually). Costs are passed as negative figures and print in brackets; every total and variance is printed as given, never recomputed. Gross/operating/pre-tax/net labels switch to 'loss' when the given figure is negative. A4 by default; the column header repeats on each printed page, totals avoid starting a page.

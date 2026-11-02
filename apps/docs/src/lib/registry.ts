@@ -1,5 +1,19 @@
 import components from "@cynco-labs/ui/registry/components.json";
 
+export interface PropDef {
+	name: string;
+	type: string;
+	required: boolean;
+	default?: string;
+	description?: string;
+}
+
+/** Props declared in our source; `inherits` names the native or Base UI props passed through. */
+export interface PropTable {
+	props: PropDef[];
+	inherits: string[];
+}
+
 export interface RegistryEntry {
 	name: string;
 	slug: string;
@@ -13,6 +27,8 @@ export interface RegistryEntry {
 	demoPath: string;
 	importFrom: string;
 	height: number;
+	/** Generated from the TypeScript source by scripts/extract-props.mjs; null for hooks and utilities. */
+	props: PropTable | null;
 }
 
 export const registry = components as RegistryEntry[];

@@ -43,6 +43,21 @@ Toggling views and options in toolbars and attach/cancel forms.
 
 Button props plus `checked`, `onCheckedChange`, `icon`, `iconOrientation` (`left` with a label, `center` icon-only, which needs an `aria-label`).
 
+- `variant?`: `"primary" | "secondary" | "skeleton" | "muted" | "destructive" | "dotted"`. Default `"secondary"`.
+- `size?`: `"sm" | "default" | "mini" | "icon"`. Default `"sm"`.
+- `icon?`: `ReactNode`
+- `asChild?`: `boolean`. Default `false`.
+- `isLoading?`: `boolean`
+- `transition?`: `boolean`
+- `disableActive?`: `boolean`
+- `hide?`: `boolean`. Default `false`.
+- `render?`: `ReactElement`
+- `focusableWhenDisabled?`: `boolean`. Keep the button in the tab order while disabled (Base UI). Set automatically while `isLoading`.
+- `iconOrientation?`: `"left" | "center" | "right"`. Default `"center"`.
+- `checked?`: `boolean`. Default `false`.
+- `onCheckedChange?`: `(checked: boolean) => void`
+- Also accepts `ComponentProps<"button">`.
+
 ## Notes
 
 Default size `sm`. State is exposed as `aria-pressed` and shown by the corner check mark, not by colour alone. The mark sits slightly outside the button, so a clipping parent (`overflow-hidden`, or the `primary` variant's own clip) hides part of it.

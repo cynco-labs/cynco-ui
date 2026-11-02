@@ -9,8 +9,7 @@ import { ReceiptDocument } from "@cynco-labs/ui";
 ## Usage
 
 ```tsx
-import { useState } from "react";
-import { DocumentBrandProvider, GroupedTabButton, ReceiptDocument } from "@cynco-labs/ui";
+import { DocumentBrandProvider, ReceiptDocument } from "@cynco-labs/ui";
 
 const BRAND = {
 	company: {
@@ -47,43 +46,6 @@ const NUSA_SITE = {
 	attention: "En. Hafiz Zainal, Facilities",
 	phone: "+60 12-334 8821",
 };
-
-function Ctl(groups) {
-	return (
-		<div className="flex flex-wrap items-center gap-2">
-			{groups.map((g, i) => (
-				<div key={i} className="flex-auto" style={{ minWidth: g[2].length * 64 }}>
-					<GroupedTabButton value={g[0]} onValueChange={g[1]} options={g[2]} />
-				</div>
-			))}
-		</div>
-	);
-}
-
-const LAYOUTS = [
-	{ value: "minimal", label: "Minimal" },
-	{ value: "classic", label: "Classic" },
-	{ value: "modern", label: "Modern" },
-];
-
-const LANGS = [
-	{ value: "en", label: "EN" },
-	{ value: "ms", label: "BM" },
-	{ value: "en-ms", label: "EN + BM" },
-];
-
-function Shell(p) {
-	return (
-		<div className="flex flex-col gap-3">
-			{Ctl(p.groups)}
-			<DocumentBrandProvider
-				brand={Object.assign({}, BRAND, { layout: p.layout, locale: p.locale })}
-			>
-				<div className={p.center ? "flex justify-center" : ""}>{p.children}</div>
-			</DocumentBrandProvider>
-		</div>
-	);
-}
 
 const CHEQUE = {
 	number: "OR-2026-0311",
@@ -127,43 +89,56 @@ const CASH = {
 	notes: "Rounded to the nearest 5 sen (BNM rounding mechanism).",
 };
 
-export default function ReceiptDocumentDemo() {
-	const [l, setL] = useState("minimal"),
-		[g, setG] = useState("en"),
-		[z, setZ] = useState("a4"),
-		[m, setM] = useState("cheque");
-	const r = m === "cash" ? CASH : CHEQUE;
+export const controls = {
+	layout: {
+		label: "Layout",
+		options: [
+			{ value: "minimal", label: "Minimal" },
+			{ value: "classic", label: "Classic" },
+			{ value: "modern", label: "Modern" },
+		],
+		default: "minimal",
+	},
+	locale: {
+		label: "Language",
+		options: [
+			{ value: "en", label: "EN" },
+			{ value: "ms", label: "BM" },
+			{ value: "en-ms", label: "EN + BM" },
+		],
+		default: "en",
+	},
+	size: {
+		label: "Size",
+		options: [
+			{ value: "a4", label: "A4" },
+			{ value: "a5", label: "A5" },
+			{ value: "receipt", label: "80mm" },
+		],
+		default: "a4",
+	},
+	payment: {
+		label: "Paid by",
+		options: [
+			{ value: "cheque", label: "Cheque" },
+			{ value: "cash", label: "Cash" },
+		],
+		default: "cheque",
+	},
+};
+
+export default function ReceiptDocumentDemo({
+	layout = "minimal",
+	locale = "en",
+	size = "a4",
+	payment = "cheque",
+}) {
 	return (
-		<Shell
-			layout={l}
-			locale={g}
-			center={z !== "a4"}
-			groups={[
-				[l, setL, LAYOUTS],
-				[g, setG, LANGS],
-				[
-					z,
-					setZ,
-					[
-						{ value: "a4", label: "A4" },
-						{ value: "a5", label: "A5" },
-						{ value: "receipt", label: "80mm" },
-					],
-				],
-				[
-					m,
-					setM,
-					[
-						{ value: "cheque", label: "Cheque" },
-						{ value: "cash", label: "Cash" },
-					],
-				],
-			]}
-		>
-			<div className={z === "a4" ? "w-full" : "w-auto"}>
-				<ReceiptDocument receipt={r} size={z} fit={z === "a4" ? "width" : "width"} />
+		<DocumentBrandProvider brand={{ ...BRAND, layout, locale }}>
+			<div className={size === "a4" ? undefined : "flex justify-center"}>
+				<ReceiptDocument receipt={payment === "cash" ? CASH : CHEQUE} size={size} fit="width" />
 			</div>
-		</Shell>
+		</DocumentBrandProvider>
 	);
 }
 ```
@@ -175,6 +150,14 @@ Acknowledging a customer payment — cash at the counter (thermal, with 5-sen ro
 ## Props
 
 receipt: ReceiptData { number, status, date, currency?, receivedFrom, payment {method: cash|cheque|bank_transfer|duitnow|card|fpx, chequeNo?, bank?, reference?, card?}, amountReceived, allocations? [{number, date, invoiceAmount?, applied}], totals? (e.g. totalDue, rounding, amountReceived, cashTendered, change), notes?, receivedBy? } + size ('a4'|'a5'|'receipt'), monochrome?, brand?, stamp?, fit?, isolate?, className.
+
+- `receipt`: `ReceiptData`
+- `brand?`: `Partial<DocBrand>`. Overrides the provider's brand (merged over it).
+- `stamp?`: `"paid" | "void" | "draft" | "copy" | "overdue" | null`. Overrides the stamp derived from the document status. `null` hides it.
+- `fit?`: `"width" | "none"`
+- `isolate?`: `boolean`
+- `size?`: `"a4" | "a5" | "receipt"`. A4, A5, or an 80mm thermal roll ("receipt"). Default `"a4"`.
+- `monochrome?`: `boolean`. Print in ink only (thermal printers are monochrome). Default: true for `size="receipt"`.
 
 ## Notes
 

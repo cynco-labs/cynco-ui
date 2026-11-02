@@ -49,6 +49,11 @@ Payroll run page.
 
 `payslips` (PayslipSummary shape, sen); optional `payable` (false for correction runs), `onOpen(id)`; optional `className` and native div props on the root.
 
+- `payslips`: `PayslipData[]`
+- `payable?`: `boolean`. Default `true`.
+- `onOpen?`: `(id: string) => void`
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 Responsive by container: DataList: table when wide, employee/net cards when narrow; totals wrap.

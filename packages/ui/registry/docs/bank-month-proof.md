@@ -44,6 +44,17 @@ The Reconcile lens for the selected month.
 
 monthName, asOf, statementClosing (null = no statement), unpostedNet, inTransit {count, net}, ledger, link (linked {code, name} | unlinked | foreign_currency | missing_account), currency, state, className and native props (spread on the root).
 
+- `monthName`: `string`
+- `asOf`: `string`. "31 Mar"
+- `statementClosing`: `number | null`. null = no statement ends in the month.
+- `unpostedNet`: `number`
+- `ledger`: `number | null`. Ledger balance on the day; null when there is nothing to compare with.
+- `link`: `BankLedgerLink`
+- `inTransit?`: `{ count: number; net: number }`
+- `currency?`: `string`. Default `"MYR"`.
+- `state?`: `"no_statement" | "in_progress" | "covered" | "needs_work" | "ready" | "closed"`
+- Also accepts `ComponentProps<"section">`.
+
 ## Notes
 
 Inherits the equation's wrapping; prose is max-w-prose.

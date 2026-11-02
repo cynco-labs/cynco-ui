@@ -79,6 +79,17 @@ Expenses Pay runs view, choosing which approved bills to schedule.
 
 bills, selectedIds / onSelectedChange or defaultSelectedIds, scheduledDate, today, bankAccounts (optional), onSchedule, isSubmitting; className and native div props.
 
+- `bills`: `CyncoBill[]`. Pay-run eligible bills (approved / awaiting payment / scheduled / partially paid).
+- `selectedIds?`: `string[]`
+- `onSelectedChange?`: `(ids: string[]) => void`
+- `defaultSelectedIds?`: `string[]`
+- `scheduledDate?`: `string`. YYYY-MM-DD; defaults to `today`.
+- `today?`: `string`. YYYY-MM-DD used to validate the schedule date.
+- `bankAccounts?`: `CyncoBankAccount[]`. Optional "Pay from" bank / cash account picker.
+- `onSchedule?`: `(billIds: string[], date: string, bankAccountId?: string) => void`
+- `isSubmitting?`: `boolean`
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 Table primitives inside the DataTable tray: header band on bg-table-tray, rows on bg-table-surface, selected rows bg-active-primary. Only approved or awaiting-payment bills can be scheduled; the rest are counted in an amber 'N excluded' chip. A Pay from account select and a footer total sit on the tray. Responsive: built on StatGrid, ActionBar and DataList: the table becomes stacked bill cards below a 42rem container.

@@ -49,4 +49,7 @@ Small static tables. For data lists use DataTable.
 
 Native table element props; `flexibleTableColumns` on `Table`.
 
+- `flexibleTableColumns?`: `boolean`
+- Also accepts `ComponentProps<"table">`.
+
 Category: Components · Data display. Source: `packages/ui/src/base/components/table/index.tsx`.

@@ -34,6 +34,16 @@ Top of a tax return page.
 
 `status` (draft|reviewed|filed|amended); optional `filingReference`, `reviewedAt`, `filedAt`, `readOnly`, `onReview`, `onFile`; optional `className` and native div props on the root.
 
+- `status`: `string`
+- `readOnly?`: `boolean`. Default `false`.
+- `isSubmitting?`: `boolean`. Default `false`.
+- `filingReference?`: `string | null`
+- `reviewedAt?`: `string | null`
+- `filedAt?`: `string | null`
+- `onReview?`: `() => void`
+- `onFile?`: `() => void`
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 Amended shows the DocStatus chip after the steps. Responsive by container: steps in a ScrollRow; actions wrap under the steps below 42rem.

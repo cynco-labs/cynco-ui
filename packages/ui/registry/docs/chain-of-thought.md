@@ -49,4 +49,9 @@ Showing how an answer was reached.
 
 `open`/`defaultOpen`; `ChainOfThoughtHeader`, `ChainOfThoughtContent` › `ChainOfThoughtStep` (`label`, `description`, `status` complete · active · pending, `icon`), `ChainOfThoughtSearchResults` › `ChainOfThoughtSearchResult`, `ChainOfThoughtImage caption`.
 
+- `open?`: `boolean`
+- `defaultOpen?`: `boolean`. Default `false`.
+- `onOpenChange?`: `(open: boolean) => void`
+- Also accepts `ComponentProps<"div">`.
+
 Category: AI. Source: `packages/ui/src/base/components/ai-elements/chain-of-thought.tsx`.

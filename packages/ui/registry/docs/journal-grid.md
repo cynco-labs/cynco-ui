@@ -164,6 +164,15 @@ On the journal entry create/edit screen, and anywhere else lines must balance (o
 
 lines / defaultLines ({ id, accountId?, description?, debit?, credit? } with decimal-string amounts), onLinesChange(lines), accounts ({ id, code, name, type }), currency? (default MYR), minLines? (default 2), showShortcuts? (default true), className and native div props. Helper: journalTotals(lines) → { debit, credit, difference }.
 
+- `accounts`: `JournalGridAccount[]`. The chart of accounts for the Account picker.
+- `lines?`: `JournalGridLine[]`. Controlled lines.
+- `defaultLines?`: `JournalGridLine[]`. Uncontrolled initial lines (default: two blank lines).
+- `onLinesChange?`: `(lines: JournalGridLine[]) => void`
+- `currency?`: `string`. Default `"MYR"`.
+- `minLines?`: `number`. Fewest lines kept; deleting below this clears the line instead. Default 2 (double entry). Default `2`.
+- `showShortcuts?`: `boolean`. Show the keyboard legend under the footer. Default true. Default `true`.
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 Keys: Tab / Shift+Tab move across cells and wrap to the next/previous line (and leave the grid past the ends); Enter moves down and adds a line on the last one; Shift+Enter up; ↑ ↓ change line in the same column unless the account list is open; mod+Enter adds a line below; mod+Backspace deletes the line (clears it at the minimum); Alt+B, or “=” then Enter in an amount cell, fills the figure that balances the entry; a Debit clears that line's Credit and vice versa, and a negative figure flips sides. Account cell: type a code or name, ↑ ↓ and Enter/Tab to pick, Alt+↓/F4 opens, Esc closes. Totals via sumAmounts; StatusChip shows Balanced / Out by RM x. Responsive: a grid on containers ≥ 36rem, a card per line below that (Debit and Credit side by side, each ≥ 6rem); the footer is sticky to the nearest scroll container.

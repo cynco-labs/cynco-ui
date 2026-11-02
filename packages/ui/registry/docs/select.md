@@ -45,6 +45,13 @@ Choosing one of a short, known list (payment terms, currencies). Use SearchableS
 
 `value`/`defaultValue`, `onValueChange`, `items` (labels for the value display); children `SelectTrigger` › `SelectValue`, `SelectContent` › `SelectItem`.
 
+- `defaultValue?`: `string`. The uncontrolled value of the select when it's initially rendered. To render a controlled select, use the `value` prop instead.
+- `value?`: `string | null`. The value of the select. Use when controlled. `null` means nothing is selected (the placeholder shows) while staying controlled.
+- `items?`: `Record<string, string> | ReadonlyArray<{ label: string; value: string }>`. Data structure of the items rendered in the select popup. When specified, `<Select.Value>` renders the label of the selected item instead of the raw value.
+- `onValueChange?`: `(value: string | null) => void`. `null` when the selection is cleared.
+- `onOpenChange?`: `(open: boolean) => void`
+- Also accepts `SelectPrimitive.Root.Props<string>`.
+
 ## Notes
 
 Trigger uses `input-state-open`. `SelectItem indicator={false}` drops the checkmark.

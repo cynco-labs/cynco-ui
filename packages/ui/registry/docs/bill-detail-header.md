@@ -53,6 +53,16 @@ Top of the bill detail page.
 
 bill (vendorName, billNumber, issueDate, dueDate, totalAmount, currency, status, overdue, isArchived), receivedVia, hasDocument, isReExtracting, isExtracting, onReExtract, onArchive, onRestore; className and native div props.
 
+- `bill`: `CyncoBill & { isArchived?: boolean }`
+- `receivedVia?`: `string`. Where the bill came from, when it arrived by email.
+- `hasDocument?`: `boolean`. Default `true`.
+- `isReExtracting?`: `boolean`
+- `isExtracting?`: `boolean`
+- `onReExtract?`: `() => void`
+- `onArchive?`: `() => void`
+- `onRestore?`: `() => void`
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 Responsive by container: title, actions and fact strip wrap on narrow containers; the archived banner moves its action under the text.

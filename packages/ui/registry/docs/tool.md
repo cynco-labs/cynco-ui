@@ -35,6 +35,9 @@ Every tool call in a transcript.
 
 `ToolHeader` (`type`, `state`, `title`), `ToolContent` › `ToolInput input`, `ToolOutput output errorText`.
 
+- `asChild?`: `boolean`
+- Also accepts `CollapsiblePrimitive.Root.Props`.
+
 ## Notes
 
 States: input-streaming, input-available, approval-requested, output-available, output-error, output-denied.

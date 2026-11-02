@@ -30,6 +30,9 @@ export default function InlineActionDemo() {
 
 Button attributes plus `icon`; children is the label.
 
+- `icon?`: `ReactNode`
+- Also accepts `ComponentProps<"button">`.
+
 ## Notes
 
 Text in `tertiary-foreground`, `primary` on hover.

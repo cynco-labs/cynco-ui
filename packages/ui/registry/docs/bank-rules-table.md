@@ -85,6 +85,11 @@ Banking → Rules.
 
 rules [{id, matchType, pattern, account {code, name} | null, category, priority, source, isActive, timesApplied, timesOverridden}], search, status, className and native props (spread on the root).
 
+- `rules`: `BankRuleRow[]`
+- `search?`: `string`. Default `""`.
+- `status?`: `"all" | "active" | "inactive"`. Default `"all"`.
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 Rule sources are StatusChips (You blue, Learned purple, Default neutral); the row menu is a ToolbarButton and the source filter a GroupedTabButton. Responsive: built on DataList: a tray table from 48rem; below that, stacked cards with the source chip, the three figures folded into one line, and the target account.

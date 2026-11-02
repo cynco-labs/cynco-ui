@@ -119,6 +119,26 @@ Any list of documents, accounts, transactions or lines. Don't hand-build <table>
 
 columns (key, header, cell, align, className, mobile: title | value | badge | meta | hidden | table | stacked, stackedAs, stackedCell, stackedLabel), rows, getKey; optional stackBelow (sm…3xl or never, default xl = 36rem of container width), column nowrap (keep IDs and dates on one line in the table), onRowClick (the primary cell, or the title when stacked, becomes the row's button; a click anywhere else on the row opens it too), column primary (the row header and button cell; default the first table column), column sortDirection (ascending | descending | none, announced as aria-sort on the header; DataList doesn't sort), isRowSelected, rowClassName, leading / leadingHeader (checkbox), trailing (row menu), totals ({label, [columnKey]: node} — a column-aligned tfoot in the table, a bold summary card when stacked), footer, empty, caption, dense / density (compact | default | comfortable; defaults from DensityProvider), stickyHeader + maxHeight (rows scroll, headers and totals stay put), className and any div props.
 
+- `columns`: `DataColumn<T>[]`
+- `rows`: `T[]`
+- `getKey`: `(row: T, index: number) => string`
+- `stackBelow?`: `"sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "never"`. Container width below which rows stack. Default `xl` (36rem). `never` keeps the table (it scrolls sideways). Default `"xl"`.
+- `onRowClick?`: `(row: T) => void`. Opens a row. The primary cell (table) or title (stacked) becomes a real button, so the row is reachable with Tab and announced as actionable; a click anywhere else on the row does the same.
+- `isRowSelected?`: `(row: T) => boolean`
+- `rowClassName?`: `(row: T) => string`. Extra classes per row, in both layouts (e.g. dim inactive rows).
+- `leading?`: `(row: T) => ReactNode`. Leading cell per row (e.g. a checkbox) — shown in both layouts.
+- `leadingHeader?`: `ReactNode`
+- `trailing?`: `(row: T) => ReactNode`. Trailing cell per row (e.g. a row menu) — shown in both layouts.
+- `totals?`: `{ label?: ReactNode } & Record<string, ReactNode>`. A totals row, keyed by column key. Renders column-aligned in the table (`tfoot`) and as a bold summary card in the stacked layout. Use `label` for the first cell's text.
+- `footer?`: `ReactNode`. Free footer under the table / list, inside the tray.
+- `empty?`: `ReactNode`
+- `caption?`: `string`
+- `dense?`: `boolean`. Compact rows. Defaults from the nearest DensityProvider.
+- `density?`: `"compact" | "default" | "comfortable"`. Row density (overrides `dense` and DensityProvider).
+- `stickyHeader?`: `boolean`. Keep the column headers (and totals) in view while the rows scroll. Needs `maxHeight`.
+- `maxHeight?`: `string`. Scroll the rows inside this height (any CSS length, e.g. "24rem"); headers and totals stay put when `stickyHeader`.
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 Responds to its own container (CSS container queries), so the same list works in a page, a side sheet and on a phone. The primary column renders as the row header (th scope=row). Rows are never focus stops themselves: with onRowClick the primary cell holds a real button (focus-ring-inset), so screen readers announce it and the row's checkbox and menu aren't nested inside a focusable row. Selection without a leading checkbox is aria-current on that button. Leading/trailing cells and any control inside a row keep their clicks; keep a clickable row's primary cell free of links and buttons.

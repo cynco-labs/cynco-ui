@@ -39,4 +39,8 @@ FAQs and stacked optional sections.
 
 `defaultValue`/`value` (array), `type="multiple"`; `AccordionItem value` › `AccordionTrigger` + `AccordionContent`.
 
+- `type?`: `"single" | "multiple"`
+- `collapsible?`: `boolean`
+- Also accepts `AccordionPrimitive.Root.Props`.
+
 Category: Components · Navigation. Source: `packages/ui/src/base/components/ui/accordion.tsx`.

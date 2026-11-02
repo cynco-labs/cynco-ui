@@ -140,6 +140,13 @@ Mount once in the app shell. Pass your own sections or use CYNCO_SHORTCUT_SECTIO
 
 ShortcutsDialog: open / defaultOpen / onOpenChange; sections ([{title, items: [{keys, label}]}], keys like "mod+enter", "g i" for a sequence, or an array of alternatives); hotkey (default "?", false to bind your own); title; className. useGoToShortcuts(map, navigate, {enabled, timeout = 1200 ms, leader = "g"}): map keys are a letter after the leader or a full sequence ("c i"); returns {pending} so you can show “G…” while it waits. Items take an optional focusScoped: true for keys that only fire inside their own field (never shown as off). KeyboardShortcutsProvider (characterKeys / defaultCharacterKeys = true / onCharacterKeysChange) and useCharacterKeyShortcuts() → [enabled, setEnabled] control the single-key switch; isCharacterKeyShortcut(keys) tells you whether your own shortcut should honour it.
 
+- `open?`: `boolean`
+- `defaultOpen?`: `boolean`. Default `false`.
+- `onOpenChange?`: `(open: boolean) => void`
+- `sections?`: `ShortcutsDialogSection[]`. Defaults to CYNCO_SHORTCUT_SECTIONS. Default `CYNCO_SHORTCUT_SECTIONS`.
+- `hotkey?`: `string | false | string[]`. Key that opens the sheet. Default "?" (Shift+/); `false` to bind your own. Default `"?"`.
+- `title?`: `string`. Default `"Keyboard shortcuts"`.
+
 ## Notes
 
 Keys: “?” opens (never while typing), type to filter by label, key or section, Esc closes and returns focus. Sequences are ignored while typing, inside dialogs and menus, and with ⌘/Ctrl/Alt held; any other key or the timeout cancels. Sections flow into two columns once the dialog is 36rem wide. WCAG 2.1.4: the footer has a “Single-key shortcuts” switch. Off unbinds “?”, every useGoToShortcuts sequence and bare-letter ShortcutButtons, and marks those rows Off; ⌘/Ctrl chords and named keys are unaffected. With no provider the choice is saved in localStorage (cy-character-key-shortcuts) and syncs across tabs; pass characterKeys to store it yourself. When it is off, the dialog opens from the command palette or a button. Gate your own printable-only page shortcuts on useCharacterKeyShortcuts().

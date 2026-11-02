@@ -1,7 +1,14 @@
-import { TooltipProvider } from "@cynco-labs/ui";
-import { Component, Suspense, lazy, useEffect, useMemo, type ComponentType, type ReactNode } from "react";
+import { DensityProvider, TooltipProvider } from "@cynco-labs/ui";
+import { Component, Suspense, lazy, useEffect, useMemo, useState, useSyncExternalStore, type ComponentType, type ReactNode } from "react";
+import { resolveControls, type ControlValues, type Controls, type DemoPropsMessage } from "../lib/controls";
+import { DEFAULT_SETTINGS, onSettings, readSettings, type SiteSettings } from "../lib/settings";
 
-const modules = import.meta.glob<{ default: ComponentType }>("../demos/*.tsx");
+interface DemoModule {
+	default: ComponentType<ControlValues>;
+	controls?: Controls;
+}
+
+const modules = import.meta.glob<DemoModule>("../demos/*.tsx");
 
 class Boundary extends Component<{ name: string; children: ReactNode }, { error: Error | null }> {
 	state = { error: null as Error | null };
@@ -32,12 +39,56 @@ function Ready({ children }: { children: ReactNode }) {
 	return <>{children}</>;
 }
 
-/** Renders one demo from src/demos by component name. Used by /demo/<slug> (the iframe in every preview). */
+let cached: SiteSettings | null = null;
+const subscribe = (onChange: () => void) =>
+	onSettings((s) => {
+		cached = s;
+		onChange();
+	});
+const snapshot = () => (cached ??= readSettings());
+const serverSnapshot = () => DEFAULT_SETTINGS;
+
+function useSiteSettings() {
+	return useSyncExternalStore(subscribe, snapshot, serverSnapshot);
+}
+
+/** Control values set by hand on the component page, posted into the iframe. */
+function useOverrides(): ControlValues {
+	const [overrides, setOverrides] = useState<ControlValues>({});
+	useEffect(() => {
+		const onMessage = (e: MessageEvent<DemoPropsMessage>) => {
+			if (e.source === window.parent && e.data?.type === "cynco-demo-props") setOverrides(e.data.overrides);
+		};
+		window.addEventListener("message", onMessage);
+		// Ask the page for anything set before this demo hydrated.
+		if (window.parent !== window) window.parent.postMessage({ type: "cynco-demo-ready" }, location.origin);
+		return () => window.removeEventListener("message", onMessage);
+	}, []);
+	return overrides;
+}
+
+/**
+ * Renders one demo from src/demos by component name, inside the site settings (density, document language)
+ * and the demo's own controls. Used by /demo/<slug> (the iframe in every preview) and inline on the home page.
+ */
 export default function DemoHost({ name }: { name: string }) {
 	const Demo = useMemo(() => {
 		const load = modules[`../demos/${name}.tsx`];
 		if (!load) throw new Error(`No demo for ${name}`);
-		return lazy(load);
+		return lazy(async () => {
+			const mod = await load();
+			function Configured() {
+				const settings = useSiteSettings();
+				const overrides = useOverrides();
+				const Body = mod.default;
+				return (
+					<DensityProvider density={settings.density}>
+						<Body {...resolveControls(mod.controls, settings, overrides)} />
+					</DensityProvider>
+				);
+			}
+			return { default: Configured };
+		});
 	}, [name]);
 	return (
 		<TooltipProvider>

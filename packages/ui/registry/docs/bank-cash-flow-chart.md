@@ -32,6 +32,11 @@ Banking overview / cash-flow lens.
 
 data [{label, credits, debits, net}], currency, title, className and native props (spread on the root).
 
+- `data`: `BankCashFlowPoint[]`
+- `currency?`: `string`. Default `"MYR"`.
+- `title?`: `string`. Default `"Cash flow"`.
+- Also accepts `ComponentProps<"section">`.
+
 ## Notes
 
 Built on SectionPanel: the legend wraps under the title when narrow; chart fills the width.

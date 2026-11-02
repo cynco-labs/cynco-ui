@@ -46,6 +46,11 @@ PO detail sidebar.
 
 `bills` [{id, billNumber, status, totalAmount, currency, issueDate}]; optional `currency`, `onOpen(id)`; optional `className` and native div props on the root.
 
+- `bills`: `{ id: string; billNumber: string | null; status: string | null; totalAmount: Num; currency?: string | null; issueDate: string | null }[]`
+- `currency?`: `string`. Default `"MYR"`.
+- `onOpen?`: `(id: string) => void`
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 Responsive by container: rows wrap amount and status under the bill number when narrow.

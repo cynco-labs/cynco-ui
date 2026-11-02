@@ -88,6 +88,19 @@ Anywhere a user enters an amount. While focused it shows exactly what was typed 
 
 value / defaultValue (decimal string, "" for empty), onValueChange(value: string), currency? (adds the symbol prefix via InputGroup and formats the hint), allowNegative?, invalid? + errorMessage?, placeholder?, messages? ("below" for forms, "overlay" for grids), onAutoFill? (what “=” then Enter fills), onParseError?, inputClassName?, className (root) and any native input props (aria-*, name, disabled, onBlur…). Forwards its ref to the <input>.
 
+- `value?`: `string`. Controlled value: a decimal string ("1296.00") or "" for empty.
+- `defaultValue?`: `string`. Uncontrolled initial value.
+- `onValueChange?`: `(value: string) => void`. Fires with the evaluated decimal string when the figure is committed (blur or Enter) and changed.
+- `currency?`: `string`. ISO code (e.g. "MYR"): shows the symbol as a prefix and in the live result hint.
+- `allowNegative?`: `boolean`. Accept negatives ("-500", "(500)"). Default false. Default `false`.
+- `invalid?`: `boolean`. Force the error styling (e.g. server-side validation).
+- `errorMessage?`: `ReactNode`. Message shown with `invalid`.
+- `messages?`: `"below" | "overlay"`. Where the hint/error appear: in flow under the field (forms) or floating over the next row (grids). Default `"below"`.
+- `onAutoFill?`: `() => string | void`. Typing `=` alone then Enter calls this; return a decimal string to commit it (e.g. the figure that balances a journal), or nothing if you've handled it yourself.
+- `onParseError?`: `(message: string, text: string) => void`. Called when a commit is refused because the text isn't a valid amount.
+- `inputClassName?`: `string`. Classes for the <input> itself (`className` goes on the root).
+- Also accepts `ComponentProps<"input">`.
+
 ## Notes
 
 Maths via parseAmount / toSen (BigInt, half-up), so 0.1 + 0.2 is 0.30. Fills its container's width; negatives display bracketed in text-error-text.

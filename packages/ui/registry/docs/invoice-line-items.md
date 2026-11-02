@@ -52,6 +52,16 @@ Step 2 of the invoice and quotation builders, and read-only on a stored document
 
 items (name, description, quantity, price, discount, discountType, taxCode, margin), onChange, currency, taxCodes (value, label, rate; defaults to SST 8%/6%, Sales 10% and Exempt), readOnly, estimatedProfit, onAddItem, onBrowseLibrary; className and native div props.
 
+- `items`: `SalesLineItem[]`
+- `onChange?`: `(items: SalesLineItem[]) => void`
+- `currency?`: `string`. Default `"MYR"`.
+- `taxCodes?`: `SalesTaxCode[]`. Default `DEFAULT_TAX_CODES`.
+- `readOnly?`: `boolean`. Default `false`.
+- `estimatedProfit?`: `{ amount: number; percent: number; health: NonNullable<SalesLineItem["margin"]> }`. Document-level estimated profit line under the total.
+- `onAddItem?`: `() => void`
+- `onBrowseLibrary?`: `() => void`
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 The footer sits on the tray, below the rows.

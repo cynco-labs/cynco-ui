@@ -49,4 +49,14 @@ The main chat input.
 
 `onSubmit(message)`, `accept`, `multiple`, `maxFiles`; `PromptInputBody` › `PromptInputTextarea`; `PromptInputFooter` › `PromptInputTools` (buttons, `PromptInputActionMenu`, `PromptInputSelect`, `PromptInputSpeechButton`) + `PromptInputSubmit status`; optional `PromptInputProvider` to control it from outside.
 
+- `onSubmit`: `(message: PromptInputMessage, event: FormEvent<HTMLFormElement>) => void | Promise<void>`
+- `accept?`: `string`
+- `multiple?`: `boolean`
+- `globalDrop?`: `boolean`
+- `syncHiddenInput?`: `boolean`
+- `maxFiles?`: `number`
+- `maxFileSize?`: `number`
+- `onError?`: `(err: { code: "max_files" | "max_file_size" | "accept"; message: string }) => void`
+- Also accepts `HTMLAttributes<HTMLFormElement>`.
+
 Category: AI. Source: `packages/ui/src/base/components/ai-elements/prompt-input.tsx`.

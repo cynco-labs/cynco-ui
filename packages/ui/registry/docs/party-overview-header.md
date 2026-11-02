@@ -37,6 +37,22 @@ Customer and vendor party pages (CustomerPartyPage / VendorPartyPage).
 
 role, name, isActive, balance, overdue, overdueSince, openCount, trendTotal, paymentTerms, category, since, currency, tab, onTabChange; className and native div props.
 
+- `role`: `"customer" | "vendor"`
+- `name`: `string`
+- `balance`: `number`. Subledger balance: positive = they owe you (customer) / you owe them (vendor).
+- `overdue`: `number`
+- `openCount`: `number`
+- `trendTotal`: `number`. Billed (customer) or spend (vendor), trailing 12 months.
+- `isActive?`: `boolean`. Default `true`.
+- `overdueSince?`: `string | null`. YYYY-MM-DD of the oldest overdue item.
+- `paymentTerms?`: `string | null`
+- `category?`: `string | null`
+- `since?`: `string | null`. YYYY-MM-DD the party was created.
+- `currency?`: `string`. Default `"MYR"`.
+- `tab?`: `"activity" | "ledger" | "details"`
+- `onTabChange?`: `(tab: string) => void`
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 Responsive by container: KPIs are a StatGrid (four-up from 48rem, wrapping below); tabs scroll sideways in a ScrollRow.

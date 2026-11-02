@@ -65,6 +65,9 @@ The Credit & Debit Notes page.
 
 notes ({id, noteNumber, noteType, customerName, totalAmount, currency, status, date}) and onOpen(id); className.
 
+- `notes`: `SalesNoteRow[]`
+- `onOpen?`: `(id: string) => void`
+
 ## Notes
 
 On the table tray, with statuses shown through DocStatus. The note type is a neutral tag with a coloured square: hue goes in the square, never the label. A draft note shows 'Draft' in place of its number. Responsive: built on DataList: a table from 48rem of container width, a stacked card per note below (note number and amount, then type and status, then customer and date).

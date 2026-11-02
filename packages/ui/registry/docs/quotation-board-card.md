@@ -60,6 +60,11 @@ Inside QuotationBoardColumn, or anywhere you show a quotation at a glance.
 
 quotation ({id, quotationNumber, customerName, totalAmount, currency, status, createdAt}), now (reference date for the relative time), onOpen; className and native button props.
 
+- `quotation`: `SalesQuotation`
+- `now?`: `string`
+- `onOpen?`: `(id: string) => void`
+- Also accepts `ComponentProps<"button">`.
+
 ## Notes
 
 A bg-card rounded-xl button that hovers to interactive-secondary-hover. The status is a DocStatus chip, with Converted on the refresh glyph. Responsive: the status moves under the name when the card is very narrow.

@@ -88,6 +88,14 @@ Expense board columns and anywhere a bill is shown outside a table (set showStat
 
 bill (vendorName, billNumber, totalAmount, paidAmount, currency, dueDate, status, category, overdue, isDuplicate, postedToGl, aiConfidence), showStatus, selected / onToggle / someSelected, onAction; className and native div props.
 
+- `bill`: `CyncoBill`
+- `showStatus?`: `boolean`. Status chip on the card, for bills shown outside a board column. Default `false`.
+- `selected?`: `boolean`
+- `onToggle?`: `(id: string) => void`
+- `someSelected?`: `boolean`. Any card on the board selected: keep checkboxes visible.
+- `onAction?`: `(bill: CyncoBill, action: string) => void`
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 Selected state uses border-primary + bg-active-primary. Responsive by container: Wraps its footer and amount instead of clipping in narrow columns.

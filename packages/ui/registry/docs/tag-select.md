@@ -41,6 +41,15 @@ Choosing several known options (tags, branches, tax codes).
 
 `value`, `onChange`, `options` [{value,label}], `placeholder`, optional `formatTag`, `renderContent`, `className` (the field box). Label it with `id` + a `<label htmlFor>` (FormLabel, FieldLabel), or `aria-label` / `aria-labelledby`; `aria-describedby` and `aria-invalid` also go on the trigger.
 
+- `value`: `string[]`. Default `[]`.
+- `onChange`: `(values: string[]) => void`
+- `options`: `TagSelectOption[]`
+- `placeholder?`: `string`. Default `"Select..."`.
+- `formatTag?`: `(value: string) => string`
+- `renderContent?`: `(setOpen: (open: boolean) => void) => ReactNode`
+- `showAllProducts?`: `boolean`. Default `false`.
+- Also accepts `ComponentProps<"button">`.
+
 ## Notes
 
 The trigger fills the field from behind and announces "{n} selected"; the tags sit beside it, not inside it, so each "Remove {label}" button is its own tab stop. Removing a tag moves focus to the next tag, or back to the trigger.

@@ -35,6 +35,19 @@ Above the journal entry editor, on both the create and edit screens.
 
 title, entryNumber?, status? (draft|pending_approval|approved|posted|reversed|cancelled), isCreate, approvalRequired, isSaving, isPosting, onBack, onFromTemplate, onSave, onPost, className? (merged on the root) and native props.
 
+- `title`: `string`
+- `entryNumber?`: `string | null`
+- `status?`: `string`
+- `isCreate?`: `boolean`
+- `approvalRequired?`: `boolean`
+- `isSaving?`: `boolean`
+- `isPosting?`: `boolean`
+- `onBack?`: `() => void`
+- `onFromTemplate?`: `() => void`
+- `onSave?`: `() => void`
+- `onPost?`: `() => void`
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 Entry number in text-tiny-id. Approval-required entries show "Save & Submit for Approval". Responsive: Actions sit in an ActionBar that wraps under the title on narrow containers.

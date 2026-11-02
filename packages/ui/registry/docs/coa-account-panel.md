@@ -62,6 +62,17 @@ Right-hand panel of the Chart of Accounts page.
 
 account { accountCode, accountName, accountType, normalBalance, isActive, description?, isSystemAccount?, isBankAccount?, isCashAccount?, isRetainedEarnings?, taxRelated?, currency?, isMonetary?, mappingKeywords? }, currency?, currentBalance, transactionCount, lastTransactionAt?, balanceHistory [{ period, periodDebit, periodCredit, closingBalance }], transactions [{ id, date, description, type, amount, source? }], defaultEditing?, onClose?, className? (merged on the root) and native props.
 
+- `account`: `CoaPanelAccount`
+- `currency?`: `string`. Default `"MYR"`.
+- `currentBalance?`: `number`. Default `0`.
+- `transactionCount?`: `number`. Default `0`.
+- `lastTransactionAt?`: `string | null`
+- `balanceHistory?`: `BalanceHistoryRow[]`. Default `[]`.
+- `transactions?`: `{ id: string; date: string; description: string; type: "debit" | "credit"; amount: number; source?: string }[]`. Default `[]`.
+- `defaultEditing?`: `boolean`
+- `onClose?`: `() => void`
+- Also accepts `ComponentProps<"aside">`.
+
 ## Notes
 
 Balance tile is a StatTile on bg-interactive-secondary. Flags and keywords use Badge variant="muted". Responsive: Fills its container (no fixed width); balance tile is a StatTile and balance history a DataList that stacks inside a narrow panel.

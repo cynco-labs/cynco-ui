@@ -48,6 +48,16 @@ Rows of headline figures above a list or report. Put tiles in a StatGrid so they
 
 StatTile: label, value, optional unit, sub, badge, tone (green | blue | red | orange | amber | yellow | purple | pink | fuchsia | neutral), dot (any CSS colour; prefer tone), negative, className, div props, children (e.g. a sparkline). StatGrid: min (sm 9rem | md 11rem | lg 14rem tile width), mode (fit — default, tiles stretch to fill the row; fill — keep empty tracks to align with other grids), className, div props.
 
+- `label`: `ReactNode`
+- `value`: `ReactNode`
+- `unit?`: `ReactNode`. Small suffix after the value, e.g. "MYR" or "days".
+- `sub?`: `ReactNode`. Small line under the value.
+- `badge?`: `ReactNode`. Chip or delta at the top right.
+- `tone?`: `StatusToneName`. Leading status dot, by status tone.
+- `dot?`: `string`. Leading status dot as any CSS colour or var() (prefer `tone`).
+- `negative?`: `boolean`. Paint the value as negative/error text.
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 The value wraps only between words (after "RM"), never mid-number, and never truncates; it steps up a size once the tile is 13rem wide.

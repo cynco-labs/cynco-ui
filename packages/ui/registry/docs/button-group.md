@@ -30,6 +30,9 @@ Segmented choices that act as one unit (date ranges, split buttons).
 
 Buttons/inputs as children; `orientation` horizontal (default) or vertical. `ButtonGroupText` and `ButtonGroupSeparator` for labels and dividers.
 
+- `orientation?`: `"horizontal" | "vertical"`. Default `"horizontal"`.
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 Inner radii and duplicate borders are removed automatically.

@@ -35,6 +35,10 @@ Under the line items in the invoice and quotation builders.
 
 rows ({label, value, bold, accent, negative}), which you can build with the exported buildSalesTotals({subtotal, discount, discountPercent, taxes, deposit}), and currency; className and native dl props.
 
+- `rows`: `SalesTotalRow[]`
+- `currency?`: `string`. Default `"MYR"`.
+- Also accepts `ComponentProps<"dl">`.
+
 ## Notes
 
 A bg-card bordered panel with text-tertiary-foreground labels. Total is semibold above a table-row-divider, and Balance Due is the one text-primary accent. Responsive: Label and value wrap onto two lines rather than overlapping in a narrow column.

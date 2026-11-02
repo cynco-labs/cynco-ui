@@ -2,24 +2,33 @@
 import { Code } from "astro:components";
 import Docs from "../../layouts/Docs.astro";
 import ComponentPreview from "../../components/ComponentPreview.astro";
+import PropsTable from "../../components/PropsTable.astro";
 import { registry } from "../../lib/registry";
 import { inlineMd, sourceUrl } from "../../lib/inline-md";
+import { neighbours } from "../../lib/nav";
+import { componentPrompt } from "../../lib/prompt";
+import type { Controls } from "../../lib/controls";
 
 const sources = import.meta.glob<string>("../../demos/*.tsx", { query: "?raw", import: "default", eager: true });
+const demos = import.meta.glob<{ controls?: Controls }>("../../demos/*.tsx", { eager: true });
 
 export function getStaticPaths() {
 	return registry.map((c) => ({ params: { slug: c.slug }, props: { entry: c } }));
 }
 const { entry } = Astro.props;
 const source = sources[`../../demos/${entry.name}.tsx`] ?? "";
+const controls = demos[`../../demos/${entry.name}.tsx`]?.controls;
 const importLine = `import { ${entry.name} } from "${entry.importFrom}";`;
+const table = entry.props?.props.length ? entry.props : null;
 const sections = [
 	{ id: "use", title: "Use", body: entry.use },
 	{ id: "props", title: "Props", body: entry.provide },
 	{ id: "notes", title: "Notes", body: entry.notes },
-].filter((s) => s.body);
+].filter((s) => s.body || (s.id === "props" && table));
 const headings = [{ depth: 2, slug: "example", text: "Example" }, ...sections.map((s) => ({ depth: 2, slug: s.id, text: s.title }))];
 const crumbs = entry.group && entry.group !== entry.category ? `${entry.category} · ${entry.group}` : entry.category;
+const { prev, next } = neighbours(`/components/${entry.slug}`);
+const arrow = "inline-flex size-7 items-center justify-center rounded-md text-tertiary-foreground hover:bg-muted hover:text-foreground";
 ---
 
 <Docs
@@ -30,29 +39,55 @@ const crumbs = entry.group && entry.group !== entry.category ? `${entry.category
 	headings={headings}
 >
 	<article>
-		<p class="text-[13px] font-medium text-subtle">
-			<a href={`/components#${entry.category.toLowerCase()}`} class="hover:text-foreground">{crumbs}</a>
-		</p>
+		<div class="flex items-center justify-between gap-3">
+			<p class="text-[13px] font-medium text-subtle">
+				<a href={`/components#${entry.category.toLowerCase()}`} class="hover:text-foreground">{crumbs}</a>
+			</p>
+			<nav class="-my-1 flex items-center gap-0.5" aria-label="Previous and next component">
+				{prev && (
+					<a href={prev.href} class={arrow} aria-label={`Previous: ${prev.label}`} title={`${prev.label} (←)`} aria-keyshortcuts="ArrowLeft">
+						<svg class="size-4" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M224 128a8 8 0 0 1-8 8H59.31l58.35 58.34a8 8 0 0 1-11.32 11.32l-72-72a8 8 0 0 1 0-11.32l72-72a8 8 0 0 1 11.32 11.32L59.31 120H216a8 8 0 0 1 8 8Z"></path></svg>
+					</a>
+				)}
+				{next && (
+					<a href={next.href} class={arrow} aria-label={`Next: ${next.label}`} title={`${next.label} (→)`} aria-keyshortcuts="ArrowRight">
+						<svg class="size-4" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="m221.66 133.66-72 72a8 8 0 0 1-11.32-11.32L196.69 136H40a8 8 0 0 1 0-16h156.69l-58.35-58.34a8 8 0 0 1 11.32-11.32l72 72a8 8 0 0 1 0 11.32Z"></path></svg>
+					</a>
+				)}
+			</nav>
+		</div>
 		<h1 class="mt-2 text-[26px] font-semibold leading-tight tracking-[-0.02em] text-foreground sm:text-[30px]" set:html={entry.name.replace(/([a-z])([A-Z])/g, "$1<wbr>$2")} />
 		<div class="mt-3 max-w-[42rem] text-[16px] leading-relaxed text-tertiary-foreground [&_code]:font-mono [&_code]:text-[0.88em] [&_code]:text-foreground" set:html={inlineMd(entry.summary)} />
 
-		<div class="group/imp relative mt-6 max-w-full">
-			<div class="code-plain overflow-x-auto rounded-lg border border-border bg-card pr-10 [&_.astro-code]:!px-3.5 [&_.astro-code]:!py-2.5">
-				<Code code={importLine} lang="tsx" themes={{ light: "github-light", dark: "github-dark" }} defaultColor={false} />
+		<div class="mt-6 flex flex-wrap items-stretch gap-2">
+			<div class="group/imp relative min-w-0 flex-1 basis-[20rem]">
+				<div class="code-plain overflow-x-auto rounded-lg border border-border bg-card pr-10 [&_.astro-code]:!px-3.5 [&_.astro-code]:!py-2.5">
+					<Code code={importLine} lang="tsx" themes={{ light: "github-light", dark: "github-dark" }} defaultColor={false} />
+				</div>
+				<button
+					type="button"
+					class="absolute right-1.5 top-1/2 inline-flex size-7 -translate-y-1/2 items-center justify-center rounded-md text-tertiary-foreground hover:bg-muted hover:text-foreground"
+					data-copy-text={importLine}
+					aria-label="Copy import"
+				>
+					<svg class="size-3.5" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M216 32H88a8 8 0 0 0-8 8v40H40a8 8 0 0 0-8 8v128a8 8 0 0 0 8 8h128a8 8 0 0 0 8-8v-40h40a8 8 0 0 0 8-8V40a8 8 0 0 0-8-8Zm-56 176H48V96h112Zm48-48h-32V88a8 8 0 0 0-8-8H96V48h112Z"></path></svg>
+				</button>
 			</div>
 			<button
 				type="button"
-				class="absolute right-1.5 top-1/2 inline-flex size-7 -translate-y-1/2 items-center justify-center rounded-md text-tertiary-foreground hover:bg-muted hover:text-foreground"
-				data-copy-text={importLine}
-				aria-label="Copy import"
+				data-copy-text={componentPrompt(entry, source)}
+				data-copy-label="Copied"
+				title="Install steps, import, props, an example and the house rules, for a coding agent"
+				class="inline-flex h-auto min-h-10 items-center gap-2 rounded-lg border border-border bg-interactive-secondary px-3.5 text-[13px] font-medium text-foreground transition-colors hover:bg-interactive-secondary-hover"
 			>
 				<svg class="size-3.5" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M216 32H88a8 8 0 0 0-8 8v40H40a8 8 0 0 0-8 8v128a8 8 0 0 0 8 8h128a8 8 0 0 0 8-8v-40h40a8 8 0 0 0 8-8V40a8 8 0 0 0-8-8Zm-56 176H48V96h112Zm48-48h-32V88a8 8 0 0 0-8-8H96V48h112Z"></path></svg>
+				<span>Copy prompt</span>
 			</button>
 		</div>
 
 		<h2 id="example" class="sr-only">Example</h2>
 		<div class="mt-8">
-			<ComponentPreview slug={entry.slug} name={entry.name} source={source} minHeight={entry.height} />
+			<ComponentPreview slug={entry.slug} name={entry.name} source={source} minHeight={entry.height} controls={controls} />
 		</div>
 
 		<div class="prose mt-2">
@@ -60,7 +95,8 @@ const crumbs = entry.group && entry.group !== entry.category ? `${entry.category
 				sections.map((s) => (
 					<>
 						<h2 id={s.id}>{s.title}</h2>
-						<Fragment set:html={inlineMd(s.body)} />
+						{s.body && <Fragment set:html={inlineMd(s.body)} />}
+						{s.id === "props" && table && <PropsTable table={table} />}
 					</>
 				))
 			}
@@ -76,6 +112,13 @@ const crumbs = entry.group && entry.group !== entry.category ? `${entry.category
 
 <script>
 	for (const b of document.querySelectorAll<HTMLButtonElement>("[data-copy-text]")) {
-		b.addEventListener("click", () => navigator.clipboard.writeText(b.dataset.copyText!));
+		b.addEventListener("click", async () => {
+			await navigator.clipboard.writeText(b.dataset.copyText!);
+			const label = b.querySelector("span");
+			if (!label || !b.dataset.copyLabel) return;
+			const before = label.textContent;
+			label.textContent = b.dataset.copyLabel;
+			setTimeout(() => (label.textContent = before), 1500);
+		});
 	}
 </script>

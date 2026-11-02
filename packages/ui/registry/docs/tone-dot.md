@@ -45,6 +45,10 @@ A small colour cue next to text that already says the state (account type, autos
 
 tone, square, className and any span props (title for a hover hint).
 
+- `tone`: `StatusToneName`
+- `square?`: `boolean`. Square corners (StatusChip style) instead of a round dot.
+- Also accepts `ComponentProps<"span">`.
+
 ## Notes
 
 Decorative (aria-hidden): the meaning must also be in nearby text.

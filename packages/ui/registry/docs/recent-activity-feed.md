@@ -87,6 +87,11 @@ Dashboard 'Recent activity' card.
 
 items [{id, kind: invoice|payment|bill, direction: in|out|neutral, title, subtitle?, amount, currency?, status, date, href?}] or null; optional now, viewAllHref (clock for relative times); plus className and native element props (spread on the root).
 
+- `items`: `ActivityItem[] | null`
+- `now?`: `string | number`
+- `viewAllHref?`: `string`
+- Also accepts `ComponentProps<"section">`.
+
 ## Notes
 
 Responsive: status chip moves under the counterparty below 28rem; names and references wrap instead of truncating.

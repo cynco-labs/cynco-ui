@@ -36,6 +36,12 @@ Above the statement of account table.
 
 metrics {totalTransactions, invoicedAmount, collectionRate, amountReceived, creditedAmount, debitedAmount, balanceDue}, currency, availableCurrencies, isSingleCurrency; className and native div props.
 
+- `metrics`: `StatementMetrics`
+- `currency?`: `string`. Default `"MYR"`.
+- `availableCurrencies?`: `string[]`
+- `isSingleCurrency?`: `boolean`. Default `true`.
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 Responsive by container: StatGrid tiles: four-up from 48rem, wrapping to one per row on phones.

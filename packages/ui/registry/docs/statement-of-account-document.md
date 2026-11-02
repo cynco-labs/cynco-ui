@@ -9,50 +9,7 @@ import { StatementOfAccountDocument } from "@cynco-labs/ui";
 ## Usage
 
 ```tsx
-import { useState } from "react";
-import {
-	DocumentBrandProvider,
-	GroupedTabButton,
-	StatementOfAccountDocument,
-} from "@cynco-labs/ui";
-
-const LAYOUTS = [
-	{ value: "minimal", label: "Minimal" },
-	{ value: "classic", label: "Classic" },
-	{ value: "modern", label: "Modern" },
-];
-
-const LOCALES = [
-	{ value: "en", label: "EN" },
-	{ value: "ms", label: "BM" },
-	{ value: "en-ms", label: "EN + BM" },
-];
-
-function Tabs(p) {
-	return (
-		<div style={{ width: p.w }}>
-			<GroupedTabButton value={p.value} onValueChange={p.onChange} options={p.options} />
-		</div>
-	);
-}
-
-function Shell(p) {
-	const [l, setL] = useState("minimal"),
-		[g, setG] = useState("en"),
-		[z, setZ] = useState(p.sizes ? p.sizes[0].value : "a4");
-	return (
-		<div className="flex flex-col gap-3">
-			<div className="flex flex-wrap items-center gap-2">
-				<Tabs w="270px" value={l} onChange={setL} options={LAYOUTS} />
-				<Tabs w="210px" value={g} onChange={setG} options={LOCALES} />
-				{p.sizes ? <Tabs w="130px" value={z} onChange={setZ} options={p.sizes} /> : null}
-			</div>
-			<DocumentBrandProvider brand={Object.assign({}, p.brand, { layout: l, locale: g })}>
-				{p.render(z)}
-			</DocumentBrandProvider>
-		</div>
-	);
-}
+import { DocumentBrandProvider, StatementOfAccountDocument } from "@cynco-labs/ui";
 
 const BRAND = {
 	company: {
@@ -217,8 +174,33 @@ const SOA = {
 		"RM 420.00 from INV-2026-1188 (August) is now over 60 days. Please settle to avoid a hold on deliveries.",
 };
 
-export default function StatementOfAccountDocumentDemo() {
-	return <Shell brand={BRAND} render={() => <StatementOfAccountDocument statement={SOA} />} />;
+export const controls = {
+	layout: {
+		label: "Layout",
+		options: [
+			{ value: "minimal", label: "Minimal" },
+			{ value: "classic", label: "Classic" },
+			{ value: "modern", label: "Modern" },
+		],
+		default: "minimal",
+	},
+	locale: {
+		label: "Language",
+		options: [
+			{ value: "en", label: "EN" },
+			{ value: "ms", label: "BM" },
+			{ value: "en-ms", label: "EN + BM" },
+		],
+		default: "en",
+	},
+};
+
+export default function StatementOfAccountDocumentDemo({ layout = "minimal", locale = "en" }) {
+	return (
+		<DocumentBrandProvider brand={{ ...BRAND, layout, locale }}>
+			<StatementOfAccountDocument statement={SOA} />
+		</DocumentBrandProvider>
+	);
 }
 ```
 
@@ -229,6 +211,13 @@ Month-end customer statements and dunning, or vendor statements for reconciliati
 ## Props
 
 statement: StatementOfAccountData { number?, date, periodFrom, periodTo, accountNo?, terms?, currency?, role? (customer | vendor), party: DocParty, openingBalance, totalDebit?, totalCredit?, closingBalance, transactions: {date, type, number?, description?, debit?, credit?, balance}[], aging: {current, days1to30, days31to60, days61to90, days90plus}, totalDue, payment? {bankName?, accountName?, accountNumber?, reference?, qr?}, notes?, remittance? }; plus brand?, size?, stamp?, fit?, isolate?, className.
+
+- `statement`: `StatementOfAccountData`
+- `brand?`: `Partial<DocBrand>`. Overrides the provider's brand (merged over it).
+- `stamp?`: `"paid" | "void" | "draft" | "copy" | "overdue"`
+- `fit?`: `"width" | "none"`
+- `isolate?`: `boolean`
+- `size?`: `"a4" | "letter"`. Default `"a4"`.
 
 ## Notes
 

@@ -217,6 +217,14 @@ In a list toolbar. Wrap the lists it controls in <DensityProvider density={value
 
 value / defaultValue ("compact" | "default" | "comfortable", default "default") / onValueChange, labels (auto — hide words when the nearest @container is under 22rem; always; never), storageKey (localStorage, uncontrolled use), label (group name, default "Row density"), className and any div props.
 
+- `value?`: `"compact" | "default" | "comfortable"`
+- `defaultValue?`: `"compact" | "default" | "comfortable"`. Default `"default"`.
+- `onValueChange?`: `(density: Density) => void`
+- `labels?`: `"auto" | "always" | "never"`. `auto` hides the words when the nearest Default `"auto"`.
+- `storageKey?`: `string`. Remember the choice in localStorage under this key (uncontrolled use).
+- `label?`: `string`. Accessible name of the radio group. Default `"Row density"`.
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 The demo DataList uses stickyHeader + maxHeight="16rem" so the header and the totals row stay in view while lines scroll; hidden in print.

@@ -158,6 +158,15 @@ Inside DataList / table cells for quick single-field corrections where opening a
 
 value, onSave(value) => void | Promise<void> (reject with an Error to revert and show its message), kind? ("text" | "amount"), currency? (amount read-out), placeholder?, allowNegative?, disabled?, aria-label (field name, e.g. "Description for EXP-2026-0311"), className and native div props.
 
+- `value`: `string`. The saved value (text, or a decimal string for `kind="amount"`).
+- `onSave`: `(value: string) => void | Promise<void>`. Persist the new value. Return a promise to show a spinner; reject to revert and show its message.
+- `kind?`: `"text" | "amount"`. Default `"text"`.
+- `currency?`: `string`. For amounts: formats the read-out ("RM 1,296.00").
+- `placeholder?`: `string`
+- `allowNegative?`: `boolean`. For amounts: accept negatives. Default true. Default `true`.
+- `disabled?`: `boolean`
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 Keyboard: the cell is a button (visible focus ring, pencil on hover/focus); Enter, Space, F2 or click starts editing; Enter saves and returns focus to the cell; Tab or blur saves and moves on; Esc cancels. Amount mode uses AmountInput, so formulas work and an invalid figure stays in edit mode. Status (Saving… / Saved / error) is announced through aria-live; the saved tick fades after 1.6s. Fills its cell, so it follows DataList's table / stacked layouts.

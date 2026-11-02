@@ -1011,6 +1011,14 @@ Settings → Documents (invoice templates). One brand drives invoices, receipts,
 
 brand / defaultBrand / onBrandChange (DocBrand), documents ([{id, label, render({stamp, size}), sizes?, stamps?}]), defaultDocumentId, onPrint. brandFromCyncoTemplate(template, company) maps Cynco's stored invoice template onto a DocBrand.
 
+- `documents`: `StudioDocument[]`
+- `brand?`: `DocBrand`. Controlled brand.
+- `defaultBrand?`: `DocBrand`. Uncontrolled starting brand.
+- `onBrandChange?`: `(brand: DocBrand) => void`
+- `defaultDocumentId?`: `string`
+- `onPrint?`: `() => void`. Called when the user presses Print (defaults to window.print, which prints only the previewed document).
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 Controls stack above the preview below 48rem of container width. Logo upload reads the file to a data URL (production should upload it and store the URL). Layout thumbnails and Inter / Geist / Newsreader; documents stay black ink, so there is no colour picker. Print prints only the previewed document.

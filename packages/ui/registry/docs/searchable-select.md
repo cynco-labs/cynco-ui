@@ -47,6 +47,33 @@ Choosing an account, item or customer from a long or remote list.
 
 `value`, `onValueChange`, `options`, `getOptionValue`, `getOptionLabel`; optional `renderOption`, `renderValue`, `onSearchChange` (server search), `header`/`footer`, `trigger`.
 
+- `value`: `string | null`
+- `onValueChange`: `(value: string) => void`
+- `options`: `T[]`
+- `getOptionValue`: `(option: T) => string`
+- `getOptionLabel`: `(option: T) => string`
+- `getOptionSearchTerms?`: `(option: T) => (string | null | undefined)[]`. Extra strings to match on, alongside the option's label and value.
+- `getOptionDisabled?`: `(option: T) => boolean`
+- `renderOption?`: `(option: T, isSelected: boolean) => ReactNode`
+- `renderValue?`: `(option: T | undefined) => ReactNode`
+- `placeholder?`: `string`. Default `"Select..."`.
+- `searchable?`: `boolean`. Default `false`.
+- `searchPlaceholder?`: `string`. Default `"Search..."`.
+- `emptyText?`: `ReactNode | null`. `null` renders no empty state at all — the search input stands alone. Default `"No results found"`.
+- `disabled?`: `boolean`. Default `false`.
+- `triggerClassName?`: `string`
+- `contentClassName?`: `string`
+- `defaultOpen?`: `boolean`. Default `false`.
+- `trigger?`: `ReactNode`. Replaces the default value-and-chevron button, e.g. with an icon button.
+- `open?`: `boolean`
+- `onOpenChange?`: `(open: boolean) => void`
+- `header?`: `ReactNode`
+- `footer?`: `SearchableSelectFooter`
+- `onSearchChange?`: `(search: string) => void`
+- `shouldFilter?`: `boolean`. Whether to filter options locally as the user types. Defaults to off when `onSearchChange` is set, since the caller is usually searching server-side. Default `!onSearchChange`.
+- `isLoading?`: `boolean`. Default `false`.
+- Also accepts `ComponentProps<"button">`.
+
 ## Notes
 
 `emptyText={null}` hides the empty state.

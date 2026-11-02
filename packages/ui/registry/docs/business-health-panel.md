@@ -73,6 +73,9 @@ Dashboard 'Checks' pane — the CFO's to-do for today.
 
 checks [{id, label, detail, area, status: fail|warn|pass|na, href?}] or null (unavailable); plus className and native element props (spread on the root).
 
+- `checks`: `HealthCheck[] | null`
+- Also accepts `ComponentProps<"section">`.
+
 ## Notes
 
 Responsive: area tag hides below 24rem; evidence line wraps instead of truncating on narrow containers.

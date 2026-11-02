@@ -78,6 +78,13 @@ The Chart of Accounts page's main list; pair with CoaAccountPanel for the select
 
 nodes [{ id, accountCode, accountName, accountType, balance?, isHeaderAccount?, isActive?, children? }], currency?, defaultExpandedIds?, selectedId?, onSelect?, className? (merged on the root) and native props.
 
+- `nodes`: `CoaTreeNode[]`
+- `currency?`: `string`. Default `"MYR"`.
+- `defaultExpandedIds?`: `string[]`
+- `selectedId?`: `string`
+- `onSelect?`: `(id: string) => void`
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 Keeps the ARIA tree (role=treeitem, aria-level/expanded/selected, Enter/Space/Arrow keys). Header accounts show "—", negatives in text-destructive, Inactive as a neutral StatusChip. Responsive: Container-responsive: below 28rem the code sits above the name, below 36rem the Type column is dropped; headers reuse the row layout so they always line up.

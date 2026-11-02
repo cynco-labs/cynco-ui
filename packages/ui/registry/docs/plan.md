@@ -58,4 +58,8 @@ Before running multi-step changes.
 
 `isStreaming`, `defaultOpen`; `PlanHeader` › `PlanTitle`, `PlanDescription` (strings), `PlanAction` › `PlanTrigger`; `PlanContent`; `PlanFooter`.
 
+- `asChild?`: `boolean`
+- `isStreaming?`: `boolean`. Default `false`.
+- Also accepts `CollapsiblePrimitive.Root.Props`.
+
 Category: AI. Source: `packages/ui/src/base/components/ai-elements/plan.tsx`.

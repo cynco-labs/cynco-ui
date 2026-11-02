@@ -54,6 +54,11 @@ Above the feed when filtered to To post, so a miscoding shows as a total on the 
 
 totals [{accountCode, accountName, type, count, total, currency}], activeKey ('code|type'), onSelect(key | null), className and native props (spread on the root).
 
+- `totals`: `BankPostingTotal[]`
+- `activeKey?`: `string | null`
+- `onSelect?`: `(key: string | null) => void`
+- Also accepts `ComponentProps<"section">`.
+
 ## Notes
 
 Responsive: built on DataList: a tray table from 32rem, stacked rows (account and total, then direction and line count) below.

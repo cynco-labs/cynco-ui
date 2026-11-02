@@ -1,0 +1,7064 @@
+{
+	"DataList": {
+		"props": [
+			{
+				"name": "columns",
+				"type": "DataColumn<T>[]",
+				"required": true
+			},
+			{
+				"name": "rows",
+				"type": "T[]",
+				"required": true
+			},
+			{
+				"name": "getKey",
+				"type": "(row: T, index: number) => string",
+				"required": true
+			},
+			{
+				"name": "stackBelow",
+				"type": "\"sm\" | \"md\" | \"lg\" | \"xl\" | \"2xl\" | \"3xl\" | \"never\"",
+				"required": false,
+				"default": "\"xl\"",
+				"description": "Container width below which rows stack. Default `xl` (36rem). `never` keeps the table (it scrolls sideways)."
+			},
+			{
+				"name": "onRowClick",
+				"type": "(row: T) => void",
+				"required": false,
+				"description": "Opens a row. The primary cell (table) or title (stacked) becomes a real button, so the row is reachable with Tab and announced as actionable; a click anywhere else on the row does the same."
+			},
+			{
+				"name": "isRowSelected",
+				"type": "(row: T) => boolean",
+				"required": false
+			},
+			{
+				"name": "rowClassName",
+				"type": "(row: T) => string",
+				"required": false,
+				"description": "Extra classes per row, in both layouts (e.g. dim inactive rows)."
+			},
+			{
+				"name": "leading",
+				"type": "(row: T) => ReactNode",
+				"required": false,
+				"description": "Leading cell per row (e.g. a checkbox) — shown in both layouts."
+			},
+			{
+				"name": "leadingHeader",
+				"type": "ReactNode",
+				"required": false
+			},
+			{
+				"name": "trailing",
+				"type": "(row: T) => ReactNode",
+				"required": false,
+				"description": "Trailing cell per row (e.g. a row menu) — shown in both layouts."
+			},
+			{
+				"name": "totals",
+				"type": "{ label?: ReactNode } & Record<string, ReactNode>",
+				"required": false,
+				"description": "A totals row, keyed by column key. Renders column-aligned in the table (`tfoot`) and as a bold summary card in the stacked layout. Use `label` for the first cell's text."
+			},
+			{
+				"name": "footer",
+				"type": "ReactNode",
+				"required": false,
+				"description": "Free footer under the table / list, inside the tray."
+			},
+			{
+				"name": "empty",
+				"type": "ReactNode",
+				"required": false
+			},
+			{
+				"name": "caption",
+				"type": "string",
+				"required": false
+			},
+			{
+				"name": "dense",
+				"type": "boolean",
+				"required": false,
+				"description": "Compact rows. Defaults from the nearest DensityProvider."
+			},
+			{
+				"name": "density",
+				"type": "\"compact\" | \"default\" | \"comfortable\"",
+				"required": false,
+				"description": "Row density (overrides `dense` and DensityProvider)."
+			},
+			{
+				"name": "stickyHeader",
+				"type": "boolean",
+				"required": false,
+				"description": "Keep the column headers (and totals) in view while the rows scroll. Needs `maxHeight`."
+			},
+			{
+				"name": "maxHeight",
+				"type": "string",
+				"required": false,
+				"description": "Scroll the rows inside this height (any CSS length, e.g. \"24rem\"); headers and totals stay put when `stickyHeader`."
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"StatTile": {
+		"props": [
+			{
+				"name": "label",
+				"type": "ReactNode",
+				"required": true
+			},
+			{
+				"name": "value",
+				"type": "ReactNode",
+				"required": true
+			},
+			{
+				"name": "unit",
+				"type": "ReactNode",
+				"required": false,
+				"description": "Small suffix after the value, e.g. \"MYR\" or \"days\"."
+			},
+			{
+				"name": "sub",
+				"type": "ReactNode",
+				"required": false,
+				"description": "Small line under the value."
+			},
+			{
+				"name": "badge",
+				"type": "ReactNode",
+				"required": false,
+				"description": "Chip or delta at the top right."
+			},
+			{
+				"name": "tone",
+				"type": "StatusToneName",
+				"required": false,
+				"description": "Leading status dot, by status tone."
+			},
+			{
+				"name": "dot",
+				"type": "string",
+				"required": false,
+				"description": "Leading status dot as any CSS colour or var() (prefer `tone`)."
+			},
+			{
+				"name": "negative",
+				"type": "boolean",
+				"required": false,
+				"description": "Paint the value as negative/error text."
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"SectionPanel": {
+		"props": [
+			{
+				"name": "title",
+				"type": "ReactNode",
+				"required": false
+			},
+			{
+				"name": "description",
+				"type": "ReactNode",
+				"required": false
+			},
+			{
+				"name": "actions",
+				"type": "ReactNode",
+				"required": false,
+				"description": "Rendered at the right of the header; wraps under the title on narrow containers."
+			},
+			{
+				"name": "flush",
+				"type": "boolean",
+				"required": false,
+				"description": "Remove body padding (for tables and lists that run edge to edge)."
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"section\">"
+		]
+	},
+	"KeyValueList": {
+		"props": [
+			{
+				"name": "items",
+				"type": "Array<{ label: ReactNode; value: ReactNode; negative?: boolean; strong?: boolean }>",
+				"required": true
+			}
+		],
+		"inherits": []
+	},
+	"ActionBar": {
+		"props": [],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"ToneDot": {
+		"props": [
+			{
+				"name": "tone",
+				"type": "StatusToneName",
+				"required": true
+			},
+			{
+				"name": "square",
+				"type": "boolean",
+				"required": false,
+				"description": "Square corners (StatusChip style) instead of a round dot."
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"span\">"
+		]
+	},
+	"Button": {
+		"props": [
+			{
+				"name": "variant",
+				"type": "\"primary\" | \"secondary\" | \"skeleton\" | \"muted\" | \"destructive\" | \"dotted\"",
+				"required": false,
+				"default": "\"primary\""
+			},
+			{
+				"name": "size",
+				"type": "\"sm\" | \"default\" | \"mini\" | \"icon\"",
+				"required": false,
+				"default": "\"default\""
+			},
+			{
+				"name": "asChild",
+				"type": "boolean",
+				"required": false,
+				"default": "false"
+			},
+			{
+				"name": "isLoading",
+				"type": "boolean",
+				"required": false,
+				"default": "false"
+			},
+			{
+				"name": "transition",
+				"type": "boolean",
+				"required": false,
+				"default": "false"
+			},
+			{
+				"name": "disableActive",
+				"type": "boolean",
+				"required": false,
+				"default": "true"
+			},
+			{
+				"name": "hide",
+				"type": "boolean",
+				"required": false,
+				"default": "false"
+			},
+			{
+				"name": "render",
+				"type": "ReactElement",
+				"required": false
+			},
+			{
+				"name": "focusableWhenDisabled",
+				"type": "boolean",
+				"required": false,
+				"default": "false",
+				"description": "Keep the button in the tab order while disabled (Base UI). Set automatically while `isLoading`."
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"button\">"
+		]
+	},
+	"ButtonGroup": {
+		"props": [
+			{
+				"name": "orientation",
+				"type": "\"horizontal\" | \"vertical\"",
+				"required": false,
+				"default": "\"horizontal\""
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"IconButton": {
+		"props": [
+			{
+				"name": "variant",
+				"type": "\"primary\" | \"secondary\" | \"skeleton\" | \"muted\" | \"destructive\" | \"dotted\"",
+				"required": false,
+				"default": "\"primary\""
+			},
+			{
+				"name": "size",
+				"type": "\"sm\" | \"default\" | \"mini\" | \"icon\"",
+				"required": false,
+				"default": "\"default\""
+			},
+			{
+				"name": "icon",
+				"type": "ReactNode",
+				"required": false
+			},
+			{
+				"name": "asChild",
+				"type": "boolean",
+				"required": false,
+				"default": "false"
+			},
+			{
+				"name": "isLoading",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "transition",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "disableActive",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "hide",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "render",
+				"type": "ReactElement",
+				"required": false
+			},
+			{
+				"name": "focusableWhenDisabled",
+				"type": "boolean",
+				"required": false,
+				"description": "Keep the button in the tab order while disabled (Base UI). Set automatically while `isLoading`."
+			},
+			{
+				"name": "iconOrientation",
+				"type": "\"center\" | \"left\" | \"right\"",
+				"required": false,
+				"default": "\"left\""
+			},
+			{
+				"name": "rightIcon",
+				"type": "ReactNode",
+				"required": false
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"button\">"
+		]
+	},
+	"IconTooltipButton": {
+		"props": [
+			{
+				"name": "tooltip",
+				"type": "string",
+				"required": true
+			},
+			{
+				"name": "icon",
+				"type": "ReactNode",
+				"required": true
+			},
+			{
+				"name": "onClick",
+				"type": "() => void",
+				"required": false
+			},
+			{
+				"name": "disabled",
+				"type": "boolean",
+				"required": false
+			}
+		],
+		"inherits": []
+	},
+	"ShortcutButton": {
+		"props": [
+			{
+				"name": "children",
+				"type": "ReactNode",
+				"required": true
+			},
+			{
+				"name": "metaShortcut",
+				"type": "string",
+				"required": false
+			},
+			{
+				"name": "singleShortcut",
+				"type": "string",
+				"required": false
+			},
+			{
+				"name": "isLoading",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "variant",
+				"type": "\"primary\" | \"secondary\"",
+				"required": false,
+				"default": "\"primary\""
+			},
+			{
+				"name": "asChild",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "transition",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "disableActive",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "hide",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "render",
+				"type": "ReactElement",
+				"required": false
+			},
+			{
+				"name": "focusableWhenDisabled",
+				"type": "boolean",
+				"required": false,
+				"description": "Keep the button in the tab order while disabled (Base UI). Set automatically while `isLoading`."
+			},
+			{
+				"name": "size",
+				"type": "\"sm\" | \"default\" | \"mini\" | \"icon\"",
+				"required": false,
+				"default": "\"default\""
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"button\">"
+		]
+	},
+	"ToolbarButton": {
+		"props": [
+			{
+				"name": "variant",
+				"type": "\"primary\" | \"secondary\" | \"skeleton\" | \"muted\" | \"destructive\" | \"dotted\"",
+				"required": false,
+				"default": "\"primary\""
+			},
+			{
+				"name": "size",
+				"type": "\"sm\" | \"default\" | \"mini\" | \"icon\"",
+				"required": false,
+				"default": "\"default\""
+			},
+			{
+				"name": "asChild",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "isLoading",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "transition",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "disableActive",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "hide",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "render",
+				"type": "ReactElement",
+				"required": false
+			},
+			{
+				"name": "focusableWhenDisabled",
+				"type": "boolean",
+				"required": false,
+				"description": "Keep the button in the tab order while disabled (Base UI). Set automatically while `isLoading`."
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"button\">"
+		]
+	},
+	"CopyButton": {
+		"props": [
+			{
+				"name": "text",
+				"type": "string",
+				"required": true
+			},
+			{
+				"name": "side",
+				"type": "\"top\" | \"bottom\" | \"left\" | \"right\"",
+				"required": false,
+				"default": "\"right\""
+			},
+			{
+				"name": "iconOrientation",
+				"type": "\"left\" | \"right\"",
+				"required": false,
+				"default": "\"right\""
+			},
+			{
+				"name": "innerClassName",
+				"type": "string",
+				"required": false,
+				"default": "\"\""
+			},
+			{
+				"name": "iconClassName",
+				"type": "string",
+				"required": false,
+				"description": "Classes applied to the copy icon button (MiniCopyButton only). Overrides the default hover-reveal."
+			},
+			{
+				"name": "icon",
+				"type": "ReactNode",
+				"required": false
+			},
+			{
+				"name": "rightIcon",
+				"type": "ReactNode",
+				"required": false
+			},
+			{
+				"name": "asChild",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "isLoading",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "transition",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "disableActive",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "hide",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "render",
+				"type": "ReactElement",
+				"required": false
+			},
+			{
+				"name": "focusableWhenDisabled",
+				"type": "boolean",
+				"required": false,
+				"description": "Keep the button in the tab order while disabled (Base UI). Set automatically while `isLoading`."
+			},
+			{
+				"name": "variant",
+				"type": "\"primary\" | \"secondary\" | \"skeleton\" | \"muted\" | \"destructive\" | \"dotted\"",
+				"required": false,
+				"default": "\"primary\""
+			},
+			{
+				"name": "size",
+				"type": "\"sm\" | \"default\" | \"mini\" | \"icon\"",
+				"required": false,
+				"default": "\"default\""
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"button\">"
+		]
+	},
+	"CopyTextButton": {
+		"props": [
+			{
+				"name": "text",
+				"type": "string",
+				"required": true
+			},
+			{
+				"name": "copySize",
+				"type": "number",
+				"required": false
+			},
+			{
+				"name": "variant",
+				"type": "string",
+				"required": false,
+				"default": "\"secondary\""
+			},
+			{
+				"name": "icon",
+				"type": "ReactNode",
+				"required": false
+			}
+		],
+		"inherits": []
+	},
+	"InlineAction": {
+		"props": [
+			{
+				"name": "icon",
+				"type": "ReactNode",
+				"required": false
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"button\">"
+		]
+	},
+	"PanelButton": {
+		"props": [
+			{
+				"name": "isSelected",
+				"type": "boolean",
+				"required": true
+			},
+			{
+				"name": "onClick",
+				"type": "() => void",
+				"required": true
+			},
+			{
+				"name": "icon",
+				"type": "ReactNode",
+				"required": true
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"button\">"
+		]
+	},
+	"GroupedTabButton": {
+		"props": [
+			{
+				"name": "value",
+				"type": "string",
+				"required": true
+			},
+			{
+				"name": "onValueChange",
+				"type": "(value: string) => void",
+				"required": true
+			},
+			{
+				"name": "options",
+				"type": "Array<{ value: string; label?: ReactNode; icon?: ReactNode; ariaLabel?: string; disabled?: boolean }>",
+				"required": true
+			},
+			{
+				"name": "buttonClassName",
+				"type": "string",
+				"required": false
+			},
+			{
+				"name": "disabled",
+				"type": "boolean",
+				"required": false
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"Input": {
+		"props": [
+			{
+				"name": "variant",
+				"type": "\"default\" | \"destructive\" | \"headless\"",
+				"required": false,
+				"default": "\"default\""
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"input\">"
+		]
+	},
+	"InputGroup": {
+		"props": [],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"InputOTP": {
+		"props": [
+			{
+				"name": "containerClassName",
+				"type": "string",
+				"required": false
+			}
+		],
+		"inherits": [
+			"ComponentProps<typeof OTPInput>"
+		]
+	},
+	"Textarea": {
+		"props": [],
+		"inherits": [
+			"ComponentProps<\"textarea\">"
+		]
+	},
+	"LongInput": {
+		"props": [],
+		"inherits": [
+			"ComponentProps<\"textarea\">"
+		]
+	},
+	"LabelInput": {
+		"props": [
+			{
+				"name": "label",
+				"type": "string | ReactElement<typeof HTMLSpanElement>",
+				"required": true
+			},
+			{
+				"name": "placeholder",
+				"type": "string",
+				"required": true
+			},
+			{
+				"name": "description",
+				"type": "string",
+				"required": false
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"input\">"
+		]
+	},
+	"TagInput": {
+		"props": [
+			{
+				"name": "value",
+				"type": "string[]",
+				"required": true,
+				"default": "[]"
+			},
+			{
+				"name": "onChange",
+				"type": "(tags: string[]) => void",
+				"required": true
+			},
+			{
+				"name": "inputValue",
+				"type": "string",
+				"required": false
+			},
+			{
+				"name": "onInputChange",
+				"type": "(value: string) => void",
+				"required": false
+			},
+			{
+				"name": "placeholder",
+				"type": "string",
+				"required": false,
+				"default": "\"Add a tag...\""
+			},
+			{
+				"name": "onTagAdd",
+				"type": "() => void",
+				"required": false
+			},
+			{
+				"name": "onTagRemove",
+				"type": "(index: number) => void",
+				"required": false
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"input\">"
+		]
+	},
+	"TagSelect": {
+		"props": [
+			{
+				"name": "value",
+				"type": "string[]",
+				"required": true,
+				"default": "[]"
+			},
+			{
+				"name": "onChange",
+				"type": "(values: string[]) => void",
+				"required": true
+			},
+			{
+				"name": "options",
+				"type": "TagSelectOption[]",
+				"required": true
+			},
+			{
+				"name": "placeholder",
+				"type": "string",
+				"required": false,
+				"default": "\"Select...\""
+			},
+			{
+				"name": "formatTag",
+				"type": "(value: string) => string",
+				"required": false
+			},
+			{
+				"name": "renderContent",
+				"type": "(setOpen: (open: boolean) => void) => ReactNode",
+				"required": false
+			},
+			{
+				"name": "showAllProducts",
+				"type": "boolean",
+				"required": false,
+				"default": "false"
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"button\">"
+		]
+	},
+	"DateInputUnix": {
+		"props": [
+			{
+				"name": "unixDate",
+				"type": "number | null",
+				"required": true
+			},
+			{
+				"name": "setUnixDate",
+				"type": "(unixDate: number | null) => void",
+				"required": true
+			},
+			{
+				"name": "disabled",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "disablePastDates",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "disableFutureDates",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "minUnixDate",
+				"type": "number",
+				"required": false
+			},
+			{
+				"name": "maxUnixDate",
+				"type": "number",
+				"required": false
+			},
+			{
+				"name": "fromYear",
+				"type": "number",
+				"required": false
+			},
+			{
+				"name": "withTime",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "use24Hour",
+				"type": "boolean",
+				"required": false,
+				"description": "Show 24-hour clock (00–23) instead of 12-hour with AM/PM."
+			},
+			{
+				"name": "placeholder",
+				"type": "string",
+				"required": false,
+				"description": "Override the empty-state label (e.g. \"Now\" when null means immediate)."
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"button\">"
+		]
+	},
+	"TimePickerInput": {
+		"props": [
+			{
+				"name": "picker",
+				"type": "\"minutes\" | \"seconds\" | \"hours\" | \"12hours\"",
+				"required": true
+			},
+			{
+				"name": "date",
+				"type": "Date",
+				"required": true,
+				"default": "new Date(new Date().setHours(0, 0, 0, 0))"
+			},
+			{
+				"name": "setDate",
+				"type": "(date: Date | undefined) => void",
+				"required": true
+			},
+			{
+				"name": "period",
+				"type": "\"AM\" | \"PM\"",
+				"required": false
+			},
+			{
+				"name": "onRightFocus",
+				"type": "() => void",
+				"required": false
+			},
+			{
+				"name": "onLeftFocus",
+				"type": "() => void",
+				"required": false
+			}
+		],
+		"inherits": [
+			"InputHTMLAttributes<HTMLInputElement>"
+		]
+	},
+	"Calendar": {
+		"props": [],
+		"inherits": [
+			"ComponentProps<typeof DayPicker>"
+		]
+	},
+	"Select": {
+		"props": [
+			{
+				"name": "defaultValue",
+				"type": "string",
+				"required": false,
+				"description": "The uncontrolled value of the select when it's initially rendered. To render a controlled select, use the `value` prop instead."
+			},
+			{
+				"name": "value",
+				"type": "string | null",
+				"required": false,
+				"description": "The value of the select. Use when controlled. `null` means nothing is selected (the placeholder shows) while staying controlled."
+			},
+			{
+				"name": "items",
+				"type": "Record<string, string> | ReadonlyArray<{ label: string; value: string }>",
+				"required": false,
+				"description": "Data structure of the items rendered in the select popup. When specified, `<Select.Value>` renders the label of the selected item instead of the raw value."
+			},
+			{
+				"name": "onValueChange",
+				"type": "(value: string | null) => void",
+				"required": false,
+				"description": "`null` when the selection is cleared."
+			},
+			{
+				"name": "onOpenChange",
+				"type": "(open: boolean) => void",
+				"required": false
+			}
+		],
+		"inherits": [
+			"SelectPrimitive.Root.Props<string>"
+		]
+	},
+	"SearchableSelect": {
+		"props": [
+			{
+				"name": "value",
+				"type": "string | null",
+				"required": true
+			},
+			{
+				"name": "onValueChange",
+				"type": "(value: string) => void",
+				"required": true
+			},
+			{
+				"name": "options",
+				"type": "T[]",
+				"required": true
+			},
+			{
+				"name": "getOptionValue",
+				"type": "(option: T) => string",
+				"required": true
+			},
+			{
+				"name": "getOptionLabel",
+				"type": "(option: T) => string",
+				"required": true
+			},
+			{
+				"name": "getOptionSearchTerms",
+				"type": "(option: T) => (string | null | undefined)[]",
+				"required": false,
+				"description": "Extra strings to match on, alongside the option's label and value."
+			},
+			{
+				"name": "getOptionDisabled",
+				"type": "(option: T) => boolean",
+				"required": false
+			},
+			{
+				"name": "renderOption",
+				"type": "(option: T, isSelected: boolean) => ReactNode",
+				"required": false
+			},
+			{
+				"name": "renderValue",
+				"type": "(option: T | undefined) => ReactNode",
+				"required": false
+			},
+			{
+				"name": "placeholder",
+				"type": "string",
+				"required": false,
+				"default": "\"Select...\""
+			},
+			{
+				"name": "searchable",
+				"type": "boolean",
+				"required": false,
+				"default": "false"
+			},
+			{
+				"name": "searchPlaceholder",
+				"type": "string",
+				"required": false,
+				"default": "\"Search...\""
+			},
+			{
+				"name": "emptyText",
+				"type": "ReactNode | null",
+				"required": false,
+				"default": "\"No results found\"",
+				"description": "`null` renders no empty state at all — the search input stands alone."
+			},
+			{
+				"name": "disabled",
+				"type": "boolean",
+				"required": false,
+				"default": "false"
+			},
+			{
+				"name": "triggerClassName",
+				"type": "string",
+				"required": false
+			},
+			{
+				"name": "contentClassName",
+				"type": "string",
+				"required": false
+			},
+			{
+				"name": "defaultOpen",
+				"type": "boolean",
+				"required": false,
+				"default": "false"
+			},
+			{
+				"name": "trigger",
+				"type": "ReactNode",
+				"required": false,
+				"description": "Replaces the default value-and-chevron button, e.g. with an icon button."
+			},
+			{
+				"name": "open",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "onOpenChange",
+				"type": "(open: boolean) => void",
+				"required": false
+			},
+			{
+				"name": "header",
+				"type": "ReactNode",
+				"required": false
+			},
+			{
+				"name": "footer",
+				"type": "SearchableSelectFooter",
+				"required": false
+			},
+			{
+				"name": "onSearchChange",
+				"type": "(search: string) => void",
+				"required": false
+			},
+			{
+				"name": "shouldFilter",
+				"type": "boolean",
+				"required": false,
+				"default": "!onSearchChange",
+				"description": "Whether to filter options locally as the user types. Defaults to off when `onSearchChange` is set, since the caller is usually searching server-side."
+			},
+			{
+				"name": "isLoading",
+				"type": "boolean",
+				"required": false,
+				"default": "false"
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"button\">"
+		]
+	},
+	"Checkbox": {
+		"props": [
+			{
+				"name": "size",
+				"type": "\"sm\" | \"md\" | \"lg\"",
+				"required": false,
+				"default": "\"sm\""
+			},
+			{
+				"name": "disabled",
+				"type": "boolean",
+				"required": false,
+				"default": "false",
+				"description": "Whether the component should ignore user interaction."
+			}
+		],
+		"inherits": [
+			"CheckboxPrimitive.Root.Props"
+		]
+	},
+	"TextCheckbox": {
+		"props": [
+			{
+				"name": "children",
+				"type": "ReactNode",
+				"required": true
+			},
+			{
+				"name": "size",
+				"type": "\"sm\" | \"md\" | \"lg\"",
+				"required": false
+			},
+			{
+				"name": "disabled",
+				"type": "boolean",
+				"required": false,
+				"default": "false",
+				"description": "Whether the component should ignore user interaction."
+			}
+		],
+		"inherits": [
+			"CheckboxPrimitive.Root.Props"
+		]
+	},
+	"AreaCheckbox": {
+		"props": [
+			{
+				"name": "title",
+				"type": "string",
+				"required": true
+			},
+			{
+				"name": "checked",
+				"type": "boolean",
+				"required": false,
+				"default": "false"
+			},
+			{
+				"name": "onCheckedChange",
+				"type": "(checked: boolean) => void",
+				"required": false
+			},
+			{
+				"name": "disabled",
+				"type": "boolean",
+				"required": false,
+				"default": "false"
+			},
+			{
+				"name": "disabledReason",
+				"type": "string",
+				"required": false
+			},
+			{
+				"name": "hide",
+				"type": "boolean",
+				"required": false,
+				"default": "false"
+			},
+			{
+				"name": "description",
+				"type": "string",
+				"required": false
+			}
+		],
+		"inherits": []
+	},
+	"IconCheckbox": {
+		"props": [
+			{
+				"name": "variant",
+				"type": "\"primary\" | \"secondary\" | \"skeleton\" | \"muted\" | \"destructive\" | \"dotted\"",
+				"required": false,
+				"default": "\"secondary\""
+			},
+			{
+				"name": "size",
+				"type": "\"sm\" | \"default\" | \"mini\" | \"icon\"",
+				"required": false,
+				"default": "\"sm\""
+			},
+			{
+				"name": "icon",
+				"type": "ReactNode",
+				"required": false
+			},
+			{
+				"name": "asChild",
+				"type": "boolean",
+				"required": false,
+				"default": "false"
+			},
+			{
+				"name": "isLoading",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "transition",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "disableActive",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "hide",
+				"type": "boolean",
+				"required": false,
+				"default": "false"
+			},
+			{
+				"name": "render",
+				"type": "ReactElement",
+				"required": false
+			},
+			{
+				"name": "focusableWhenDisabled",
+				"type": "boolean",
+				"required": false,
+				"description": "Keep the button in the tab order while disabled (Base UI). Set automatically while `isLoading`."
+			},
+			{
+				"name": "iconOrientation",
+				"type": "\"left\" | \"center\" | \"right\"",
+				"required": false,
+				"default": "\"center\""
+			},
+			{
+				"name": "checked",
+				"type": "boolean",
+				"required": false,
+				"default": "false"
+			},
+			{
+				"name": "onCheckedChange",
+				"type": "(checked: boolean) => void",
+				"required": false
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"button\">"
+		]
+	},
+	"RadioGroup": {
+		"props": [],
+		"inherits": [
+			"RadioGroupPrimitive.Props"
+		]
+	},
+	"AreaRadioGroupItem": {
+		"props": [
+			{
+				"name": "value",
+				"type": "string",
+				"required": true
+			},
+			{
+				"name": "label",
+				"type": "string",
+				"required": true
+			},
+			{
+				"name": "description",
+				"type": "string",
+				"required": false
+			},
+			{
+				"name": "disabled",
+				"type": "boolean",
+				"required": false,
+				"default": "false"
+			},
+			{
+				"name": "disabledReason",
+				"type": "string",
+				"required": false
+			}
+		],
+		"inherits": []
+	},
+	"Switch": {
+		"props": [
+			{
+				"name": "thumbClassName",
+				"type": "string",
+				"required": false
+			}
+		],
+		"inherits": [
+			"SwitchPrimitive.Root.Props"
+		]
+	},
+	"Dialog": {
+		"props": [],
+		"inherits": [
+			"DialogPrimitive.Root.Props"
+		]
+	},
+	"Sheet": {
+		"props": [],
+		"inherits": [
+			"SheetPrimitive.Root.Props"
+		]
+	},
+	"Popover": {
+		"props": [],
+		"inherits": [
+			"PopoverPrimitive.Root.Props"
+		]
+	},
+	"Tooltip": {
+		"props": [
+			{
+				"name": "delayDuration",
+				"type": "number",
+				"required": false
+			}
+		],
+		"inherits": [
+			"TooltipPrimitive.Root.Props"
+		]
+	},
+	"HoverCard": {
+		"props": [
+			{
+				"name": "openDelay",
+				"type": "number",
+				"required": false
+			},
+			{
+				"name": "closeDelay",
+				"type": "number",
+				"required": false
+			}
+		],
+		"inherits": [
+			"PreviewCardPrimitive.Root.Props"
+		]
+	},
+	"DropdownMenu": {
+		"props": [],
+		"inherits": [
+			"MenuPrimitive.Root.Props"
+		]
+	},
+	"Command": {
+		"props": [],
+		"inherits": [
+			"ComponentProps<typeof CommandPrimitive>"
+		]
+	},
+	"InfoTooltip": {
+		"props": [
+			{
+				"name": "children",
+				"type": "ReactNode",
+				"required": true
+			},
+			{
+				"name": "side",
+				"type": "\"top\" | \"bottom\" | \"left\" | \"right\"",
+				"required": false
+			},
+			{
+				"name": "align",
+				"type": "\"start\" | \"center\" | \"end\"",
+				"required": false
+			},
+			{
+				"name": "sideOffset",
+				"type": "number",
+				"required": false
+			}
+		],
+		"inherits": []
+	},
+	"ConditionalTooltip": {
+		"props": [
+			{
+				"name": "enabled",
+				"type": "boolean",
+				"required": true
+			},
+			{
+				"name": "content",
+				"type": "ReactNode",
+				"required": true
+			},
+			{
+				"name": "children",
+				"type": "ReactElement",
+				"required": true
+			},
+			{
+				"name": "contentClassName",
+				"type": "string",
+				"required": false
+			}
+		],
+		"inherits": []
+	},
+	"SheetCloseButton": {
+		"props": [
+			{
+				"name": "onClose",
+				"type": "() => void",
+				"required": true
+			}
+		],
+		"inherits": []
+	},
+	"SheetBackdrop": {
+		"props": [
+			{
+				"name": "isOpen",
+				"type": "boolean",
+				"required": true
+			},
+			{
+				"name": "onClose",
+				"type": "() => void",
+				"required": true
+			},
+			{
+				"name": "zIndex",
+				"type": "number",
+				"required": false,
+				"default": "SHEET_BACKDROP_Z_INDEX"
+			}
+		],
+		"inherits": []
+	},
+	"Tabs": {
+		"props": [],
+		"inherits": [
+			"TabsPrimitive.Root.Props"
+		]
+	},
+	"Breadcrumb": {
+		"props": [],
+		"inherits": [
+			"ComponentProps<\"nav\">"
+		]
+	},
+	"Pagination": {
+		"props": [],
+		"inherits": [
+			"ComponentProps<\"nav\">"
+		]
+	},
+	"Accordion": {
+		"props": [
+			{
+				"name": "type",
+				"type": "\"single\" | \"multiple\"",
+				"required": false
+			},
+			{
+				"name": "collapsible",
+				"type": "boolean",
+				"required": false
+			}
+		],
+		"inherits": [
+			"AccordionPrimitive.Root.Props"
+		]
+	},
+	"SheetAccordion": {
+		"props": [
+			{
+				"name": "children",
+				"type": "ReactNode",
+				"required": true
+			},
+			{
+				"name": "type",
+				"type": "\"single\" | \"multiple\"",
+				"required": false,
+				"default": "\"single\""
+			},
+			{
+				"name": "defaultValue",
+				"type": "string | string[]",
+				"required": false
+			},
+			{
+				"name": "withSeparator",
+				"type": "boolean",
+				"required": false,
+				"default": "true"
+			},
+			{
+				"name": "collapsible",
+				"type": "boolean",
+				"required": false,
+				"default": "true"
+			}
+		],
+		"inherits": [
+			"AccordionPrimitive.Root.Props<string>"
+		]
+	},
+	"Collapsible": {
+		"props": [
+			{
+				"name": "asChild",
+				"type": "boolean",
+				"required": false
+			}
+		],
+		"inherits": [
+			"CollapsiblePrimitive.Root.Props"
+		]
+	},
+	"Carousel": {
+		"props": [
+			{
+				"name": "opts",
+				"type": "CarouselOptions",
+				"required": false
+			},
+			{
+				"name": "plugins",
+				"type": "CarouselPlugin",
+				"required": false
+			},
+			{
+				"name": "orientation",
+				"type": "\"horizontal\" | \"vertical\"",
+				"required": false,
+				"default": "\"horizontal\""
+			},
+			{
+				"name": "setApi",
+				"type": "(api: CarouselApi) => void",
+				"required": false
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"Badge": {
+		"props": [
+			{
+				"name": "variant",
+				"type": "\"default\" | \"secondary\" | \"muted\"",
+				"required": false,
+				"default": "\"default\""
+			},
+			{
+				"name": "size",
+				"type": "\"sm\" | \"default\"",
+				"required": false,
+				"default": "\"default\""
+			},
+			{
+				"name": "asChild",
+				"type": "boolean",
+				"required": false,
+				"default": "false"
+			}
+		],
+		"inherits": [
+			"useRender.ComponentProps<\"span\">"
+		]
+	},
+	"BetaBadge": {
+		"props": [],
+		"inherits": []
+	},
+	"IconBadge": {
+		"props": [
+			{
+				"name": "variant",
+				"type": "\"default\" | \"muted\"",
+				"required": false,
+				"default": "\"muted\""
+			},
+			{
+				"name": "icon",
+				"type": "ReactNode",
+				"required": false
+			},
+			{
+				"name": "asChild",
+				"type": "boolean",
+				"required": false,
+				"default": "false"
+			},
+			{
+				"name": "rightIcon",
+				"type": "ReactNode",
+				"required": false
+			},
+			{
+				"name": "position",
+				"type": "\"left\" | \"right\"",
+				"required": false,
+				"default": "\"left\""
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"span\">"
+		]
+	},
+	"StatusChip": {
+		"props": [
+			{
+				"name": "tone",
+				"type": "StatusTone",
+				"required": false
+			},
+			{
+				"name": "glyph",
+				"type": "StatusGlyph",
+				"required": false
+			},
+			{
+				"name": "dashed",
+				"type": "boolean",
+				"required": false,
+				"default": "false"
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"span\">"
+		]
+	},
+	"StepBadge": {
+		"props": [
+			{
+				"name": "children",
+				"type": "ReactNode",
+				"required": true
+			}
+		],
+		"inherits": []
+	},
+	"SectionTag": {
+		"props": [
+			{
+				"name": "children",
+				"type": "ReactNode",
+				"required": true
+			}
+		],
+		"inherits": []
+	},
+	"FilterChip": {
+		"props": [
+			{
+				"name": "label",
+				"type": "string",
+				"required": true
+			},
+			{
+				"name": "value",
+				"type": "string",
+				"required": true
+			},
+			{
+				"name": "onRemove",
+				"type": "() => void",
+				"required": true
+			}
+		],
+		"inherits": []
+	},
+	"InfoRow": {
+		"props": [
+			{
+				"name": "label",
+				"type": "string",
+				"required": true
+			},
+			{
+				"name": "value",
+				"type": "ReactNode",
+				"required": true
+			},
+			{
+				"name": "icon",
+				"type": "ReactNode",
+				"required": false
+			},
+			{
+				"name": "mono",
+				"type": "boolean",
+				"required": false
+			}
+		],
+		"inherits": []
+	},
+	"Card": {
+		"props": [],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"Alert": {
+		"props": [
+			{
+				"name": "variant",
+				"type": "\"default\" | \"destructive\" | \"note\" | \"success\" | \"warning\"",
+				"required": false,
+				"default": "\"default\""
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"Table": {
+		"props": [
+			{
+				"name": "flexibleTableColumns",
+				"type": "boolean",
+				"required": false
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"table\">"
+		]
+	},
+	"DataTable": null,
+	"ChartContainer": {
+		"props": [
+			{
+				"name": "children",
+				"type": "ReactNode",
+				"required": true
+			},
+			{
+				"name": "config",
+				"type": "ChartConfig",
+				"required": true
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"Progress": {
+		"props": [],
+		"inherits": [
+			"ProgressPrimitive.Root.Props"
+		]
+	},
+	"Skeleton": {
+		"props": [],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"SmallSpinner": {
+		"props": [],
+		"inherits": [
+			"LucideProps"
+		]
+	},
+	"LoadingShimmerText": {
+		"props": [
+			{
+				"name": "text",
+				"type": "string",
+				"required": true
+			}
+		],
+		"inherits": []
+	},
+	"CopyablePre": {
+		"props": [
+			{
+				"name": "text",
+				"type": "string",
+				"required": true
+			}
+		],
+		"inherits": []
+	},
+	"Label": {
+		"props": [],
+		"inherits": [
+			"ComponentProps<\"label\">"
+		]
+	},
+	"FormLabel": {
+		"props": [
+			{
+				"name": "disabled",
+				"type": "boolean",
+				"required": false,
+				"description": "Dims the label to match a disabled control."
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"label\">"
+		]
+	},
+	"FieldLabel": {
+		"props": [
+			{
+				"name": "description",
+				"type": "string",
+				"required": false,
+				"description": "Hint under the label. Rendered outside the `<label>`, so it never joins the control's name."
+			},
+			{
+				"name": "descriptionId",
+				"type": "string",
+				"required": false,
+				"description": "Id for the description, so the control can point `aria-describedby` at it."
+			},
+			{
+				"name": "empty",
+				"type": "boolean",
+				"required": false,
+				"default": "false",
+				"description": "Render an aria-hidden spacer the height of a label, to align fields that have none."
+			},
+			{
+				"name": "tooltip",
+				"type": "string",
+				"required": false,
+				"description": "Info tooltip beside the description (or the label, without one). Kept outside the `<label>`."
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"label\">"
+		]
+	},
+	"PageHeader": {
+		"props": [
+			{
+				"name": "icon",
+				"type": "ReactNode",
+				"required": true
+			},
+			{
+				"name": "title",
+				"type": "string",
+				"required": true
+			},
+			{
+				"name": "titleAccessory",
+				"type": "ReactNode",
+				"required": false
+			}
+		],
+		"inherits": []
+	},
+	"PageContainer": {
+		"props": [
+			{
+				"name": "children",
+				"type": "ReactNode",
+				"required": true
+			}
+		],
+		"inherits": []
+	},
+	"SandboxBanner": {
+		"props": [
+			{
+				"name": "label",
+				"type": "string",
+				"required": false,
+				"default": "\"Sandbox\""
+			},
+			{
+				"name": "icon",
+				"type": "ReactNode",
+				"required": false
+			},
+			{
+				"name": "color",
+				"type": "string",
+				"required": false
+			}
+		],
+		"inherits": []
+	},
+	"Separator": {
+		"props": [
+			{
+				"name": "orientation",
+				"type": "\"horizontal\" | \"vertical\"",
+				"required": false,
+				"default": "'horizontal'",
+				"description": "The orientation of the separator."
+			},
+			{
+				"name": "decorative",
+				"type": "boolean",
+				"required": false,
+				"default": "true"
+			}
+		],
+		"inherits": [
+			"SeparatorPrimitive.Props"
+		]
+	},
+	"ScrollArea": {
+		"props": [],
+		"inherits": [
+			"ScrollAreaPrimitive.Root.Props"
+		]
+	},
+	"ResizablePanelGroup": {
+		"props": [],
+		"inherits": [
+			"ResizablePrimitive.GroupProps"
+		]
+	},
+	"AmountInput": {
+		"props": [
+			{
+				"name": "value",
+				"type": "string",
+				"required": false,
+				"description": "Controlled value: a decimal string (\"1296.00\") or \"\" for empty."
+			},
+			{
+				"name": "defaultValue",
+				"type": "string",
+				"required": false,
+				"description": "Uncontrolled initial value."
+			},
+			{
+				"name": "onValueChange",
+				"type": "(value: string) => void",
+				"required": false,
+				"description": "Fires with the evaluated decimal string when the figure is committed (blur or Enter) and changed."
+			},
+			{
+				"name": "currency",
+				"type": "string",
+				"required": false,
+				"description": "ISO code (e.g. \"MYR\"): shows the symbol as a prefix and in the live result hint."
+			},
+			{
+				"name": "allowNegative",
+				"type": "boolean",
+				"required": false,
+				"default": "false",
+				"description": "Accept negatives (\"-500\", \"(500)\"). Default false."
+			},
+			{
+				"name": "invalid",
+				"type": "boolean",
+				"required": false,
+				"description": "Force the error styling (e.g. server-side validation)."
+			},
+			{
+				"name": "errorMessage",
+				"type": "ReactNode",
+				"required": false,
+				"description": "Message shown with `invalid`."
+			},
+			{
+				"name": "messages",
+				"type": "\"below\" | \"overlay\"",
+				"required": false,
+				"default": "\"below\"",
+				"description": "Where the hint/error appear: in flow under the field (forms) or floating over the next row (grids)."
+			},
+			{
+				"name": "onAutoFill",
+				"type": "() => string | void",
+				"required": false,
+				"description": "Typing `=` alone then Enter calls this; return a decimal string to commit it (e.g. the figure that balances a journal), or nothing if you've handled it yourself."
+			},
+			{
+				"name": "onParseError",
+				"type": "(message: string, text: string) => void",
+				"required": false,
+				"description": "Called when a commit is refused because the text isn't a valid amount."
+			},
+			{
+				"name": "inputClassName",
+				"type": "string",
+				"required": false,
+				"description": "Classes for the <input> itself (`className` goes on the root)."
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"input\">"
+		]
+	},
+	"JournalGrid": {
+		"props": [
+			{
+				"name": "accounts",
+				"type": "JournalGridAccount[]",
+				"required": true,
+				"description": "The chart of accounts for the Account picker."
+			},
+			{
+				"name": "lines",
+				"type": "JournalGridLine[]",
+				"required": false,
+				"description": "Controlled lines."
+			},
+			{
+				"name": "defaultLines",
+				"type": "JournalGridLine[]",
+				"required": false,
+				"description": "Uncontrolled initial lines (default: two blank lines)."
+			},
+			{
+				"name": "onLinesChange",
+				"type": "(lines: JournalGridLine[]) => void",
+				"required": false
+			},
+			{
+				"name": "currency",
+				"type": "string",
+				"required": false,
+				"default": "\"MYR\""
+			},
+			{
+				"name": "minLines",
+				"type": "number",
+				"required": false,
+				"default": "2",
+				"description": "Fewest lines kept; deleting below this clears the line instead. Default 2 (double entry)."
+			},
+			{
+				"name": "showShortcuts",
+				"type": "boolean",
+				"required": false,
+				"default": "true",
+				"description": "Show the keyboard legend under the footer. Default true."
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"InlineEditCell": {
+		"props": [
+			{
+				"name": "value",
+				"type": "string",
+				"required": true,
+				"description": "The saved value (text, or a decimal string for `kind=\"amount\"`)."
+			},
+			{
+				"name": "onSave",
+				"type": "(value: string) => void | Promise<void>",
+				"required": true,
+				"description": "Persist the new value. Return a promise to show a spinner; reject to revert and show its message."
+			},
+			{
+				"name": "kind",
+				"type": "\"text\" | \"amount\"",
+				"required": false,
+				"default": "\"text\""
+			},
+			{
+				"name": "currency",
+				"type": "string",
+				"required": false,
+				"description": "For amounts: formats the read-out (\"RM 1,296.00\")."
+			},
+			{
+				"name": "placeholder",
+				"type": "string",
+				"required": false
+			},
+			{
+				"name": "allowNegative",
+				"type": "boolean",
+				"required": false,
+				"default": "true",
+				"description": "For amounts: accept negatives. Default true."
+			},
+			{
+				"name": "disabled",
+				"type": "boolean",
+				"required": false
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"CommandPalette": {
+		"props": [
+			{
+				"name": "open",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "defaultOpen",
+				"type": "boolean",
+				"required": false,
+				"default": "false"
+			},
+			{
+				"name": "onOpenChange",
+				"type": "(open: boolean) => void",
+				"required": false
+			},
+			{
+				"name": "items",
+				"type": "CommandPaletteItem[]",
+				"required": false,
+				"default": "CYNCO_PALETTE_ITEMS",
+				"description": "Commands. Defaults to CYNCO_PALETTE_ITEMS."
+			},
+			{
+				"name": "recent",
+				"type": "CommandPaletteRecord[]",
+				"required": false,
+				"default": "[]",
+				"description": "Recently opened records, newest first. Searchable by number, name, status and amount."
+			},
+			{
+				"name": "recentLimit",
+				"type": "number",
+				"required": false,
+				"default": "5",
+				"description": "How many recent records to list before the user types. Default 5."
+			},
+			{
+				"name": "onSelect",
+				"type": "(item: CommandPaletteItem) => void",
+				"required": false,
+				"description": "Called for every chosen item (after the item's own onSelect), e.g. to route to `item.href`."
+			},
+			{
+				"name": "hotkey",
+				"type": "string | false | string[]",
+				"required": false,
+				"default": "\"mod+k\"",
+				"description": "Shortcut that toggles the palette. Default \"mod+k\"; `false` to bind your own."
+			},
+			{
+				"name": "placeholder",
+				"type": "string",
+				"required": false,
+				"default": "\"Search or jump to…\""
+			},
+			{
+				"name": "inline",
+				"type": "boolean",
+				"required": false,
+				"default": "false",
+				"description": "Render in place (a card on the page) instead of as a ⌘K dialog."
+			}
+		],
+		"inherits": []
+	},
+	"ShortcutsDialog": {
+		"props": [
+			{
+				"name": "open",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "defaultOpen",
+				"type": "boolean",
+				"required": false,
+				"default": "false"
+			},
+			{
+				"name": "onOpenChange",
+				"type": "(open: boolean) => void",
+				"required": false
+			},
+			{
+				"name": "sections",
+				"type": "ShortcutsDialogSection[]",
+				"required": false,
+				"default": "CYNCO_SHORTCUT_SECTIONS",
+				"description": "Defaults to CYNCO_SHORTCUT_SECTIONS."
+			},
+			{
+				"name": "hotkey",
+				"type": "string | false | string[]",
+				"required": false,
+				"default": "\"?\"",
+				"description": "Key that opens the sheet. Default \"?\" (Shift+/); `false` to bind your own."
+			},
+			{
+				"name": "title",
+				"type": "string",
+				"required": false,
+				"default": "\"Keyboard shortcuts\""
+			}
+		],
+		"inherits": []
+	},
+	"SavedViewsBar": {
+		"props": [
+			{
+				"name": "views",
+				"type": "SavedView[]",
+				"required": false
+			},
+			{
+				"name": "defaultViews",
+				"type": "SavedView[]",
+				"required": false,
+				"default": "[]"
+			},
+			{
+				"name": "onViewsChange",
+				"type": "(views: SavedView[]) => void",
+				"required": false
+			},
+			{
+				"name": "activeViewId",
+				"type": "string",
+				"required": false
+			},
+			{
+				"name": "defaultActiveViewId",
+				"type": "string",
+				"required": false
+			},
+			{
+				"name": "onActiveViewChange",
+				"type": "(id: string) => void",
+				"required": false
+			},
+			{
+				"name": "filters",
+				"type": "SavedViewFilter[]",
+				"required": false,
+				"description": "Filters applied to the list right now. Uncontrolled default: the active view's filters."
+			},
+			{
+				"name": "defaultFilters",
+				"type": "SavedViewFilter[]",
+				"required": false
+			},
+			{
+				"name": "onFiltersChange",
+				"type": "(filters: SavedViewFilter[]) => void",
+				"required": false
+			},
+			{
+				"name": "counts",
+				"type": "Record<string, number>",
+				"required": false,
+				"description": "Row counts per view id (overrides `view.count`)."
+			},
+			{
+				"name": "addFilter",
+				"type": "ReactNode",
+				"required": false,
+				"description": "Your \"Add filter\" control, shown after the chips."
+			},
+			{
+				"name": "label",
+				"type": "string",
+				"required": false,
+				"default": "\"Saved views\"",
+				"description": "Accessible name of the view switcher. Default \"Saved views\"."
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"BulkActionBar": {
+		"props": [
+			{
+				"name": "count",
+				"type": "number",
+				"required": true,
+				"description": "Selected rows. The bar renders nothing at 0."
+			},
+			{
+				"name": "onClear",
+				"type": "() => void",
+				"required": true,
+				"description": "Clear the selection (also Esc)."
+			},
+			{
+				"name": "actions",
+				"type": "BulkAction[]",
+				"required": true
+			},
+			{
+				"name": "total",
+				"type": "string",
+				"required": false,
+				"description": "Sum of the selected rows' money field, as a decimal string (use `sumAmounts`)."
+			},
+			{
+				"name": "currency",
+				"type": "string",
+				"required": false,
+				"default": "\"MYR\""
+			},
+			{
+				"name": "totalCount",
+				"type": "number",
+				"required": false,
+				"description": "Rows in the whole list — shows \"Select all N\" while only some are selected."
+			},
+			{
+				"name": "onSelectAll",
+				"type": "() => void",
+				"required": false
+			},
+			{
+				"name": "maxVisible",
+				"type": "number",
+				"required": false,
+				"description": "Buttons shown before the rest go into the ⋯ menu. Default 3."
+			},
+			{
+				"name": "sticky",
+				"type": "boolean",
+				"required": false,
+				"description": "Stick to the bottom of the scrolling container. Default true."
+			},
+			{
+				"name": "label",
+				"type": "string",
+				"required": false,
+				"description": "Accessible name of the toolbar."
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"UndoToast": {
+		"props": [
+			{
+				"name": "message",
+				"type": "ReactNode",
+				"required": true
+			},
+			{
+				"name": "onUndo",
+				"type": "() => void",
+				"required": true
+			},
+			{
+				"name": "onDismiss",
+				"type": "() => void",
+				"required": false,
+				"description": "Close button / Esc."
+			},
+			{
+				"name": "onExpire",
+				"type": "() => void",
+				"required": false,
+				"description": "The countdown ran out."
+			},
+			{
+				"name": "duration",
+				"type": "number",
+				"required": false,
+				"default": "Number.POSITIVE_INFINITY",
+				"description": "ms; 0 or Infinity = no countdown. Default Infinity (stays until dismissed)."
+			},
+			{
+				"name": "undoLabel",
+				"type": "string",
+				"required": false,
+				"default": "\"Undo\""
+			},
+			{
+				"name": "showShortcut",
+				"type": "boolean",
+				"required": false,
+				"default": "true",
+				"description": "Show the ⌘/Ctrl+Z keycap on the Undo button (the newest toast). Default true."
+			},
+			{
+				"name": "paused",
+				"type": "boolean",
+				"required": false,
+				"description": "Hold the countdown (it also pauses on hover, on focus and while the tab is hidden)."
+			},
+			{
+				"name": "returnFocusTo",
+				"type": "MutableRefObject<HTMLElement | null>",
+				"required": false,
+				"description": "Focus target when this toast closes while focused."
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"li\">"
+		]
+	},
+	"DensityToggle": {
+		"props": [
+			{
+				"name": "value",
+				"type": "\"compact\" | \"default\" | \"comfortable\"",
+				"required": false
+			},
+			{
+				"name": "defaultValue",
+				"type": "\"compact\" | \"default\" | \"comfortable\"",
+				"required": false,
+				"default": "\"default\""
+			},
+			{
+				"name": "onValueChange",
+				"type": "(density: Density) => void",
+				"required": false
+			},
+			{
+				"name": "labels",
+				"type": "\"auto\" | \"always\" | \"never\"",
+				"required": false,
+				"default": "\"auto\"",
+				"description": "`auto` hides the words when the nearest"
+			},
+			{
+				"name": "storageKey",
+				"type": "string",
+				"required": false,
+				"description": "Remember the choice in localStorage under this key (uncontrolled use)."
+			},
+			{
+				"name": "label",
+				"type": "string",
+				"required": false,
+				"default": "\"Row density\"",
+				"description": "Accessible name of the radio group."
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"PrintButton": {
+		"props": [
+			{
+				"name": "variant",
+				"type": "\"primary\" | \"secondary\" | \"skeleton\" | \"muted\" | \"destructive\" | \"dotted\"",
+				"required": false,
+				"default": "\"secondary\""
+			},
+			{
+				"name": "size",
+				"type": "\"sm\" | \"default\" | \"mini\" | \"icon\"",
+				"required": false,
+				"default": "\"default\""
+			},
+			{
+				"name": "asChild",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "isLoading",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "transition",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "disableActive",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "hide",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "render",
+				"type": "ReactElement",
+				"required": false
+			},
+			{
+				"name": "focusableWhenDisabled",
+				"type": "boolean",
+				"required": false,
+				"description": "Keep the button in the tab order while disabled (Base UI). Set automatically while `isLoading`."
+			},
+			{
+				"name": "onPrint",
+				"type": "() => void",
+				"required": false,
+				"description": "Replace window.print() — e.g. download a server-rendered PDF."
+			},
+			{
+				"name": "bindShortcut",
+				"type": "boolean",
+				"required": false,
+				"description": "Handle ⌘/Ctrl+P on this page. Default: only when `onPrint` is given (otherwise the browser's own print already uses the print layout)."
+			},
+			{
+				"name": "showShortcut",
+				"type": "boolean",
+				"required": false,
+				"default": "true",
+				"description": "Show the ⌘/Ctrl+P keycap. Default true."
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"button\">"
+		]
+	},
+	"DocumentStudio": {
+		"props": [
+			{
+				"name": "documents",
+				"type": "StudioDocument[]",
+				"required": true
+			},
+			{
+				"name": "brand",
+				"type": "DocBrand",
+				"required": false,
+				"description": "Controlled brand."
+			},
+			{
+				"name": "defaultBrand",
+				"type": "DocBrand",
+				"required": false,
+				"description": "Uncontrolled starting brand."
+			},
+			{
+				"name": "onBrandChange",
+				"type": "(brand: DocBrand) => void",
+				"required": false
+			},
+			{
+				"name": "defaultDocumentId",
+				"type": "string",
+				"required": false
+			},
+			{
+				"name": "onPrint",
+				"type": "() => void",
+				"required": false,
+				"description": "Called when the user presses Print (defaults to window.print, which prints only the previewed document)."
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"DocumentPage": {
+		"props": [
+			{
+				"name": "brand",
+				"type": "Partial<DocBrand>",
+				"required": false,
+				"description": "Overrides the provider's brand (merged over it)."
+			},
+			{
+				"name": "size",
+				"type": "\"a4\" | \"a4-landscape\" | \"a5\" | \"letter\" | \"receipt\"",
+				"required": false,
+				"default": "\"a4\""
+			},
+			{
+				"name": "stamp",
+				"type": "\"paid\" | \"void\" | \"draft\" | \"copy\" | \"overdue\"",
+				"required": false,
+				"description": "A diagonal stamp across the page: Paid, Void, Draft, Copy, Overdue."
+			},
+			{
+				"name": "fit",
+				"type": "\"width\" | \"none\"",
+				"required": false,
+				"description": "On screen: scale the sheet down to fit its container (\"width\") or keep 100% and scroll (\"none\"). Controlled; pair with `onFitChange`. Leave unset to let the zoom control switch it."
+			},
+			{
+				"name": "defaultFit",
+				"type": "\"width\" | \"none\"",
+				"required": false,
+				"default": "\"width\"",
+				"description": "Uncontrolled starting fit. Default \"width\"."
+			},
+			{
+				"name": "onFitChange",
+				"type": "(fit: DocumentFit) => void",
+				"required": false
+			},
+			{
+				"name": "zoomControl",
+				"type": "boolean",
+				"required": false,
+				"default": "true",
+				"description": "Show \"Fit width / Actual size\" above the sheet while it is scaled down. Default true. Fit-to-width cancels browser zoom, so readers need a way back to 100% to enlarge the text (WCAG 1.4.4). Hidden in print, and when `fit` is controlled without `onFitChange`."
+			},
+			{
+				"name": "isolate",
+				"type": "boolean",
+				"required": false,
+				"default": "true",
+				"description": "When printing, hide the rest of the app and print only this page. Default true."
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"article\">"
+		]
+	},
+	"TaxInvoiceDocument": {
+		"props": [
+			{
+				"name": "invoice",
+				"type": "TaxInvoiceData",
+				"required": true
+			},
+			{
+				"name": "brand",
+				"type": "Partial<DocBrand>",
+				"required": false,
+				"description": "Overrides the provider's brand (merged over it)."
+			},
+			{
+				"name": "stamp",
+				"type": "\"paid\" | \"void\" | \"draft\" | \"copy\" | \"overdue\" | null",
+				"required": false,
+				"description": "Overrides the stamp derived from the document status. `null` hides it."
+			},
+			{
+				"name": "fit",
+				"type": "\"width\" | \"none\"",
+				"required": false
+			},
+			{
+				"name": "isolate",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "size",
+				"type": "\"a4\" | \"letter\"",
+				"required": false,
+				"default": "\"a4\""
+			}
+		],
+		"inherits": []
+	},
+	"QuotationDocument": {
+		"props": [
+			{
+				"name": "quotation",
+				"type": "QuotationData",
+				"required": true
+			},
+			{
+				"name": "brand",
+				"type": "Partial<DocBrand>",
+				"required": false,
+				"description": "Overrides the provider's brand (merged over it)."
+			},
+			{
+				"name": "stamp",
+				"type": "\"paid\" | \"void\" | \"draft\" | \"copy\" | \"overdue\" | null",
+				"required": false,
+				"description": "Overrides the stamp derived from the document status. `null` hides it."
+			},
+			{
+				"name": "fit",
+				"type": "\"width\" | \"none\"",
+				"required": false
+			},
+			{
+				"name": "isolate",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "size",
+				"type": "\"a4\" | \"letter\"",
+				"required": false,
+				"default": "\"a4\""
+			}
+		],
+		"inherits": []
+	},
+	"AdjustmentNoteDocument": {
+		"props": [
+			{
+				"name": "note",
+				"type": "AdjustmentNoteData",
+				"required": true
+			},
+			{
+				"name": "brand",
+				"type": "Partial<DocBrand>",
+				"required": false,
+				"description": "Overrides the provider's brand (merged over it)."
+			},
+			{
+				"name": "stamp",
+				"type": "\"paid\" | \"void\" | \"draft\" | \"copy\" | \"overdue\" | null",
+				"required": false,
+				"description": "Overrides the stamp derived from the document status. `null` hides it."
+			},
+			{
+				"name": "fit",
+				"type": "\"width\" | \"none\"",
+				"required": false
+			},
+			{
+				"name": "isolate",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "size",
+				"type": "\"a4\" | \"letter\"",
+				"required": false,
+				"default": "\"a4\""
+			}
+		],
+		"inherits": []
+	},
+	"ReceiptDocument": {
+		"props": [
+			{
+				"name": "receipt",
+				"type": "ReceiptData",
+				"required": true
+			},
+			{
+				"name": "brand",
+				"type": "Partial<DocBrand>",
+				"required": false,
+				"description": "Overrides the provider's brand (merged over it)."
+			},
+			{
+				"name": "stamp",
+				"type": "\"paid\" | \"void\" | \"draft\" | \"copy\" | \"overdue\" | null",
+				"required": false,
+				"description": "Overrides the stamp derived from the document status. `null` hides it."
+			},
+			{
+				"name": "fit",
+				"type": "\"width\" | \"none\"",
+				"required": false
+			},
+			{
+				"name": "isolate",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "size",
+				"type": "\"a4\" | \"a5\" | \"receipt\"",
+				"required": false,
+				"default": "\"a4\"",
+				"description": "A4, A5, or an 80mm thermal roll (\"receipt\")."
+			},
+			{
+				"name": "monochrome",
+				"type": "boolean",
+				"required": false,
+				"description": "Print in ink only (thermal printers are monochrome). Default: true for `size=\"receipt\"`."
+			}
+		],
+		"inherits": []
+	},
+	"DeliveryOrderDocument": {
+		"props": [
+			{
+				"name": "order",
+				"type": "DeliveryOrderData",
+				"required": true
+			},
+			{
+				"name": "brand",
+				"type": "Partial<DocBrand>",
+				"required": false,
+				"description": "Overrides the provider's brand (merged over it)."
+			},
+			{
+				"name": "stamp",
+				"type": "\"paid\" | \"void\" | \"draft\" | \"copy\" | \"overdue\" | null",
+				"required": false,
+				"description": "Overrides the stamp derived from the document status. `null` hides it."
+			},
+			{
+				"name": "fit",
+				"type": "\"width\" | \"none\"",
+				"required": false
+			},
+			{
+				"name": "isolate",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "size",
+				"type": "\"a4\" | \"a5\" | \"letter\"",
+				"required": false,
+				"default": "\"a4\""
+			}
+		],
+		"inherits": []
+	},
+	"PurchaseOrderDocument": {
+		"props": [
+			{
+				"name": "order",
+				"type": "PurchaseOrderData",
+				"required": true
+			},
+			{
+				"name": "brand",
+				"type": "Partial<DocBrand>",
+				"required": false,
+				"description": "Overrides the provider's brand (merged over it)."
+			},
+			{
+				"name": "stamp",
+				"type": "\"paid\" | \"void\" | \"draft\" | \"copy\" | \"overdue\"",
+				"required": false
+			},
+			{
+				"name": "fit",
+				"type": "\"width\" | \"none\"",
+				"required": false
+			},
+			{
+				"name": "isolate",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "size",
+				"type": "\"a4\" | \"letter\"",
+				"required": false,
+				"default": "\"a4\""
+			}
+		],
+		"inherits": []
+	},
+	"PaymentVoucherDocument": {
+		"props": [
+			{
+				"name": "voucher",
+				"type": "PaymentVoucherData",
+				"required": true
+			},
+			{
+				"name": "brand",
+				"type": "Partial<DocBrand>",
+				"required": false,
+				"description": "Overrides the provider's brand (merged over it)."
+			},
+			{
+				"name": "stamp",
+				"type": "\"paid\" | \"void\" | \"draft\" | \"copy\" | \"overdue\"",
+				"required": false
+			},
+			{
+				"name": "fit",
+				"type": "\"width\" | \"none\"",
+				"required": false
+			},
+			{
+				"name": "isolate",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "size",
+				"type": "\"a4\" | \"letter\"",
+				"required": false,
+				"default": "\"a4\""
+			}
+		],
+		"inherits": []
+	},
+	"StatementOfAccountDocument": {
+		"props": [
+			{
+				"name": "statement",
+				"type": "StatementOfAccountData",
+				"required": true
+			},
+			{
+				"name": "brand",
+				"type": "Partial<DocBrand>",
+				"required": false,
+				"description": "Overrides the provider's brand (merged over it)."
+			},
+			{
+				"name": "stamp",
+				"type": "\"paid\" | \"void\" | \"draft\" | \"copy\" | \"overdue\"",
+				"required": false
+			},
+			{
+				"name": "fit",
+				"type": "\"width\" | \"none\"",
+				"required": false
+			},
+			{
+				"name": "isolate",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "size",
+				"type": "\"a4\" | \"letter\"",
+				"required": false,
+				"default": "\"a4\""
+			}
+		],
+		"inherits": []
+	},
+	"PayslipDocument": {
+		"props": [
+			{
+				"name": "payslip",
+				"type": "PayslipDocumentData",
+				"required": true
+			},
+			{
+				"name": "brand",
+				"type": "Partial<DocBrand>",
+				"required": false,
+				"description": "Overrides the provider's brand (merged over it)."
+			},
+			{
+				"name": "stamp",
+				"type": "\"paid\" | \"void\" | \"draft\" | \"copy\" | \"overdue\"",
+				"required": false
+			},
+			{
+				"name": "fit",
+				"type": "\"width\" | \"none\"",
+				"required": false
+			},
+			{
+				"name": "isolate",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "size",
+				"type": "\"a4\" | \"a5\"",
+				"required": false,
+				"default": "\"a4\""
+			}
+		],
+		"inherits": []
+	},
+	"ProfitAndLossReport": {
+		"props": [
+			{
+				"name": "report",
+				"type": "ProfitAndLossData",
+				"required": true
+			},
+			{
+				"name": "size",
+				"type": "\"a4\" | \"a4-landscape\" | \"a5\" | \"letter\" | \"receipt\"",
+				"required": false
+			},
+			{
+				"name": "brand",
+				"type": "Partial<DocBrand>",
+				"required": false,
+				"description": "Overrides the provider's brand (merged over it)."
+			},
+			{
+				"name": "stamp",
+				"type": "\"paid\" | \"void\" | \"draft\" | \"copy\" | \"overdue\"",
+				"required": false,
+				"description": "A diagonal stamp across the page: Paid, Void, Draft, Copy, Overdue."
+			},
+			{
+				"name": "fit",
+				"type": "\"width\" | \"none\"",
+				"required": false,
+				"description": "On screen: scale the sheet down to fit its container (\"width\") or keep 100% and scroll (\"none\"). Controlled; pair with `onFitChange`. Leave unset to let the zoom control switch it."
+			},
+			{
+				"name": "isolate",
+				"type": "boolean",
+				"required": false,
+				"description": "When printing, hide the rest of the app and print only this page. Default true."
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"article\">"
+		]
+	},
+	"BalanceSheetReport": {
+		"props": [
+			{
+				"name": "report",
+				"type": "BalanceSheetData",
+				"required": true
+			},
+			{
+				"name": "size",
+				"type": "\"a4\" | \"a4-landscape\" | \"a5\" | \"letter\" | \"receipt\"",
+				"required": false
+			},
+			{
+				"name": "brand",
+				"type": "Partial<DocBrand>",
+				"required": false,
+				"description": "Overrides the provider's brand (merged over it)."
+			},
+			{
+				"name": "stamp",
+				"type": "\"paid\" | \"void\" | \"draft\" | \"copy\" | \"overdue\"",
+				"required": false,
+				"description": "A diagonal stamp across the page: Paid, Void, Draft, Copy, Overdue."
+			},
+			{
+				"name": "fit",
+				"type": "\"width\" | \"none\"",
+				"required": false,
+				"description": "On screen: scale the sheet down to fit its container (\"width\") or keep 100% and scroll (\"none\"). Controlled; pair with `onFitChange`. Leave unset to let the zoom control switch it."
+			},
+			{
+				"name": "isolate",
+				"type": "boolean",
+				"required": false,
+				"description": "When printing, hide the rest of the app and print only this page. Default true."
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"article\">"
+		]
+	},
+	"TrialBalanceDocument": {
+		"props": [
+			{
+				"name": "report",
+				"type": "TrialBalanceData",
+				"required": true
+			},
+			{
+				"name": "size",
+				"type": "\"a4\" | \"a4-landscape\" | \"a5\" | \"letter\" | \"receipt\"",
+				"required": false
+			},
+			{
+				"name": "brand",
+				"type": "Partial<DocBrand>",
+				"required": false,
+				"description": "Overrides the provider's brand (merged over it)."
+			},
+			{
+				"name": "stamp",
+				"type": "\"paid\" | \"void\" | \"draft\" | \"copy\" | \"overdue\"",
+				"required": false,
+				"description": "A diagonal stamp across the page: Paid, Void, Draft, Copy, Overdue."
+			},
+			{
+				"name": "fit",
+				"type": "\"width\" | \"none\"",
+				"required": false,
+				"description": "On screen: scale the sheet down to fit its container (\"width\") or keep 100% and scroll (\"none\"). Controlled; pair with `onFitChange`. Leave unset to let the zoom control switch it."
+			},
+			{
+				"name": "isolate",
+				"type": "boolean",
+				"required": false,
+				"description": "When printing, hide the rest of the app and print only this page. Default true."
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"article\">"
+		]
+	},
+	"GeneralLedgerReport": {
+		"props": [
+			{
+				"name": "report",
+				"type": "GeneralLedgerData",
+				"required": true
+			},
+			{
+				"name": "size",
+				"type": "\"a4\" | \"a4-landscape\" | \"a5\" | \"letter\" | \"receipt\"",
+				"required": false,
+				"default": "\"a4-landscape\""
+			},
+			{
+				"name": "brand",
+				"type": "Partial<DocBrand>",
+				"required": false,
+				"description": "Overrides the provider's brand (merged over it)."
+			},
+			{
+				"name": "stamp",
+				"type": "\"paid\" | \"void\" | \"draft\" | \"copy\" | \"overdue\"",
+				"required": false,
+				"description": "A diagonal stamp across the page: Paid, Void, Draft, Copy, Overdue."
+			},
+			{
+				"name": "fit",
+				"type": "\"width\" | \"none\"",
+				"required": false,
+				"description": "On screen: scale the sheet down to fit its container (\"width\") or keep 100% and scroll (\"none\"). Controlled; pair with `onFitChange`. Leave unset to let the zoom control switch it."
+			},
+			{
+				"name": "isolate",
+				"type": "boolean",
+				"required": false,
+				"description": "When printing, hide the rest of the app and print only this page. Default true."
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"article\">"
+		]
+	},
+	"AgedReceivablesReport": {
+		"props": [
+			{
+				"name": "report",
+				"type": "AgedReceivablesData",
+				"required": true
+			},
+			{
+				"name": "size",
+				"type": "\"a4\" | \"a4-landscape\" | \"a5\" | \"letter\" | \"receipt\"",
+				"required": false
+			},
+			{
+				"name": "brand",
+				"type": "Partial<DocBrand>",
+				"required": false,
+				"description": "Overrides the provider's brand (merged over it)."
+			},
+			{
+				"name": "stamp",
+				"type": "\"paid\" | \"void\" | \"draft\" | \"copy\" | \"overdue\"",
+				"required": false,
+				"description": "A diagonal stamp across the page: Paid, Void, Draft, Copy, Overdue."
+			},
+			{
+				"name": "fit",
+				"type": "\"width\" | \"none\"",
+				"required": false,
+				"description": "On screen: scale the sheet down to fit its container (\"width\") or keep 100% and scroll (\"none\"). Controlled; pair with `onFitChange`. Leave unset to let the zoom control switch it."
+			},
+			{
+				"name": "isolate",
+				"type": "boolean",
+				"required": false,
+				"description": "When printing, hide the rest of the app and print only this page. Default true."
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"article\">"
+		]
+	},
+	"CashFlowReport": {
+		"props": [
+			{
+				"name": "report",
+				"type": "CashFlowData",
+				"required": true
+			},
+			{
+				"name": "size",
+				"type": "\"a4\" | \"a4-landscape\" | \"a5\" | \"letter\" | \"receipt\"",
+				"required": false
+			},
+			{
+				"name": "brand",
+				"type": "Partial<DocBrand>",
+				"required": false,
+				"description": "Overrides the provider's brand (merged over it)."
+			},
+			{
+				"name": "stamp",
+				"type": "\"paid\" | \"void\" | \"draft\" | \"copy\" | \"overdue\"",
+				"required": false,
+				"description": "A diagonal stamp across the page: Paid, Void, Draft, Copy, Overdue."
+			},
+			{
+				"name": "fit",
+				"type": "\"width\" | \"none\"",
+				"required": false,
+				"description": "On screen: scale the sheet down to fit its container (\"width\") or keep 100% and scroll (\"none\"). Controlled; pair with `onFitChange`. Leave unset to let the zoom control switch it."
+			},
+			{
+				"name": "isolate",
+				"type": "boolean",
+				"required": false,
+				"description": "When printing, hide the rest of the app and print only this page. Default true."
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"article\">"
+		]
+	},
+	"InvoiceListTable": {
+		"props": [
+			{
+				"name": "invoices",
+				"type": "SalesInvoiceRow[]",
+				"required": true
+			},
+			{
+				"name": "selectedIds",
+				"type": "string[]",
+				"required": false,
+				"default": "[]"
+			},
+			{
+				"name": "onToggleRow",
+				"type": "(id: string) => void",
+				"required": false
+			},
+			{
+				"name": "onToggleAll",
+				"type": "() => void",
+				"required": false
+			},
+			{
+				"name": "sortField",
+				"type": "string",
+				"required": false,
+				"default": "\"invoice_date\""
+			},
+			{
+				"name": "sortDirection",
+				"type": "\"asc\" | \"desc\"",
+				"required": false,
+				"default": "\"desc\""
+			},
+			{
+				"name": "onSort",
+				"type": "(field: string) => void",
+				"required": false
+			},
+			{
+				"name": "footer",
+				"type": "ReactNode",
+				"required": false
+			}
+		],
+		"inherits": []
+	},
+	"InvoiceLineItems": {
+		"props": [
+			{
+				"name": "items",
+				"type": "SalesLineItem[]",
+				"required": true
+			},
+			{
+				"name": "onChange",
+				"type": "(items: SalesLineItem[]) => void",
+				"required": false
+			},
+			{
+				"name": "currency",
+				"type": "string",
+				"required": false,
+				"default": "\"MYR\""
+			},
+			{
+				"name": "taxCodes",
+				"type": "SalesTaxCode[]",
+				"required": false,
+				"default": "DEFAULT_TAX_CODES"
+			},
+			{
+				"name": "readOnly",
+				"type": "boolean",
+				"required": false,
+				"default": "false"
+			},
+			{
+				"name": "estimatedProfit",
+				"type": "{ amount: number; percent: number; health: NonNullable<SalesLineItem[\"margin\"]> }",
+				"required": false,
+				"description": "Document-level estimated profit line under the total."
+			},
+			{
+				"name": "onAddItem",
+				"type": "() => void",
+				"required": false
+			},
+			{
+				"name": "onBrowseLibrary",
+				"type": "() => void",
+				"required": false
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"InvoiceTotalsPanel": {
+		"props": [
+			{
+				"name": "rows",
+				"type": "SalesTotalRow[]",
+				"required": true
+			},
+			{
+				"name": "currency",
+				"type": "string",
+				"required": false,
+				"default": "\"MYR\""
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"dl\">"
+		]
+	},
+	"InvoiceMetricTiles": {
+		"props": [
+			{
+				"name": "stats",
+				"type": "{ totalValue: number; paidValue: number; pendingValue: number; overdueValue: number; overdueCount: number } | null",
+				"required": true,
+				"description": "null when the tenant-wide stats could not load: tiles show \"—\"."
+			},
+			{
+				"name": "currency",
+				"type": "string",
+				"required": false,
+				"default": "\"MYR\""
+			},
+			{
+				"name": "onShowOverdue",
+				"type": "() => void",
+				"required": false
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"InvoiceCreateSteps": {
+		"props": [
+			{
+				"name": "currentStep",
+				"type": "1 | 2 | 3",
+				"required": true
+			},
+			{
+				"name": "completed",
+				"type": "number[]",
+				"required": false,
+				"default": "[]"
+			},
+			{
+				"name": "children",
+				"type": "Partial<Record<1 | 2 | 3, ReactNode>>",
+				"required": false
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"ol\">"
+		]
+	},
+	"InvoiceSummaryRail": {
+		"props": [
+			{
+				"name": "rows",
+				"type": "SalesTotalRow[]",
+				"required": true,
+				"description": "Totals rows; empty means no line items yet."
+			},
+			{
+				"name": "currency",
+				"type": "string",
+				"required": false,
+				"default": "\"MYR\""
+			},
+			{
+				"name": "actions",
+				"type": "ReactNode",
+				"required": false
+			},
+			{
+				"name": "defaultOpen",
+				"type": "boolean",
+				"required": false,
+				"default": "false"
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"InvoiceActionsPanel": {
+		"props": [
+			{
+				"name": "status",
+				"type": "string",
+				"required": true
+			},
+			{
+				"name": "emailSent",
+				"type": "boolean",
+				"required": false,
+				"default": "false"
+			},
+			{
+				"name": "onAction",
+				"type": "(label: string) => void",
+				"required": false
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"section\">"
+		]
+	},
+	"MarkAsPaidDialog": {
+		"props": [
+			{
+				"name": "invoice",
+				"type": "{ invoiceNumber: string; customerName: string; total: number; currency?: string; paidAmount?: number }",
+				"required": true
+			},
+			{
+				"name": "open",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "defaultOpen",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "modal",
+				"type": "boolean",
+				"required": false,
+				"default": "true"
+			},
+			{
+				"name": "onOpenChange",
+				"type": "(open: boolean) => void",
+				"required": false
+			},
+			{
+				"name": "paymentDate",
+				"type": "string",
+				"required": false
+			},
+			{
+				"name": "paymentMethod",
+				"type": "string",
+				"required": false
+			},
+			{
+				"name": "bankAccounts",
+				"type": "SalesBankAccount[]",
+				"required": false,
+				"default": "[]"
+			},
+			{
+				"name": "bankAccount",
+				"type": "string",
+				"required": false
+			},
+			{
+				"name": "note",
+				"type": "string",
+				"required": false
+			},
+			{
+				"name": "showSuccess",
+				"type": "boolean",
+				"required": false,
+				"default": "false"
+			},
+			{
+				"name": "isSubmitting",
+				"type": "boolean",
+				"required": false,
+				"default": "false"
+			},
+			{
+				"name": "onConfirm",
+				"type": "(p: { method: string; bankAccount: string; note: string }) => void",
+				"required": false
+			}
+		],
+		"inherits": []
+	},
+	"InvoiceBulkBar": {
+		"props": [
+			{
+				"name": "selected",
+				"type": "{ id: string; status: string; hasPayments?: boolean }[]",
+				"required": true
+			},
+			{
+				"name": "onClear",
+				"type": "() => void",
+				"required": false
+			},
+			{
+				"name": "onDownload",
+				"type": "() => void",
+				"required": false
+			},
+			{
+				"name": "onDelete",
+				"type": "() => void",
+				"required": false
+			},
+			{
+				"name": "downloading",
+				"type": "boolean",
+				"required": false,
+				"default": "false"
+			},
+			{
+				"name": "deleting",
+				"type": "boolean",
+				"required": false,
+				"default": "false"
+			},
+			{
+				"name": "floating",
+				"type": "boolean",
+				"required": false,
+				"default": "false",
+				"description": "Pin to the bottom of the viewport, as in the app; off for inline previews."
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"InvoiceFilterChips": {
+		"props": [
+			{
+				"name": "chips",
+				"type": "SalesFilterChip[]",
+				"required": true
+			},
+			{
+				"name": "onRemove",
+				"type": "(key: string) => void",
+				"required": false
+			},
+			{
+				"name": "onClearAll",
+				"type": "() => void",
+				"required": false
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"CreditNoteSummary": {
+		"props": [
+			{
+				"name": "note",
+				"type": "SalesNote",
+				"required": true
+			},
+			{
+				"name": "payments",
+				"type": "SalesNotePayment[]",
+				"required": false,
+				"default": "[]"
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"CreditDebitNoteList": {
+		"props": [
+			{
+				"name": "notes",
+				"type": "SalesNoteRow[]",
+				"required": true
+			},
+			{
+				"name": "onOpen",
+				"type": "(id: string) => void",
+				"required": false
+			}
+		],
+		"inherits": []
+	},
+	"QuotationBoardCard": {
+		"props": [
+			{
+				"name": "quotation",
+				"type": "SalesQuotation",
+				"required": true
+			},
+			{
+				"name": "now",
+				"type": "string",
+				"required": false
+			},
+			{
+				"name": "onOpen",
+				"type": "(id: string) => void",
+				"required": false
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"button\">"
+		]
+	},
+	"QuotationBoardColumn": {
+		"props": [
+			{
+				"name": "column",
+				"type": "\"terminal\" | \"draft\" | \"active\" | \"accepted\"",
+				"required": true
+			},
+			{
+				"name": "quotations",
+				"type": "SalesQuotation[]",
+				"required": true
+			},
+			{
+				"name": "currency",
+				"type": "string",
+				"required": false,
+				"default": "\"MYR\""
+			},
+			{
+				"name": "now",
+				"type": "string",
+				"required": false
+			},
+			{
+				"name": "onOpen",
+				"type": "(id: string) => void",
+				"required": false
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"section\">"
+		]
+	},
+	"QuotationStats": {
+		"props": [
+			{
+				"name": "stats",
+				"type": "{ totalQuotedAmount: number; currency?: string; sentCount: number; acceptedCount: number; conversionRate: number }",
+				"required": true
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"RecurringTemplateTable": {
+		"props": [
+			{
+				"name": "templates",
+				"type": "SalesRecurringTemplate[]",
+				"required": true
+			}
+		],
+		"inherits": []
+	},
+	"AccountingWorkbenchHeader": {
+		"props": [
+			{
+				"name": "title",
+				"type": "ReactNode",
+				"required": true
+			},
+			{
+				"name": "meta",
+				"type": "ReactNode",
+				"required": false
+			},
+			{
+				"name": "actions",
+				"type": "ReactNode",
+				"required": false
+			},
+			{
+				"name": "stats",
+				"type": "WorkbenchStat[]",
+				"required": false,
+				"default": "[]"
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"JournalEntryHeader": {
+		"props": [
+			{
+				"name": "title",
+				"type": "string",
+				"required": true
+			},
+			{
+				"name": "entryNumber",
+				"type": "string | null",
+				"required": false
+			},
+			{
+				"name": "status",
+				"type": "string",
+				"required": false
+			},
+			{
+				"name": "isCreate",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "approvalRequired",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "isSaving",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "isPosting",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "onBack",
+				"type": "() => void",
+				"required": false
+			},
+			{
+				"name": "onFromTemplate",
+				"type": "() => void",
+				"required": false
+			},
+			{
+				"name": "onSave",
+				"type": "() => void",
+				"required": false
+			},
+			{
+				"name": "onPost",
+				"type": "() => void",
+				"required": false
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"JournalLineEditor": {
+		"props": [
+			{
+				"name": "lines",
+				"type": "JournalEditorLine[]",
+				"required": true
+			},
+			{
+				"name": "accounts",
+				"type": "LedgerPickerAccount[]",
+				"required": false,
+				"default": "[]"
+			},
+			{
+				"name": "recentIds",
+				"type": "string[]",
+				"required": false
+			},
+			{
+				"name": "fieldErrors",
+				"type": "Record<string, string>",
+				"required": false,
+				"default": "{}",
+				"description": "Keyed `${line.key}.accountId`."
+			},
+			{
+				"name": "onLinesChange",
+				"type": "(lines: JournalEditorLine[]) => void",
+				"required": false
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"AccountPickerField": {
+		"props": [
+			{
+				"name": "accounts",
+				"type": "LedgerPickerAccount[]",
+				"required": true
+			},
+			{
+				"name": "recentIds",
+				"type": "string[]",
+				"required": false
+			},
+			{
+				"name": "selectedId",
+				"type": "string",
+				"required": false
+			},
+			{
+				"name": "defaultOpen",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "label",
+				"type": "string",
+				"required": false
+			},
+			{
+				"name": "onSelect",
+				"type": "(a: LedgerPickerAccount) => void",
+				"required": false
+			},
+			{
+				"name": "onCreate",
+				"type": "(query: string) => void",
+				"required": false
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"JournalBalanceBar": {
+		"props": [
+			{
+				"name": "totalDebit",
+				"type": "number",
+				"required": true
+			},
+			{
+				"name": "totalCredit",
+				"type": "number",
+				"required": true
+			},
+			{
+				"name": "autoSave",
+				"type": "\"saving\" | \"saved\" | null",
+				"required": false,
+				"description": "The auto-save line above the bar."
+			},
+			{
+				"name": "currency",
+				"type": "string",
+				"required": false,
+				"default": "\"MYR\""
+			},
+			{
+				"name": "hasAmounts",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "showError",
+				"type": "boolean",
+				"required": false
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"JournalDraftRecoveryBanner": {
+		"props": [
+			{
+				"name": "savedAgo",
+				"type": "string",
+				"required": true
+			},
+			{
+				"name": "onRecover",
+				"type": "() => void",
+				"required": false
+			},
+			{
+				"name": "onDismiss",
+				"type": "() => void",
+				"required": false
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"JournalLinesTable": {
+		"props": [
+			{
+				"name": "lines",
+				"type": "JournalPostedLine[]",
+				"required": true
+			},
+			{
+				"name": "currency",
+				"type": "string",
+				"required": false,
+				"default": "\"MYR\""
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"section\">"
+		]
+	},
+	"JournalEntryDetailsRail": {
+		"props": [
+			{
+				"name": "entry",
+				"type": "{ entryDate: string; period: string; currency: string; documentNumber?: string | null; manualReason?: string | null; vendorName?: string | null; customerName?: string | null; approvedBy?: string | null; approvedAt?: string | null; postedAt?: string | null; memo?: string | null }",
+				"required": true
+			},
+			{
+				"name": "statusHistory",
+				"type": "JournalStatusEvent[]",
+				"required": false,
+				"default": "[]"
+			},
+			{
+				"name": "createdAt",
+				"type": "string",
+				"required": false
+			},
+			{
+				"name": "updatedAt",
+				"type": "string",
+				"required": false
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"ChartOfAccountsTree": {
+		"props": [
+			{
+				"name": "nodes",
+				"type": "CoaTreeNode[]",
+				"required": true
+			},
+			{
+				"name": "currency",
+				"type": "string",
+				"required": false,
+				"default": "\"MYR\""
+			},
+			{
+				"name": "defaultExpandedIds",
+				"type": "string[]",
+				"required": false
+			},
+			{
+				"name": "selectedId",
+				"type": "string",
+				"required": false
+			},
+			{
+				"name": "onSelect",
+				"type": "(id: string) => void",
+				"required": false
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"CoaAccountPanel": {
+		"props": [
+			{
+				"name": "account",
+				"type": "CoaPanelAccount",
+				"required": true
+			},
+			{
+				"name": "currency",
+				"type": "string",
+				"required": false,
+				"default": "\"MYR\""
+			},
+			{
+				"name": "currentBalance",
+				"type": "number",
+				"required": false,
+				"default": "0"
+			},
+			{
+				"name": "transactionCount",
+				"type": "number",
+				"required": false,
+				"default": "0"
+			},
+			{
+				"name": "lastTransactionAt",
+				"type": "string | null",
+				"required": false
+			},
+			{
+				"name": "balanceHistory",
+				"type": "BalanceHistoryRow[]",
+				"required": false,
+				"default": "[]"
+			},
+			{
+				"name": "transactions",
+				"type": "{ id: string; date: string; description: string; type: \"debit\" | \"credit\"; amount: number; source?: string }[]",
+				"required": false,
+				"default": "[]"
+			},
+			{
+				"name": "defaultEditing",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "onClose",
+				"type": "() => void",
+				"required": false
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"aside\">"
+		]
+	},
+	"GeneralLedgerTable": {
+		"props": [
+			{
+				"name": "rows",
+				"type": "GlRegisterRow[]",
+				"required": true
+			},
+			{
+				"name": "baseCurrency",
+				"type": "string",
+				"required": false,
+				"default": "\"MYR\""
+			},
+			{
+				"name": "showAccount",
+				"type": "boolean",
+				"required": false,
+				"description": "No account selected → show the account column instead of a meaningful running balance."
+			},
+			{
+				"name": "openingBalance",
+				"type": "number",
+				"required": false
+			},
+			{
+				"name": "openingDate",
+				"type": "string",
+				"required": false
+			},
+			{
+				"name": "closingDate",
+				"type": "string",
+				"required": false
+			}
+		],
+		"inherits": []
+	},
+	"BankLedgerHeader": {
+		"props": [
+			{
+				"name": "account",
+				"type": "{ name: string; number?: string; glCode?: string; institutionName?: string; currency: string }",
+				"required": true
+			},
+			{
+				"name": "month",
+				"type": "string",
+				"required": true,
+				"description": "\"2026-10\""
+			},
+			{
+				"name": "tieOut",
+				"type": "{ status: \"tied\"; statementClosing: number } | { status: \"off\"; difference: number } | { status: \"none\"; basis: \"statement\" | \"unverified\" }",
+				"required": true
+			},
+			{
+				"name": "bookBalance",
+				"type": "number",
+				"required": true
+			},
+			{
+				"name": "transactionCount",
+				"type": "number",
+				"required": true
+			},
+			{
+				"name": "credits",
+				"type": "number",
+				"required": true
+			},
+			{
+				"name": "debits",
+				"type": "number",
+				"required": true
+			},
+			{
+				"name": "statement",
+				"type": "{ date: string; balance: number; unreconciledDifference: number } | null",
+				"required": false
+			},
+			{
+				"name": "notCounted",
+				"type": "{ label: string; title?: string }[]",
+				"required": false,
+				"default": "[]"
+			},
+			{
+				"name": "canPrev",
+				"type": "boolean",
+				"required": false,
+				"default": "true"
+			},
+			{
+				"name": "canNext",
+				"type": "boolean",
+				"required": false,
+				"default": "true"
+			},
+			{
+				"name": "onMonthChange",
+				"type": "(dir: -1 | 1) => void",
+				"required": false
+			},
+			{
+				"name": "onDownload",
+				"type": "() => void",
+				"required": false
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"PeriodCloseRow": {
+		"props": [
+			{
+				"name": "period",
+				"type": "LedgerPeriod",
+				"required": true
+			},
+			{
+				"name": "isYearEnd",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "baseCurrency",
+				"type": "string",
+				"required": false,
+				"default": "\"MYR\""
+			},
+			{
+				"name": "onClose",
+				"type": "() => void",
+				"required": false
+			},
+			{
+				"name": "onReopen",
+				"type": "() => void",
+				"required": false
+			},
+			{
+				"name": "onLock",
+				"type": "() => void",
+				"required": false
+			},
+			{
+				"name": "onUnlock",
+				"type": "() => void",
+				"required": false
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"PeriodCloseChecklist": {
+		"props": [
+			{
+				"name": "items",
+				"type": "CloseCheckItem[]",
+				"required": true
+			},
+			{
+				"name": "runningTask",
+				"type": "\"depreciation\" | \"recognition\" | \"fxRevaluation\" | null",
+				"required": false
+			},
+			{
+				"name": "busy",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "onRunTask",
+				"type": "(task: NonNullable<CloseCheckItem[\"task\"]>) => void",
+				"required": false
+			},
+			{
+				"name": "onClosePeriodFirst",
+				"type": "(period: string) => void",
+				"required": false
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"PeriodCloseAttentionCard": {
+		"props": [
+			{
+				"name": "card",
+				"type": "CloseAttentionCard",
+				"required": true
+			},
+			{
+				"name": "note",
+				"type": "string",
+				"required": false,
+				"default": "\"\""
+			},
+			{
+				"name": "onNoteChange",
+				"type": "(n: string) => void",
+				"required": false
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"OpeningBalanceTotalsBar": {
+		"props": [
+			{
+				"name": "debit",
+				"type": "number",
+				"required": true
+			},
+			{
+				"name": "credit",
+				"type": "number",
+				"required": true
+			},
+			{
+				"name": "filled",
+				"type": "number",
+				"required": true,
+				"description": "Rows with a typed amount."
+			},
+			{
+				"name": "currency",
+				"type": "string",
+				"required": false,
+				"default": "\"MYR\""
+			},
+			{
+				"name": "invalidCount",
+				"type": "number",
+				"required": false,
+				"default": "0"
+			},
+			{
+				"name": "overLimit",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "maxAmount",
+				"type": "number",
+				"required": false
+			},
+			{
+				"name": "suspenseLabel",
+				"type": "string",
+				"required": false,
+				"default": "\"3900-000 Opening Balance Suspense\""
+			},
+			{
+				"name": "onlySubledger",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "entryStatus",
+				"type": "\"draft\" | \"posted\" | null",
+				"required": false,
+				"default": "null"
+			},
+			{
+				"name": "isDirty",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "isPosting",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "canPost",
+				"type": "boolean",
+				"required": false,
+				"default": "true"
+			},
+			{
+				"name": "onDiscard",
+				"type": "() => void",
+				"required": false
+			},
+			{
+				"name": "onPost",
+				"type": "() => void",
+				"required": false
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"BankFeedList": {
+		"props": [
+			{
+				"name": "days",
+				"type": "BankFeedDay[]",
+				"required": true
+			},
+			{
+				"name": "total",
+				"type": "number",
+				"required": true
+			},
+			{
+				"name": "statusLabel",
+				"type": "string",
+				"required": false,
+				"default": "\"All statuses\""
+			},
+			{
+				"name": "search",
+				"type": "string",
+				"required": false
+			},
+			{
+				"name": "showAccount",
+				"type": "boolean",
+				"required": false,
+				"default": "true"
+			},
+			{
+				"name": "selectedIds",
+				"type": "string[]",
+				"required": false,
+				"default": "[]"
+			},
+			{
+				"name": "postAll",
+				"type": "string",
+				"required": false,
+				"description": "\"RM 4,210.00 in · RM 1,180.40 out\" shown on Post all, when filtered to To post."
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"BankFeedRow": {
+		"props": [
+			{
+				"name": "tx",
+				"type": "BankFeedTransaction",
+				"required": true
+			},
+			{
+				"name": "selected",
+				"type": "boolean",
+				"required": false,
+				"default": "false"
+			},
+			{
+				"name": "showAccount",
+				"type": "boolean",
+				"required": false,
+				"default": "false"
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"BankCategoryCell": {
+		"props": [
+			{
+				"name": "status",
+				"type": "\"posted\" | \"imported\" | \"categorized\" | \"reconciled\" | \"excluded\"",
+				"required": true
+			},
+			{
+				"name": "category",
+				"type": "string | null",
+				"required": false
+			},
+			{
+				"name": "suggestion",
+				"type": "BankCoaSuggestion | null",
+				"required": false
+			},
+			{
+				"name": "picking",
+				"type": "boolean",
+				"required": false,
+				"default": "false"
+			},
+			{
+				"name": "onAccept",
+				"type": "() => void",
+				"required": false
+			},
+			{
+				"name": "onPick",
+				"type": "() => void",
+				"required": false
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"span\">"
+		]
+	},
+	"BankConfidenceMeter": {
+		"props": [
+			{
+				"name": "confidence",
+				"type": "number | null",
+				"required": true
+			},
+			{
+				"name": "variant",
+				"type": "\"badge\" | \"ring\" | \"inline\"",
+				"required": false,
+				"default": "\"badge\""
+			},
+			{
+				"name": "showTier",
+				"type": "boolean",
+				"required": false,
+				"default": "false"
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"span\">"
+		]
+	},
+	"BankLifecycleSpine": {
+		"props": [
+			{
+				"name": "status",
+				"type": "\"posted\" | \"imported\" | \"categorized\" | \"reconciled\" | \"excluded\"",
+				"required": true
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"span\">"
+		]
+	},
+	"BankMatchReview": {
+		"props": [
+			{
+				"name": "matches",
+				"type": "BankMatch[]",
+				"required": true
+			},
+			{
+				"name": "line",
+				"type": "BankLineSummary",
+				"required": false
+			},
+			{
+				"name": "pendingId",
+				"type": "string | null",
+				"required": false
+			},
+			{
+				"name": "error",
+				"type": "string | null",
+				"required": false
+			},
+			{
+				"name": "onAccept",
+				"type": "(id: string) => void",
+				"required": false
+			},
+			{
+				"name": "onReject",
+				"type": "(id: string) => void",
+				"required": false
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"BankReviewCard": {
+		"props": [
+			{
+				"name": "tx",
+				"type": "Pick<BankFeedTransaction, \"payeeName\" | \"description\" | \"date\" | \"type\" | \"amount\" | \"currency\" | \"suggestion\">",
+				"required": true
+			},
+			{
+				"name": "accountName",
+				"type": "string",
+				"required": false
+			},
+			{
+				"name": "active",
+				"type": "boolean",
+				"required": false,
+				"default": "false"
+			},
+			{
+				"name": "picking",
+				"type": "boolean",
+				"required": false,
+				"default": "false"
+			},
+			{
+				"name": "events",
+				"type": "BankTxEvent[]",
+				"required": false
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"BankTransactionTimeline": {
+		"props": [
+			{
+				"name": "events",
+				"type": "BankTxEvent[]",
+				"required": true
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"ul\">"
+		]
+	},
+	"BankPostingSummary": {
+		"props": [
+			{
+				"name": "totals",
+				"type": "BankPostingTotal[]",
+				"required": true
+			},
+			{
+				"name": "activeKey",
+				"type": "string | null",
+				"required": false
+			},
+			{
+				"name": "onSelect",
+				"type": "(key: string | null) => void",
+				"required": false
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"section\">"
+		]
+	},
+	"BankBalanceEquation": {
+		"props": [
+			{
+				"name": "terms",
+				"type": "readonly BankEquationTerm[]",
+				"required": true
+			},
+			{
+				"name": "resultLabel",
+				"type": "string",
+				"required": true
+			},
+			{
+				"name": "check",
+				"type": "BankEquationCheck",
+				"required": false
+			},
+			{
+				"name": "currency",
+				"type": "string",
+				"required": false,
+				"default": "\"MYR\""
+			},
+			{
+				"name": "tiesLabel",
+				"type": "string",
+				"required": false,
+				"default": "\"Ties\""
+			},
+			{
+				"name": "unknownLabel",
+				"type": "string",
+				"required": false,
+				"default": "\"Can't verify\""
+			},
+			{
+				"name": "size",
+				"type": "\"sm\" | \"md\"",
+				"required": false,
+				"default": "\"md\""
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"BankStatementEquation": {
+		"props": [
+			{
+				"name": "statement",
+				"type": "BankParsedStatement | null",
+				"required": true
+			},
+			{
+				"name": "chainValid",
+				"type": "boolean",
+				"required": false,
+				"default": "true"
+			},
+			{
+				"name": "brokenRows",
+				"type": "number[]",
+				"required": false,
+				"default": "[]"
+			},
+			{
+				"name": "currency",
+				"type": "string",
+				"required": false,
+				"default": "\"MYR\""
+			},
+			{
+				"name": "size",
+				"type": "\"sm\" | \"md\"",
+				"required": false,
+				"default": "\"md\""
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"BankMonthProof": {
+		"props": [
+			{
+				"name": "monthName",
+				"type": "string",
+				"required": true
+			},
+			{
+				"name": "asOf",
+				"type": "string",
+				"required": true,
+				"description": "\"31 Mar\""
+			},
+			{
+				"name": "statementClosing",
+				"type": "number | null",
+				"required": true,
+				"description": "null = no statement ends in the month."
+			},
+			{
+				"name": "unpostedNet",
+				"type": "number",
+				"required": true
+			},
+			{
+				"name": "ledger",
+				"type": "number | null",
+				"required": true,
+				"description": "Ledger balance on the day; null when there is nothing to compare with."
+			},
+			{
+				"name": "link",
+				"type": "BankLedgerLink",
+				"required": true
+			},
+			{
+				"name": "inTransit",
+				"type": "{ count: number; net: number }",
+				"required": false
+			},
+			{
+				"name": "currency",
+				"type": "string",
+				"required": false,
+				"default": "\"MYR\""
+			},
+			{
+				"name": "state",
+				"type": "\"no_statement\" | \"in_progress\" | \"covered\" | \"needs_work\" | \"ready\" | \"closed\"",
+				"required": false
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"section\">"
+		]
+	},
+	"BankMonthClose": {
+		"props": [
+			{
+				"name": "monthName",
+				"type": "string",
+				"required": true
+			},
+			{
+				"name": "state",
+				"type": "\"ready\" | \"needs_work\" | \"in_progress\" | \"covered\" | \"no_statement\" | \"closed\"",
+				"required": true
+			},
+			{
+				"name": "signedOffLabel",
+				"type": "string",
+				"required": false,
+				"description": "\"Signed off by Aisyah Rahman · 3 Apr 2026\""
+			},
+			{
+				"name": "standing",
+				"type": "\"none\" | \"holds\" | \"stale\"",
+				"required": false,
+				"default": "\"none\""
+			},
+			{
+				"name": "staleNote",
+				"type": "string",
+				"required": false
+			},
+			{
+				"name": "signing",
+				"type": "boolean",
+				"required": false,
+				"default": "false"
+			},
+			{
+				"name": "fiscalStatus",
+				"type": "\"open\" | \"closed\" | \"closing\" | \"locked\" | null",
+				"required": false
+			},
+			{
+				"name": "checks",
+				"type": "BankCloseCheck[] | null",
+				"required": false,
+				"description": "undefined = loading; null = no chart to close against."
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"section\">"
+		]
+	},
+	"BankCloseStateChip": {
+		"props": [
+			{
+				"name": "state",
+				"type": "BankCloseMonthState",
+				"required": true
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"span\">"
+		]
+	},
+	"BankReconciliationYearStrip": {
+		"props": [
+			{
+				"name": "months",
+				"type": "BankCloseMonth[]",
+				"required": true
+			},
+			{
+				"name": "selected",
+				"type": "string | null",
+				"required": true
+			},
+			{
+				"name": "yearLabel",
+				"type": "string",
+				"required": true,
+				"description": "\"FY 2026\""
+			},
+			{
+				"name": "accountName",
+				"type": "string",
+				"required": true
+			},
+			{
+				"name": "calendarMonths",
+				"type": "boolean",
+				"required": false,
+				"default": "false"
+			},
+			{
+				"name": "selectedSummary",
+				"type": "{ nextStep: string; signedOffLabel?: string }",
+				"required": false,
+				"description": "The next-step sentence for the selected month, and its sign-off line."
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"BankAccountAvatar": {
+		"props": [
+			{
+				"name": "account",
+				"type": "Pick<BankRailAccount, \"accountName\" | \"accountType\" | \"institution\">",
+				"required": true
+			},
+			{
+				"name": "size",
+				"type": "number",
+				"required": false,
+				"default": "24"
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"span\">"
+		]
+	},
+	"BankAccountRail": {
+		"props": [
+			{
+				"name": "accounts",
+				"type": "BankRailAccount[]",
+				"required": true
+			},
+			{
+				"name": "net",
+				"type": "{ amount: number; currency: string }[]",
+				"required": true,
+				"description": "One entry per currency; never summed across currencies."
+			},
+			{
+				"name": "selectedId",
+				"type": "string | null",
+				"required": false,
+				"default": "null"
+			},
+			{
+				"name": "cashFlow",
+				"type": "{ month: string; net: number }[]",
+				"required": false,
+				"default": "[]"
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"BankRulesTable": {
+		"props": [
+			{
+				"name": "rules",
+				"type": "BankRuleRow[]",
+				"required": true
+			},
+			{
+				"name": "search",
+				"type": "string",
+				"required": false,
+				"default": "\"\""
+			},
+			{
+				"name": "status",
+				"type": "\"all\" | \"active\" | \"inactive\"",
+				"required": false,
+				"default": "\"all\""
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"BankCashFlowChart": {
+		"props": [
+			{
+				"name": "data",
+				"type": "BankCashFlowPoint[]",
+				"required": true
+			},
+			{
+				"name": "currency",
+				"type": "string",
+				"required": false,
+				"default": "\"MYR\""
+			},
+			{
+				"name": "title",
+				"type": "string",
+				"required": false,
+				"default": "\"Cash flow\""
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"section\">"
+		]
+	},
+	"TrialBalanceReport": {
+		"props": [
+			{
+				"name": "rows",
+				"type": "TrialBalanceAccount[]",
+				"required": true
+			},
+			{
+				"name": "title",
+				"type": "string",
+				"required": false,
+				"default": "\"Trial balance\""
+			},
+			{
+				"name": "description",
+				"type": "ReactNode",
+				"required": false
+			},
+			{
+				"name": "period",
+				"type": "string",
+				"required": false,
+				"description": "Period label for the heading, e.g. \"October 2026\"."
+			},
+			{
+				"name": "groups",
+				"type": "TrialBalanceColumnGroup[]",
+				"required": false,
+				"description": "Column groups; defaults to one pair read from `row.debit` / `row.credit`."
+			},
+			{
+				"name": "showType",
+				"type": "boolean",
+				"required": false,
+				"default": "false"
+			},
+			{
+				"name": "balanced",
+				"type": "boolean",
+				"required": false,
+				"description": "Override the computed balanced state (totals of every unsigned group tie)."
+			},
+			{
+				"name": "badgeLabel",
+				"type": "string",
+				"required": false,
+				"description": "Which figures the chip speaks for, when there is more than one set."
+			},
+			{
+				"name": "currency",
+				"type": "string",
+				"required": false,
+				"default": "\"MYR\""
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"ProfitLossStatement": {
+		"props": [
+			{
+				"name": "period",
+				"type": "string",
+				"required": true,
+				"description": "Current period label, e.g. \"October 2026\" or \"Jan – Oct 2026\"."
+			},
+			{
+				"name": "rows",
+				"type": "StatementRow[]",
+				"required": true
+			},
+			{
+				"name": "priorPeriod",
+				"type": "string",
+				"required": false,
+				"description": "Set to render the comparative (Current | Prior | Variance | %) layout."
+			},
+			{
+				"name": "description",
+				"type": "ReactNode",
+				"required": false
+			},
+			{
+				"name": "currency",
+				"type": "string",
+				"required": false,
+				"default": "\"MYR\""
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"section\">"
+		]
+	},
+	"BalanceSheetStatement": {
+		"props": [
+			{
+				"name": "asAt",
+				"type": "string",
+				"required": true,
+				"description": "\"As at\" label, e.g. \"31 Oct 2026\"."
+			},
+			{
+				"name": "rows",
+				"type": "StatementRow[]",
+				"required": true
+			},
+			{
+				"name": "totals",
+				"type": "{ assets: number; liabilities: number; equity: number }",
+				"required": true,
+				"description": "Tiles + balance check."
+			},
+			{
+				"name": "priorPeriod",
+				"type": "string",
+				"required": false
+			},
+			{
+				"name": "equityLabel",
+				"type": "string",
+				"required": false,
+				"default": "\"Total equity\"",
+				"description": "\"Total equity\", \"Total owner's equity\" (sole prop), \"Total partners' capital\"…"
+			},
+			{
+				"name": "showTotalsStrip",
+				"type": "boolean",
+				"required": false,
+				"default": "true",
+				"description": "The Total assets / liabilities / equity tiles above the statement."
+			},
+			{
+				"name": "balanced",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "description",
+				"type": "ReactNode",
+				"required": false
+			},
+			{
+				"name": "currency",
+				"type": "string",
+				"required": false,
+				"default": "\"MYR\""
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"ReportToolbar": {
+		"props": [
+			{
+				"name": "period",
+				"type": "string",
+				"required": true
+			},
+			{
+				"name": "periods",
+				"type": "string[]",
+				"required": true
+			},
+			{
+				"name": "title",
+				"type": "ReactNode",
+				"required": false
+			},
+			{
+				"name": "meta",
+				"type": "ReactNode",
+				"required": false,
+				"description": "Quiet sub-line, e.g. \"October 2026 · MYR\"."
+			},
+			{
+				"name": "fiscalYearEnd",
+				"type": "string | null",
+				"required": false,
+				"description": "\"MM-DD\"; groups the period list by fiscal year."
+			},
+			{
+				"name": "view",
+				"type": "string",
+				"required": false,
+				"description": "Current view (P&L Monthly/YTD, TB Standard/Extended)."
+			},
+			{
+				"name": "views",
+				"type": "{ value: string; label: string }[]",
+				"required": false
+			},
+			{
+				"name": "compare",
+				"type": "boolean",
+				"required": false,
+				"description": "Compare toggle; omit to hide it (reports without a comparative)."
+			},
+			{
+				"name": "comparePeriod",
+				"type": "string",
+				"required": false
+			},
+			{
+				"name": "showSaveSnapshot",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "freshness",
+				"type": "ReportFreshness | null",
+				"required": false
+			},
+			{
+				"name": "now",
+				"type": "string | number",
+				"required": false,
+				"description": "Clock for the freshness label (defaults to Date.now())."
+			},
+			{
+				"name": "onExport",
+				"type": "(format: \"pdf\" | \"excel\") => void",
+				"required": false
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"header\">"
+		]
+	},
+	"KpiTileGrid": {
+		"props": [
+			{
+				"name": "tiles",
+				"type": "KpiTileData[]",
+				"required": true
+			},
+			{
+				"name": "columns",
+				"type": "2 | 5 | 3 | 4",
+				"required": false,
+				"default": "4",
+				"description": "Kept for compatibility; tiles auto-fit the container (min 9rem each)."
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"OwedAgingRings": {
+		"props": [
+			{
+				"name": "receivables",
+				"type": "AgingBucket | null",
+				"required": true
+			},
+			{
+				"name": "payables",
+				"type": "AgingBucket | null",
+				"required": true
+			},
+			{
+				"name": "currency",
+				"type": "string",
+				"required": false,
+				"default": "\"MYR\""
+			},
+			{
+				"name": "dso",
+				"type": "number | null",
+				"required": false,
+				"description": "Days sales outstanding, shown under receivables."
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"section\">"
+		]
+	},
+	"ReceivablesAgingTable": {
+		"props": [
+			{
+				"name": "asOf",
+				"type": "string",
+				"required": true,
+				"description": "\"31 Oct 2026\"."
+			},
+			{
+				"name": "rows",
+				"type": "AgingCustomerRow[]",
+				"required": true
+			},
+			{
+				"name": "dso",
+				"type": "number | null",
+				"required": false
+			},
+			{
+				"name": "limit",
+				"type": "number",
+				"required": false,
+				"description": "Show only the top N debtors (by total)."
+			},
+			{
+				"name": "currency",
+				"type": "string",
+				"required": false,
+				"default": "\"MYR\""
+			},
+			{
+				"name": "partyLabel",
+				"type": "string",
+				"required": false,
+				"default": "\"Customer\"",
+				"description": "\"Customer\" for receivables, \"Vendor\" for payables."
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"CashFlowOverview": {
+		"props": [
+			{
+				"name": "points",
+				"type": "CashFlowPoint[]",
+				"required": true,
+				"description": "Up to 6 months, oldest → newest."
+			},
+			{
+				"name": "currency",
+				"type": "string",
+				"required": false,
+				"default": "\"MYR\""
+			},
+			{
+				"name": "hasActivity",
+				"type": "boolean",
+				"required": false,
+				"default": "true"
+			},
+			{
+				"name": "defaultRange",
+				"type": "\"3\" | \"6\"",
+				"required": false,
+				"default": "\"6\""
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"section\">"
+		]
+	},
+	"CashRunwayPosition": {
+		"props": [
+			{
+				"name": "cash",
+				"type": "number | null",
+				"required": true
+			},
+			{
+				"name": "runwayMonths",
+				"type": "number | null",
+				"required": true,
+				"description": "Months at the last 3 months' burn; null when it can't be computed."
+			},
+			{
+				"name": "accounts",
+				"type": "number | null",
+				"required": false
+			},
+			{
+				"name": "cashPositive",
+				"type": "boolean",
+				"required": false,
+				"description": "No burn to divide by — earns a full bar."
+			},
+			{
+				"name": "trail",
+				"type": "{ label: string; cash: number }[]",
+				"required": false,
+				"description": "Implied month-end cash, oldest → newest."
+			},
+			{
+				"name": "currency",
+				"type": "string",
+				"required": false,
+				"default": "\"MYR\""
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"section\">"
+		]
+	},
+	"BusinessHealthPanel": {
+		"props": [
+			{
+				"name": "checks",
+				"type": "HealthCheck[] | null",
+				"required": true
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"section\">"
+		]
+	},
+	"RecentActivityFeed": {
+		"props": [
+			{
+				"name": "items",
+				"type": "ActivityItem[] | null",
+				"required": true
+			},
+			{
+				"name": "now",
+				"type": "string | number",
+				"required": false
+			},
+			{
+				"name": "viewAllHref",
+				"type": "string",
+				"required": false
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"section\">"
+		]
+	},
+	"BillCard": {
+		"props": [
+			{
+				"name": "bill",
+				"type": "CyncoBill",
+				"required": true
+			},
+			{
+				"name": "showStatus",
+				"type": "boolean",
+				"required": false,
+				"default": "false",
+				"description": "Status chip on the card, for bills shown outside a board column."
+			},
+			{
+				"name": "selected",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "onToggle",
+				"type": "(id: string) => void",
+				"required": false
+			},
+			{
+				"name": "someSelected",
+				"type": "boolean",
+				"required": false,
+				"description": "Any card on the board selected: keep checkboxes visible."
+			},
+			{
+				"name": "onAction",
+				"type": "(bill: CyncoBill, action: string) => void",
+				"required": false
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"BillsBoard": {
+		"props": [
+			{
+				"name": "bills",
+				"type": "CyncoBill[]",
+				"required": true
+			},
+			{
+				"name": "columns",
+				"type": "(\"paid\" | \"in_review\" | \"pending_approval\" | \"awaiting_payment\" | \"scheduled\")[]",
+				"required": false,
+				"description": "Columns to show, in board order (default: all five)."
+			},
+			{
+				"name": "selectedIds",
+				"type": "string[]",
+				"required": false
+			},
+			{
+				"name": "onToggleBill",
+				"type": "(id: string) => void",
+				"required": false
+			},
+			{
+				"name": "paidFilterLabel",
+				"type": "string",
+				"required": false,
+				"default": "\"Past 30 Days\""
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"BillDetailHeader": {
+		"props": [
+			{
+				"name": "bill",
+				"type": "CyncoBill & { isArchived?: boolean }",
+				"required": true
+			},
+			{
+				"name": "receivedVia",
+				"type": "string",
+				"required": false,
+				"description": "Where the bill came from, when it arrived by email."
+			},
+			{
+				"name": "hasDocument",
+				"type": "boolean",
+				"required": false,
+				"default": "true"
+			},
+			{
+				"name": "isReExtracting",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "isExtracting",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "onReExtract",
+				"type": "() => void",
+				"required": false
+			},
+			{
+				"name": "onArchive",
+				"type": "() => void",
+				"required": false
+			},
+			{
+				"name": "onRestore",
+				"type": "() => void",
+				"required": false
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"BillAlerts": {
+		"props": [
+			{
+				"name": "isDuplicate",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "duplicateBill",
+				"type": "{ vendorName: string | null; billNumber?: string | null; totalAmount?: number; currency?: string } | null",
+				"required": false
+			},
+			{
+				"name": "status",
+				"type": "string",
+				"required": false
+			},
+			{
+				"name": "rejectionNotes",
+				"type": "string | null",
+				"required": false
+			},
+			{
+				"name": "vendorLoadError",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "lineItemsCorrupted",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "unusedCredit",
+				"type": "{ amount: number; currency?: string } | null",
+				"required": false,
+				"description": "Vendor credits in the bill's currency (cynco ApplyVendorCreditPanel)."
+			},
+			{
+				"name": "onDismissDuplicate",
+				"type": "() => void",
+				"required": false
+			},
+			{
+				"name": "onApplyCredit",
+				"type": "() => void",
+				"required": false
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"PayRunTable": {
+		"props": [
+			{
+				"name": "bills",
+				"type": "CyncoBill[]",
+				"required": true,
+				"description": "Pay-run eligible bills (approved / awaiting payment / scheduled / partially paid)."
+			},
+			{
+				"name": "selectedIds",
+				"type": "string[]",
+				"required": false
+			},
+			{
+				"name": "onSelectedChange",
+				"type": "(ids: string[]) => void",
+				"required": false
+			},
+			{
+				"name": "defaultSelectedIds",
+				"type": "string[]",
+				"required": false
+			},
+			{
+				"name": "scheduledDate",
+				"type": "string",
+				"required": false,
+				"description": "YYYY-MM-DD; defaults to `today`."
+			},
+			{
+				"name": "today",
+				"type": "string",
+				"required": false,
+				"description": "YYYY-MM-DD used to validate the schedule date."
+			},
+			{
+				"name": "bankAccounts",
+				"type": "CyncoBankAccount[]",
+				"required": false,
+				"description": "Optional \"Pay from\" bank / cash account picker."
+			},
+			{
+				"name": "onSchedule",
+				"type": "(billIds: string[], date: string, bankAccountId?: string) => void",
+				"required": false
+			},
+			{
+				"name": "isSubmitting",
+				"type": "boolean",
+				"required": false
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"RecordBillPaymentDialog": {
+		"props": [
+			{
+				"name": "billAmount",
+				"type": "number",
+				"required": true
+			},
+			{
+				"name": "bankAccounts",
+				"type": "CyncoBankAccount[]",
+				"required": true
+			},
+			{
+				"name": "paidAmount",
+				"type": "number",
+				"required": false,
+				"default": "0"
+			},
+			{
+				"name": "currency",
+				"type": "string",
+				"required": false,
+				"default": "\"MYR\""
+			},
+			{
+				"name": "defaultOpen",
+				"type": "boolean",
+				"required": false,
+				"default": "false"
+			},
+			{
+				"name": "defaultDate",
+				"type": "string",
+				"required": false,
+				"description": "YYYY-MM-DD; defaults to today."
+			},
+			{
+				"name": "disabled",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "onSubmit",
+				"type": "(data: { paymentDate: string; paymentAmount: string; paymentMethod?: string; paymentReference?: string; bankAccountId: string; notes?: string }) => void",
+				"required": false
+			},
+			{
+				"name": "contentClassName",
+				"type": "string",
+				"required": false,
+				"description": "Classes for the sheet panel."
+			}
+		],
+		"inherits": []
+	},
+	"ReceiptExtractionProgress": {
+		"props": [
+			{
+				"name": "view",
+				"type": "ExtractionView | null",
+				"required": true
+			},
+			{
+				"name": "hasExtractedData",
+				"type": "boolean",
+				"required": false,
+				"default": "true"
+			},
+			{
+				"name": "manualEntry",
+				"type": "boolean",
+				"required": false,
+				"default": "false",
+				"description": "The user chose to fill the form while extraction runs."
+			},
+			{
+				"name": "isReExtracting",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "onReview",
+				"type": "() => void",
+				"required": false
+			},
+			{
+				"name": "onReExtract",
+				"type": "() => void",
+				"required": false
+			},
+			{
+				"name": "onEnterManually",
+				"type": "() => void",
+				"required": false
+			},
+			{
+				"name": "onCheckStatus",
+				"type": "() => void",
+				"required": false
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"PartyOverviewHeader": {
+		"props": [
+			{
+				"name": "role",
+				"type": "\"customer\" | \"vendor\"",
+				"required": true
+			},
+			{
+				"name": "name",
+				"type": "string",
+				"required": true
+			},
+			{
+				"name": "balance",
+				"type": "number",
+				"required": true,
+				"description": "Subledger balance: positive = they owe you (customer) / you owe them (vendor)."
+			},
+			{
+				"name": "overdue",
+				"type": "number",
+				"required": true
+			},
+			{
+				"name": "openCount",
+				"type": "number",
+				"required": true
+			},
+			{
+				"name": "trendTotal",
+				"type": "number",
+				"required": true,
+				"description": "Billed (customer) or spend (vendor), trailing 12 months."
+			},
+			{
+				"name": "isActive",
+				"type": "boolean",
+				"required": false,
+				"default": "true"
+			},
+			{
+				"name": "overdueSince",
+				"type": "string | null",
+				"required": false,
+				"description": "YYYY-MM-DD of the oldest overdue item."
+			},
+			{
+				"name": "paymentTerms",
+				"type": "string | null",
+				"required": false
+			},
+			{
+				"name": "category",
+				"type": "string | null",
+				"required": false
+			},
+			{
+				"name": "since",
+				"type": "string | null",
+				"required": false,
+				"description": "YYYY-MM-DD the party was created."
+			},
+			{
+				"name": "currency",
+				"type": "string",
+				"required": false,
+				"default": "\"MYR\""
+			},
+			{
+				"name": "tab",
+				"type": "\"activity\" | \"ledger\" | \"details\"",
+				"required": false
+			},
+			{
+				"name": "onTabChange",
+				"type": "(tab: string) => void",
+				"required": false
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"PartyRail": {
+		"props": [
+			{
+				"name": "role",
+				"type": "\"customer\" | \"vendor\"",
+				"required": true
+			},
+			{
+				"name": "ledgerBalance",
+				"type": "number",
+				"required": true,
+				"description": "Subledger balance (ground truth)."
+			},
+			{
+				"name": "openItemsTotal",
+				"type": "number",
+				"required": true,
+				"description": "Sum of open bills / invoices — ties out against the ledger."
+			},
+			{
+				"name": "aging",
+				"type": "PartyAging",
+				"required": true
+			},
+			{
+				"name": "currency",
+				"type": "string",
+				"required": false,
+				"default": "\"MYR\""
+			},
+			{
+				"name": "trend",
+				"type": "Array<{ month: string; total: number }>",
+				"required": false,
+				"description": "Last 12 months: { month: \"2026-10\", total }."
+			},
+			{
+				"name": "credits",
+				"type": "Array<{ currency: string; amount: number; count: number }>",
+				"required": false,
+				"description": "Unused credit notes per currency (customers only)."
+			},
+			{
+				"name": "creditNotesHref",
+				"type": "string",
+				"required": false,
+				"description": "Where \"View credit notes\" goes; renders it as a real link."
+			},
+			{
+				"name": "onViewCreditNotes",
+				"type": "() => void",
+				"required": false,
+				"description": "In-app handler for \"View credit notes\" when there is no URL; renders it as a button. Without either, the action is hidden."
+			},
+			{
+				"name": "contacts",
+				"type": "PartyContact[]",
+				"required": false
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"aside\">"
+		]
+	},
+	"PartyTimeline": {
+		"props": [
+			{
+				"name": "role",
+				"type": "\"customer\" | \"vendor\"",
+				"required": true
+			},
+			{
+				"name": "events",
+				"type": "PartyEvent[]",
+				"required": true
+			},
+			{
+				"name": "currency",
+				"type": "string",
+				"required": false,
+				"default": "\"MYR\""
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"PartyLedgerTable": {
+		"props": [
+			{
+				"name": "rows",
+				"type": "PartyLedgerRow[]",
+				"required": true
+			},
+			{
+				"name": "currency",
+				"type": "string",
+				"required": false,
+				"default": "\"MYR\""
+			}
+		],
+		"inherits": []
+	},
+	"CustomerListTable": {
+		"props": [
+			{
+				"name": "customers",
+				"type": "CyncoCustomerRow[]",
+				"required": true
+			},
+			{
+				"name": "selectedIds",
+				"type": "string[]",
+				"required": false
+			},
+			{
+				"name": "onSelectedChange",
+				"type": "(ids: string[]) => void",
+				"required": false
+			},
+			{
+				"name": "defaultSelectedIds",
+				"type": "string[]",
+				"required": false
+			},
+			{
+				"name": "marginWindowDays",
+				"type": "number",
+				"required": false,
+				"default": "90"
+			},
+			{
+				"name": "onRowClick",
+				"type": "(row: CyncoCustomerRow) => void",
+				"required": false
+			}
+		],
+		"inherits": []
+	},
+	"VendorListTable": {
+		"props": [
+			{
+				"name": "vendors",
+				"type": "CyncoVendorRow[]",
+				"required": true
+			},
+			{
+				"name": "selectedIds",
+				"type": "string[]",
+				"required": false
+			},
+			{
+				"name": "onSelectedChange",
+				"type": "(ids: string[]) => void",
+				"required": false
+			},
+			{
+				"name": "defaultSelectedIds",
+				"type": "string[]",
+				"required": false
+			},
+			{
+				"name": "currency",
+				"type": "string",
+				"required": false,
+				"default": "\"MYR\""
+			},
+			{
+				"name": "onRowClick",
+				"type": "(row: CyncoVendorRow) => void",
+				"required": false
+			}
+		],
+		"inherits": []
+	},
+	"CustomerStatementMetrics": {
+		"props": [
+			{
+				"name": "metrics",
+				"type": "StatementMetrics",
+				"required": true
+			},
+			{
+				"name": "currency",
+				"type": "string",
+				"required": false,
+				"default": "\"MYR\""
+			},
+			{
+				"name": "availableCurrencies",
+				"type": "string[]",
+				"required": false
+			},
+			{
+				"name": "isSingleCurrency",
+				"type": "boolean",
+				"required": false,
+				"default": "true"
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"CustomerStatementTable": {
+		"props": [
+			{
+				"name": "transactions",
+				"type": "StatementTransaction[]",
+				"required": true
+			},
+			{
+				"name": "currency",
+				"type": "string",
+				"required": false,
+				"default": "\"MYR\""
+			},
+			{
+				"name": "isSingleCurrency",
+				"type": "boolean",
+				"required": false,
+				"default": "true"
+			},
+			{
+				"name": "balanceDue",
+				"type": "number",
+				"required": false,
+				"description": "Shown on the last page in single-currency mode."
+			},
+			{
+				"name": "page",
+				"type": "number",
+				"required": false
+			},
+			{
+				"name": "totalPages",
+				"type": "number",
+				"required": false
+			}
+		],
+		"inherits": []
+	},
+	"TaxComputationSummary": {
+		"props": [
+			{
+				"name": "data",
+				"type": "TaxComputationData",
+				"required": true
+			},
+			{
+				"name": "rateExplanation",
+				"type": "string",
+				"required": false
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"TaxInstallmentSchedule": {
+		"props": [
+			{
+				"name": "installments",
+				"type": "CP204Installment[]",
+				"required": true
+			},
+			{
+				"name": "totalDue",
+				"type": "number",
+				"required": true
+			},
+			{
+				"name": "totalPaid",
+				"type": "number",
+				"required": true
+			},
+			{
+				"name": "isSubmitting",
+				"type": "boolean",
+				"required": false,
+				"default": "false"
+			},
+			{
+				"name": "onMarkPaid",
+				"type": "(id: string) => void",
+				"required": false
+			},
+			{
+				"name": "description",
+				"type": "ReactNode",
+				"required": false,
+				"default": "\"12 monthly installments, due 15th of each month\""
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"TaxAdjustmentsTable": {
+		"props": [
+			{
+				"name": "title",
+				"type": "string",
+				"required": true
+			},
+			{
+				"name": "adjustments",
+				"type": "TaxAdjustment[]",
+				"required": true
+			},
+			{
+				"name": "category",
+				"type": "\"add_back\" | \"deduction\" | \"relief\"",
+				"required": true
+			},
+			{
+				"name": "readOnly",
+				"type": "boolean",
+				"required": false,
+				"default": "false"
+			},
+			{
+				"name": "isSubmitting",
+				"type": "boolean",
+				"required": false,
+				"default": "false"
+			},
+			{
+				"name": "onAdd",
+				"type": "() => void",
+				"required": false
+			},
+			{
+				"name": "onDelete",
+				"type": "(id: string) => void",
+				"required": false
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"TaxFilingWorkflow": {
+		"props": [
+			{
+				"name": "status",
+				"type": "string",
+				"required": true
+			},
+			{
+				"name": "readOnly",
+				"type": "boolean",
+				"required": false,
+				"default": "false"
+			},
+			{
+				"name": "isSubmitting",
+				"type": "boolean",
+				"required": false,
+				"default": "false"
+			},
+			{
+				"name": "filingReference",
+				"type": "string | null",
+				"required": false
+			},
+			{
+				"name": "reviewedAt",
+				"type": "string | null",
+				"required": false
+			},
+			{
+				"name": "filedAt",
+				"type": "string | null",
+				"required": false
+			},
+			{
+				"name": "onReview",
+				"type": "() => void",
+				"required": false
+			},
+			{
+				"name": "onFile",
+				"type": "() => void",
+				"required": false
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"FixedAssetOverview": {
+		"props": [
+			{
+				"name": "asset",
+				"type": "FixedAssetData",
+				"required": true
+			},
+			{
+				"name": "schedule",
+				"type": "AssetDepreciationEntry[]",
+				"required": false
+			},
+			{
+				"name": "defaultTab",
+				"type": "string",
+				"required": false,
+				"default": "\"overview\""
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"AssetDepreciationSchedule": {
+		"props": [
+			{
+				"name": "entries",
+				"type": "AssetDepreciationEntry[]",
+				"required": true
+			},
+			{
+				"name": "onOpenJournal",
+				"type": "(journalEntryId: string) => void",
+				"required": false
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"ItemsListTable": {
+		"props": [
+			{
+				"name": "items",
+				"type": "CatalogItem[]",
+				"required": true
+			},
+			{
+				"name": "inventoryByItem",
+				"type": "Record<string, ItemInventoryInfo>",
+				"required": false,
+				"default": "{}"
+			},
+			{
+				"name": "realizedByItem",
+				"type": "Record<string, ItemRealized>",
+				"required": false,
+				"default": "{}"
+			},
+			{
+				"name": "selectedItems",
+				"type": "string[]",
+				"required": false,
+				"default": "[]"
+			},
+			{
+				"name": "onToggle",
+				"type": "(id: string) => void",
+				"required": false
+			},
+			{
+				"name": "onToggleAll",
+				"type": "(all: boolean) => void",
+				"required": false
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"ItemStatsRow": {
+		"props": [
+			{
+				"name": "stats",
+				"type": "{ avgProfitMargin: number | null; avgRevenuePerItem: number | null; highestEarningItem: { name: string; revenue: number } | null; mostSoldItem: { name: string; quantity: number } | null }",
+				"required": true
+			},
+			{
+				"name": "realizedMargins",
+				"type": "{ marginPercent: number | null; lineCount: number; belowCostItemCount: number }",
+				"required": false
+			},
+			{
+				"name": "currency",
+				"type": "string",
+				"required": false,
+				"default": "\"MYR\""
+			},
+			{
+				"name": "windowDays",
+				"type": "number",
+				"required": false,
+				"default": "30"
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"InventoryFlowPanel": {
+		"props": [
+			{
+				"name": "trackedItems",
+				"type": "number",
+				"required": true
+			},
+			{
+				"name": "isReconciled",
+				"type": "boolean",
+				"required": true
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"section\">"
+		]
+	},
+	"StockBalancesReport": {
+		"props": [
+			{
+				"name": "balances",
+				"type": "StockBalanceRow[]",
+				"required": true
+			},
+			{
+				"name": "reconciliation",
+				"type": "{ glBalance: Num; subledgerBalance: Num; difference: Num; isReconciled: boolean }",
+				"required": true
+			},
+			{
+				"name": "period",
+				"type": "string",
+				"required": false
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"section\">"
+		]
+	},
+	"PurchaseOrderStats": {
+		"props": [
+			{
+				"name": "stats",
+				"type": "{ status: string; count: number; total: Num }[]",
+				"required": true
+			},
+			{
+				"name": "currency",
+				"type": "string",
+				"required": false,
+				"default": "\"MYR\""
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"PurchaseOrderLines": {
+		"props": [
+			{
+				"name": "lineItems",
+				"type": "POLine[]",
+				"required": true
+			},
+			{
+				"name": "onChange",
+				"type": "(items: POLine[]) => void",
+				"required": false
+			},
+			{
+				"name": "readOnly",
+				"type": "boolean",
+				"required": false,
+				"default": "false"
+			},
+			{
+				"name": "currency",
+				"type": "string",
+				"required": false,
+				"default": "\"MYR\""
+			},
+			{
+				"name": "taxAmount",
+				"type": "number",
+				"required": false
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"PurchaseOrderLinkedBills": {
+		"props": [
+			{
+				"name": "bills",
+				"type": "{ id: string; billNumber: string | null; status: string | null; totalAmount: Num; currency?: string | null; issueDate: string | null }[]",
+				"required": true
+			},
+			{
+				"name": "currency",
+				"type": "string",
+				"required": false,
+				"default": "\"MYR\""
+			},
+			{
+				"name": "onOpen",
+				"type": "(id: string) => void",
+				"required": false
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"PayslipSummary": {
+		"props": [
+			{
+				"name": "payslip",
+				"type": "PayslipData",
+				"required": true
+			},
+			{
+				"name": "month",
+				"type": "string",
+				"required": false
+			},
+			{
+				"name": "canMarkPaid",
+				"type": "boolean",
+				"required": false,
+				"default": "false"
+			},
+			{
+				"name": "onMarkPaid",
+				"type": "(reference: string) => void",
+				"required": false
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"section\">"
+		]
+	},
+	"PayslipsRunTable": {
+		"props": [
+			{
+				"name": "payslips",
+				"type": "PayslipData[]",
+				"required": true
+			},
+			{
+				"name": "payable",
+				"type": "boolean",
+				"required": false,
+				"default": "true"
+			},
+			{
+				"name": "onOpen",
+				"type": "(id: string) => void",
+				"required": false
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"PayrollRemittancesPanel": {
+		"props": [
+			{
+				"name": "remittances",
+				"type": "{ payable: string; label: string; employee: number; employer: number }[]",
+				"required": true
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"section\">"
+		]
+	},
+	"EInvoiceStatusCard": {
+		"props": [
+			{
+				"name": "credentialEnvironments",
+				"type": "EnvName[]",
+				"required": true
+			},
+			{
+				"name": "byEnvironment",
+				"type": "Partial<Record<EnvName, EInvoiceEnvStatus>>",
+				"required": true
+			},
+			{
+				"name": "documentLabel",
+				"type": "string",
+				"required": false,
+				"default": "\"invoice\""
+			},
+			{
+				"name": "hasCorrection",
+				"type": "boolean",
+				"required": false,
+				"default": "true"
+			},
+			{
+				"name": "onSubmit",
+				"type": "(env: EnvName) => void",
+				"required": false
+			},
+			{
+				"name": "onCancel",
+				"type": "(env: EnvName, reason: string) => void",
+				"required": false
+			},
+			{
+				"name": "onCheck",
+				"type": "(env: EnvName) => void",
+				"required": false
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"Artifact": {
+		"props": [],
+		"inherits": [
+			"HTMLAttributes<HTMLDivElement>"
+		]
+	},
+	"Canvas": {
+		"props": [],
+		"inherits": [
+			"ReactFlowProps"
+		]
+	},
+	"Node": {
+		"props": [
+			{
+				"name": "handles",
+				"type": "{ target: boolean; source: boolean }",
+				"required": true
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"Edge": null,
+	"Controls": {
+		"props": [],
+		"inherits": [
+			"ComponentProps<typeof ControlsPrimitive>"
+		]
+	},
+	"Panel": {
+		"props": [],
+		"inherits": [
+			"ComponentProps<typeof PanelPrimitive>"
+		]
+	},
+	"Toolbar": {
+		"props": [],
+		"inherits": [
+			"ComponentProps<typeof NodeToolbar>"
+		]
+	},
+	"Connection": {
+		"props": [],
+		"inherits": [
+			"ConnectionLineComponentProps"
+		]
+	},
+	"ChainOfThought": {
+		"props": [
+			{
+				"name": "open",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "defaultOpen",
+				"type": "boolean",
+				"required": false,
+				"default": "false"
+			},
+			{
+				"name": "onOpenChange",
+				"type": "(open: boolean) => void",
+				"required": false
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"Checkpoint": {
+		"props": [],
+		"inherits": [
+			"HTMLAttributes<HTMLDivElement>"
+		]
+	},
+	"CodeBlock": {
+		"props": [
+			{
+				"name": "code",
+				"type": "string",
+				"required": true
+			},
+			{
+				"name": "language",
+				"type": "BundledLanguage",
+				"required": true
+			},
+			{
+				"name": "showLineNumbers",
+				"type": "boolean",
+				"required": false,
+				"default": "false"
+			}
+		],
+		"inherits": [
+			"HTMLAttributes<HTMLDivElement>"
+		]
+	},
+	"CompactPromptInput": {
+		"props": [
+			{
+				"name": "value",
+				"type": "string",
+				"required": true
+			},
+			{
+				"name": "onChange",
+				"type": "(value: string) => void",
+				"required": true
+			},
+			{
+				"name": "onSubmit",
+				"type": "() => void",
+				"required": true
+			},
+			{
+				"name": "placeholder",
+				"type": "string",
+				"required": false,
+				"default": "\"Describe changes...\""
+			},
+			{
+				"name": "isLoading",
+				"type": "boolean",
+				"required": false
+			}
+		],
+		"inherits": []
+	},
+	"Confirmation": {
+		"props": [
+			{
+				"name": "state",
+				"type": "ToolUIPart[\"state\"]",
+				"required": true
+			},
+			{
+				"name": "variant",
+				"type": "\"default\" | \"destructive\" | \"note\" | \"success\" | \"warning\"",
+				"required": false,
+				"default": "\"default\""
+			},
+			{
+				"name": "approval",
+				"type": "ToolUIPartApproval",
+				"required": false
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"Context": {
+		"props": [
+			{
+				"name": "usedTokens",
+				"type": "number",
+				"required": true
+			},
+			{
+				"name": "maxTokens",
+				"type": "number",
+				"required": true
+			},
+			{
+				"name": "usage",
+				"type": "LanguageModelUsage",
+				"required": false
+			},
+			{
+				"name": "modelId",
+				"type": "ModelId",
+				"required": false
+			}
+		],
+		"inherits": [
+			"PopoverPrimitive.Root.Props"
+		]
+	},
+	"Conversation": {
+		"props": [],
+		"inherits": [
+			"ComponentProps<typeof StickToBottom>"
+		]
+	},
+	"Image": {
+		"props": [
+			{
+				"name": "alt",
+				"type": "string",
+				"required": false
+			}
+		],
+		"inherits": [
+			"Experimental_GeneratedImage"
+		]
+	},
+	"InlineCitation": {
+		"props": [],
+		"inherits": [
+			"ComponentProps<\"span\">"
+		]
+	},
+	"Loader": {
+		"props": [
+			{
+				"name": "size",
+				"type": "number",
+				"required": false,
+				"default": "16"
+			}
+		],
+		"inherits": [
+			"HTMLAttributes<HTMLDivElement>"
+		]
+	},
+	"Message": {
+		"props": [
+			{
+				"name": "from",
+				"type": "\"user\" | \"system\" | \"assistant\"",
+				"required": true
+			}
+		],
+		"inherits": [
+			"HTMLAttributes<HTMLDivElement>"
+		]
+	},
+	"ModelSelector": {
+		"props": [],
+		"inherits": [
+			"DialogPrimitive.Root.Props"
+		]
+	},
+	"OpenIn": {
+		"props": [
+			{
+				"name": "query",
+				"type": "string",
+				"required": true
+			}
+		],
+		"inherits": [
+			"MenuPrimitive.Root.Props"
+		]
+	},
+	"Plan": {
+		"props": [
+			{
+				"name": "asChild",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "isStreaming",
+				"type": "boolean",
+				"required": false,
+				"default": "false"
+			}
+		],
+		"inherits": [
+			"CollapsiblePrimitive.Root.Props"
+		]
+	},
+	"PromptInput": {
+		"props": [
+			{
+				"name": "onSubmit",
+				"type": "(message: PromptInputMessage, event: FormEvent<HTMLFormElement>) => void | Promise<void>",
+				"required": true
+			},
+			{
+				"name": "accept",
+				"type": "string",
+				"required": false
+			},
+			{
+				"name": "multiple",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "globalDrop",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "syncHiddenInput",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "maxFiles",
+				"type": "number",
+				"required": false
+			},
+			{
+				"name": "maxFileSize",
+				"type": "number",
+				"required": false
+			},
+			{
+				"name": "onError",
+				"type": "(err: { code: \"max_files\" | \"max_file_size\" | \"accept\"; message: string }) => void",
+				"required": false
+			}
+		],
+		"inherits": [
+			"HTMLAttributes<HTMLFormElement>"
+		]
+	},
+	"Queue": {
+		"props": [],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"Reasoning": {
+		"props": [
+			{
+				"name": "open",
+				"type": "boolean",
+				"required": false,
+				"description": "Whether the collapsible panel is currently open. To render an uncontrolled collapsible, use the `defaultOpen` prop instead."
+			},
+			{
+				"name": "defaultOpen",
+				"type": "boolean",
+				"required": false,
+				"default": "false",
+				"description": "Whether the collapsible panel is initially open. To render a controlled collapsible, use the `open` prop instead."
+			},
+			{
+				"name": "onOpenChange",
+				"type": "(open: boolean) => void",
+				"required": false,
+				"description": "Event handler called when the panel is opened or closed."
+			},
+			{
+				"name": "asChild",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "isStreaming",
+				"type": "boolean",
+				"required": false,
+				"default": "false"
+			},
+			{
+				"name": "duration",
+				"type": "number",
+				"required": false
+			}
+		],
+		"inherits": [
+			"CollapsiblePrimitive.Root.Props"
+		]
+	},
+	"Shimmer": {
+		"props": [
+			{
+				"name": "children",
+				"type": "string",
+				"required": true
+			},
+			{
+				"name": "as",
+				"type": "ElementType",
+				"required": false,
+				"default": "\"p\""
+			},
+			{
+				"name": "duration",
+				"type": "number",
+				"required": false,
+				"default": "2"
+			},
+			{
+				"name": "spread",
+				"type": "number",
+				"required": false,
+				"default": "2"
+			}
+		],
+		"inherits": []
+	},
+	"Sources": {
+		"props": [],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	},
+	"Suggestion": {
+		"props": [
+			{
+				"name": "suggestion",
+				"type": "string",
+				"required": true
+			},
+			{
+				"name": "variant",
+				"type": "\"primary\" | \"secondary\" | \"skeleton\" | \"muted\" | \"destructive\" | \"dotted\"",
+				"required": false,
+				"default": "\"secondary\""
+			},
+			{
+				"name": "size",
+				"type": "\"sm\" | \"default\" | \"mini\" | \"icon\"",
+				"required": false,
+				"default": "\"sm\""
+			},
+			{
+				"name": "asChild",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "isLoading",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "transition",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "disableActive",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "hide",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "render",
+				"type": "ReactElement",
+				"required": false
+			},
+			{
+				"name": "focusableWhenDisabled",
+				"type": "boolean",
+				"required": false,
+				"description": "Keep the button in the tab order while disabled (Base UI). Set automatically while `isLoading`."
+			},
+			{
+				"name": "onClick",
+				"type": "(suggestion: string) => void",
+				"required": false
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"button\">"
+		]
+	},
+	"Task": {
+		"props": [
+			{
+				"name": "asChild",
+				"type": "boolean",
+				"required": false
+			}
+		],
+		"inherits": [
+			"CollapsiblePrimitive.Root.Props"
+		]
+	},
+	"Tool": {
+		"props": [
+			{
+				"name": "asChild",
+				"type": "boolean",
+				"required": false
+			}
+		],
+		"inherits": [
+			"CollapsiblePrimitive.Root.Props"
+		]
+	},
+	"WebPreview": {
+		"props": [
+			{
+				"name": "defaultUrl",
+				"type": "string",
+				"required": false,
+				"default": "\"\""
+			},
+			{
+				"name": "onUrlChange",
+				"type": "(url: string) => void",
+				"required": false
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
+	}
+}

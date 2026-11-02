@@ -66,6 +66,14 @@ Tax return page, CP204 tab.
 
 `installments` [{id, installmentNumber, dueDate, amount, paidAmount, status: paid|pending|partial|overdue}], `totalDue`, `totalPaid`; optional `onMarkPaid(id)`, `isSubmitting`; optional `description` (defaults to Cynco's 12-instalment copy), `className` and native div props on the root.
 
+- `installments`: `CP204Installment[]`
+- `totalDue`: `number`
+- `totalPaid`: `number`
+- `isSubmitting?`: `boolean`. Default `false`.
+- `onMarkPaid?`: `(id: string) => void`
+- `description?`: `ReactNode`. Default `"12 monthly installments, due 15th of each month"`.
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 A table in the DataTable tray (table-tray / table-surface); the totals row sits on the tray and progress shows in the header. Responsive: built on DataList: a tray table when wide, stacked cards (due date, amount, status, paid) when narrow.

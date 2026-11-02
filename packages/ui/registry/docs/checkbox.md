@@ -49,4 +49,8 @@ Boolean options in lists and tables; use Switch for settings that apply immediat
 
 `checked`/`defaultChecked`, `onCheckedChange`, `size` (`sm` · `md` · `lg`), `disabled`.
 
+- `size?`: `"sm" | "md" | "lg"`. Default `"sm"`.
+- `disabled?`: `boolean`. Whether the component should ignore user interaction. Default `false`.
+- Also accepts `CheckboxPrimitive.Root.Props`.
+
 Category: Components · Selection. Source: `packages/ui/src/base/components/ui/checkbox.tsx`.

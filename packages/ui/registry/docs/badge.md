@@ -33,6 +33,11 @@ Counts and neutral labels. Use StatusChip for states.
 
 `variant` (`default` · `muted` · `secondary`), `size` (`default` · `sm`), children.
 
+- `variant?`: `"default" | "secondary" | "muted"`. Default `"default"`.
+- `size?`: `"sm" | "default"`. Default `"default"`.
+- `asChild?`: `boolean`. Default `false`.
+- Also accepts `useRender.ComponentProps<"span">`.
+
 ## Notes
 
 Prefer `muted`; `default` is the zinc pill.

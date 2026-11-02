@@ -169,6 +169,16 @@ Build any printed document by composing the parts inside a DocumentPage, under a
 
 DocumentBrandProvider brand (company {name, registrationNo, tin, sstNo, address, phone, email, website}, logo (URL or element; typographic monogram when omitted), layout minimal (default) | classic | modern, font inter | geist | serif, locale en | ms | en-ms, labels overrides, signature, footerNote). DocumentPage: size a4 | a4-landscape | a5 | letter | receipt, stamp paid | void | draft | copy | overdue, fit width | none (controlled, with onFitChange) or defaultFit, zoomControl (default true: a Fit width / Actual size toggle appears while the sheet is scaled down, so browser zoom can enlarge the text), isolate, brand (override). Figures are decimal strings, printed as given.
 
+- `brand?`: `Partial<DocBrand>`. Overrides the provider's brand (merged over it).
+- `size?`: `"a4" | "a4-landscape" | "a5" | "letter" | "receipt"`. Default `"a4"`.
+- `stamp?`: `"paid" | "void" | "draft" | "copy" | "overdue"`. A diagonal stamp across the page: Paid, Void, Draft, Copy, Overdue.
+- `fit?`: `"width" | "none"`. On screen: scale the sheet down to fit its container ("width") or keep 100% and scroll ("none"). Controlled; pair with `onFitChange`. Leave unset to let the zoom control switch it.
+- `defaultFit?`: `"width" | "none"`. Uncontrolled starting fit. Default "width". Default `"width"`.
+- `onFitChange?`: `(fit: DocumentFit) => void`
+- `zoomControl?`: `boolean`. Show "Fit width / Actual size" above the sheet while it is scaled down. Default true. Fit-to-width cancels browser zoom, so readers need a way back to 100% to enlarge the text (WCAG 1.4.4). Hidden in print, and when `fit` is controlled without `onFitChange`. Default `true`.
+- `isolate?`: `boolean`. When printing, hide the rest of the app and print only this page. Default true. Default `true`.
+- Also accepts `ComponentProps<"article">`.
+
 ## Notes
 
 Black ink on white paper only — no colour, tints or filled bars; hierarchy from type, spacing and hairlines. In print: real paper size and margins, page numbers "2 / 3", headers repeat, rows never split, and only the document prints (isolate). On screen the sheet scales to its container. amountInWords writes Ringgit Malaysia in English or Malay; formatDocAmount and formatDocDate are exact and timezone-safe.

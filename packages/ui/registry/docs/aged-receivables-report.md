@@ -246,6 +246,14 @@ Credit-control meetings, month-end receivables review, bank covenant and auditor
 
 report: AgedReceivablesData — period (kind 'asAt'), customers [{name, detail?, current, days1to30, days31to60, days61to90, over90, total}], totals {…same buckets}, percentages {…same buckets, e.g. '49.2'}, summary?, basis?, currency?, filters?, preparedBy?, preparedOn?, notes?; plus brand?, size?, stamp?, fit?, isolate?, className.
 
+- `report`: `AgedReceivablesData`
+- `size?`: `"a4" | "a4-landscape" | "a5" | "letter" | "receipt"`
+- `brand?`: `Partial<DocBrand>`. Overrides the provider's brand (merged over it).
+- `stamp?`: `"paid" | "void" | "draft" | "copy" | "overdue"`. A diagonal stamp across the page: Paid, Void, Draft, Copy, Overdue.
+- `fit?`: `"width" | "none"`. On screen: scale the sheet down to fit its container ("width") or keep 100% and scroll ("none"). Controlled; pair with `onFitChange`. Leave unset to let the zoom control switch it.
+- `isolate?`: `boolean`. When printing, hide the rest of the app and print only this page. Default true.
+- Also accepts `ComponentProps<"article">`.
+
 ## Notes
 
 Bucket bars deepen from light to dark grey with age (black ink only). Percentages are supplied by the ledger, not calculated. Customer detail line suits code and terms ('C-0012 · Net 30'). A4 portrait by default (very long names wrap; pass size='a4-landscape' for wide ledgers).

@@ -61,6 +61,13 @@ Statement import review and the import done screen.
 
 statement {openingBalance, closingBalance, totalCredits, totalDebits, creditLines, debitLines} | null while reading, chainValid, brokenRows (0-based), currency, size, className and native props (spread on the root).
 
+- `statement`: `BankParsedStatement | null`
+- `chainValid?`: `boolean`. Default `true`.
+- `brokenRows?`: `number[]`. Default `[]`.
+- `currency?`: `string`. Default `"MYR"`.
+- `size?`: `"sm" | "md"`. Default `"md"`.
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 Built on BankBalanceEquation; the warning line uses an amber StatusChipIcon instead of warning-coloured text. Inherits the equation's wrapping; no overflow at 320px.

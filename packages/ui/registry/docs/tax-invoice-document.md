@@ -9,8 +9,7 @@ import { TaxInvoiceDocument } from "@cynco-labs/ui";
 ## Usage
 
 ```tsx
-import { useState } from "react";
-import { DocumentBrandProvider, GroupedTabButton, TaxInvoiceDocument } from "@cynco-labs/ui";
+import { DocumentBrandProvider, TaxInvoiceDocument } from "@cynco-labs/ui";
 
 const BRAND = {
 	company: {
@@ -47,43 +46,6 @@ const NUSA_SITE = {
 	attention: "En. Hafiz Zainal, Facilities",
 	phone: "+60 12-334 8821",
 };
-
-function Ctl(groups) {
-	return (
-		<div className="flex flex-wrap items-center gap-2">
-			{groups.map((g, i) => (
-				<div key={i} className="flex-auto" style={{ minWidth: g[2].length * 64 }}>
-					<GroupedTabButton value={g[0]} onValueChange={g[1]} options={g[2]} />
-				</div>
-			))}
-		</div>
-	);
-}
-
-const LAYOUTS = [
-	{ value: "minimal", label: "Minimal" },
-	{ value: "classic", label: "Classic" },
-	{ value: "modern", label: "Modern" },
-];
-
-const LANGS = [
-	{ value: "en", label: "EN" },
-	{ value: "ms", label: "BM" },
-	{ value: "en-ms", label: "EN + BM" },
-];
-
-function Shell(p) {
-	return (
-		<div className="flex flex-col gap-3">
-			{Ctl(p.groups)}
-			<DocumentBrandProvider
-				brand={Object.assign({}, BRAND, { layout: p.layout, locale: p.locale })}
-			>
-				<div className={p.center ? "flex justify-center" : ""}>{p.children}</div>
-			</DocumentBrandProvider>
-		</div>
-	);
-}
 
 const SST_INV = {
 	title: "taxInvoice",
@@ -291,31 +253,46 @@ const PLAIN_BRAND = {
 	footerNote: "Terima kasih atas sokongan anda.",
 };
 
-export default function TaxInvoiceDocumentDemo() {
-	const [l, setL] = useState("minimal"),
-		[g, setG] = useState("en"),
-		[v, setV] = useState("sst");
-	const inv = v === "usd" ? USD_INV : v === "plain" ? PLAIN_INV : SST_INV;
+export const controls = {
+	layout: {
+		label: "Layout",
+		options: [
+			{ value: "minimal", label: "Minimal" },
+			{ value: "classic", label: "Classic" },
+			{ value: "modern", label: "Modern" },
+		],
+		default: "minimal",
+	},
+	locale: {
+		label: "Language",
+		options: [
+			{ value: "en", label: "EN" },
+			{ value: "ms", label: "BM" },
+			{ value: "en-ms", label: "EN + BM" },
+		],
+		default: "en",
+	},
+	variant: {
+		label: "Invoice",
+		options: [
+			{ value: "sst", label: "SST · MYR" },
+			{ value: "usd", label: "USD" },
+			{ value: "plain", label: "Non-SST" },
+		],
+		default: "sst",
+	},
+};
+
+export default function TaxInvoiceDocumentDemo({
+	layout = "minimal",
+	locale = "en",
+	variant = "sst",
+}) {
+	const invoice = variant === "usd" ? USD_INV : variant === "plain" ? PLAIN_INV : SST_INV;
 	return (
-		<Shell
-			layout={l}
-			locale={g}
-			groups={[
-				[l, setL, LAYOUTS],
-				[g, setG, LANGS],
-				[
-					v,
-					setV,
-					[
-						{ value: "sst", label: "SST · MYR" },
-						{ value: "usd", label: "USD" },
-						{ value: "plain", label: "Non-SST" },
-					],
-				],
-			]}
-		>
-			<TaxInvoiceDocument invoice={inv} brand={v === "plain" ? PLAIN_BRAND : undefined} />
-		</Shell>
+		<DocumentBrandProvider brand={{ ...BRAND, layout, locale }}>
+			<TaxInvoiceDocument invoice={invoice} brand={variant === "plain" ? PLAIN_BRAND : undefined} />
+		</DocumentBrandProvider>
 	);
 }
 ```
@@ -327,6 +304,13 @@ Printing / PDF-ing a posted sales invoice, including foreign-currency invoices t
 ## Props
 
 invoice: TaxInvoiceData { title ('taxInvoice'|'invoice'), number, status, subtitle?, invoiceDate, dueDate?, terms?, reference?, currency?, billTo, shipTo?, lines: SalesDocLine[] (description, detail, code, quantity, unit, unitPrice, discount, taxCode, taxRate, amount), totals: TotalsRow[], amountInWords?, exchange? {rate, rateDate, source, taxMyr, totalMyr}, payment? {bank…, qr}, einvoice? {status, uuid, validatedAt, url, qr}, notes?, termsAndConditions?, signature? } + brand?, size ('a4'|'letter'), stamp?, fit?, isolate?, className.
+
+- `invoice`: `TaxInvoiceData`
+- `brand?`: `Partial<DocBrand>`. Overrides the provider's brand (merged over it).
+- `stamp?`: `"paid" | "void" | "draft" | "copy" | "overdue" | null`. Overrides the stamp derived from the document status. `null` hides it.
+- `fit?`: `"width" | "none"`
+- `isolate?`: `boolean`
+- `size?`: `"a4" | "letter"`. Default `"a4"`.
 
 ## Notes
 

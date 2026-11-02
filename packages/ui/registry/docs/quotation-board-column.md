@@ -80,6 +80,13 @@ Board view of the Quotations page, with four columns side by side.
 
 column ('draft' | 'active' | 'accepted' | 'terminal'), quotations, currency, now, onOpen; className and native section props.
 
+- `column`: `"terminal" | "draft" | "active" | "accepted"`
+- `quotations`: `SalesQuotation[]`
+- `currency?`: `string`. Default `"MYR"`.
+- `now?`: `string`
+- `onOpen?`: `(id: string) => void`
+- Also accepts `ComponentProps<"section">`.
+
 ## Notes
 
 Responsive: Fluid width (no fixed minimum): lay the columns out in an auto-fit grid or a ScrollRow.

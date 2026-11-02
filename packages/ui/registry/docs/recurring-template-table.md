@@ -69,6 +69,8 @@ The Recurring Invoices page.
 
 templates ({id, customerName, customerEmail, frequency, nextGenerationDate, totalAmount, currency, totalGenerated, status}); className.
 
+- `templates`: `SalesRecurringTemplate[]`
+
 ## Notes
 
 Frequencies read Weekly through Annually; the lifecycle status is a DocStatus chip, with Paused on the pause glyph. Missing values show an em dash. Responsive: built on DataList: a table from 36rem of container width, stacked cards below.

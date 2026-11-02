@@ -30,6 +30,15 @@ Lists of IDs or emails typed by the user.
 
 `value` string[], `onChange`, optional controlled `inputValue`.
 
+- `value`: `string[]`. Default `[]`.
+- `onChange`: `(tags: string[]) => void`
+- `inputValue?`: `string`
+- `onInputChange?`: `(value: string) => void`
+- `placeholder?`: `string`. Default `"Add a tag..."`.
+- `onTagAdd?`: `() => void`
+- `onTagRemove?`: `(index: number) => void`
+- Also accepts `ComponentProps<"input">`.
+
 ## Notes
 
 Enter or comma adds a tag; Backspace on empty removes the last.

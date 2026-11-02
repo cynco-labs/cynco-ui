@@ -30,6 +30,11 @@ Single options in forms.
 
 Checkbox props and the label as children.
 
+- `children`: `ReactNode`
+- `size?`: `"sm" | "md" | "lg"`
+- `disabled?`: `boolean`. Whether the component should ignore user interaction. Default `false`.
+- Also accepts `CheckboxPrimitive.Root.Props`.
+
 ## Notes
 
 Label uses `text-checkbox-label`; disabled uses `text-checkbox-disabled`.

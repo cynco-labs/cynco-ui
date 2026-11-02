@@ -43,6 +43,9 @@ Every text field. Use `variant="destructive"` for validation errors, `headless` 
 
 Native input props, `variant`.
 
+- `variant?`: `"default" | "destructive" | "headless"`. Default `"default"`.
+- Also accepts `ComponentProps<"input">`.
+
 ## Notes
 
 Built on the form layers: `input-base` + `input-shadow-default` + `input-state-focus` (see Forms). Focus darkens the border and adds a soft 3px ring, never a coloured outline.

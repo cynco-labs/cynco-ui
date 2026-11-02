@@ -46,6 +46,12 @@ Document template and onboarding galleries.
 
 `Carousel opts orientation setApi` › `CarouselContent` › `CarouselItem`, `CarouselPrevious`, `CarouselNext`.
 
+- `opts?`: `CarouselOptions`
+- `plugins?`: `CarouselPlugin`
+- `orientation?`: `"horizontal" | "vertical"`. Default `"horizontal"`.
+- `setApi?`: `(api: CarouselApi) => void`
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 Leave horizontal room for the arrow buttons.

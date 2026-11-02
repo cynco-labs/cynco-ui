@@ -34,6 +34,9 @@ Payroll run page, after compute.
 
 `remittances` [{payable, label, employee, employer}] in sen; optional `className` and native section props on the root.
 
+- `remittances`: `{ payable: string; label: string; employee: number; employer: number }[]`
+- Also accepts `ComponentProps<"section">`.
+
 ## Notes
 
 Responsive by container: DataList stacks below 24rem; totals wrap.

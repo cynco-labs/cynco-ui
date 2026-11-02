@@ -253,6 +253,18 @@ Under any DataList with checkboxes. Render it after the list inside the scrollin
 
 count, onClear, actions ([{id, label, icon?, onSelect, destructive?, shortcut? ("p", "shift+v", "mod+e"), disabled?, overflow? (always in the ⋯ menu)}]); optional total (decimal string), currency (default MYR), totalCount + onSelectAll (shows "Select all N"), maxVisible (buttons before the ⋯ menu, default 3), sticky (default true), label (toolbar name), className and any div props.
 
+- `count`: `number`. Selected rows. The bar renders nothing at 0.
+- `onClear`: `() => void`. Clear the selection (also Esc).
+- `actions`: `BulkAction[]`
+- `total?`: `string`. Sum of the selected rows' money field, as a decimal string (use `sumAmounts`).
+- `currency?`: `string`. Default `"MYR"`.
+- `totalCount?`: `number`. Rows in the whole list — shows "Select all N" while only some are selected.
+- `onSelectAll?`: `() => void`
+- `maxVisible?`: `number`. Buttons shown before the rest go into the ⋯ menu. Default 3.
+- `sticky?`: `boolean`. Stick to the bottom of the scrolling container. Default true.
+- `label?`: `string`. Accessible name of the toolbar.
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 The count/total is aria-live. Responsive: one row from 48rem of container width (keycaps shown), below that the summary + Select all/Clear sit above the actions, and under 24rem the summary takes its own line; hidden in print.

@@ -31,6 +31,11 @@ Compact toolbars and row actions where the icon alone is not self-explanatory.
 
 `tooltip` text, `icon`, `onClick`, optional `disabled`.
 
+- `tooltip`: `string`
+- `icon`: `ReactNode`
+- `onClick?`: `() => void`
+- `disabled?`: `boolean`
+
 ## Notes
 
 Every icon-only action should use this (or IconButton + Tooltip) so it has an accessible label.

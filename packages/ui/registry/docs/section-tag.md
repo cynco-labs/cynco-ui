@@ -29,4 +29,6 @@ Section headings inside sheets and editors.
 
 Children.
 
+- `children`: `ReactNode`
+
 Category: Components · Data display. Source: `packages/ui/src/base/components/general/section-tag.tsx`.

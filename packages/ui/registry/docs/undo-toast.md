@@ -194,6 +194,17 @@ Mount UndoToastProvider once near the app root. On a destructive action, update 
 
 UndoToastProvider: children, max (default 3; a 4th toast commits the oldest), duration (ms, default Infinity: stays until dismissed, undone or pushed out, per WCAG 2.2.1), viewport (default true; false to place <UndoToastViewport/> yourself), position (bottom-center | bottom-right | bottom-left). useUndoToast() → {show({message, onUndo, onCommit?, duration?, undoLabel?, id?}) → id, undo(id?), dismiss(id), count}. UndoToastViewport: position, className, section props. UndoToast (the presentational item): message, onUndo, onDismiss, onExpire, duration, undoLabel, showShortcut, paused, className, li props.
 
+- `message`: `ReactNode`
+- `onUndo`: `() => void`
+- `onDismiss?`: `() => void`. Close button / Esc.
+- `onExpire?`: `() => void`. The countdown ran out.
+- `duration?`: `number`. ms; 0 or Infinity = no countdown. Default Infinity (stays until dismissed). Default `Number.POSITIVE_INFINITY`.
+- `undoLabel?`: `string`. Default `"Undo"`.
+- `showShortcut?`: `boolean`. Show the ⌘/Ctrl+Z keycap on the Undo button (the newest toast). Default true. Default `true`.
+- `paused?`: `boolean`. Hold the countdown (it also pauses on hover, on focus and while the tab is hidden).
+- `returnFocusTo?`: `MutableRefObject<HTMLElement | null>`. Focus target when this toast closes while focused.
+- Also accepts `ComponentProps<"li">`.
+
 ## Notes
 
 Keyboard: ⌘/Ctrl+Z undoes the newest toast (left alone while typing in a field, where it is the field's own undo); F8 jumps to the newest Undo button; Esc on a focused toast dismisses (commits) it; focus returns to where it was. The countdown pauses on hover, on focus and while the tab is hidden; the stack is an aria-live="polite" list. Each toast settles exactly once; anything pending commits when the provider unmounts or on pagehide. No toast library — the countdown is a CSS animation whose end commits. Width is min(24rem, viewport − 2rem); hidden in print.

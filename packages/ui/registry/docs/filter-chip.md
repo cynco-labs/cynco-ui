@@ -29,4 +29,8 @@ Inside search bars and toolbars to show applied filters.
 
 `label`, `value`, `onRemove`.
 
+- `label`: `string`
+- `value`: `string`
+- `onRemove`: `() => void`
+
 Category: Components · Data display. Source: `packages/ui/src/base/components/general/filter-chip.tsx`.

@@ -34,6 +34,9 @@ Top of the Quotations page.
 
 stats ({totalQuotedAmount, currency, sentCount, acceptedCount, conversionRate}); className and native div props.
 
+- `stats`: `{ totalQuotedAmount: number; currency?: string; sentCount: number; acceptedCount: number; conversionRate: number }`
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 Each accent (warning, success, violet) shrinks to a small coloured square before the label, so the figures stay in foreground. Responsive: StatGrid/StatTile, auto-fit 4-up to 2-up.

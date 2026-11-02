@@ -66,6 +66,10 @@ The credit and debit note detail page.
 
 note ({noteType, status, subtotal, discountAmount, taxAmount, totalAmount, appliedAmount, refundAmount, remainingAmount, paidAmount, isInvoiceAmendment, currency}) and payments ({id, paymentDate, method, reference, amount}); className and native div props.
 
+- `note`: `SalesNote`
+- `payments?`: `SalesNotePayment[]`. Default `[]`.
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 The settlement rows hide on drafts, voided notes and invoice amendments. Payments sit on a bg-table-surface list with table-row-divider, and references show in primary text-tiny-id. Responsive: rows and payments wrap rather than overlap when narrow.

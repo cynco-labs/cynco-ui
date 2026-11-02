@@ -32,6 +32,14 @@ Composing a time picker; used inside DateInputUnix.
 
 `picker`, `date`, `setDate`, optional `period`, focus hand-off callbacks.
 
+- `picker`: `"minutes" | "seconds" | "hours" | "12hours"`
+- `date`: `Date`. Default `new Date(new Date().setHours(0, 0, 0, 0))`.
+- `setDate`: `(date: Date | undefined) => void`
+- `period?`: `"AM" | "PM"`
+- `onRightFocus?`: `() => void`
+- `onLeftFocus?`: `() => void`
+- Also accepts `InputHTMLAttributes<HTMLInputElement>`.
+
 ## Notes
 
 Adapted from openstatusHQ/time-picker (MIT).

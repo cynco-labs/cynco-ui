@@ -133,6 +133,14 @@ Monthly, year-to-date and annual cash flow statements, single period or with com
 
 report: CashFlowData — period, columns, profitBeforeTax, adjustments[], operatingProfitBeforeWorkingCapital, workingCapitalChanges[], cashGeneratedFromOperations, operatingOther?[], netOperating, investing[], netInvesting, financing[], netFinancing, netChange, openingCash, fxEffect?, closingCash, reconciled?, basis?, currency?, filters?, preparedBy?, preparedOn?, notes?; plus brand?, size?, stamp?, fit?, isolate?, className.
 
+- `report`: `CashFlowData`
+- `size?`: `"a4" | "a4-landscape" | "a5" | "letter" | "receipt"`
+- `brand?`: `Partial<DocBrand>`. Overrides the provider's brand (merged over it).
+- `stamp?`: `"paid" | "void" | "draft" | "copy" | "overdue"`. A diagonal stamp across the page: Paid, Void, Draft, Copy, Overdue.
+- `fit?`: `"width" | "none"`. On screen: scale the sheet down to fit its container ("width") or keep 100% and scroll ("none"). Controlled; pair with `onFitChange`. Leave unset to let the zoom control switch it.
+- `isolate?`: `boolean`. When printing, hide the rest of the app and print only this page. Default true.
+- Also accepts `ComponentProps<"article">`.
+
 ## Notes
 
 All layouts and locales; A4; header repeats when printed.

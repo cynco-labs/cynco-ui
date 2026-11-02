@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { AdjustmentNoteDocument, DocumentBrandProvider, GroupedTabButton } from "@cynco-labs/ui";
+import { AdjustmentNoteDocument, DocumentBrandProvider } from "@cynco-labs/ui";
 
 const BRAND = {
 	company: {
@@ -36,43 +35,6 @@ const NUSA_SITE = {
 	attention: "En. Hafiz Zainal, Facilities",
 	phone: "+60 12-334 8821",
 };
-
-function Ctl(groups) {
-	return (
-		<div className="flex flex-wrap items-center gap-2">
-			{groups.map((g, i) => (
-				<div key={i} className="flex-auto" style={{ minWidth: g[2].length * 64 }}>
-					<GroupedTabButton value={g[0]} onValueChange={g[1]} options={g[2]} />
-				</div>
-			))}
-		</div>
-	);
-}
-
-const LAYOUTS = [
-	{ value: "minimal", label: "Minimal" },
-	{ value: "classic", label: "Classic" },
-	{ value: "modern", label: "Modern" },
-];
-
-const LANGS = [
-	{ value: "en", label: "EN" },
-	{ value: "ms", label: "BM" },
-	{ value: "en-ms", label: "EN + BM" },
-];
-
-function Shell(p) {
-	return (
-		<div className="flex flex-col gap-3">
-			{Ctl(p.groups)}
-			<DocumentBrandProvider
-				brand={Object.assign({}, BRAND, { layout: p.layout, locale: p.locale })}
-			>
-				<div className={p.center ? "flex justify-center" : ""}>{p.children}</div>
-			</DocumentBrandProvider>
-		</div>
-	);
-}
 
 const QRSLOT = (t) => (
 	<div className="flex size-full items-center justify-center rounded-[1.5mm] border border-dashed border-[var(--doc-subtle)] text-center text-[6pt] leading-tight text-[var(--doc-subtle)]">
@@ -176,28 +138,43 @@ const DN = {
 	signature: true,
 };
 
-export default function AdjustmentNoteDocumentDemo() {
-	const [l, setL] = useState("minimal"),
-		[g, setG] = useState("en"),
-		[k, setK] = useState("credit");
+export const controls = {
+	layout: {
+		label: "Layout",
+		options: [
+			{ value: "minimal", label: "Minimal" },
+			{ value: "classic", label: "Classic" },
+			{ value: "modern", label: "Modern" },
+		],
+		default: "minimal",
+	},
+	locale: {
+		label: "Language",
+		options: [
+			{ value: "en", label: "EN" },
+			{ value: "ms", label: "BM" },
+			{ value: "en-ms", label: "EN + BM" },
+		],
+		default: "en",
+	},
+	kind: {
+		label: "Note",
+		options: [
+			{ value: "credit", label: "Credit note" },
+			{ value: "debit", label: "Debit note" },
+		],
+		default: "credit",
+	},
+};
+
+export default function AdjustmentNoteDocumentDemo({
+	layout = "minimal",
+	locale = "en",
+	kind = "credit",
+}) {
 	return (
-		<Shell
-			layout={l}
-			locale={g}
-			groups={[
-				[l, setL, LAYOUTS],
-				[g, setG, LANGS],
-				[
-					k,
-					setK,
-					[
-						{ value: "credit", label: "Credit note" },
-						{ value: "debit", label: "Debit note" },
-					],
-				],
-			]}
-		>
-			<AdjustmentNoteDocument note={k === "credit" ? CN : DN} />
-		</Shell>
+		<DocumentBrandProvider brand={{ ...BRAND, layout, locale }}>
+			<AdjustmentNoteDocument note={kind === "credit" ? CN : DN} />
+		</DocumentBrandProvider>
 	);
 }

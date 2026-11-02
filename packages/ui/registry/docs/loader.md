@@ -30,4 +30,7 @@ While the assistant is working.
 
 `size`.
 
+- `size?`: `number`. Default `16`.
+- Also accepts `HTMLAttributes<HTMLDivElement>`.
+
 Category: AI. Source: `packages/ui/src/base/components/ai-elements/loader.tsx`.

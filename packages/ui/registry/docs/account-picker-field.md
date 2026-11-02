@@ -154,6 +154,15 @@ Wherever a single GL account is chosen: journal lines, bank categorisation, defa
 
 accounts [{ id, accountCode, accountName, accountType, normalBalance }], recentIds?, selectedId?, defaultOpen?, label?, onSelect?, onCreate?(query), className? (merged on the root) and native props.
 
+- `accounts`: `LedgerPickerAccount[]`
+- `recentIds?`: `string[]`
+- `selectedId?`: `string`
+- `defaultOpen?`: `boolean`
+- `label?`: `string`
+- `onSelect?`: `(a: LedgerPickerAccount) => void`
+- `onCreate?`: `(query: string) => void`
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 Keeps the "Create new account" / Create “query” sentinel row. No fetching: the consumer passes the accounts. Responsive: The popup follows the trigger width (min 18rem, max the viewport).

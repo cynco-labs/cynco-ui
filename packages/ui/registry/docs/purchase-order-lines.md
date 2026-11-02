@@ -48,6 +48,13 @@ Create or edit a purchase order; `readOnly` on the PO detail.
 
 `lineItems` [{id, description, quantity, unitPrice, amount}]; optional `onChange` (uncontrolled when omitted), `readOnly`, `currency`, `taxAmount`; optional `className` and native div props on the root.
 
+- `lineItems`: `POLine[]`
+- `onChange?`: `(items: POLine[]) => void`
+- `readOnly?`: `boolean`. Default `false`.
+- `currency?`: `string`. Default `"MYR"`.
+- `taxAmount?`: `number`
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 The totals block mirrors the PO's subtotal/tax/total fields.

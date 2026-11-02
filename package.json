@@ -9,7 +9,7 @@
     "build:ui": "pnpm --filter @cynco-labs/ui build",
     "typecheck": "pnpm -r typecheck",
     "test": "pnpm -r test",
-    "registry": "node scripts/build-registry.mjs",
+    "registry": "node scripts/extract-props.mjs && node scripts/build-registry.mjs",
     "changeset": "changeset",
     "release": "pnpm build:ui && changeset publish"
   },

@@ -32,4 +32,7 @@ Images returned by an image model.
 
 `base64`, `mediaType`, `uint8Array`, `alt`, `className`.
 
+- `alt?`: `string`
+- Also accepts `Experimental_GeneratedImage`.
+
 Category: AI. Source: `packages/ui/src/base/components/ai-elements/image.tsx`.

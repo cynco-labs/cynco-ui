@@ -52,6 +52,14 @@ Wherever a bank line's chart-of-accounts category is set or accepted.
 
 status, category, suggestion {accountName, accountCode?, confidence}, picking, onAccept, onPick, className and native props (spread on the root).
 
+- `status`: `"posted" | "imported" | "categorized" | "reconciled" | "excluded"`
+- `category?`: `string | null`
+- `suggestion?`: `BankCoaSuggestion | null`
+- `picking?`: `boolean`. Default `false`.
+- `onAccept?`: `() => void`
+- `onPick?`: `() => void`
+- Also accepts `ComponentProps<"span">`.
+
 ## Notes
 
 All states are Buttons (secondary / dotted / skeleton) inside a span root.

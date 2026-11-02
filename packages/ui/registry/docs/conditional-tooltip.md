@@ -35,4 +35,9 @@ Explaining why a control is disabled.
 
 `enabled`, `content`, one element child.
 
+- `enabled`: `boolean`
+- `content`: `ReactNode`
+- `children`: `ReactElement`
+- `contentClassName?`: `string`
+
 Category: Components · Overlays. Source: `packages/ui/src/base/components/general/conditional-tooltip.tsx`.

@@ -8,8 +8,9 @@ Guidance for coding agents and contributors. Read it before changing anything.
 - `packages/ui/src/productivity`, `documents`, `accounting` — Cynco-specific components built from the above.
 - `packages/ui/src/lib` — `money.ts` (decimal-safe maths) and `shared.tsx` (formatters, `DocStatus`, the barrel other files import from).
 - `packages/ui/src/documents/labels.ts` — every printed label in English and Bahasa Melayu. Add keys here, never in a document file.
-- `packages/ui/registry` — generated (`pnpm registry`); `meta.json` is the editable source for names, categories and docs text.
-- `apps/docs/src/demos/<Name>.tsx` — one demo per component; it is both the live preview and the code shown on the site.
+- `packages/ui/registry` — generated (`pnpm registry`); `meta.json` is the editable source for names, categories and docs text. `props.json` is generated from the TypeScript source (`scripts/extract-props.mjs`): document a prop with JSDoc on its declaration and its default in the destructuring, and the props table follows.
+- `packages/ui/skills/cynco-ui/SKILL.md` — the agent skill shipped in the package and served at `/skill.md`. Keep its rules in step with the ones below.
+- `apps/docs/src/demos/<Name>.tsx` — one demo per component; it is both the live preview and the code shown on the site. Import only from what a reader installs (`@cynco-labs/ui`, `react`, `@phosphor-icons/react`…). For playground knobs, `export const controls = { key: { label, options, default } | { label, default: boolean } }` and take each key as a parameter of the default export; controls named `locale` or `density` follow the site settings. `pnpm registry` fails on a demo that breaks either rule.
 
 ## Rules
 1. **Tokens only.** Colours, radii and shadows come from the theme (`bg-card`, `text-muted-foreground`, `border-border`, `text-error-text`…). No hex values or Tailwind palette colours in components, except chart fills via `var(--chart-series-N)`.

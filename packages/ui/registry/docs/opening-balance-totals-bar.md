@@ -37,6 +37,23 @@ Sticky at the bottom of the opening balances sheet.
 
 debit, credit, currency?, filled, invalidCount?, overLimit?, maxAmount?, suspenseLabel?, onlySubledger?, entryStatus? (draft|posted), isDirty?, isPosting?, canPost?, onDiscard?, onPost?, className? (merged on the root) and native props.
 
+- `debit`: `number`
+- `credit`: `number`
+- `filled`: `number`. Rows with a typed amount.
+- `currency?`: `string`. Default `"MYR"`.
+- `invalidCount?`: `number`. Default `0`.
+- `overLimit?`: `boolean`
+- `maxAmount?`: `number`
+- `suspenseLabel?`: `string`. Default `"3900-000 Opening Balance Suspense"`.
+- `onlySubledger?`: `boolean`
+- `entryStatus?`: `"draft" | "posted" | null`. Default `null`.
+- `isDirty?`: `boolean`
+- `isPosting?`: `boolean`
+- `canPost?`: `boolean`. Default `true`.
+- `onDiscard?`: `() => void`
+- `onPost?`: `() => void`
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 Responsive: Container-responsive: one line from 48rem, below that the status box and buttons wrap to their own rows.

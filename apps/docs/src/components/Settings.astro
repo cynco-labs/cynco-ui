@@ -1,0 +1,68 @@
+---
+import { DEFAULT_SETTINGS, SETTINGS } from "../lib/settings";
+import { KBD, SEG, SEG_GROUP } from "../lib/classes";
+
+interface Props {
+	/** `panel`: one setting per row (header popover). `strip`: settings side by side, wrapping (home page). */
+	variant?: "panel" | "strip";
+}
+const { variant = "panel" } = Astro.props;
+---
+
+<div class:list={[variant === "strip" ? "flex flex-wrap items-center gap-x-6 gap-y-3" : "grid gap-2.5"]}>
+	{
+		SETTINGS.map((s) => (
+			<div class:list={["flex items-center gap-3", variant === "panel" && "justify-between"]} role="group" aria-label={s.label}>
+				<span class="flex items-center gap-1.5 text-[12.5px] text-tertiary-foreground">
+					{s.label}
+					<kbd class:list={[KBD, "max-sm:hidden"]} title={`Press ${s.shortcut.toUpperCase()} to switch`}>
+						{s.shortcut.toUpperCase()}
+					</kbd>
+				</span>
+				<div class={SEG_GROUP}>
+					{s.options.map((o) => (
+						<button type="button" class={SEG} data-setting={s.key} data-value={o.value} aria-pressed={String(o.value === DEFAULT_SETTINGS[s.key])}>
+							{o.label}
+						</button>
+					))}
+				</div>
+			</div>
+		))
+	}
+</div>
+
+<script>
+	import { SETTINGS, onSettings, parseSettings, readSettings, writeSettings, type SiteSettings } from "../lib/settings";
+
+	const set = (key: string, value: string) => writeSettings(parseSettings(JSON.stringify({ ...readSettings(), [key]: value })));
+
+	const live = document.createElement("div");
+	live.className = "sr-only";
+	live.setAttribute("aria-live", "polite");
+	document.body.append(live);
+
+	function sync(s: SiteSettings) {
+		for (const b of document.querySelectorAll<HTMLButtonElement>("[data-setting]")) {
+			b.setAttribute("aria-pressed", String(s[b.dataset.setting as keyof SiteSettings] === b.dataset.value));
+		}
+	}
+	sync(readSettings());
+	onSettings(sync);
+
+	document.addEventListener("click", (e) => {
+		const b = (e.target as Element).closest<HTMLButtonElement>("[data-setting]");
+		if (b) set(b.dataset.setting!, b.dataset.value!);
+	});
+	document.addEventListener("keydown", (e) => {
+		const t = e.target as HTMLElement;
+		if (e.defaultPrevented || e.repeat || e.metaKey || e.ctrlKey || e.altKey || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName) || t.isContentEditable) return;
+		if (t.closest("[role=listbox],[role=menu],[role=grid],[role=tree],[role=combobox],[role=dialog]")) return;
+		const def = SETTINGS.find((s) => s.shortcut === e.key.toLowerCase());
+		if (!def) return;
+		const options: readonly { value: string; label: string }[] = def.options;
+		const current = readSettings()[def.key];
+		const next = options[(options.findIndex((o) => o.value === current) + (e.shiftKey ? options.length - 1 : 1)) % options.length];
+		set(def.key, next.value);
+		live.textContent = `${def.label}: ${next.label}`;
+	});
+</script>

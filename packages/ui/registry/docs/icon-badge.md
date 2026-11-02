@@ -35,4 +35,11 @@ Metadata like currency, branch, external links.
 
 `icon`/`rightIcon`, `variant` (`default` · `muted`), `position`.
 
+- `variant?`: `"default" | "muted"`. Default `"muted"`.
+- `icon?`: `ReactNode`
+- `asChild?`: `boolean`. Default `false`.
+- `rightIcon?`: `ReactNode`
+- `position?`: `"left" | "right"`. Default `"left"`.
+- Also accepts `ComponentProps<"span">`.
+
 Category: Components · Data display. Source: `packages/ui/src/base/components/general/icon-badge.tsx`.

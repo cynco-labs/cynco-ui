@@ -40,6 +40,9 @@ On the selected month heading and anywhere a month's close state is listed.
 
 state, className and native props (spread on the root).
 
+- `state`: `BankCloseMonthState`
+- Also accepts `ComponentProps<"span">`.
+
 ## Notes
 
 Inline at any width.

@@ -24,6 +24,10 @@ Top of the inventory workspace.
 
 `trackedItems` count and `isReconciled`; optional `className` and native section props on the root.
 
+- `trackedItems`: `number`
+- `isReconciled`: `boolean`
+- Also accepts `ComponentProps<"section">`.
+
 ## Notes
 
 Responsive by container: steps 1 / 2 / 3 / 5 per row by container width.

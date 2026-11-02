@@ -1,0 +1,46 @@
+---
+import type { PropTable } from "../lib/registry";
+
+interface Props {
+	table: PropTable;
+}
+const { table } = Astro.props;
+---
+
+<div class="not-prose overflow-x-auto rounded-xl border border-border">
+	<table class="w-full min-w-[34rem] border-collapse text-left text-[13px]">
+		<thead>
+			<tr class="border-b border-border bg-card text-[12px] text-subtle">
+				<th scope="col" class="px-3.5 py-2 font-medium">Prop</th>
+				<th scope="col" class="px-3.5 py-2 font-medium">Type</th>
+				<th scope="col" class="px-3.5 py-2 font-medium">Default</th>
+			</tr>
+		</thead>
+		<tbody>
+			{
+				table.props.map((p) => (
+					<tr class="border-b border-border align-top last:border-b-0">
+						<td class="whitespace-nowrap px-3.5 py-2.5">
+							<code class="font-mono text-[12.5px] text-foreground">{p.name}</code>
+							{p.required && <span class="ml-1.5 text-[11px] text-subtle">required</span>}
+						</td>
+						<td class="px-3.5 py-2.5">
+							<code class="break-words font-mono text-[12px] text-tertiary-foreground">{p.type}</code>
+							{p.description && <p class="mt-1 max-w-[36rem] text-[13px] leading-relaxed text-tertiary-foreground">{p.description}</p>}
+						</td>
+						<td class="whitespace-nowrap px-3.5 py-2.5">
+							{p.default ? <code class="font-mono text-[12px] text-tertiary-foreground">{p.default}</code> : <span class="text-subtle">–</span>}
+						</td>
+					</tr>
+				))
+			}
+		</tbody>
+	</table>
+</div>
+{
+	table.inherits.length > 0 && (
+		<p class="mt-2 text-[13px] text-subtle">
+			Also accepts {table.inherits.map((t, i) => (<>{i > 0 && ", "}<code class="font-mono text-[12px]">{t}</code></>))}, and <code class="font-mono text-[12px]">className</code>.
+		</p>
+	)
+}

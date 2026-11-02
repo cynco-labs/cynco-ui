@@ -34,4 +34,8 @@ Dividing groups in toolbars and panels.
 
 `orientation`.
 
+- `orientation?`: `"horizontal" | "vertical"`. The orientation of the separator. Default `'horizontal'`.
+- `decorative?`: `boolean`. Default `true`.
+- Also accepts `SeparatorPrimitive.Props`.
+
 Category: Components · Layout. Source: `packages/ui/src/base/components/ui/separator.tsx`.

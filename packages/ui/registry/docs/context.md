@@ -61,6 +61,12 @@ Showing how much of the model's context window is used.
 
 `usedTokens`, `maxTokens`, `usage`, `modelId`; `ContextTrigger`, `ContextContent` › `ContextContentHeader`, `ContextContentBody` (usage rows), `ContextContentFooter`.
 
+- `usedTokens`: `number`
+- `maxTokens`: `number`
+- `usage?`: `LanguageModelUsage`
+- `modelId?`: `ModelId`
+- Also accepts `PopoverPrimitive.Root.Props`.
+
 ## Notes
 
 Cost uses tokenlens model prices.

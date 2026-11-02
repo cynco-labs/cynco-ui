@@ -60,6 +60,9 @@ In the review card, import review and ledger detail, so the explanation reads th
 
 events [{actor: rule|ai|policy|system|user, action, at, reasoning, confidence, ruleStats, policy}], className and native props (spread on the root).
 
+- `events`: `BankTxEvent[]`
+- Also accepts `ComponentProps<"ul">`.
+
 ## Notes
 
 Actor icons are Phosphor at 14px; AI uses text-primary, others the text steps; dates via formatDate. Responsive by container: below 24rem the date moves under each event.

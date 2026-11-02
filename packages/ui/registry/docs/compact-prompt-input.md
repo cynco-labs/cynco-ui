@@ -35,4 +35,10 @@ Small "ask about this" boxes without attachments.
 
 `value`, `onChange`, `onSubmit`, `placeholder`, `isLoading`.
 
+- `value`: `string`
+- `onChange`: `(value: string) => void`
+- `onSubmit`: `() => void`
+- `placeholder?`: `string`. Default `"Describe changes..."`.
+- `isLoading?`: `boolean`
+
 Category: AI. Source: `packages/ui/src/base/components/ai-elements/compact-prompt-input.tsx`.

@@ -40,6 +40,17 @@ Above the bill form on the bill detail page.
 
 isDuplicate, duplicateBill, status, rejectionNotes, unusedCredit {amount, currency}, vendorLoadError, lineItemsCorrupted, onDismissDuplicate, onApplyCredit; className and native div props.
 
+- `isDuplicate?`: `boolean`
+- `duplicateBill?`: `{ vendorName: string | null; billNumber?: string | null; totalAmount?: number; currency?: string } | null`
+- `status?`: `string`
+- `rejectionNotes?`: `string | null`
+- `vendorLoadError?`: `boolean`
+- `lineItemsCorrupted?`: `boolean`
+- `unusedCredit?`: `{ amount: number; currency?: string } | null`. Vendor credits in the bill's currency (cynco ApplyVendorCreditPanel).
+- `onDismissDuplicate?`: `() => void`
+- `onApplyCredit?`: `() => void`
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 Responsive by container: each alert's action drops under its text below a 28rem container.

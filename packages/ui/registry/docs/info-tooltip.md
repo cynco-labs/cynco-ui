@@ -29,4 +29,9 @@ Next to labels whose meaning is not obvious.
 
 Tooltip content as children; optional `side`, `align`.
 
+- `children`: `ReactNode`
+- `side?`: `"top" | "bottom" | "left" | "right"`
+- `align?`: `"start" | "center" | "end"`
+- `sideOffset?`: `number`
+
 Category: Components · Overlays. Source: `packages/ui/src/base/components/general/info-tooltip.tsx`.

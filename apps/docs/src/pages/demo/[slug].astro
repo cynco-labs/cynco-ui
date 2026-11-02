@@ -3,6 +3,7 @@ import "../../styles/global.css";
 import DemoHost from "../../components/DemoHost";
 import interUrl from "@cynco-labs/ui/fonts/Inter-Variable.woff2?url";
 import { registry } from "../../lib/registry";
+import { PRESET_BOOT } from "../../lib/settings";
 
 export function getStaticPaths() {
 	return registry.map((c) => ({ params: { slug: c.slug }, props: { entry: c } }));
@@ -30,6 +31,7 @@ const { entry } = Astro.props;
 				});
 			})();
 		</script>
+		<script is:inline set:html={PRESET_BOOT} />
 		<style is:global>
 			body {
 				background: var(--background);
@@ -41,6 +43,8 @@ const { entry } = Astro.props;
 			<DemoHost name={entry.name} client:load />
 		</div>
 		<script>
+			import { startInspect, type DemoInspectMessage } from "../../lib/inspect";
+
 			const report = () => {
 				const root = document.getElementById("demo-root")!;
 				const height = Math.ceil(Math.max(root.getBoundingClientRect().height, document.body.scrollHeight));
@@ -50,6 +54,13 @@ const { entry } = Astro.props;
 				new ResizeObserver(report).observe(document.getElementById("demo-root")!);
 				addEventListener("load", report);
 			}
+
+			let stopInspect: (() => void) | null = null;
+			addEventListener("message", (e: MessageEvent<DemoInspectMessage>) => {
+				if (e.source !== parent || e.data?.type !== "cynco-demo-inspect") return;
+				stopInspect?.();
+				stopInspect = e.data.on ? startInspect() : null;
+			});
 		</script>
 	</body>
 </html>

@@ -56,6 +56,11 @@ Fixed asset detail page.
 
 `asset` (the cynco LoaderData asset fields); optional `schedule` for the Depreciation tab, `defaultTab`; optional `className` and native div props on the root.
 
+- `asset`: `FixedAssetData`
+- `schedule?`: `AssetDepreciationEntry[]`
+- `defaultTab?`: `string`. Default `"overview"`.
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 The Capital allowances and Revaluations tabs are placeholders in the demo.

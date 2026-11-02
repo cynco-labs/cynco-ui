@@ -87,6 +87,13 @@ The Ledger tab and the ledger explorer, once an account is selected (showAccount
 
 rows [{ id, date, entryNumber, description, counterparty?, debit, credit, currency?, baseDebit?, baseCredit?, runningBalance, isReconciled?, accountCode?, accountName? }], baseCurrency?, showAccount?, openingBalance?, openingDate?, closingDate?, className? (merged on the root).
 
+- `rows`: `GlRegisterRow[]`
+- `baseCurrency?`: `string`. Default `"MYR"`.
+- `showAccount?`: `boolean`. No account selected → show the account column instead of a meaningful running balance.
+- `openingBalance?`: `number`
+- `openingDate?`: `string`
+- `closingDate?`: `string`
+
 ## Notes
 
 Page totals and the closing balance sit on the tray footer. Foreign-currency lines show the ISO code with the "≈ RM" base figure underneath; zero sides print "-". Reconciled lines carry a green StatusChipIcon. Entry # stacks under the date and the counterparty under the description so the table fits 720px. Responsive: built on DataList: a tray table from 42rem (the description truncates with a tooltip), below that stacked postings with one Dr/Cr amount, date, entry #, balance and Rec.

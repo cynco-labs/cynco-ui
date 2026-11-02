@@ -82,6 +82,13 @@ Vendors page list.
 
 vendors [{name, email, phone, category, city, country, isActive, outstanding, overdue, totalPaid, lastPaymentDate}], defaultSelectedIds, currency; selectedIds / onSelectedChange (controlled), onRowClick, className.
 
+- `vendors`: `CyncoVendorRow[]`
+- `selectedIds?`: `string[]`
+- `onSelectedChange?`: `(ids: string[]) => void`
+- `defaultSelectedIds?`: `string[]`
+- `currency?`: `string`. Default `"MYR"`.
+- `onRowClick?`: `(row: CyncoVendorRow) => void`
+
 ## Notes
 
 Responsive by container: DataList: stacked vendor cards below a 42rem container.

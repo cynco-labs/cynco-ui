@@ -63,6 +63,16 @@ The aside beside the month-end proof in Reconcile.
 
 monthName, state, signedOffLabel, standing ('none' | 'holds' | 'stale'), staleNote, signing, fiscalStatus, checks [{id, label, status: pass|warn|attention|fail, text, figures}] (undefined = loading), className and native props (spread on the root).
 
+- `monthName`: `string`
+- `state`: `"ready" | "needs_work" | "in_progress" | "covered" | "no_statement" | "closed"`
+- `signedOffLabel?`: `string`. "Signed off by Aisyah Rahman · 3 Apr 2026"
+- `standing?`: `"none" | "holds" | "stale"`. Default `"none"`.
+- `staleNote?`: `string`
+- `signing?`: `boolean`. Default `false`.
+- `fiscalStatus?`: `"open" | "closed" | "closing" | "locked" | null`
+- `checks?`: `BankCloseCheck[] | null`. undefined = loading; null = no chart to close against.
+- Also accepts `ComponentProps<"section">`.
+
 ## Notes
 
 Single column that fits any width; place it in an aside or stack it under the proof.

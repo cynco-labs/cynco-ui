@@ -57,6 +57,10 @@ Previewing a page the agent built.
 
 `defaultUrl`, `onUrlChange`; `WebPreviewNavigation` › `WebPreviewNavigationButton tooltip`, `WebPreviewUrl`; `WebPreviewBody` (iframe); `WebPreviewConsole logs`.
 
+- `defaultUrl?`: `string`. Default `""`.
+- `onUrlChange?`: `(url: string) => void`
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 The demo leaves out the iframe body.

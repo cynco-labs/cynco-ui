@@ -47,6 +47,9 @@ Settings that take effect immediately.
 
 `checked`/`defaultChecked`, `onCheckedChange`, `disabled`.
 
+- `thumbClassName?`: `string`
+- Also accepts `SwitchPrimitive.Root.Props`.
+
 ## Notes
 
 Thumb uses `switch-thumb-on` when on.

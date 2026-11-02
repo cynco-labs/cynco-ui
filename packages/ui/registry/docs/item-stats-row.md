@@ -34,6 +34,12 @@ Above the items list.
 
 `stats` {avgProfitMargin, avgRevenuePerItem, highestEarningItem, mostSoldItem}; optional `realizedMargins` {marginPercent, lineCount, belowCostItemCount}, `currency`, `windowDays`; optional `className` and native div props on the root.
 
+- `stats`: `{ avgProfitMargin: number | null; avgRevenuePerItem: number | null; highestEarningItem: { name: string; revenue: number } | null; mostSoldItem: { name: string; quantity: number } | null }`
+- `realizedMargins?`: `{ marginPercent: number | null; lineCount: number; belowCostItemCount: number }`
+- `currency?`: `string`. Default `"MYR"`.
+- `windowDays?`: `number`. Default `30`.
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 Responsive by container: StatGrid tiles auto-fit and never truncate.

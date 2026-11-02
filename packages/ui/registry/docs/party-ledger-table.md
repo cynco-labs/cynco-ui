@@ -87,6 +87,9 @@ Ledger tab of customer and vendor pages — the ground-truth statement behind th
 
 rows [{entryDate, event, documentNumber, documentType, amount, runningBalance}] oldest-first, currency; className.
 
+- `rows`: `PartyLedgerRow[]`
+- `currency?`: `string`. Default `"MYR"`.
+
 ## Notes
 
 Responsive by container: DataList: stacked entries below a 36rem container.

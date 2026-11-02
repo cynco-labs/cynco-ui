@@ -34,4 +34,8 @@ Previewing a customer or invoice from a link.
 
 `HoverCardTrigger`, `HoverCardContent` with `align`/`side`.
 
+- `openDelay?`: `number`
+- `closeDelay?`: `number`
+- Also accepts `PreviewCardPrimitive.Root.Props`.
+
 Category: Components · Overlays. Source: `packages/ui/src/base/components/ui/hover-card.tsx`.

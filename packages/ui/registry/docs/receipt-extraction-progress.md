@@ -43,6 +43,16 @@ Top of the bill form while a receipt or bill document is being read.
 
 view ({kind:'running', stage, detail, slow} | {kind:'timed-out'} | {kind:'done', confidence} | {kind:'failed', message, retryable}), hasExtractedData, manualEntry, isReExtracting, onReview, onReExtract, onEnterManually, onCheckStatus; className and native div props.
 
+- `view`: `ExtractionView | null`
+- `hasExtractedData?`: `boolean`. Default `true`.
+- `manualEntry?`: `boolean`. The user chose to fill the form while extraction runs. Default `false`.
+- `isReExtracting?`: `boolean`
+- `onReview?`: `() => void`
+- `onReExtract?`: `() => void`
+- `onEnterManually?`: `() => void`
+- `onCheckStatus?`: `() => void`
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 Responsive: actions sit under the message, so it reads at any width.

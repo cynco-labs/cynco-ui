@@ -29,4 +29,6 @@ Install commands and API keys in onboarding.
 
 `text`; `CopyableSpan` for inline.
 
+- `text`: `string`
+
 Category: Components · Data display. Source: `packages/ui/src/base/components/general/copyable-pre.tsx`.

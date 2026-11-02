@@ -35,4 +35,9 @@ Detail panels (customer, invoice).
 
 `label`, `value`, optional `icon`, `mono` for IDs.
 
+- `label`: `string`
+- `value`: `ReactNode`
+- `icon?`: `ReactNode`
+- `mono?`: `boolean`
+
 Category: Components · Data display. Source: `packages/ui/src/base/components/general/info-row.tsx`.

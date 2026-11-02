@@ -54,6 +54,11 @@ Picking one of a few big options in onboarding (business type, tax registration)
 
 `isSelected`, `onClick`, `icon` (Phosphor duotone, 20px), and an `aria-label` (the tile is icon-only).
 
+- `isSelected`: `boolean`
+- `onClick`: `() => void`
+- `icon`: `ReactNode`
+- Also accepts `ComponentProps<"button">`.
+
 ## Notes
 
 Selection is exposed as `aria-pressed` and shown by the corner check mark, not by colour alone. The mark sits slightly outside the tile, so leave a few pixels of room around it.

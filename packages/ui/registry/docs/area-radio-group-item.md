@@ -44,4 +44,10 @@ Tax treatment and behaviour choices in sheets.
 
 Inside RadioGroup: `value`, `label`, optional `description`, `disabled` + `disabledReason`.
 
+- `value`: `string`
+- `label`: `string`
+- `description?`: `string`
+- `disabled?`: `boolean`. Default `false`.
+- `disabledReason?`: `string`
+
 Category: Components · Selection. Source: `packages/ui/src/base/components/general/area-radio-group-item.tsx`.

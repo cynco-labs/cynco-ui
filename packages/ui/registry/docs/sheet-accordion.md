@@ -39,4 +39,11 @@ Grouping long create/edit sheets into collapsible sections.
 
 `type`, `defaultValue`, `withSeparator`; `SheetAccordionItem value title description`.
 
+- `children`: `ReactNode`
+- `type?`: `"single" | "multiple"`. Default `"single"`.
+- `defaultValue?`: `string | string[]`
+- `withSeparator?`: `boolean`. Default `true`.
+- `collapsible?`: `boolean`. Default `true`.
+- Also accepts `AccordionPrimitive.Root.Props<string>`.
+
 Category: Components · Navigation. Source: `packages/ui/src/base/components/general/sheet-accordion.tsx`.

@@ -31,6 +31,9 @@ Naming icon-only controls and clarifying terms.
 
 `TooltipTrigger` (with `render`) and `TooltipContent` (`side`, `align`). `Tooltip` brings its own provider.
 
+- `delayDuration?`: `number`
+- Also accepts `TooltipPrimitive.Root.Props`.
+
 ## Notes
 
 Keep it to one line.

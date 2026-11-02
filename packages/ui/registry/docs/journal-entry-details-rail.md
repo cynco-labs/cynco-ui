@@ -63,6 +63,12 @@ Right rail of the journal entry detail page.
 
 entry { entryDate, period, currency, documentNumber?, manualReason?, vendorName?, customerName?, approvedBy?, approvedAt?, postedAt?, memo? }, statusHistory [{ id, fromStatus, toStatus, changedAt, changedBy?, notes? }], createdAt?, updatedAt?, className? (merged on the root) and native props.
 
+- `entry`: `{ entryDate: string; period: string; currency: string; documentNumber?: string | null; manualReason?: string | null; vendorName?: string | null; customerName?: string | null; approvedBy?: string | null; approvedAt?: string | null; postedAt?: string | null; memo?: string | null }`
+- `statusHistory?`: `JournalStatusEvent[]`. Default `[]`.
+- `createdAt?`: `string`
+- `updatedAt?`: `string`
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 A hairline-divided card (divide-y, bg-card, rounded-xl) with section-label captions. Timeline statuses are DocStatus chips and the timeline dots take StatusChip tones. Dates read "29 Oct 2026, 16:05"; period and reference are text-tiny-id. Responsive: fills its container (no fixed width); long values wrap.

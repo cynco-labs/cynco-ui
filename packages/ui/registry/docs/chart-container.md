@@ -46,6 +46,10 @@ Revenue, expense and cash charts.
 
 `config` {key: {label, color | theme}} and one Recharts chart as child (import it from `recharts`); `ChartTooltip` + `ChartTooltipContent`, `ChartLegend` + `ChartLegendContent`.
 
+- `children`: `ReactNode`
+- `config`: `ChartConfig`
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 Colour series with `chart-series-1…8` in order; grid lines `chart-grid-stroke`.

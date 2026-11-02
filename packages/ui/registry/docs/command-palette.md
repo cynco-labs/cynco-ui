@@ -117,6 +117,17 @@ Mount once in the app shell and put a CommandPaletteTrigger in the header. Feed 
 
 CommandPalette: open / defaultOpen / onOpenChange; items (CommandPaletteItem[]: id, group — “Go to” | “Create” | “Recent” | “Actions” or your own heading, label, keywords, icon, shortcut such as "mod+k" or "g i", hint, href, disabled, onSelect; defaults to CYNCO_PALETTE_ITEMS, Cynco's registry paths, keywords and keybinds); recent (CommandPaletteRecord[]: id, type — invoice | quotation | bill | credit_note | customer | vendor | journal | payment | item | account, number, label, status, amount as a decimal string, currency, keywords, href, onSelect); recentLimit (default 5); onSelect(item) to route with item.href / item.id; hotkey (default "mod+k", false to bind your own); placeholder; inline; className. CommandPaletteTrigger: label, shortcut, className and any button props (wire onClick).
 
+- `open?`: `boolean`
+- `defaultOpen?`: `boolean`. Default `false`.
+- `onOpenChange?`: `(open: boolean) => void`
+- `items?`: `CommandPaletteItem[]`. Commands. Defaults to CYNCO_PALETTE_ITEMS. Default `CYNCO_PALETTE_ITEMS`.
+- `recent?`: `CommandPaletteRecord[]`. Recently opened records, newest first. Searchable by number, name, status and amount. Default `[]`.
+- `recentLimit?`: `number`. How many recent records to list before the user types. Default 5. Default `5`.
+- `onSelect?`: `(item: CommandPaletteItem) => void`. Called for every chosen item (after the item's own onSelect), e.g. to route to `item.href`.
+- `hotkey?`: `string | false | string[]`. Shortcut that toggles the palette. Default "mod+k"; `false` to bind your own. Default `"mod+k"`.
+- `placeholder?`: `string`. Default `"Search or jump to…"`.
+- `inline?`: `boolean`. Render in place (a card on the page) instead of as a ⌘K dialog. Default `false`.
+
 ## Notes
 
 Keys: ⌘K / Ctrl+K toggles, ↑ ↓ move, Enter runs, Esc closes (clears the query when inline), a leading “>” narrows to actions. Search: every word must match a label, keyword, number or amount (prefix > word start > fuzzy subsequence; acronyms like “gl”, “pl”); groups re-rank by best match. Focus returns to whatever opened it. Rows drop status, amount, type and keycaps as the dialog narrows (container queries), so it stays one line from 320px up. Shortcut keycaps made of printable keys alone ("?", "g i") are hidden while the user has single-key shortcuts turned off; a printable-only `hotkey` is unbound then too.

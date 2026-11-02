@@ -67,6 +67,15 @@ Tax computation adjustments sections, one per category.
 
 `title`, `category` (add_back|deduction|relief), `adjustments` [{id, category, itemCode, description, amount, source, accountCode}]; optional `readOnly`, `onAdd`, `onDelete(id)`; optional `className` and native div props on the root.
 
+- `title`: `string`
+- `adjustments`: `TaxAdjustment[]`
+- `category`: `"add_back" | "deduction" | "relief"`
+- `readOnly?`: `boolean`. Default `false`.
+- `isSubmitting?`: `boolean`. Default `false`.
+- `onAdd?`: `() => void`
+- `onDelete?`: `(id: string) => void`
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 Codes and account codes in mono.

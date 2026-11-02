@@ -54,6 +54,10 @@ Corporate tax return page, Computation tab.
 
 `data` with every Form C line (numbers or numeric strings, null = 0) and `isSME`; optional `rateExplanation` shown under the Standard 24% chip; optional `className` and native div props on the root.
 
+- `data`: `TaxComputationData`
+- `rateExplanation?`: `string`
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 Responsive by container: two panels side by side from 42rem of container width, stacked below.

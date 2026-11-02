@@ -70,6 +70,10 @@ Account rail rows, reconcile account chooser, connect dialogs.
 
 account {accountName, accountType, institution? {name, shortName, primaryColor}}, size, className and native props (spread on the root).
 
+- `account`: `Pick<BankRailAccount, "accountName" | "accountType" | "institution">`
+- `size?`: `number`. Default `24`.
+- Also accepts `ComponentProps<"span">`.
+
 ## Notes
 
 Size via the size prop; colour and size styles are data-driven.

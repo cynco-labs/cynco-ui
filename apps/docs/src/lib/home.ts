@@ -1,6 +1,26 @@
 import { CATEGORIES, byCategory, registry } from "./registry";
 import { GUIDES } from "./nav";
 
+/**
+ * Live demos on the home page, in grid order. At three columns the grid is 7 rows with no holes:
+ * 7 small (1 cell) + 3 wide (2) + 2 large (4) = 21 cells. `right` pins a wide or large tile to the
+ * right two columns; the dense flow backfills column 1. Re-balance when adding a tile.
+ */
+export const SHOWCASE: { name: string; size: "small" | "wide" | "large"; right?: boolean; note: string }[] = [
+	{ name: "DataList", size: "large", note: "Try Density above" },
+	{ name: "AmountInput", size: "small", note: "Decimal-safe" },
+	{ name: "StatusChip", size: "small", note: "Never colour alone" },
+	{ name: "BankFeedRow", size: "wide", note: "Reconcile a line" },
+	{ name: "Calendar", size: "small", note: "Keyboard first" },
+	{ name: "TaxInvoiceDocument", size: "large", right: true, note: "Try Documents above" },
+	{ name: "InvoiceTotalsPanel", size: "small", note: "Tabular figures" },
+	{ name: "PromptInput", size: "small", note: "@cynco-labs/ui/ai" },
+	{ name: "KpiTileGrid", size: "wide", note: "Auto-fits its container" },
+	{ name: "Conversation", size: "small", note: "@cynco-labs/ui/ai" },
+	{ name: "JournalGrid", size: "wide", note: "Spreadsheet-fast entry" },
+	{ name: "BankMatchReview", size: "small", note: "Match suggestions" },
+];
+
 export const PRINCIPLES = [
 	{ title: "Quiet by default", body: "Neutral surfaces and four steps of text. One blue does the pointing; colour appears only when it carries meaning." },
 	{ title: "Dense, not cramped", body: "13px type, 28px controls and tight rows, so a ledger or a bank feed fits on one screen without feeling crowded." },

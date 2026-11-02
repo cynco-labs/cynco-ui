@@ -33,6 +33,12 @@ Dashboard overview cash-flow card.
 
 points [{label, credits, debits, net}] oldest → newest; optional currency, hasActivity, defaultRange; plus className and native element props (spread on the root).
 
+- `points`: `CashFlowPoint[]`. Up to 6 months, oldest → newest.
+- `currency?`: `string`. Default `"MYR"`.
+- `hasActivity?`: `boolean`. Default `true`.
+- `defaultRange?`: `"3" | "6"`. Default `"6"`.
+- Also accepts `ComponentProps<"section">`.
+
 ## Notes
 
 Responsive: SectionPanel header wraps the net figure and range toggle under the title; chart fills the width.

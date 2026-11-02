@@ -80,6 +80,10 @@ On the journal entry detail page beside the details rail.
 
 lines [{ id, lineNumber, accountCode, accountName, accountType, debitAmount, creditAmount, description? }], currency?, className? (merged on the root) and native props.
 
+- `lines`: `JournalPostedLine[]`
+- `currency?`: `string`. Default `"MYR"`.
+- Also accepts `ComponentProps<"section">`.
+
 ## Notes
 
 The Balanced / Unbalanced state is a StatusChip in the header. Empty sides are blank and totals are formatted with formatCurrency. Responsive: built on DataList: a tray table on wide containers, stacked line cards (account, Dr/Cr amount, description) below 36rem.

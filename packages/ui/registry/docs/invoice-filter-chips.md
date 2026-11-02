@@ -42,6 +42,11 @@ Under the invoice search bar, so the active filters are visible and each can be 
 
 chips ({key, label, value}), onRemove(key), onClearAll; className and native div props.
 
+- `chips`: `SalesFilterChip[]`
+- `onRemove?`: `(key: string) => void`
+- `onClearAll?`: `() => void`
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 Responsive: Built on ActionBar, so the chips wrap.

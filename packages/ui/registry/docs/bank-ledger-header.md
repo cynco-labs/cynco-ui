@@ -48,6 +48,21 @@ Above the bank/GL register for one bank account and month.
 
 account { name, number?, glCode?, institutionName?, currency }, month (YYYY-MM), tieOut ({status:'tied',statementClosing} | {status:'off',difference} | {status:'none',basis}), bookBalance, statement?, notCounted?, transactionCount, credits, debits, canPrev?, canNext?, onMonthChange?, onDownload?, className? (merged on the root) and native props.
 
+- `account`: `{ name: string; number?: string; glCode?: string; institutionName?: string; currency: string }`
+- `month`: `string`. "2026-10"
+- `tieOut`: `{ status: "tied"; statementClosing: number } | { status: "off"; difference: number } | { status: "none"; basis: "statement" | "unverified" }`
+- `bookBalance`: `number`
+- `transactionCount`: `number`
+- `credits`: `number`
+- `debits`: `number`
+- `statement?`: `{ date: string; balance: number; unreconciledDifference: number } | null`
+- `notCounted?`: `{ label: string; title?: string }[]`. Default `[]`.
+- `canPrev?`: `boolean`. Default `true`.
+- `canNext?`: `boolean`. Default `true`.
+- `onMonthChange?`: `(dir: -1 | 1) => void`
+- `onDownload?`: `() => void`
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 The GL code sits in a mono tag. Credits and debits are neutral figures; an unreconciled gap gets an amber warning glyph rather than coloured text. CSV export is a skeleton icon button (wire onExport yourself). Responsive: balances, the tie-out chip and the month stepper all wrap on narrow containers.

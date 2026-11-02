@@ -72,6 +72,21 @@ Top of every financial statement page (ReportShell header).
 
 period ('YYYY-MM'), periods[]; optional title, meta, fiscalYearEnd ('MM-DD'), view + views[{value,label}], compare, comparePeriod, showSaveSnapshot, freshness {mode:'live', lastPostingAt} | {mode:'snapshot', takenAt}, now, onExport(format); plus className and native element props (spread on the root).
 
+- `period`: `string`
+- `periods`: `string[]`
+- `title?`: `ReactNode`
+- `meta?`: `ReactNode`. Quiet sub-line, e.g. "October 2026 · MYR".
+- `fiscalYearEnd?`: `string | null`. "MM-DD"; groups the period list by fiscal year.
+- `view?`: `string`. Current view (P&L Monthly/YTD, TB Standard/Extended).
+- `views?`: `{ value: string; label: string }[]`
+- `compare?`: `boolean`. Compare toggle; omit to hide it (reports without a comparative).
+- `comparePeriod?`: `string`
+- `showSaveSnapshot?`: `boolean`
+- `freshness?`: `ReportFreshness | null`
+- `now?`: `string | number`. Clock for the freshness label (defaults to Date.now()).
+- `onExport?`: `(format: "pdf" | "excel") => void`
+- Also accepts `ComponentProps<"header">`.
+
 ## Notes
 
 Layout splits into title row (freshness + Export at right) and a controls row so it fits 720px. State is local, no router. Responsive: title row and controls row are ActionBars that wrap; selects are w-36 max-w-full.

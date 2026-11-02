@@ -37,6 +37,9 @@ Above inputs in sheets.
 
 Children, `htmlFor` (the control's `id`) or a wrapped control, `disabled`, and any `<label>` props.
 
+- `disabled?`: `boolean`. Dims the label to match a disabled control.
+- Also accepts `ComponentProps<"label">`.
+
 ## Notes
 
 Pair `disabled` with the control's own `disabled`; the label only dims.

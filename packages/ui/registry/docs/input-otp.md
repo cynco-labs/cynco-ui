@@ -40,4 +40,7 @@ Sign-in OTP entry.
 
 `maxLength`, `value`, `onChange`; children `InputOTPGroup` of `InputOTPSlot index`, `InputOTPSeparator`.
 
+- `containerClassName?`: `string`
+- Also accepts `ComponentProps<typeof OTPInput>`.
+
 Category: Components · Inputs. Source: `packages/ui/src/base/components/ui/input-otp.tsx`.

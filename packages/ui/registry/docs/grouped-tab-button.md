@@ -38,6 +38,13 @@ Switching a small set of mutually exclusive modes (period, chart range).
 
 `value`, `onValueChange`, `options` [{value, label?, icon?, disabled?}].
 
+- `value`: `string`
+- `onValueChange`: `(value: string) => void`
+- `options`: `Array<{ value: string; label?: ReactNode; icon?: ReactNode; ariaLabel?: string; disabled?: boolean }>`
+- `buttonClassName?`: `string`
+- `disabled?`: `boolean`
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 Fills its container width; constrain the parent.

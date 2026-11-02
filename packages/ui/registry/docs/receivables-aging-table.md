@@ -76,6 +76,14 @@ AR (or AP with partyLabel 'Vendor') aging report pages and a top-debtors list (l
 
 asOf, rows [{id, name, invoices?, current, days1to30, days31to60, days61to90, over90}]; optional dso, limit, partyLabel, currency; plus className and native element props (spread on the root).
 
+- `asOf`: `string`. "31 Oct 2026".
+- `rows`: `AgingCustomerRow[]`
+- `dso?`: `number | null`
+- `limit?`: `number`. Show only the top N debtors (by total).
+- `currency?`: `string`. Default `"MYR"`.
+- `partyLabel?`: `string`. "Customer" for receivables, "Vendor" for payables. Default `"Customer"`.
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 Responsive: StatGrid summary; DataList table from 42rem, a card per customer (bands as label/value lines, total at right) below; totals are the last row.

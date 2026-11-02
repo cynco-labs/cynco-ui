@@ -54,6 +54,9 @@ Every chat turn.
 
 `from` (`user` · `assistant`); `MessageContent` › `MessageResponse` (Streamdown Markdown) ; `MessageActions` › `MessageAction` (`tooltip`, `label`); `MessageBranch*` for alternative replies; `MessageAttachments` › `MessageAttachment`.
 
+- `from`: `"user" | "system" | "assistant"`
+- Also accepts `HTMLAttributes<HTMLDivElement>`.
+
 ## Notes
 
 Mermaid diagrams inside Markdown are not bundled and render as nothing.

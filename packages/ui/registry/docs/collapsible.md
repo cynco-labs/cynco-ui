@@ -37,4 +37,7 @@ export default function CollapsibleDemo() {
 
 `open`/`defaultOpen`, `CollapsibleTrigger` (with `render`), `CollapsibleContent`.
 
+- `asChild?`: `boolean`
+- Also accepts `CollapsiblePrimitive.Root.Props`.
+
 Category: Components · Navigation. Source: `packages/ui/src/base/components/ui/collapsible.tsx`.

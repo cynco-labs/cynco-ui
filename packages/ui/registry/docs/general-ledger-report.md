@@ -693,6 +693,14 @@ Ledger listings for audit, account reviews, bank and receivables reconciliations
 
 report: GeneralLedgerData — period, accounts [{code, name, openingBalance, lines [{date, journalNo, description, debit?, credit?, balance}], totalDebit, totalCredit, closingBalance}], balanceStyle? ('drcr' | 'brackets'), basis?, currency?, filters?, preparedBy?, preparedOn?, notes?; plus brand?, size? (default 'a4-landscape'), stamp?, fit?, isolate?, className.
 
+- `report`: `GeneralLedgerData`
+- `size?`: `"a4" | "a4-landscape" | "a5" | "letter" | "receipt"`. Default `"a4-landscape"`.
+- `brand?`: `Partial<DocBrand>`. Overrides the provider's brand (merged over it).
+- `stamp?`: `"paid" | "void" | "draft" | "copy" | "overdue"`. A diagonal stamp across the page: Paid, Void, Draft, Copy, Overdue.
+- `fit?`: `"width" | "none"`. On screen: scale the sheet down to fit its container ("width") or keep 100% and scroll ("none"). Controlled; pair with `onFitChange`. Leave unset to let the zoom control switch it.
+- `isolate?`: `boolean`. When printing, hide the rest of the app and print only this page. Default true.
+- Also accepts `ComponentProps<"article">`.
+
 ## Notes
 
 Assembled on the kit's DocumentTable (sections per account, dense) so the column header repeats on every printed page; account headers don't orphan and the closing row doesn't start a page. Balances are debit-positive decimal strings printed with a Dr/Cr suffix (Dt/Kt in BM). Running balances come from the ledger — never recomputed.

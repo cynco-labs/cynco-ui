@@ -56,6 +56,12 @@ Grouping a chart, a detail list or a small table under a heading with actions. U
 
 title, description, actions, flush, className, children and any section props.
 
+- `title?`: `ReactNode`
+- `description?`: `ReactNode`
+- `actions?`: `ReactNode`. Rendered at the right of the header; wraps under the title on narrow containers.
+- `flush?`: `boolean`. Remove body padding (for tables and lists that run edge to edge).
+- Also accepts `ComponentProps<"section">`.
+
 ## Notes
 
 Named SectionPanel so it never collides with the AI kit's flow-canvas Panel.

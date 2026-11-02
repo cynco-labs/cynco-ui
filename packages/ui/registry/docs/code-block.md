@@ -35,6 +35,11 @@ Code in assistant replies and tool output.
 
 `code`, `language`, `showLineNumbers`; `CodeBlockCopyButton` child.
 
+- `code`: `string`
+- `language`: `BundledLanguage`
+- `showLineNumbers?`: `boolean`. Default `false`.
+- Also accepts `HTMLAttributes<HTMLDivElement>`.
+
 ## Notes
 
 The bundle carries Shiki grammars for TypeScript, TSX, JavaScript, JSX, JSON, Bash, Python, CSS, HTML, Markdown, YAML, SQL and Go; other languages render as plain text.

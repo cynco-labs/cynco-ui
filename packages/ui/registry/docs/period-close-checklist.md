@@ -68,6 +68,13 @@ In the close-period flow before a period is closed.
 
 items [{ id, status: fail|attention|warn|pass, label, detail, task?: depreciation|recognition|fxRevaluation, unclosedPeriod?, failure?, attention?: AttentionCard[] }], runningTask?, busy?, onRunTask?, onClosePeriodFirst?, className? (merged on the root) and native props.
 
+- `items`: `CloseCheckItem[]`
+- `runningTask?`: `"depreciation" | "recognition" | "fxRevaluation" | null`
+- `busy?`: `boolean`
+- `onRunTask?`: `(task: NonNullable<CloseCheckItem["task"]>) => void`
+- `onClosePeriodFirst?`: `(period: string) => void`
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 Passed is a disclosure with Show/Hide. Close notes are kept in local state. Responsive: Passed checks use Collapsible and go two-column from 36rem; action buttons wrap.

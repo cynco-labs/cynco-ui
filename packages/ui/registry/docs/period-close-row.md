@@ -68,6 +68,15 @@ Stacked in the Periods tab, newest first.
 
 period { period (YYYY-MM), fiscalStatus: open|closed|locked, accountCount, transactionCount, totalDebit, totalCredit }, isYearEnd?, baseCurrency?, onClose, onReopen, onLock, onUnlock, className? (merged on the root) and native props.
 
+- `period`: `LedgerPeriod`
+- `isYearEnd?`: `boolean`
+- `baseCurrency?`: `string`. Default `"MYR"`.
+- `onClose?`: `() => void`
+- `onReopen?`: `() => void`
+- `onLock?`: `() => void`
+- `onUnlock?`: `() => void`
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 Card row (rounded-xl border bg-card). Open is a green StatusChip; Closed/Locked are neutral chips carrying the lock glyph; Year-End is a muted Badge. Actions are secondary IconButtons: Close period · Lock + Reopen · Unlock. Responsive: Totals and actions drop under the period name when narrow.

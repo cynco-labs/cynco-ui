@@ -57,6 +57,20 @@ Next to any Cynco document (TaxInvoiceDocument, ReceiptDocument, ProfitAndLossRe
 
 onPrint?, bindShortcut? (default: true only when onPrint is set — otherwise the browser's own ⌘/Ctrl+P already prints the print layout), showShortcut (default true), children (label, default "Print"), plus Button props (variant — default secondary, size, disabled, className…).
 
+- `variant?`: `"primary" | "secondary" | "skeleton" | "muted" | "destructive" | "dotted"`. Default `"secondary"`.
+- `size?`: `"sm" | "default" | "mini" | "icon"`. Default `"default"`.
+- `asChild?`: `boolean`
+- `isLoading?`: `boolean`
+- `transition?`: `boolean`
+- `disableActive?`: `boolean`
+- `hide?`: `boolean`
+- `render?`: `ReactElement`
+- `focusableWhenDisabled?`: `boolean`. Keep the button in the tab order while disabled (Base UI). Set automatically while `isLoading`.
+- `onPrint?`: `() => void`. Replace window.print() — e.g. download a server-rendered PDF.
+- `bindShortcut?`: `boolean`. Handle ⌘/Ctrl+P on this page. Default: only when `onPrint` is given (otherwise the browser's own print already uses the print layout).
+- `showShortcut?`: `boolean`. Show the ⌘/Ctrl+P keycap. Default true. Default `true`.
+- Also accepts `ComponentProps<"button">`.
+
 ## Notes
 
 Keyboard: Tab + Enter/Space; ⌘/Ctrl+P when bound (works from inputs too, as a mod shortcut). Hidden in print.

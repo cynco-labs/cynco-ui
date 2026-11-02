@@ -47,6 +47,14 @@ Top of the Reconcile lens for one bank account.
 
 months [{period 'YYYY-MM', state, openLines, missing, untied, signedOff}], selected, yearLabel, accountName, calendarMonths, selectedSummary {nextStep, signedOffLabel}, className and native props (spread on the root).
 
+- `months`: `BankCloseMonth[]`
+- `selected`: `string | null`
+- `yearLabel`: `string`. "FY 2026"
+- `accountName`: `string`
+- `calendarMonths?`: `boolean`. Default `false`.
+- `selectedSummary?`: `{ nextStep: string; signedOffLabel?: string }`. The next-step sentence for the selected month, and its sign-off line.
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 The strip sits in a table-tray band; the selected cell is a raised bg-table-surface tab with a primary underline; bars use var(--status-green/amber) and neutrals. Responsive by container: 12 months across from 42rem, 6 per row from 24rem, 4 per row below.

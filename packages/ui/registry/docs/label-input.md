@@ -32,6 +32,11 @@ Most form fields in sheets: name, IDs, URLs.
 
 `label`, `placeholder` (required), optional `description`, input props.
 
+- `label`: `string | ReactElement<typeof HTMLSpanElement>`
+- `placeholder`: `string`
+- `description?`: `string`
+- Also accepts `ComponentProps<"input">`.
+
 ## Notes
 
 Label uses `text-form-label`; description `text-body-secondary`.

@@ -43,6 +43,12 @@ Fields that need a hint.
 
 Children, `htmlFor` (the control's `id`), optional `description` + `descriptionId`, `tooltip`, `empty`, and any `<label>` props.
 
+- `description?`: `string`. Hint under the label. Rendered outside the `<label>`, so it never joins the control's name.
+- `descriptionId?`: `string`. Id for the description, so the control can point `aria-describedby` at it.
+- `empty?`: `boolean`. Render an aria-hidden spacer the height of a label, to align fields that have none. Default `false`.
+- `tooltip?`: `string`. Info tooltip beside the description (or the label, without one). Kept outside the `<label>`.
+- Also accepts `ComponentProps<"label">`.
+
 ## Notes
 
 The description and tooltip render outside the `<label>`, so the control's name is just the label text; point the control's `aria-describedby` at `descriptionId` to read the hint with it. With a description or tooltip, `className` goes on the wrapper and `<label>` props on the label. `empty` renders an aria-hidden spacer.

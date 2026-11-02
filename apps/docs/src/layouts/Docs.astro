@@ -24,7 +24,7 @@ const { prev, next } = neighbours(current);
 	<Header current={current} />
 	<div class="mx-auto flex max-w-[90rem] px-0 lg:px-8">
 		<Sidebar current={current} />
-		<main id="content" class="min-w-0 flex-1 px-4 pb-24 pt-8 sm:px-6 lg:pl-10 lg:pr-2 min-[1360px]:pr-10">
+		<main id="content" data-prev={prev?.href} data-next={next?.href} class="min-w-0 flex-1 px-4 pb-24 pt-8 sm:px-6 lg:pl-10 lg:pr-2 min-[1360px]:pr-10">
 			<div class:list={["mx-auto", wide ? "max-w-[64rem]" : "max-w-[52rem]"]}>
 				<slot />
 				{
@@ -54,6 +54,15 @@ const { prev, next } = neighbours(current);
 </Base>
 
 <script>
+	// ← and → step through pages in reading order, as the arrows beside a component's title do.
+	document.addEventListener("keydown", (e) => {
+		const t = e.target as HTMLElement;
+		// Only when focus is on the page or a link: buttons, grids and calendars use the arrows themselves.
+		if (e.defaultPrevented || e.metaKey || e.ctrlKey || e.altKey || e.shiftKey || (t !== document.body && !(t instanceof HTMLAnchorElement))) return;
+		const href = e.key === "ArrowLeft" ? document.getElementById("content")?.dataset.prev : e.key === "ArrowRight" ? document.getElementById("content")?.dataset.next : undefined;
+		if (href) location.href = href;
+	});
+
 	// Copy buttons on code blocks in prose
 	for (const pre of document.querySelectorAll<HTMLPreElement>(".prose pre.astro-code")) {
 		const wrap = document.createElement("div");

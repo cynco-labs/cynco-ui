@@ -89,6 +89,11 @@ Activity tab of customer and vendor pages.
 
 events [{kind, date, title, reference, status, dueDate, overdue, amount, currency, baseAmount}], role, currency; className and native div props.
 
+- `role`: `"customer" | "vendor"`
+- `events`: `PartyEvent[]`
+- `currency?`: `string`. Default `"MYR"`.
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 Responsive by container: below a 28rem container the day joins the detail line and titles wrap to two lines.

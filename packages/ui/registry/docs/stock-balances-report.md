@@ -75,6 +75,11 @@ Inventory workspace balances and reports.
 
 `balances` [{itemId, itemName, locationName, quantity, unitOfMeasure, weightedAvgCost, value, reorderPoint}], `reconciliation` {glBalance, subledgerBalance, difference, isReconciled}; optional `period`; optional `className` and native section props on the root.
 
+- `balances`: `StockBalanceRow[]`
+- `reconciliation`: `{ glBalance: Num; subledgerBalance: Num; difference: Num; isReconciled: boolean }`
+- `period?`: `string`
+- Also accepts `ComponentProps<"section">`.
+
 ## Notes
 
 Balances table, per-item balance status and a reconciliation strip in one panel. Responsive: DataList for balances; the reconciliation strip wraps.

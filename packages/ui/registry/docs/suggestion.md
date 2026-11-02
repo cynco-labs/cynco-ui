@@ -30,4 +30,17 @@ Empty chats and follow-up ideas.
 
 `Suggestions` › `Suggestion suggestion onClick`.
 
+- `suggestion`: `string`
+- `variant?`: `"primary" | "secondary" | "skeleton" | "muted" | "destructive" | "dotted"`. Default `"secondary"`.
+- `size?`: `"sm" | "default" | "mini" | "icon"`. Default `"sm"`.
+- `asChild?`: `boolean`
+- `isLoading?`: `boolean`
+- `transition?`: `boolean`
+- `disableActive?`: `boolean`
+- `hide?`: `boolean`
+- `render?`: `ReactElement`
+- `focusableWhenDisabled?`: `boolean`. Keep the button in the tab order while disabled (Base UI). Set automatically while `isLoading`.
+- `onClick?`: `(suggestion: string) => void`
+- Also accepts `ComponentProps<"button">`.
+
 Category: AI. Source: `packages/ui/src/base/components/ai-elements/suggestion.tsx`.

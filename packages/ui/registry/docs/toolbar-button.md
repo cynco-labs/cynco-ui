@@ -36,6 +36,17 @@ Last cell of a table row, as the trigger of a DropdownMenu.
 
 Button props (usually via `DropdownMenuTrigger render`). Clicks stop propagation so the row click does not fire.
 
+- `variant?`: `"primary" | "secondary" | "skeleton" | "muted" | "destructive" | "dotted"`. Default `"primary"`.
+- `size?`: `"sm" | "default" | "mini" | "icon"`. Default `"default"`.
+- `asChild?`: `boolean`
+- `isLoading?`: `boolean`
+- `transition?`: `boolean`
+- `disableActive?`: `boolean`
+- `hide?`: `boolean`
+- `render?`: `ReactElement`
+- `focusableWhenDisabled?`: `boolean`. Keep the button in the tab order while disabled (Base UI). Set automatically while `isLoading`.
+- Also accepts `ComponentProps<"button">`.
+
 ## Notes
 
 Always `skeleton`, icon-only; give it an `aria-label`.

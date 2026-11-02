@@ -6,13 +6,17 @@
  *
  * Writes:
  *   packages/ui/registry/components.json  [{ name, slug, category, group, summary, use, provide, notes,
- *                                           sourcePath, demoPath, importFrom, height }]
+ *                                           sourcePath, demoPath, importFrom, height, props }]
  *   packages/ui/registry/docs/<slug>.md   one markdown page per component (used by the CLI and the docs
  *                                           site's .md endpoints)
  *
  * meta.json is the hand-edited source of truth for names, categories and copy. The demo file is the usage
- * example; sourcePath is found by scanning packages/ui/src for the component's export.
+ * example; sourcePath is found by scanning packages/ui/src for the component's export. props come from
+ * registry/props.json, generated from the TypeScript source by scripts/extract-props.mjs.
  * Dependency-free on purpose so it runs before anything is installed.
+ *
+ * Also fails the build when the docs would mislead: a demo importing something a reader can't install, a
+ * playground control the demo ignores, or a link to a page that doesn't exist.
  */
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
@@ -23,6 +27,9 @@ const UI = join(ROOT, "packages/ui");
 const REGISTRY = join(UI, "registry");
 const DEMOS = join(ROOT, "apps/docs/src/demos");
 const CATEGORIES = ["Layout", "Components", "Productivity", "Documents", "Accounting", "AI"];
+const GUIDES = join(ROOT, "apps/docs/src/content/guides");
+/** What a demo may import: what a reader of the docs installs. Anything else would not run if copied. */
+const DEMO_IMPORTS = /^(react|@cynco-labs\/ui|@cynco-labs\/ui\/ai|@phosphor-icons\/react|recharts|@tanstack\/react-table)$/;
 
 export const slugify = (name) =>
 	name
@@ -76,13 +83,39 @@ function markdown(c, demo) {
 	const lines = [`# ${c.name}`, "", c.summary, "", "```tsx", `import { ${c.name} } from "${c.importFrom}";`, "```", ""];
 	lines.push("## Usage", "", "```tsx", demo.trimEnd(), "```", "");
 	if (c.use) lines.push("## Use", "", c.use, "");
-	if (c.provide) lines.push("## Props", "", c.provide, "");
+	if (c.provide || c.props?.props.length) {
+		lines.push("## Props", "");
+		if (c.provide) lines.push(c.provide, "");
+		if (c.props?.props.length) {
+			for (const p of c.props.props) {
+				const desc = [p.description, p.default ? `Default \`${p.default}\`.` : ""].filter(Boolean).join(" ");
+				lines.push(`- \`${p.name}${p.required ? "" : "?"}\`: \`${p.type}\`${desc ? `. ${desc}` : ""}`);
+			}
+			if (c.props.inherits.length) lines.push(`- Also accepts ${c.props.inherits.map((i) => `\`${i}\``).join(", ")}.`);
+			lines.push("");
+		}
+	}
 	if (c.notes) lines.push("## Notes", "", c.notes, "");
 	lines.push(`Category: ${c.category}${c.group && c.group !== c.category ? ` · ${c.group}` : ""}. Source: \`${c.sourcePath}\`.`, "");
 	return lines.join("\n");
 }
 
+/** Problems in one demo file: imports a reader can't install, controls the default export doesn't take. */
+function checkDemo(file) {
+	const src = readFileSync(file, "utf8");
+	const problems = [];
+	for (const m of src.matchAll(/^import[^"']*["']([^"']+)["']/gm)) if (!DEMO_IMPORTS.test(m[1])) problems.push(`imports "${m[1]}"`);
+	const controls = src.match(/^export const controls = \{([\s\S]*?)^\};/m);
+	if (controls) {
+		const params = src.match(/^export default function \w*\(\{([^}]*)\}\)/m)?.[1] ?? "";
+		for (const k of controls[1].matchAll(/^\s+["']?(\w+)["']?\s*:\s*\{/gm)) if (!new RegExp(`\\b${k[1]}\\b`).test(params)) problems.push(`control "${k[1]}" is not a parameter of the default export`);
+	}
+	return problems;
+}
+
 const meta = JSON.parse(readFileSync(join(REGISTRY, "meta.json"), "utf8"));
+const propsFile = join(REGISTRY, "props.json");
+const props = existsSync(propsFile) ? JSON.parse(readFileSync(propsFile, "utf8")) : {};
 const index = exportIndex();
 const errors = [];
 const seen = new Set();
@@ -93,6 +126,9 @@ for (const m of meta) {
 	if (!CATEGORIES.includes(m.category)) errors.push(`${m.name}: unknown category "${m.category}"`);
 	const demoFile = join(DEMOS, `${m.name}.tsx`);
 	if (!existsSync(demoFile)) errors.push(`${m.name}: missing demo ${relative(ROOT, demoFile)}`);
+	else for (const p of checkDemo(demoFile)) errors.push(`${relative(ROOT, demoFile)}: ${p}`);
+	if (!m.summary) errors.push(`${m.name}: no summary in registry/meta.json`);
+	if (!(m.name in props)) errors.push(`${m.name}: not in registry/props.json (run node scripts/extract-props.mjs)`);
 	const sourcePath = index.get(m.name);
 	if (!sourcePath) errors.push(`${m.name}: no export found in packages/ui/src`);
 	components.push({
@@ -108,6 +144,7 @@ for (const m of meta) {
 		demoPath: relative(ROOT, demoFile),
 		importFrom: m.category === "AI" ? "@cynco-labs/ui/ai" : "@cynco-labs/ui",
 		height: m.height ?? 160,
+		props: props[m.name] ?? null,
 	});
 }
 const slugs = new Set();
@@ -121,6 +158,19 @@ if (existsSync(DEMOS)) {
 		if (f.endsWith(".tsx") && !seen.has(name)) errors.push(`${f}: demo has no entry in registry/meta.json`);
 	}
 }
+// Links to /components/<slug> and /<guide> in the copy and the guides must resolve.
+const guides = existsSync(GUIDES) ? readdirSync(GUIDES).filter((f) => f.endsWith(".md")) : [];
+const pages = new Set(["/", "/components", "/colors", "/typography", "/llms.txt", "/skill", "/index", ...guides.map((f) => `/${f.replace(/\.md$/, "")}`), ...[...slugs].map((s) => `/components/${s}`)]);
+const texts = [
+	...components.map((c) => [`registry/meta.json (${c.name})`, `${c.summary}\n${c.use}\n${c.provide}\n${c.notes}`]),
+	...guides.map((f) => [`guides/${f}`, readFileSync(join(GUIDES, f), "utf8")]),
+];
+for (const [where, text] of texts)
+	for (const m of text.matchAll(/\]\((\/[^)#\s]*)/g)) {
+		const path = m[1].replace(/\.md$/, "").replace(/\/$/, "") || "/";
+		if (!pages.has(path)) errors.push(`${where}: link to ${m[1]} has no page`);
+	}
+
 if (errors.length) {
 	console.error(`registry: ${errors.length} problem(s)\n  ${errors.join("\n  ")}`);
 	process.exit(1);

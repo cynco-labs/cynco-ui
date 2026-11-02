@@ -9,46 +9,7 @@ import { PurchaseOrderDocument } from "@cynco-labs/ui";
 ## Usage
 
 ```tsx
-import { useState } from "react";
-import { DocumentBrandProvider, GroupedTabButton, PurchaseOrderDocument } from "@cynco-labs/ui";
-
-const LAYOUTS = [
-	{ value: "minimal", label: "Minimal" },
-	{ value: "classic", label: "Classic" },
-	{ value: "modern", label: "Modern" },
-];
-
-const LOCALES = [
-	{ value: "en", label: "EN" },
-	{ value: "ms", label: "BM" },
-	{ value: "en-ms", label: "EN + BM" },
-];
-
-function Tabs(p) {
-	return (
-		<div style={{ width: p.w }}>
-			<GroupedTabButton value={p.value} onValueChange={p.onChange} options={p.options} />
-		</div>
-	);
-}
-
-function Shell(p) {
-	const [l, setL] = useState("minimal"),
-		[g, setG] = useState("en"),
-		[z, setZ] = useState(p.sizes ? p.sizes[0].value : "a4");
-	return (
-		<div className="flex flex-col gap-3">
-			<div className="flex flex-wrap items-center gap-2">
-				<Tabs w="270px" value={l} onChange={setL} options={LAYOUTS} />
-				<Tabs w="210px" value={g} onChange={setG} options={LOCALES} />
-				{p.sizes ? <Tabs w="130px" value={z} onChange={setZ} options={p.sizes} /> : null}
-			</div>
-			<DocumentBrandProvider brand={Object.assign({}, p.brand, { layout: l, locale: g })}>
-				{p.render(z)}
-			</DocumentBrandProvider>
-		</div>
-	);
-}
+import { DocumentBrandProvider, PurchaseOrderDocument } from "@cynco-labs/ui";
 
 const BRAND = {
 	company: {
@@ -157,8 +118,33 @@ const PO = {
 	approvedBy: { name: "Tan Mei Ling", title: "Operations Manager" },
 };
 
-export default function PurchaseOrderDocumentDemo() {
-	return <Shell brand={BRAND} render={() => <PurchaseOrderDocument order={PO} />} />;
+export const controls = {
+	layout: {
+		label: "Layout",
+		options: [
+			{ value: "minimal", label: "Minimal" },
+			{ value: "classic", label: "Classic" },
+			{ value: "modern", label: "Modern" },
+		],
+		default: "minimal",
+	},
+	locale: {
+		label: "Language",
+		options: [
+			{ value: "en", label: "EN" },
+			{ value: "ms", label: "BM" },
+			{ value: "en-ms", label: "EN + BM" },
+		],
+		default: "en",
+	},
+};
+
+export default function PurchaseOrderDocumentDemo({ layout = "minimal", locale = "en" }) {
+	return (
+		<DocumentBrandProvider brand={{ ...BRAND, layout, locale }}>
+			<PurchaseOrderDocument order={PO} />
+		</DocumentBrandProvider>
+	);
 }
 ```
 
@@ -169,6 +155,13 @@ Printing, emailing or downloading an approved purchase order; the same component
 ## Props
 
 order: PurchaseOrderData { number, date, requiredBy?, terms?, quotationRef?, requester? {name, department?}, currency?, revision?, vendor: DocParty, deliverTo: DocParty, lines: {itemCode?, description, detail?, quantity, unit?, unitPrice, taxRate?, taxCode?, amount}[], totals: {subtotal?, discount?, taxes?: {label?, rate?, amount}[], shipping?, rounding?, total}, deliveryInstructions?, termsAndConditions?, notes?, preparedBy?, approvedBy?, acceptedBy? }; plus brand?, size? (a4 | letter), stamp?, fit?, isolate?, className.
+
+- `order`: `PurchaseOrderData`
+- `brand?`: `Partial<DocBrand>`. Overrides the provider's brand (merged over it).
+- `stamp?`: `"paid" | "void" | "draft" | "copy" | "overdue"`
+- `fit?`: `"width" | "none"`
+- `isolate?`: `boolean`
+- `size?`: `"a4" | "letter"`. Default `"a4"`.
 
 ## Notes
 

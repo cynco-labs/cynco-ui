@@ -41,6 +41,10 @@ Fixed asset Depreciation tab, or anywhere a schedule is listed.
 
 `entries` [{id, period, depreciationAmount, accumulatedToDate, netBookValueAfter, isPosted, journalEntryId}]; optional `onOpenJournal(id)`; optional `className` and native div props on the root.
 
+- `entries`: `AssetDepreciationEntry[]`
+- `onOpenJournal?`: `(journalEntryId: string) => void`
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 Responsive by container: DataList: table when wide, period/NBV cards when narrow.

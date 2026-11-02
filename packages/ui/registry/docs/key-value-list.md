@@ -40,6 +40,8 @@ Totals blocks, document detail rails, payment summaries.
 
 items ({label, value, negative, strong}), className.
 
+- `items`: `Array<{ label: ReactNode; value: ReactNode; negative?: boolean; strong?: boolean }>`
+
 ## Notes
 
 Values are tabular-nums and right-aligned; negative uses text-error-text, strong makes a total row.

@@ -198,6 +198,13 @@ Inside the journal entry form, above the balance bar, for creating or editing a 
 
 lines [{ key, accountId?, accountCode?, accountName?, description?, debitAmount?, creditAmount? }], accounts (picker list), recentIds?, fieldErrors? keyed `${key}.accountId`, onLinesChange?, className? (merged on the root) and native props.
 
+- `lines`: `JournalEditorLine[]`
+- `accounts?`: `LedgerPickerAccount[]`. Default `[]`.
+- `recentIds?`: `string[]`
+- `fieldErrors?`: `Record<string, string>`. Keyed `${line.key}.accountId`. Default `{}`.
+- `onLinesChange?`: `(lines: JournalEditorLine[]) => void`
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 An AI-suggested but unconfirmed account (code with no id) shows a dashed border and an amber warning glyph. Remove is a skeleton icon button, disabled at two lines (double-entry minimum).

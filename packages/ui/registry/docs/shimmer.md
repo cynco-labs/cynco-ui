@@ -24,4 +24,9 @@ Short "working" labels while streaming.
 
 String children; `duration`, `spread`, `as`.
 
+- `children`: `string`
+- `as?`: `ElementType`. Default `"p"`.
+- `duration?`: `number`. Default `2`.
+- `spread?`: `number`. Default `2`.
+
 Category: AI. Source: `packages/ui/src/base/components/ai-elements/shimmer.tsx`.

@@ -57,6 +57,12 @@ At the top of a ledger or journal screen, to name the tab, give its quiet sub-li
 
 title, meta (e.g. "Company · FY2026 · 214 accounts · MYR"), actions (buttons), stats [{ key, label, value, hint?, href?, status?: success|warning|danger }], className? (merged on the root) and native props.
 
+- `title`: `ReactNode`
+- `meta?`: `ReactNode`
+- `actions?`: `ReactNode`
+- `stats?`: `WorkbenchStat[]`. Default `[]`.
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 A workbench title row and a StatGrid in one. Tiles are card surfaces (rounded-xl border bg-card) with text-tiny captions and text-sub tabular values; the single state dot uses the StatusChip tones; linked tiles show a hover arrow. Responsive: tiles are StatGrid/StatTile (auto-fit, values wrap instead of truncating); the action bar wraps under the title when narrow.

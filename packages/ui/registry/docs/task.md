@@ -35,4 +35,7 @@ Showing an agent's search or edit work.
 
 `TaskTrigger title`, `TaskContent` › `TaskItem` (with `TaskItemFile`).
 
+- `asChild?`: `boolean`
+- Also accepts `CollapsiblePrimitive.Root.Props`.
+
 Category: AI. Source: `packages/ui/src/base/components/ai-elements/task.tsx`.

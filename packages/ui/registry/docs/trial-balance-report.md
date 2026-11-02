@@ -111,6 +111,17 @@ The trial balance report in its standard, comparative (current | prior | varianc
 
 rows ({accountId, accountCode, accountName, accountType?, debit?, credit?}); optional groups [{label, muted, signed, debit(row), credit(row), totalDebit?, totalCredit?}], period, description, showType, balanced, badgeLabel, currency; plus className and native element props (spread on the root).
 
+- `rows`: `TrialBalanceAccount[]`
+- `title?`: `string`. Default `"Trial balance"`.
+- `description?`: `ReactNode`
+- `period?`: `string`. Period label for the heading, e.g. "October 2026".
+- `groups?`: `TrialBalanceColumnGroup[]`. Column groups; defaults to one pair read from `row.debit` / `row.credit`.
+- `showType?`: `boolean`. Default `false`.
+- `balanced?`: `boolean`. Override the computed balanced state (totals of every unsigned group tie).
+- `badgeLabel?`: `string`. Which figures the chip speaks for, when there is more than one set.
+- `currency?`: `string`. Default `"MYR"`.
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 Zero Dr/Cr cells stay blank, totals get an accountant's double rule, codes use text-tiny-id. Responsive: DataList tray table from 36rem of container width, one card per account below (blank Dr/Cr show an em dash there); built on SectionPanel + DataList.

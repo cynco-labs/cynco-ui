@@ -29,6 +29,11 @@ Right rail of the invoice detail page.
 
 status, emailSent, onAction(label); className and native section props.
 
+- `status`: `string`
+- `emailSent?`: `boolean`. Default `false`.
+- `onAction?`: `(label: string) => void`
+- Also accepts `ComponentProps<"section">`.
+
 ## Notes
 
 Responsive: Built on the SectionPanel primitive.

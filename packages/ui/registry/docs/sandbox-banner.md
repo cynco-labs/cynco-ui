@@ -30,6 +30,10 @@ Shown on every page while working in a sandbox or demo company.
 
 Optional `label`, `icon`, `color`; `SandboxBannerAction` children.
 
+- `label?`: `string`. Default `"Sandbox"`.
+- `icon?`: `ReactNode`
+- `color?`: `string`
+
 ## Notes
 
 Fill is `sandbox`; text white.

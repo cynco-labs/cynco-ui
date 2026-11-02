@@ -29,6 +29,10 @@ Behind floating inline sheet panels.
 
 `isOpen`, `onClose`, optional `zIndex`.
 
+- `isOpen`: `boolean`
+- `onClose`: `() => void`
+- `zIndex?`: `number`. Default `SHEET_BACKDROP_Z_INDEX`.
+
 ## Notes
 
 Click closes.

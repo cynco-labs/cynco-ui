@@ -43,6 +43,20 @@ From an invoice's Mark as paid action, for payments received offline.
 
 open, defaultOpen, modal, onOpenChange, invoice ({invoiceNumber, customerName, total, paidAmount, currency}), paymentDate, paymentMethod, bankAccounts ({accountCode, accountName}), bankAccount, note, isSubmitting, showSuccess, onConfirm; className (merged onto the dialog panel).
 
+- `invoice`: `{ invoiceNumber: string; customerName: string; total: number; currency?: string; paidAmount?: number }`
+- `open?`: `boolean`
+- `defaultOpen?`: `boolean`
+- `modal?`: `boolean`. Default `true`.
+- `onOpenChange?`: `(open: boolean) => void`
+- `paymentDate?`: `string`
+- `paymentMethod?`: `string`
+- `bankAccounts?`: `SalesBankAccount[]`. Default `[]`.
+- `bankAccount?`: `string`
+- `note?`: `string`
+- `showSuccess?`: `boolean`. Default `false`.
+- `isSubmitting?`: `boolean`. Default `false`.
+- `onConfirm?`: `(p: { method: string; bankAccount: string; note: string }) => void`
+
 ## Notes
 
 Dialog and DialogContent, with the fact block on bg-table-tray and sections divided by table-row-divider. The warning is Alert variant="warning", and bank accounts show their mono account code. Confirm is the primary Button, and it is disabled with no date or when a bank account is required but not chosen. Responsive: The fact block stacks its labels above the values in a narrow dialog, the method chips wrap, and the panel scrolls within the viewport.

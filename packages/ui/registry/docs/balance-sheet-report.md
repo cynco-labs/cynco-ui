@@ -131,6 +131,14 @@ Month-end and year-end balance sheets, with a comparative column (e.g. the last 
 
 report: BalanceSheetData — period (kind 'asAt'), columns, codes?, nonCurrentAssets[], totalNonCurrentAssets, currentAssets[], totalCurrentAssets, totalAssets, currentLiabilities[], totalCurrentLiabilities, nonCurrentLiabilities[], totalNonCurrentLiabilities, totalLiabilities, equity[], totalEquity, totalEquityAndLiabilities, balanced, difference?, basis?, currency?, filters?, preparedBy?, preparedOn?, notes?; plus brand?, size?, stamp?, fit?, isolate?, className.
 
+- `report`: `BalanceSheetData`
+- `size?`: `"a4" | "a4-landscape" | "a5" | "letter" | "receipt"`
+- `brand?`: `Partial<DocBrand>`. Overrides the provider's brand (merged over it).
+- `stamp?`: `"paid" | "void" | "draft" | "copy" | "overdue"`. A diagonal stamp across the page: Paid, Void, Draft, Copy, Overdue.
+- `fit?`: `"width" | "none"`. On screen: scale the sheet down to fit its container ("width") or keep 100% and scroll ("none"). Controlled; pair with `onFitChange`. Leave unset to let the zoom control switch it.
+- `isolate?`: `boolean`. When printing, hide the rest of the app and print only this page. Default true.
+- Also accepts `ComponentProps<"article">`.
+
 ## Notes
 
 Note references print in a Note column when any line carries one. All three layouts and EN / BM / EN+BM; A4; header repeats when printed.

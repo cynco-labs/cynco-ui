@@ -33,4 +33,8 @@ Top of every list page; matches DataTable.Toolbar.
 
 `icon` (16px Phosphor fill in `subtle`), `title`, optional `titleAccessory`, actions as children.
 
+- `icon`: `ReactNode`
+- `title`: `string`
+- `titleAccessory?`: `ReactNode`
+
 Category: Components · Layout. Source: `packages/ui/src/base/components/general/page-header.tsx`.

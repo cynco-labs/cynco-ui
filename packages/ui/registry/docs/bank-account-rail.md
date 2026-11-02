@@ -74,6 +74,12 @@ The left rail of the Banking workspace.
 
 accounts [{id, accountName, accountType, balance, currency, institution, counts, hasChainIssue, feed {health, summary}}], selectedId, net [{amount, currency}] (never summed across currencies), cashFlow [{month, net}], className and native props (spread on the root).
 
+- `accounts`: `BankRailAccount[]`
+- `net`: `{ amount: number; currency: string }[]`. One entry per currency; never summed across currencies.
+- `selectedId?`: `string | null`. Default `null`.
+- `cashFlow?`: `{ month: string; net: number }[]`. Default `[]`.
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 Fills its container (constrain it, e.g. max-w-60, when used as a side rail).

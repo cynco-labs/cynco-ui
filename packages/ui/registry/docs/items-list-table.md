@@ -104,6 +104,14 @@ Items page list.
 
 `items` [{id, name, description, unitPrice, unitCost, costingMode, targetMarginPercent, trackInventory, unitOfMeasure, reorderPoint, taxRate, discountRate, isArchived}], `inventoryByItem`, `realizedByItem`; optional `selectedItems`, `onToggle`, `onToggleAll`; optional `className` and native div props on the root.
 
+- `items`: `CatalogItem[]`
+- `inventoryByItem?`: `Record<string, ItemInventoryInfo>`. Default `{}`.
+- `realizedByItem?`: `Record<string, ItemRealized>`. Default `{}`.
+- `selectedItems?`: `string[]`. Default `[]`.
+- `onToggle?`: `(id: string) => void`
+- `onToggleAll?`: `(all: boolean) => void`
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 Loss-making or below-target margins read in error-text; everything else stays neutral. Responsive: DataList (stacks below 42rem) with the checkbox kept as the leading cell.

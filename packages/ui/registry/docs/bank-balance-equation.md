@@ -63,6 +63,15 @@ Any proof in banking: a statement, a month end, a month's cash.
 
 terms [{label, amount (number | null unknown | undefined pending), op, hint}], resultLabel, check {label, amount}, currency, tiesLabel, unknownLabel, size, className and native props (spread on the root).
 
+- `terms`: `readonly BankEquationTerm[]`
+- `resultLabel`: `string`
+- `check?`: `BankEquationCheck`
+- `currency?`: `string`. Default `"MYR"`.
+- `tiesLabel?`: `string`. Default `"Ties"`.
+- `unknownLabel?`: `string`. Default `"Can't verify"`.
+- `size?`: `"sm" | "md"`. Default `"md"`.
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 Terms wrap onto new lines; verdict chips wrap their label instead of truncating.

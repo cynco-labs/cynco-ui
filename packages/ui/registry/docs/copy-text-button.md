@@ -24,4 +24,9 @@ Showing a document number or ID the user is expected to copy.
 
 `text`, optional `children` (display), `copySize`, `icon`.
 
+- `text`: `string`
+- `copySize?`: `number`
+- `variant?`: `string`. Default `"secondary"`.
+- `icon?`: `ReactNode`
+
 Category: Components · Actions. Source: `packages/ui/src/base/components/general/copy-text-button.tsx`.

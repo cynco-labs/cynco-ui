@@ -43,6 +43,11 @@ Left side of the create-invoice flow, wrapping each step's form content.
 
 currentStep (1–3), optional completed step numbers, and children keyed by step number for each step's content; className and native ol props.
 
+- `currentStep`: `1 | 2 | 3`
+- `completed?`: `number[]`. Default `[]`.
+- `children?`: `Partial<Record<1 | 2 | 3, ReactNode>>`
+- Also accepts `ComponentProps<"ol">`.
+
 ## Notes
 
 Responsive: A vertical ordered list that works at any width.

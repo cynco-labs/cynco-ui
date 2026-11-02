@@ -125,6 +125,11 @@ Inside the feed list, or anywhere a single bank line is listed.
 
 tx (BankFeedTransaction: payeeName, description, reference, type, amount, status, category, suggestion, isTransfer, flags, excludeReason, account {name, color}, matches), selected, showAccount, className and native props (spread on the root).
 
+- `tx`: `BankFeedTransaction`
+- `selected?`: `boolean`. Default `false`.
+- `showAccount?`: `boolean`. Default `false`.
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 Responsive by container: below 32rem the payee wraps to two lines, flags wrap, the category drops under the text and the amount stays top right.

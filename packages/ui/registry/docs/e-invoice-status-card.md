@@ -51,6 +51,15 @@ Invoice and credit/debit note detail sidebars (NoteEInvoiceCard).
 
 `credentialEnvironments` (sandbox|production), `byEnvironment` {status, documentUuid, longId, validatedAt, rejectionRequestedAt, rejectionReason, validationErrors, unconfirmed, withinCancelWindow}; optional `documentLabel`, `hasCorrection`, `onSubmit`, `onCancel`, `onCheck`; optional `className` and native div props on the root.
 
+- `credentialEnvironments`: `EnvName[]`
+- `byEnvironment`: `Partial<Record<EnvName, EInvoiceEnvStatus>>`
+- `documentLabel?`: `string`. Default `"invoice"`.
+- `hasCorrection?`: `boolean`. Default `true`.
+- `onSubmit?`: `(env: EnvName) => void`
+- `onCancel?`: `(env: EnvName, reason: string) => void`
+- `onCheck?`: `(env: EnvName) => void`
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 Fetcher, retry hold and portal-settle flow are left to the caller. Validation stamp from templates/EInvoiceValidationBlock (QR omitted). Responsive by container: controls in a wrapping ActionBar; UUID and long ID break instead of overflowing.

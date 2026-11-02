@@ -48,6 +48,11 @@ When the agent needs a yes/no before acting (deleting, posting).
 
 `state` (AI SDK tool state), `approval`; `ConfirmationTitle` › `ConfirmationRequest` / `ConfirmationAccepted` / `ConfirmationRejected`; `ConfirmationActions` › `ConfirmationAction`.
 
+- `state`: `ToolUIPart["state"]`
+- `variant?`: `"default" | "destructive" | "note" | "success" | "warning"`. Default `"default"`.
+- `approval?`: `ToolUIPartApproval`
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 Each child renders only in its matching state.

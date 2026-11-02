@@ -24,6 +24,11 @@ Below the journal top bar when a recoverable draft exists in local storage.
 
 savedAgo (e.g. "12 minutes ago"), onRecover, onDismiss, className? (merged on the root) and native props.
 
+- `savedAgo`: `string`
+- `onRecover?`: `() => void`
+- `onDismiss?`: `() => void`
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 Responsive: Buttons wrap under the message when narrow.

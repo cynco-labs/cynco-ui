@@ -32,6 +32,24 @@ export default function CopyButtonDemo() {
 
 `text` to copy; `displayText` (Mini) to shorten what is shown; `side` for the tooltip.
 
+- `text`: `string`
+- `side?`: `"top" | "bottom" | "left" | "right"`. Default `"right"`.
+- `iconOrientation?`: `"left" | "right"`. Default `"right"`.
+- `innerClassName?`: `string`. Default `""`.
+- `iconClassName?`: `string`. Classes applied to the copy icon button (MiniCopyButton only). Overrides the default hover-reveal.
+- `icon?`: `ReactNode`
+- `rightIcon?`: `ReactNode`
+- `asChild?`: `boolean`
+- `isLoading?`: `boolean`
+- `transition?`: `boolean`
+- `disableActive?`: `boolean`
+- `hide?`: `boolean`
+- `render?`: `ReactElement`
+- `focusableWhenDisabled?`: `boolean`. Keep the button in the tab order while disabled (Base UI). Set automatically while `isLoading`.
+- `variant?`: `"primary" | "secondary" | "skeleton" | "muted" | "destructive" | "dotted"`. Default `"primary"`.
+- `size?`: `"sm" | "default" | "mini" | "icon"`. Default `"default"`.
+- Also accepts `ComponentProps<"button">`.
+
 ## Notes
 
 IDs render in the mono family.

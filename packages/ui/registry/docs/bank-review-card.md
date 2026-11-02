@@ -81,6 +81,13 @@ The keyboard review mode for uncategorised lines.
 
 tx {payeeName, description, date, type, amount, suggestion}, accountName, active, picking, events, className and native props (spread on the root).
 
+- `tx`: `Pick<BankFeedTransaction, "payeeName" | "description" | "date" | "type" | "amount" | "currency" | "suggestion">`
+- `accountName?`: `string`
+- `active?`: `boolean`. Default `false`.
+- `picking?`: `boolean`. Default `false`.
+- `events?`: `BankTxEvent[]`
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 Active card gets border-primary/45 on bg-interactive-secondary; inactive cards sit on bg-card. Responsive by container: payee wraps to two lines and actions wrap under the suggestion when narrow.

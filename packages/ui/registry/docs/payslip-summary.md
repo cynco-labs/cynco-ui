@@ -75,6 +75,12 @@ Payslip drawer or detail on a payroll run.
 
 `payslip` {employeeName, reference, gross, statutoryDeductions, otherDeductions, net, employerCost, paymentStatus, paymentReference, lines, contributions} in integer sen; optional `month`, `canMarkPaid`, `onMarkPaid(reference)`; optional `className` and native section props on the root.
 
+- `payslip`: `PayslipData`
+- `month?`: `string`
+- `canMarkPaid?`: `boolean`. Default `false`.
+- `onMarkPaid?`: `(reference: string) => void`
+- Also accepts `ComponentProps<"section">`.
+
 ## Notes
 
 Responsive by container: StatGrid tiles wrap; pay lines and contributions sit side by side from 42rem.

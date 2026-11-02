@@ -49,6 +49,9 @@ Each step on a Canvas.
 
 `handles` {target, source}; `NodeHeader` › `NodeTitle`, `NodeDescription`, `NodeAction`; `NodeContent`; `NodeFooter`.
 
+- `handles`: `{ target: boolean; source: boolean }`
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 Register it in `nodeTypes`; with handles it must render inside a Canvas.

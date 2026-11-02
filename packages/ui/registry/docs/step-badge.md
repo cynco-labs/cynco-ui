@@ -28,4 +28,6 @@ Onboarding steps.
 
 The step number as children.
 
+- `children`: `ReactNode`
+
 Category: Components · Data display. Source: `packages/ui/src/base/components/general/step-badge.tsx`.

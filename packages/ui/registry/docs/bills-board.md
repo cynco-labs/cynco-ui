@@ -87,6 +87,13 @@ The Expenses page board view.
 
 bills, columns (subset of board keys, in order), selectedIds + onToggleBill, paidFilterLabel; className and native div props.
 
+- `bills`: `CyncoBill[]`
+- `columns?`: `("paid" | "in_review" | "pending_approval" | "awaiting_payment" | "scheduled")[]`. Columns to show, in board order (default: all five).
+- `selectedIds?`: `string[]`
+- `onToggleBill?`: `(id: string) => void`
+- `paidFilterLabel?`: `string`. Default `"Past 30 Days"`.
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 Responsive by container: columns sit side by side from a 48rem container and stack as sections (cards two-up from 36rem) below that.

@@ -24,6 +24,8 @@ Long-running background work ("Syncing bank feed…").
 
 `text`.
 
+- `text`: `string`
+
 ## Notes
 
 Uses the `.shimmer` gradient from the stylesheet.

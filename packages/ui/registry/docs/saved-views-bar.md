@@ -300,6 +300,20 @@ Above a DataList whose rows you filter from `filters`. Ship built-in views (All,
 
 views / defaultViews / onViewsChange (SavedView: id, name, filters, count, shared, locked); activeViewId / defaultActiveViewId / onActiveViewChange; filters / defaultFilters / onFiltersChange (SavedViewFilter: id, field, label, value — the list applies field+value, chips show label and value); counts (rows per view id); addFilter (your Add-filter control, rendered after the chips); label (accessible name, default “Saved views”); className and any div props.
 
+- `views?`: `SavedView[]`
+- `defaultViews?`: `SavedView[]`. Default `[]`.
+- `onViewsChange?`: `(views: SavedView[]) => void`
+- `activeViewId?`: `string`
+- `defaultActiveViewId?`: `string`
+- `onActiveViewChange?`: `(id: string) => void`
+- `filters?`: `SavedViewFilter[]`. Filters applied to the list right now. Uncontrolled default: the active view's filters.
+- `defaultFilters?`: `SavedViewFilter[]`
+- `onFiltersChange?`: `(filters: SavedViewFilter[]) => void`
+- `counts?`: `Record<string, number>`. Row counts per view id (overrides `view.count`).
+- `addFilter?`: `ReactNode`. Your "Add filter" control, shown after the chips.
+- `label?`: `string`. Accessible name of the view switcher. Default "Saved views". Default `"Saved views"`.
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 A blue dot marks a modified view; locked views offer Save as new only. The tab row scrolls sideways on narrow containers and the save actions wrap under the chips.

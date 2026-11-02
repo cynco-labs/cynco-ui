@@ -48,6 +48,12 @@ Sticky footer of the invoice and quotation builders, so the amount stays visible
 
 rows (as for InvoiceTotalsPanel), currency, actions (buttons), defaultOpen; className and native div props.
 
+- `rows`: `SalesTotalRow[]`. Totals rows; empty means no line items yet.
+- `currency?`: `string`. Default `"MYR"`.
+- `actions?`: `ReactNode`
+- `defaultOpen?`: `boolean`. Default `false`.
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 The secondary figures hide through a container query when the rail is too narrow, so the total never truncates. When there are no rows, it reads 'Add a line item to see the total'. Responsive: The Subtotal/Discount/Tax figures show only from 36rem of container width, and the actions wrap under the total when space runs out.

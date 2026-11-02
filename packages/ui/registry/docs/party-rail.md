@@ -65,6 +65,18 @@ Right column of customer and vendor pages.
 
 role, currency, ledgerBalance, openItemsTotal, aging {current, days1to30, days31to60, days61plus}, trend [{month, total}], credits [{currency, amount, count}], contacts [{name, role, email, phone, isPrimary}], className (e.g. grid-cols-2); className and native aside props.
 
+- `role`: `"customer" | "vendor"`
+- `ledgerBalance`: `number`. Subledger balance (ground truth).
+- `openItemsTotal`: `number`. Sum of open bills / invoices — ties out against the ledger.
+- `aging`: `PartyAging`
+- `currency?`: `string`. Default `"MYR"`.
+- `trend?`: `Array<{ month: string; total: number }>`. Last 12 months: { month: "2026-10", total }.
+- `credits?`: `Array<{ currency: string; amount: number; count: number }>`. Unused credit notes per currency (customers only).
+- `creditNotesHref?`: `string`. Where "View credit notes" goes; renders it as a real link.
+- `onViewCreditNotes?`: `() => void`. In-app handler for "View credit notes" when there is no URL; renders it as a button. Without either, the action is hidden.
+- `contacts?`: `PartyContact[]`
+- Also accepts `ComponentProps<"aside">`.
+
 ## Notes
 
 Responsive by container: one column as a rail, two from a 36rem container, three from 64rem.

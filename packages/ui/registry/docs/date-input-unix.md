@@ -30,6 +30,19 @@ Due dates, schedule dates, backdating.
 
 `unixDate` (ms or null), `setUnixDate`; optional `withTime`, `use24Hour`, `disablePastDates`, `minUnixDate`/`maxUnixDate`, `placeholder`.
 
+- `unixDate`: `number | null`
+- `setUnixDate`: `(unixDate: number | null) => void`
+- `disabled?`: `boolean`
+- `disablePastDates?`: `boolean`
+- `disableFutureDates?`: `boolean`
+- `minUnixDate?`: `number`
+- `maxUnixDate?`: `number`
+- `fromYear?`: `number`
+- `withTime?`: `boolean`
+- `use24Hour?`: `boolean`. Show 24-hour clock (00–23) instead of 12-hour with AM/PM.
+- `placeholder?`: `string`. Override the empty-state label (e.g. "Now" when null means immediate).
+- Also accepts `ComponentProps<"button">`.
+
 ## Notes
 
 Opens a Calendar in a Popover.

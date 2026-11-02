@@ -37,7 +37,8 @@
     "bin",
     "dist",
     "fonts",
-    "registry"
+    "registry",
+    "skills"
   ],
   "scripts": {
     "build": "vite build && tsc -p tsconfig.build.json && node scripts/build-css.mjs",

@@ -54,6 +54,17 @@ The balance sheet report as at a period end, single or comparative.
 
 asAt, rows (StatementRow ladder, see ProfitLossStatement), totals {assets, liabilities, equity}; optional priorPeriod, equityLabel (legal-form wording), showTotalsStrip, balanced, description, currency; plus className and native element props (spread on the root).
 
+- `asAt`: `string`. "As at" label, e.g. "31 Oct 2026".
+- `rows`: `StatementRow[]`
+- `totals`: `{ assets: number; liabilities: number; equity: number }`. Tiles + balance check.
+- `priorPeriod?`: `string`
+- `equityLabel?`: `string`. "Total equity", "Total owner's equity" (sole prop), "Total partners' capital"… Default `"Total equity"`.
+- `showTotalsStrip?`: `boolean`. The Total assets / liabilities / equity tiles above the statement. Default `true`.
+- `balanced?`: `boolean`
+- `description?`: `ReactNode`
+- `currency?`: `string`. Default `"MYR"`.
+- Also accepts `ComponentProps<"div">`.
+
 ## Notes
 
 Responsive: totals in an auto-fit StatGrid; same container-query ladder as the P&L.
