@@ -9,6 +9,7 @@
  * so it works in a full page, a side sheet or a 360px phone.
  */
 import * as React from "react";
+import { parseDate } from "../base/lib/utils";
 import {
 	Alert,
 	AlertDescription,
@@ -1201,7 +1202,7 @@ export function CoaAccountPanel({
 								<ClockIcon size={12} aria-hidden="true" />
 								{transactionCount} transactions
 							</span>
-							{lastTransactionAt && <span>Last: {new Date(lastTransactionAt).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}</span>}
+							{lastTransactionAt && <span>Last: {parseDate(lastTransactionAt).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}</span>}
 						</span>
 					}
 				/>

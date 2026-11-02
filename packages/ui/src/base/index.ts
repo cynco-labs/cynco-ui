@@ -90,5 +90,6 @@ export { useIsMobile } from "./hooks/use-is-mobile";
 export {
 	cn,
 	getMetaKey,
+	useIsMac,
 	hasSubmitShortcutModifier,
 } from "./lib/utils";

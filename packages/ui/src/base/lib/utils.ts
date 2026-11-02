@@ -1,4 +1,5 @@
 import { type ClassValue, clsx } from "clsx";
+import { useSyncExternalStore } from "react";
 import { extendTailwindMerge } from "tailwind-merge";
 
 /**
@@ -28,5 +29,23 @@ export const hasSubmitShortcutModifier = (event: {
 	ctrlKey: boolean;
 }) => event.metaKey || event.ctrlKey;
 
-export const getMetaKey = () =>
-	navigator.userAgent.includes("Mac") ? "⌘" : "Ctrl";
+/** Apple platforms use ⌘ where others use Ctrl. For event handlers; in render use `useIsMac`. */
+export const isMacPlatform = () => typeof navigator !== "undefined" && /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent);
+
+export const getMetaKey = () => (isMacPlatform() ? "⌘" : "Ctrl");
+
+/**
+ * A date for display. "2026-10-30" and "2026-10" are calendar dates and read as local midnight: `new Date()` reads
+ * them as UTC midnight, which shows the previous day west of UTC. Other strings are instants and parse as usual.
+ */
+export function parseDate(value: string | Date): Date {
+	if (typeof value !== "string") return value;
+	const m = /^(\d{4})-(\d{2})(?:-(\d{2}))?$/.exec(value);
+	return m ? new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3] ?? 1)) : new Date(value);
+}
+
+// Browser-only values for render: the server snapshot is used on the server and during hydration, so the
+// hydrated markup always matches the server HTML; React then re-renders with the real value.
+const noSubscribe = () => () => {};
+export const useIsMac = () => useSyncExternalStore(noSubscribe, isMacPlatform, () => false);
+export const useIsClient = () => useSyncExternalStore(noSubscribe, () => true, () => false);

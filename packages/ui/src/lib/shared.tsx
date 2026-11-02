@@ -6,6 +6,7 @@
  */
 import * as React from "react";
 import { StatusChip, cn, type StatusTone, type StatusGlyph } from "../base";
+import { parseDate } from "../base/lib/utils";
 import { isDecimalString } from "./money";
 import { WarningCircleIcon } from "@phosphor-icons/react";
 
@@ -38,7 +39,8 @@ export function formatCurrencyWhole(amount: number, currency = "MYR"): string {
 }
 /** Compact currency: "RM 184.5K". */
 export function formatCurrencyCompact(amount: number, currency = "MYR"): string {
-	return fmt(currency, { notation: "compact", compactDisplay: "short", maximumFractionDigits: 1 }).format(amount);
+	// minimumFractionDigits is explicit because engines disagree on the default (Node prints "RM 208.0K", Chrome "RM 208K").
+	return fmt(currency, { notation: "compact", compactDisplay: "short", minimumFractionDigits: 0, maximumFractionDigits: 1 }).format(amount);
 }
 /** Report figure without a symbol: "1,234.00"; negative bracketed, zero "—". */
 export function formatBracketed(amount: number): string {
@@ -48,7 +50,7 @@ export function formatBracketed(amount: number): string {
 }
 /** "29 Oct 2026" */
 export function formatDate(d: string | Date): string {
-	const date = typeof d === "string" ? new Date(d) : d;
+	const date = parseDate(d);
 	const M = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 	return `${date.getDate()} ${M[date.getMonth()]} ${date.getFullYear()}`;
 }

@@ -8,6 +8,7 @@
  */
 import * as React from "react";
 import { cn, useMergedRef, useShortcutAllowed } from "../base";
+import { isMacPlatform, useIsMac } from "../base/lib/utils";
 
 /* ───────────── Surfaces ───────────── */
 
@@ -65,17 +66,16 @@ const ROW_PAD: Record<Density, string> = { compact: "py-1", default: "py-2.5", c
 
 /* ───────────── Keyboard ───────────── */
 
-const isMac = () => typeof navigator !== "undefined" && /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent);
-
 /** Spoken names for keycap glyphs: screen readers read "⌘" or "↵" as symbol names, or skip them. */
 const KEY_NAME: Record<string, string> = { "⌘": "Command", "⌥": "Option", "⇧": "Shift", "↵": "Enter", "↑": "Up arrow", "↓": "Down arrow", "←": "Left arrow", "→": "Right arrow", "⌫": "Backspace" };
 
 /** A keycap. `mod` renders ⌘ on Mac and Ctrl elsewhere. */
 export function Kbd({ keys, className, ...props }: Omit<React.ComponentProps<"kbd">, "children"> & { keys: string | string[] }) {
+	const mac = useIsMac();
 	const list = (Array.isArray(keys) ? keys : keys.split("+")).map((k) => {
 		const l = k.toLowerCase();
-		if (l === "mod") return isMac() ? "⌘" : "Ctrl";
-		if (l === "alt") return isMac() ? "⌥" : "Alt";
+		if (l === "mod") return mac ? "⌘" : "Ctrl";
+		if (l === "alt") return mac ? "⌥" : "Alt";
 		if (l === "shift") return "⇧";
 		if (l === "enter") return "↵";
 		if (l === "esc" || l === "escape") return "Esc";
@@ -122,7 +122,7 @@ export function useHotkey(combo: string | string[], handler: (e: KeyboardEvent) 
 			const t = e.target as HTMLElement | null;
 			const typing = !!t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.tagName === "SELECT" || t.isContentEditable);
 			for (const c of list) {
-				const mod = isMac() ? e.metaKey : e.ctrlKey;
+				const mod = isMacPlatform() ? e.metaKey : e.ctrlKey;
 				if (e.key.toLowerCase() !== c.key || mod !== c.mod || e.altKey !== c.alt) continue;
 				if (c.shift && !e.shiftKey) continue;
 				if (typing && !c.mod && !opts.allowInInputs) continue;

@@ -28,6 +28,7 @@
  */
 import * as React from "react";
 import { GroupedTabButton, cn, useControllableState } from "../base";
+import { parseDate } from "../base/lib/utils";
 import { toSen, fromSen, isDecimalString, parseAmount, sumAmounts } from "../lib/money";
 import { DOC_LABELS, type DocLabelKey, type DocText } from "./labels";
 
@@ -168,14 +169,9 @@ const MONTHS_MS = ["Jan", "Feb", "Mac", "Apr", "Mei", "Jun", "Jul", "Ogo", "Sep"
 /** "2026-10-28" → "28 Oct 2026" (no timezone shift: date-only strings are read as calendar dates). */
 export function formatDocDate(value: string | Date | undefined, locale: DocLocale = "en"): string {
 	if (!value) return "";
-	let y: number, m: number, d: number;
-	if (typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value)) [y, m, d] = value.split("-").map(Number) as [number, number, number];
-	else {
-		const dt = typeof value === "string" ? new Date(value) : value;
-		if (Number.isNaN(dt.getTime())) return String(value);
-		[y, m, d] = [dt.getFullYear(), dt.getMonth() + 1, dt.getDate()];
-	}
-	return `${d} ${(locale === "ms" ? MONTHS_MS : MONTHS_EN)[m - 1]} ${y}`;
+	const dt = parseDate(value);
+	if (Number.isNaN(dt.getTime())) return String(value);
+	return `${dt.getDate()} ${(locale === "ms" ? MONTHS_MS : MONTHS_EN)[dt.getMonth()]} ${dt.getFullYear()}`;
 }
 
 const NUM = new Intl.NumberFormat("en-MY", { minimumFractionDigits: 2, maximumFractionDigits: 2 });

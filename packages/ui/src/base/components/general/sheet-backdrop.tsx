@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from "motion/react";
 import { createPortal } from "react-dom";
+import { useIsClient } from "../../lib/utils";
 
 const SHEET_BACKDROP_Z_INDEX = 40;
 
@@ -18,6 +19,7 @@ export function SheetBackdrop({
 	onClose,
 	zIndex = SHEET_BACKDROP_Z_INDEX,
 }: SheetBackdropProps) {
+	if (!useIsClient()) return null;
 	return createPortal(
 		<AnimatePresence>
 			{isOpen && (

@@ -8,6 +8,7 @@
  * SectionPanel / ScrollRow / container queries), from 320px up to a full page.
  */
 import * as React from "react";
+import { parseDate } from "../base/lib/utils";
 import {
 	Button,
 	Badge,
@@ -389,7 +390,7 @@ export function TaxFilingWorkflow({ status, readOnly = false, isSubmitting = fal
 				</ScrollRow>
 				<ActionBar className="gap-x-3">
 					{filingReference && <span className="text-2xs text-tertiary-foreground">Ref: <span className="font-mono font-medium text-muted-foreground">{filingReference}</span></span>}
-					{reviewedAt && status !== "draft" && <span className="text-2xs text-tertiary-foreground">Reviewed: {new Date(reviewedAt).toLocaleDateString("en-MY", { day: "2-digit", month: "short" })}</span>}
+					{reviewedAt && status !== "draft" && <span className="text-2xs text-tertiary-foreground">Reviewed: {parseDate(reviewedAt).toLocaleDateString("en-MY", { day: "2-digit", month: "short" })}</span>}
 					{filedAt && <span className="text-2xs text-tertiary-foreground">Filed: {formatDate(filedAt)}</span>}
 					{!readOnly && status === "draft" && <Button variant="secondary" size="sm" disabled={isSubmitting} focusableWhenDisabled onClick={() => onReview?.()}>Mark reviewed</Button>}
 					{!readOnly && status === "reviewed" && <Button variant="primary" size="sm" disabled={isSubmitting} focusableWhenDisabled onClick={() => onFile?.()}>Mark filed</Button>}

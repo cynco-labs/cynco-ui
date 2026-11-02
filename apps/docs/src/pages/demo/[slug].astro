@@ -1,6 +1,7 @@
 ---
 import "../../styles/global.css";
 import DemoHost from "../../components/DemoHost";
+import interUrl from "@cynco-labs/ui/fonts/Inter-Variable.woff2?url";
 import { registry } from "../../lib/registry";
 
 export function getStaticPaths() {
@@ -16,6 +17,7 @@ const { entry } = Astro.props;
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="robots" content="noindex" />
 		<title>{entry.name} demo · Cynco UI</title>
+		<link rel="preload" href={interUrl} as="font" type="font/woff2" crossorigin />
 		<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 		<script is:inline>
 			(() => {
@@ -36,7 +38,7 @@ const { entry } = Astro.props;
 	</head>
 	<body data-slug={entry.slug}>
 		<div id="demo-root" class="p-4 sm:p-6">
-			<DemoHost name={entry.name} client:only="react" />
+			<DemoHost name={entry.name} client:load />
 		</div>
 		<script>
 			const report = () => {

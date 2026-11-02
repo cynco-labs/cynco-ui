@@ -7,13 +7,18 @@ import { CheckIcon, CopyIcon } from "lucide-react";
 import {
 	type ComponentProps,
 	createContext,
+	Fragment,
 	type HTMLAttributes,
 	useContext,
 	useEffect,
 	useRef,
 	useState,
 } from "react";
-import { type BundledLanguage, codeToHtml, type ShikiTransformer } from "shiki";
+import type { BundledLanguage, ShikiTransformer } from "shiki";
+import { createHighlighterCore, type HighlighterCore } from "shiki/core";
+import { createJavaScriptRegexEngine } from "shiki/engine/javascript";
+import { bundledLanguages } from "shiki/langs";
+import { bundledThemes } from "shiki/themes";
 
 type CodeBlockProps = HTMLAttributes<HTMLDivElement> & {
 	code: string;
@@ -29,52 +34,69 @@ const CodeBlockContext = createContext<CodeBlockContextType>({
 	code: "",
 });
 
+const LINE_NUMBER_CLASSES = [
+	"inline-block",
+	"min-w-10",
+	"mr-4",
+	"text-right",
+	"select-none",
+	"text-muted-foreground",
+];
+
 const lineNumberTransformer: ShikiTransformer = {
 	name: "line-numbers",
 	line(node, line) {
 		node.children.unshift({
 			type: "element",
 			tagName: "span",
-			properties: {
-				// Line numbers are visual only; screen readers read the code itself.
-				"aria-hidden": "true",
-				className: [
-					"inline-block",
-					"min-w-10",
-					"mr-4",
-					"text-right",
-					"select-none",
-					"text-muted-foreground",
-				],
-			},
+			// Line numbers are visual only; screen readers read the code itself.
+			properties: { "aria-hidden": "true", className: LINE_NUMBER_CLASSES },
 			children: [{ type: "text", value: String(line) }],
 		});
 	},
 };
 
+// One Light tokens fall to ~3:1 on the page background; this theme keeps every token above 4.5:1.
+const LIGHT_THEME = "github-light-high-contrast";
+
+// One highlighter per page on Shiki's JavaScript regex engine, which avoids the ~600 KB Oniguruma WASM
+// download; grammars load on first use. `forgiving` skips the rare pattern the engine can't compile
+// instead of failing the whole grammar.
+let highlighterPromise: Promise<HighlighterCore> | undefined;
+
+async function getHighlighter(language: BundledLanguage) {
+	highlighterPromise ??= createHighlighterCore({
+		themes: [bundledThemes[LIGHT_THEME], bundledThemes["one-dark-pro"]],
+		langs: [],
+		engine: createJavaScriptRegexEngine({ forgiving: true }),
+	}).catch((error: unknown) => {
+		highlighterPromise = undefined;
+		throw error;
+	});
+	const highlighter = await highlighterPromise;
+	if (!highlighter.getLoadedLanguages().includes(language)) {
+		await highlighter.loadLanguage(bundledLanguages[language]);
+	}
+	return highlighter;
+}
+
 export async function highlightCode(
 	code: string,
 	language: BundledLanguage,
 	showLineNumbers = false,
-) {
+): Promise<[string, string]> {
+	const highlighter = await getHighlighter(language);
 	const transformers: ShikiTransformer[] = showLineNumbers
 		? [lineNumberTransformer]
 		: [];
-
-	return await Promise.all([
-		codeToHtml(code, {
-			lang: language,
-			// One Light tokens fall to ~3:1 on the page background; this theme keeps every token above 4.5:1.
-			theme: "github-light-high-contrast",
-			transformers,
-		}),
-		codeToHtml(code, {
-			lang: language,
-			theme: "one-dark-pro",
-			transformers,
-		}),
-	]);
+	return [
+		highlighter.codeToHtml(code, { lang: language, theme: LIGHT_THEME, transformers }),
+		highlighter.codeToHtml(code, { lang: language, theme: "one-dark-pro", transformers }),
+	];
 }
+
+const PANE_CLASSES =
+	"overflow-auto outline-none focus-ring-inset [&>pre]:m-0 [&>pre]:bg-background! [&>pre]:p-4 [&>pre]:text-foreground! [&>pre]:text-sm [&_code]:font-mono [&_code]:text-sm";
 
 export const CodeBlock = ({
 	code,
@@ -86,19 +108,19 @@ export const CodeBlock = ({
 }: CodeBlockProps) => {
 	const [html, setHtml] = useState<string>("");
 	const [darkHtml, setDarkHtml] = useState<string>("");
-	const mounted = useRef(false);
 
 	useEffect(() => {
-		highlightCode(code, language, showLineNumbers).then(([light, dark]) => {
-			if (!mounted.current) {
+		let cancelled = false;
+		highlightCode(code, language, showLineNumbers)
+			.then(([light, dark]) => {
+				if (cancelled) return;
 				setHtml(light);
 				setDarkHtml(dark);
-				mounted.current = true;
-			}
-		});
-
+			})
+			// An unknown language or a failed grammar load keeps the plain-text rendering.
+			.catch((error: unknown) => console.error("[CodeBlock]", error));
 		return () => {
-			mounted.current = false;
+			cancelled = true;
 		};
 	}, [code, language, showLineNumbers]);
 
@@ -113,18 +135,44 @@ export const CodeBlock = ({
 			>
 				<div className="relative">
 					{/* tabIndex: long lines scroll horizontally, which keyboard users must reach. */}
-					<div
-						className="overflow-auto dark:hidden outline-none focus-ring-inset [&>pre]:m-0 [&>pre]:bg-background! [&>pre]:p-4 [&>pre]:text-foreground! [&>pre]:text-sm [&_code]:font-mono [&_code]:text-sm"
-						// biome-ignore lint/security/noDangerouslySetInnerHtml: "this is needed."
-						dangerouslySetInnerHTML={{ __html: html }}
-						tabIndex={0}
-					/>
-					<div
-						className="hidden overflow-auto dark:block outline-none focus-ring-inset [&>pre]:m-0 [&>pre]:bg-background! [&>pre]:p-4 [&>pre]:text-foreground! [&>pre]:text-sm [&_code]:font-mono [&_code]:text-sm"
-						// biome-ignore lint/security/noDangerouslySetInnerHtml: "this is needed."
-						dangerouslySetInnerHTML={{ __html: darkHtml }}
-						tabIndex={0}
-					/>
+					{html ? (
+						<>
+							<div
+								className={cn(PANE_CLASSES, "dark:hidden")}
+								// biome-ignore lint/security/noDangerouslySetInnerHtml: "this is needed."
+								dangerouslySetInnerHTML={{ __html: html }}
+								tabIndex={0}
+							/>
+							<div
+								className={cn(PANE_CLASSES, "hidden dark:block")}
+								// biome-ignore lint/security/noDangerouslySetInnerHtml: "this is needed."
+								dangerouslySetInnerHTML={{ __html: darkHtml }}
+								tabIndex={0}
+							/>
+						</>
+					) : (
+						// Plain text with Shiki's line structure until the highlighter is ready, so the code is
+						// readable on first paint (and server-rendered) and the colours swap in without a shift.
+						<div className={PANE_CLASSES} tabIndex={0}>
+							<pre tabIndex={0}>
+								<code>
+									{code.split("\n").map((line, i) => (
+										<Fragment key={i}>
+											{i > 0 && "\n"}
+											<span className="line">
+												{showLineNumbers && (
+													<span aria-hidden="true" className={LINE_NUMBER_CLASSES.join(" ")}>
+														{i + 1}
+													</span>
+												)}
+												{line}
+											</span>
+										</Fragment>
+									))}
+								</code>
+							</pre>
+						</div>
+					)}
 					{children && (
 						<div className="absolute top-2 right-2 flex items-center gap-2">
 							{children}

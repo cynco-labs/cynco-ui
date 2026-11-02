@@ -22,11 +22,10 @@ import {
 	LiveStatus,
 } from "../base";
 import { ArrowCounterClockwiseIcon, DotsThreeIcon, PrinterIcon, XIcon } from "@phosphor-icons/react";
+import { isMacPlatform, useIsMac } from "../base/lib/utils";
 import { Kbd, formatCurrency, formatDate, parseAmount, sumAmounts, useHotkey, type Density } from "../lib/shared";
 
 /* ───────────── local helpers ───────────── */
-
-const isMacPlatform = () => typeof navigator !== "undefined" && /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent);
 
 /** True when a key event comes from somewhere the user is typing text. */
 function isTypingTarget(t: EventTarget | null) {
@@ -155,6 +154,7 @@ export function BulkActionBar(props: BulkActionBarProps) {
 }
 
 function BulkActionBarInner({ count, total, currency = "MYR", totalCount, onSelectAll, onClear, actions, maxVisible = 3, sticky = true, label = "Bulk actions", className, ...props }: BulkActionBarProps) {
+	const mac = useIsMac();
 	const [menuOpen, setMenuOpen] = React.useState(false);
 	const { ref, onFocusCapture } = useFocusReturn<HTMLDivElement>();
 	const allowed = useShortcutAllowed();
@@ -246,7 +246,7 @@ function BulkActionBarInner({ count, total, currency = "MYR", totalCount, onSele
 							variant="secondary"
 							disabled={a.disabled}
 							onClick={a.onSelect}
-							aria-keyshortcuts={liveShortcut(a.shortcut) ? toAriaKeyShortcuts(a.shortcut) : undefined}
+							aria-keyshortcuts={liveShortcut(a.shortcut) ? toAriaKeyShortcuts(a.shortcut, mac) : undefined}
 							title={liveShortcut(a.shortcut) ? `${a.label} (${a.shortcut.toUpperCase()})` : undefined}
 							className={cn("gap-1.5", a.destructive && "text-error-text hover:!text-error-text")}
 						>
@@ -266,7 +266,7 @@ function BulkActionBarInner({ count, total, currency = "MYR", totalCount, onSele
 										key={a.id}
 										disabled={a.disabled}
 										onClick={a.onSelect}
-										aria-keyshortcuts={liveShortcut(a.shortcut) ? toAriaKeyShortcuts(a.shortcut) : undefined}
+										aria-keyshortcuts={liveShortcut(a.shortcut) ? toAriaKeyShortcuts(a.shortcut, mac) : undefined}
 										className={cn(a.destructive && "text-error-text focus:text-error-text data-highlighted:text-error-text [&_svg]:text-current")}
 									>
 										{a.icon && <span aria-hidden="true" className="flex size-3.5 items-center justify-center">{a.icon}</span>}
@@ -491,6 +491,7 @@ export type UndoToastProps = Omit<React.ComponentProps<"li">, "children"> & {
 
 /** One toast: message, Undo (⌘/Ctrl+Z), dismiss, and a countdown bar that pauses on hover or focus. */
 export function UndoToast({ message, onUndo, onDismiss, onExpire, duration = Number.POSITIVE_INFINITY, undoLabel = "Undo", showShortcut = true, paused: pausedProp, returnFocusTo, className, ...props }: UndoToastProps) {
+	const mac = useIsMac();
 	const [hover, setHover] = React.useState(false);
 	const [focused, setFocused] = React.useState(false);
 	const [hidden, setHidden] = React.useState(() => typeof document !== "undefined" && document.visibilityState === "hidden");
@@ -559,7 +560,7 @@ export function UndoToast({ message, onUndo, onDismiss, onExpire, duration = Num
 			{...props}
 		>
 			<div className="min-w-0 flex-1 py-0.5">{message}</div>
-			<Button variant="secondary" data-cy-undo-button="" onClick={onUndo} aria-keyshortcuts={showShortcut ? toAriaKeyShortcuts("mod+z") : undefined} className="shrink-0 gap-1.5">
+			<Button variant="secondary" data-cy-undo-button="" onClick={onUndo} aria-keyshortcuts={showShortcut ? toAriaKeyShortcuts("mod+z", mac) : undefined} className="shrink-0 gap-1.5">
 				<ArrowCounterClockwiseIcon size={14} aria-hidden="true" />
 				{undoLabel}
 				{showShortcut && <Kbd keys="mod+z" aria-hidden="true" />}
@@ -697,13 +698,14 @@ export type PrintButtonProps = Omit<React.ComponentProps<typeof Button>, "onClic
 
 /** "Print" with a ⌘/Ctrl+P keycap; calls window.print() unless `onPrint` is given. Hidden in print. */
 export function PrintButton({ onPrint, bindShortcut, showShortcut = true, variant = "secondary", className, children, ...props }: PrintButtonProps) {
+	const mac = useIsMac();
 	const print = React.useCallback(() => {
 		if (onPrint) onPrint();
 		else if (typeof window !== "undefined") window.print();
 	}, [onPrint]);
 	useHotkey("mod+p", print, { enabled: bindShortcut ?? !!onPrint });
 	return (
-		<Button variant={variant} onClick={print} aria-keyshortcuts={toAriaKeyShortcuts("mod+p")} className={cn("gap-1.5 print:hidden", className)} {...props}>
+		<Button variant={variant} onClick={print} aria-keyshortcuts={toAriaKeyShortcuts("mod+p", mac)} className={cn("gap-1.5 print:hidden", className)} {...props}>
 			<PrinterIcon size={14} aria-hidden="true" />
 			{children ?? "Print"}
 			{showShortcut && <Kbd keys="mod+p" aria-hidden="true" />}

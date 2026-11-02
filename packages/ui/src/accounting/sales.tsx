@@ -5,6 +5,7 @@
  * of its own container (DataList / StatGrid / container queries), from 320px to a full page.
  */
 import * as React from "react";
+import { parseDate } from "../base/lib/utils";
 import {
 	Alert,
 	AlertDescription,
@@ -1065,7 +1066,7 @@ export function CreditDebitNoteList({ notes, onOpen, className }: { notes: Sales
 export type SalesQuotation = { id: string; quotationNumber?: string | null; customerName: string; totalAmount: number; currency?: string; status: string; createdAt: string };
 
 function relativeTime(dateStr: string, now = new Date()) {
-	const d = new Date(dateStr);
+	const d = parseDate(dateStr);
 	if (isNaN(d.getTime())) return "";
 	const days = Math.floor((now.getTime() - d.getTime()) / 86_400_000);
 	if (days <= 0) return "Today";
@@ -1094,7 +1095,7 @@ export function QuotationBoardCard({ quotation, now, onOpen, className, ...props
 			</div>
 			<div className="mt-2.5 flex flex-wrap items-center justify-between gap-x-2">
 				<span className="whitespace-nowrap text-sm tabular-nums text-foreground">{formatCurrency(quotation.totalAmount ?? 0, quotation.currency || "MYR")}</span>
-				<span className="text-2xs text-subtle">{relativeTime(quotation.createdAt, now ? new Date(now) : undefined)}</span>
+				<span className="text-2xs text-subtle">{relativeTime(quotation.createdAt, now ? parseDate(now) : undefined)}</span>
 			</div>
 		</button>
 	);

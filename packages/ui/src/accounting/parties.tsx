@@ -7,6 +7,7 @@
  * Every component responds to its own container width (container queries), not the viewport.
  */
 import * as React from "react";
+import { parseDate } from "../base/lib/utils";
 import {
 	Alert,
 	AlertDescription,
@@ -153,11 +154,11 @@ function initialsOf(name: string | null | undefined): string {
 }
 
 function dayMonth(d: string): string {
-	return new Date(d).toLocaleDateString("en-GB", { day: "numeric", month: "short" });
+	return parseDate(d).toLocaleDateString("en-GB", { day: "numeric", month: "short" });
 }
 
 function monthYear(d: string): string {
-	return new Date(d).toLocaleDateString("en-GB", { month: "short", year: "numeric" });
+	return parseDate(d).toLocaleDateString("en-GB", { month: "short", year: "numeric" });
 }
 
 function confidenceLabel(p: number): "High" | "Medium" | "Low" {
@@ -1405,7 +1406,7 @@ export function PartyRail({ role, currency = "MYR", ledgerBalance, openItemsTota
 	const agingTotal = AGING_BUCKETS.reduce((s, b) => s + aging[b.key], 0);
 	const trendTotal = (trend ?? []).reduce((s, m) => s + m.total, 0);
 	const trendLabel = isVendor ? "Spend, 12 months" : "Billed, 12 months";
-	const chartData = (trend ?? []).map((m) => ({ m: new Date(`${m.month}-01`).toLocaleDateString("en-GB", { month: "short" }), v: m.total }));
+	const chartData = (trend ?? []).map((m) => ({ m: parseDate(m.month).toLocaleDateString("en-GB", { month: "short" }), v: m.total }));
 
 	return (
 		<aside className={cn("@container min-w-0", className)} {...props}>
@@ -1618,7 +1619,7 @@ export function PartyTimeline({ events, role, currency = "MYR", className, ...pr
 		<div className={cn("@container flex min-w-0 flex-col gap-5", className)} {...props}>
 			{[...byMonth].map(([month, list]) => (
 				<section key={month} aria-labelledby={sectionId(month)}>
-					<h3 id={sectionId(month)} className="mb-2 text-xs font-medium text-tertiary-foreground">{new Date(`${month}-01`).toLocaleDateString("en-GB", { month: "long", year: "numeric" })}</h3>
+					<h3 id={sectionId(month)} className="mb-2 text-xs font-medium text-tertiary-foreground">{parseDate(month).toLocaleDateString("en-GB", { month: "long", year: "numeric" })}</h3>
 					<ul className={surfaces.surface}>
 						{list.map((e) => {
 							const kind = kindLabel(e);

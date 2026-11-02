@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "../../lib/utils";
+import { cn, useIsClient } from "../../lib/utils";
 import { Dialog as SheetPrimitive } from "@base-ui/react/dialog";
 import { XIcon } from "lucide-react";
 import * as React from "react";
@@ -57,8 +57,10 @@ function SheetPortal({
 }: SheetPrimitive.Portal.Props & {
 	container?: HTMLElement | null;
 }) {
+	const isClient = useIsClient();
 	const resolvedContainer =
-		container ?? document.querySelector("[data-main-content]") ?? document.body;
+		container ??
+		(isClient ? (document.querySelector("[data-main-content]") ?? document.body) : undefined);
 	return (
 		<SheetPrimitive.Portal
 			data-slot="sheet-portal"

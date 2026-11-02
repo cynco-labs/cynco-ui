@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Button, type ButtonProps } from "../ui/button";
-import { cn, getMetaKey } from "../../lib/utils";
+import { cn, useIsMac } from "../../lib/utils";
 import { useHotkeys } from "react-hotkeys-hook";
 import { toAriaKeyShortcuts, useShortcutAllowed } from "../../hooks/use-character-key-shortcuts";
 import { useMergedRef } from "../../hooks/use-merged-ref";
@@ -48,6 +48,7 @@ export const ShortcutButton = ({
 		},
 	);
 
+	const mac = useIsMac();
 	const keystrokeContainer = (keyStroke: string, isEnter = false) => {
 		const isSingleChar = keyStroke.length === 1;
 		const sizeClasses = isSingleChar ? "w-4" : "px-1";
@@ -88,9 +89,9 @@ export const ShortcutButton = ({
 	const ariaKeyShortcuts = !shortcutActive
 		? undefined
 		: metaShortcut
-			? toAriaKeyShortcuts(`mod+${metaShortcut}`)
+			? toAriaKeyShortcuts(`mod+${metaShortcut}`, mac)
 			: singleShortcut
-				? toAriaKeyShortcuts(singleShortcut)
+				? toAriaKeyShortcuts(singleShortcut, mac)
 				: undefined;
 
 	return (
@@ -106,7 +107,7 @@ export const ShortcutButton = ({
 			{shortcutActive && (
 				// Glyphs like ⌘ ↵ read as noise; the shortcut is exposed via aria-keyshortcuts.
 				<span aria-hidden="true" className="flex items-center gap-0.5">
-					{metaShortcut && keystrokeContainer(getMetaKey())}
+					{metaShortcut && keystrokeContainer(mac ? "⌘" : "Ctrl")}
 					{keystrokeContainer(getShortcutDisplay(), metaShortcut === "enter")}
 				</span>
 			)}

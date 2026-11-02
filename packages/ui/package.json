@@ -23,6 +23,7 @@
     "./theme.css": "./dist/styles/theme.css",
     "./styles.css": "./dist/styles.css",
     "./fonts.css": "./dist/styles/fonts.css",
+    "./fonts/*": "./fonts/*",
     "./registry/components.json": "./registry/components.json",
     "./package.json": "./package.json"
   },

@@ -15,11 +15,11 @@
 import * as React from "react";
 import { Button, IconButton, Input, InputGroup, InputGroupAddon, InputGroupInput, StatusChip, cn, LiveStatus } from "../base";
 import { CaretUpDownIcon, CheckIcon, CircleNotchIcon, PencilSimpleIcon, PlusIcon, TrashIcon } from "@phosphor-icons/react";
+import { isMacPlatform, useIsMac } from "../base/lib/utils";
 import { Kbd, ToneDot, formatCurrency, fromSen, isDecimalString, parseAmount, sumAmounts, surfaces, toSen, type StatusToneName } from "../lib/shared";
 
 /* ------------------------------------------------------------------ helpers */
 
-const isMacPlatform = () => typeof navigator !== "undefined" && /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent);
 /** ⌘ on Mac, Ctrl elsewhere — matches `Kbd keys="mod"`. */
 const isMod = (e: React.KeyboardEvent) => (isMacPlatform() ? e.metaKey : e.ctrlKey);
 const noMods = (e: React.KeyboardEvent) => !e.metaKey && !e.ctrlKey && !e.altKey && !e.shiftKey;
@@ -498,6 +498,7 @@ export function JournalGrid({
 	...props
 }: JournalGridProps) {
 	const [lines, setLines, linesRef] = useLines(linesProp, defaultLines, onLinesChange);
+	const mac = useIsMac();
 	const rootRef = React.useRef<HTMLDivElement>(null);
 	const pendingFocus = React.useRef<{ id: string; col: Col } | null>(null);
 	const [announcement, setAnnouncement] = React.useState("");
@@ -654,7 +655,7 @@ export function JournalGrid({
 							size="icon"
 							tabIndex={-1}
 							aria-label={lines.length <= minLines ? `Clear line ${n}` : `Delete line ${n}`}
-							title={`${lines.length <= minLines ? "Clear" : "Delete"} line (${isMacPlatform() ? "⌘" : "Ctrl"}+Backspace)`}
+							title={`${lines.length <= minLines ? "Clear" : "Delete"} line (${mac ? "⌘" : "Ctrl"}+Backspace)`}
 							icon={<TrashIcon />}
 							onClick={() => removeLine(i)}
 						/>

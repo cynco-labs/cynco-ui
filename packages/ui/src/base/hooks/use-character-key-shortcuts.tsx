@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { isMacPlatform } from "../lib/utils";
 
 /**
  * WCAG 2.1.4 Character Key Shortcuts: page-wide shortcuts made only of printable keys ("?", "n",
@@ -153,8 +154,6 @@ export function isCharacterKeyShortcut(keys: string | string[]): boolean {
 }
 
 
-const isMacPlatform = () => typeof navigator !== "undefined" && /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent);
-
 /** Library key names → the UI Events key values aria-keyshortcuts expects. */
 const ARIA_KEY: Record<string, string> = {
 	ctrl: "Control", control: "Control", cmd: "Meta", command: "Meta", meta: "Meta", alt: "Alt", option: "Alt", shift: "Shift",
@@ -165,9 +164,10 @@ const ARIA_KEY: Record<string, string> = {
 /**
  * The `aria-keyshortcuts` spelling of a combo in the library's key syntax: "mod+k" → "Meta+K" (Mac) or
  * "Control+K", "shift+up" → "Shift+ArrowUp". Undefined for a sequence ("g i"): the attribute can't
- * express one (a space there separates alternatives).
+ * express one (a space there separates alternatives). In render, pass `mac` from `useIsMac()` so the
+ * server-rendered attribute matches after hydration.
  */
-export function toAriaKeyShortcuts(combo: string): string | undefined {
+export function toAriaKeyShortcuts(combo: string, mac = isMacPlatform()): string | undefined {
 	const trimmed = combo.trim();
 	if (!trimmed || /\s/.test(trimmed)) return undefined;
 	const parts = trimmed.split("+");
@@ -176,7 +176,7 @@ export function toAriaKeyShortcuts(combo: string): string | undefined {
 	return keys
 		.map((k) => {
 			const l = k.toLowerCase();
-			if (l === "mod") return isMacPlatform() ? "Meta" : "Control";
+			if (l === "mod") return mac ? "Meta" : "Control";
 			return ARIA_KEY[l] ?? (k.length === 1 ? k.toUpperCase() : k.charAt(0).toUpperCase() + k.slice(1));
 		})
 		.join("+");

@@ -1,5 +1,6 @@
 ---
 import "../styles/global.css";
+import interUrl from "@cynco-labs/ui/fonts/Inter-Variable.woff2?url";
 
 interface Props {
 	title: string;
@@ -21,6 +22,7 @@ const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : un
 		<meta name="description" content={description} />
 		{canonical && <link rel="canonical" href={canonical} />}
 		{mdHref && <link rel="alternate" type="text/markdown" href={mdHref} title="Markdown" />}
+		<link rel="preload" href={interUrl} as="font" type="font/woff2" crossorigin />
 		<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 		<meta name="theme-color" content="#fafaf9" media="(prefers-color-scheme: light)" />
 		<meta name="theme-color" content="#161616" media="(prefers-color-scheme: dark)" />
