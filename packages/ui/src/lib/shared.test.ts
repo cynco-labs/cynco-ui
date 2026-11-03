@@ -15,6 +15,10 @@ describe("formatCurrency", () => {
 		expect(formatCurrency(10000, "IDR")).toBe(`Rp${NB}10.000,00`);
 		expect(formatCurrency(1234, "JPY")).toBe("￥1,234");
 	});
+	test("keeps ISO minor units whatever the runtime's currency data says", () => {
+		expect(formatCurrency("10000.50", "IDR")).toBe(`Rp${NB}10.000,50`);
+		expect(formatCurrencyWhole(10000.5, "IDR")).toBe(`Rp${NB}10.001`);
+	});
 	test("invalid input prints zero rather than NaN", () => {
 		expect(formatCurrency("abc")).toBe(`RM${NB}0.00`);
 		expect(formatCurrency("1,234")).toBe(`RM${NB}0.00`);

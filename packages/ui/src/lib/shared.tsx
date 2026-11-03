@@ -13,12 +13,21 @@ import { WarningCircleIcon } from "@phosphor-icons/react";
 const LOCALE: Record<string, string> = {
 	MYR: "en-MY", SGD: "en-SG", USD: "en-US", GBP: "en-GB", AUD: "en-AU", EUR: "en-IE", IDR: "id-ID", THB: "th-TH", PHP: "en-PH", JPY: "ja-JP", CNY: "zh-CN", HKD: "en-HK",
 };
+/**
+ * ISO 4217 minor units, fixed rather than left to the runtime: newer CLDR data prints IDR with no decimals, which
+ * would round a posted "10000.50" to "Rp 10.001". Currencies not listed keep the runtime's default.
+ */
+const MINOR_UNITS: Record<string, number> = {
+	MYR: 2, SGD: 2, USD: 2, GBP: 2, AUD: 2, EUR: 2, IDR: 2, THB: 2, PHP: 2, JPY: 0, CNY: 2, HKD: 2,
+};
 const fmtCache = new Map<string, Intl.NumberFormat>();
 function fmt(currency: string, opts: Intl.NumberFormatOptions = {}) {
 	const key = currency + JSON.stringify(opts);
 	let f = fmtCache.get(key);
 	if (!f) {
-		f = new Intl.NumberFormat(LOCALE[currency] ?? "en-US", { style: "currency", currency, ...opts });
+		const digits = MINOR_UNITS[currency];
+		const minor = digits === undefined ? {} : { minimumFractionDigits: digits, maximumFractionDigits: digits };
+		f = new Intl.NumberFormat(LOCALE[currency] ?? "en-US", { style: "currency", currency, ...minor, ...opts });
 		fmtCache.set(key, f);
 	}
 	return f;

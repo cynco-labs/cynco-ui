@@ -20,7 +20,11 @@
     "noEmit": true,
     "types": [
       "vite/client"
-    ]
+    ],
+    "paths": {
+      "@cynco-labs/ui/ai": ["./src/ai.ts"],
+      "@cynco-labs/ui": ["./src/index.ts"]
+    }
   },
   "include": [
     "src",
