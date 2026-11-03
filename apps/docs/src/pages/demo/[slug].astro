@@ -3,7 +3,7 @@ import "../../styles/global.css";
 import DemoHost from "../../components/DemoHost";
 import interUrl from "@cynco-labs/ui/fonts/Inter-Variable.woff2?url";
 import { registry } from "../../lib/registry";
-import { PRESET_BOOT } from "../../lib/settings";
+import SettingsBoot from "../../components/SettingsBoot.astro";
 
 export function getStaticPaths() {
 	return registry.map((c) => ({ params: { slug: c.slug }, props: { entry: c } }));
@@ -31,7 +31,6 @@ const { entry } = Astro.props;
 				});
 			})();
 		</script>
-		<script is:inline set:html={PRESET_BOOT} />
 		<style is:global>
 			body {
 				background: var(--background);
@@ -39,6 +38,7 @@ const { entry } = Astro.props;
 		</style>
 	</head>
 	<body data-slug={entry.slug}>
+		<SettingsBoot />
 		<div id="demo-root" class="p-4 sm:p-6">
 			<DemoHost name={entry.name} client:load />
 		</div>

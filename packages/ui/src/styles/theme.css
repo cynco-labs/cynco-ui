@@ -289,12 +289,12 @@
 	--animate-shine: shine var(--duration) infinite linear;
 }
 
-/* Literal theme values: defined in tokens.css */
+/* Registers these utilities; tokens.css (unlayered) sets the values every theme uses. */
 @theme {
 	--text-2xs: 11px;
-	--color-panel-icon-background: #ede1ff;
-	--color-primary-btn-hover: #a568ff;
-	--color-primary-btn-active: #9b5afb;
+	--color-panel-icon-background: var(--primary);
+	--color-primary-btn-hover: var(--primary);
+	--color-primary-btn-active: var(--primary);
 
 	--color-muted-hover: #f2ebff;
 	--color-muted-active: #f2e9ff;
@@ -333,8 +333,8 @@
 	--color-code-bg: #1e1e1e;
 	--color-code-tabs-active: #3c3c3c;
 
-	--shadow-focus: 0 0 3px 1.5px rgba(139, 92, 246, 0.4);
-	--color-focus: rgba(139, 92, 246, 0.95);
+	--shadow-focus: 0 0 3px 1.5px var(--primary);
+	--color-focus: var(--primary);
 
 	--color-table-hover: #f3f3f3;
 	--color-light-purple: #f9f5ff;

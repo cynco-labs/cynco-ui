@@ -303,7 +303,7 @@ export function PromptInputAttachment({
 					{...props}
 				>
 					<div className="relative size-5 shrink-0">
-						<div className="absolute inset-0 flex size-5 items-center justify-center overflow-hidden rounded bg-background transition-opacity group-hover:opacity-0 group-has-[:focus-visible]:opacity-0 no-hover:opacity-0">
+						<div className="absolute inset-0 flex size-5 items-center justify-center overflow-hidden rounded-md bg-background transition-opacity group-hover:opacity-0 group-has-[:focus-visible]:opacity-0 no-hover:opacity-0">
 							{isImage ? (
 								// Decorative: the file name is printed beside it.
 								<img
@@ -321,7 +321,7 @@ export function PromptInputAttachment({
 						</div>
 						<Button
 							aria-label={`Remove ${attachmentLabel}`}
-							className="absolute inset-0 size-5 cursor-pointer rounded p-0 opacity-0 transition-opacity group-hover:pointer-events-auto group-hover:opacity-100 focus-visible:opacity-100 no-hover:opacity-100 [&>svg]:size-2.5"
+							className="absolute inset-0 size-5 cursor-pointer rounded-md p-0 opacity-0 transition-opacity group-hover:pointer-events-auto group-hover:opacity-100 focus-visible:opacity-100 no-hover:opacity-100 [&>svg]:size-2.5"
 							onClick={(e) => {
 								e.stopPropagation();
 								// This button unmounts with its attachment; keep focus in the composer.

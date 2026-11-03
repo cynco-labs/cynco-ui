@@ -4,4 +4,4 @@ export const SEG =
 
 export const SEG_GROUP = "flex items-center gap-0.5 rounded-lg bg-muted p-0.5";
 
-export const KBD = "inline-flex h-[18px] min-w-[18px] items-center justify-center rounded border border-border bg-background px-1 font-mono text-[10.5px] font-medium text-subtle";
+export const KBD = "inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-md border border-border bg-background px-1 font-mono text-[10.5px] font-medium text-subtle";

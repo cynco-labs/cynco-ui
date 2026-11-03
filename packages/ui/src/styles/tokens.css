@@ -20,9 +20,10 @@
 	--primary-text: var(--primary);
 	/* Keyboard focus ring: at least 3:1 against every surface in this theme (WCAG 1.4.11). */
 	--focus-ring: var(--primary);
-	--hover-primary: #f5fbff;
-	--active-primary: #e8f5ff;
-	--radio-group-hover-primary: #f5fbff;
+	/* Primary tints are mixed from --primary, so overriding --primary rebrands every hover, focus and selection. */
+	--hover-primary: color-mix(in srgb, var(--primary) 4%, #fff);
+	--active-primary: color-mix(in srgb, var(--primary) 9%, #fff);
+	--radio-group-hover-primary: var(--hover-primary);
 	--border: #e5e5e5;
 	--border-sheet: #eaeae9;
 	--border-table: #e5e5e5;
@@ -87,9 +88,9 @@
 	--sidebar-accent-foreground: oklch(0.21 0.006 285.885);
 	--sidebar-border: oklch(0.92 0.004 286.32);
 	--sidebar-ring: oklch(0.63 0.015 286.067);
-	--color-panel-icon-background: #e0f2ff;
-	--color-primary-btn-hover: #1a88ef;
-	--color-primary-btn-active: #006bcf;
+	--color-panel-icon-background: color-mix(in srgb, var(--primary) 12%, #fff);
+	--color-primary-btn-hover: color-mix(in srgb, var(--primary) 88%, #fff);
+	--color-primary-btn-active: color-mix(in srgb, var(--primary) 92%, #000);
 	--color-muted-hover: #f2ebff;
 	--color-muted-active: #f2e9ff;
 	--color-yellow-50: #fefce8;
@@ -106,7 +107,7 @@
 	--color-code-tabs: #2d2d2d;
 	--color-code-bg: #1e1e1e;
 	--color-code-tabs-active: #3c3c3c;
-	--color-focus: rgba(0, 119, 230, 0.95);
+	--color-focus: color-mix(in srgb, var(--primary) 95%, transparent);
 	--color-table-hover: #f3f3f3;
 	--color-light-purple: #f9f5ff;
 	--color-error-light: #fee1e1;
@@ -176,18 +177,18 @@
 	--status-fuchsia-glyph: #ffffff;
 	--status-neutral: #8a8a8a;
 	--status-neutral-glyph: #ffffff;
-	--panel-selected-bg: #f0f9ff;
-	--panel-selected-border: #7dccff;
+	--panel-selected-bg: color-mix(in srgb, var(--primary) 6%, #fff);
+	--panel-selected-border: color-mix(in srgb, var(--primary) 50%, #fff);
 	--panel-unselected-bg: #ffffff;
 	--panel-unselected-border: rgb(229 231 235);
 	--panel-unselected-border-hover: rgb(209 213 219);
-	--panel-screw-selected: #bfe5ff;
+	--panel-screw-selected: color-mix(in srgb, var(--primary) 25%, #fff);
 	--panel-screw-unselected: rgb(229 231 235);
-	--panel-icon-selected-bg: #e0f2ff;
-	--panel-icon-selected-border: #9dd8ff;
+	--panel-icon-selected-bg: color-mix(in srgb, var(--primary) 12%, #fff);
+	--panel-icon-selected-border: color-mix(in srgb, var(--primary) 38%, #fff);
 	--panel-icon-unselected-bg: rgb(249 250 251);
 	--panel-icon-unselected-border: rgb(209 213 219);
-	--panel-icon-selected: #0069cc;
+	--panel-icon-selected: var(--primary);
 	--panel-icon-unselected: rgb(75 85 99);
 	--overlay-shadow: 0 4px 12px rgb(0 0 0 / 0.05), 0 1px 2px rgb(0 0 0 / 0.04);
 	--overlay-dialog-shadow: 0 8px 24px rgb(0 0 0 / 0.07), 0 1px 3px rgb(0 0 0 / 0.04);
@@ -196,13 +197,13 @@
 	--shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
 	--shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
 	--shadow-card: 0 0 8px rgba(0, 0, 0, 0.04);
-	--shadow-focus: 0 0 3px 1.5px rgba(0, 119, 230, 0.4);
+	--shadow-focus: 0 0 3px 1.5px color-mix(in srgb, var(--primary) 40%, transparent);
 	--input-shadow-default: 0 1px 2px 0 rgb(0 0 0 / 0.03);
 	--input-shadow-hover: 0 1px 2px 0 rgb(0 0 0 / 0.05);
 	--btn-primary-shadow: 0 -3px 4px 0 rgba(0, 0, 0, 0.12) inset, 0 4px 4px 0 rgba(0, 0, 0, 0.02);
 	--btn-secondary-shadow: 0 -3px 4px 0 rgba(100, 100, 100, 0.03) inset, 0 4px 4px 0 rgba(0, 0, 0, 0.02);
 	--btn-destructive-shadow: 0 -3px 4px 0 rgba(0, 0, 0, 0.12) inset, 0 4px 4px 0 rgba(0, 0, 0, 0.04);
-	--panel-shadow: 0 2px 4px rgba(0, 119, 230, 0.25), 0 8px 18px rgba(0, 119, 230, 0.05), inset 0 -8px 11px rgba(0, 0, 0, 0.04);
+	--panel-shadow: 0 2px 4px color-mix(in srgb, var(--primary) 25%, transparent), 0 8px 18px color-mix(in srgb, var(--primary) 5%, transparent), inset 0 -8px 11px rgba(0, 0, 0, 0.04);
 	--input-shadow-focus: 0 0 0 3px rgba(18, 18, 18, 0.07), 0 1px 2px 0 rgb(0 0 0 / 0.05);
 	--input-shadow-focus-tiny: 0 0 0 2px rgba(18, 18, 18, 0.06);
 	--input-shadow-destructive: 0 0 0 3px rgba(228, 0, 0, 0.18);
@@ -339,9 +340,9 @@
 	--primary-text: var(--primary);
 	/* Keyboard focus ring: at least 3:1 against every surface in this theme (WCAG 1.4.11). */
 	--focus-ring: var(--primary);
-	--hover-primary: #f5fbff;
-	--active-primary: #e8f5ff;
-	--radio-group-hover-primary: #f5fbff;
+	--hover-primary: color-mix(in srgb, var(--primary) 4%, #fff);
+	--active-primary: color-mix(in srgb, var(--primary) 9%, #fff);
+	--radio-group-hover-primary: var(--hover-primary);
 	--border: #e5e5e5;
 	--border-sheet: #eaeae9;
 	--border-table: #e5e5e5;

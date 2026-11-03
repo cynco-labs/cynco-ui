@@ -90,7 +90,7 @@ export function Kbd({ keys, className, ...props }: Omit<React.ComponentProps<"kb
 		<kbd data-slot="cy-kbd" className={cn("inline-flex items-center gap-0.5 font-sans", className)} {...props}>
 			{list.map((k, i) => (
 				<React.Fragment key={i}>
-					<span aria-hidden={KEY_NAME[k] ? true : undefined} className="inline-flex h-[18px] min-w-[18px] items-center justify-center rounded border border-border bg-interactive-secondary px-1 text-2xs font-medium text-muted-foreground shadow-[0_1px_0_var(--border)]">
+					<span aria-hidden={KEY_NAME[k] ? true : undefined} className="inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-md border border-border bg-interactive-secondary px-1 text-2xs font-medium text-muted-foreground shadow-[0_1px_0_var(--border)]">
 						{k}
 					</span>
 					{KEY_NAME[k] && <span className="sr-only">{KEY_NAME[k]}</span>}

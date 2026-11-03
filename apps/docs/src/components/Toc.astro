@@ -50,6 +50,8 @@ const items = headings.filter((h) => h.depth === 2 || h.depth === 3);
 </aside>
 
 <script>
+	import { copyWithFeedback } from "../lib/copy";
+
 	const links = [...document.querySelectorAll<HTMLAnchorElement>("[data-toc]")];
 	const targets = links.map((a) => document.getElementById(a.dataset.toc!)).filter(Boolean) as HTMLElement[];
 	function update() {
@@ -69,11 +71,7 @@ const items = headings.filter((h) => h.depth === 2 || h.depth === 3);
 	for (const b of document.querySelectorAll<HTMLButtonElement>("[data-copy-md]")) {
 		b.addEventListener("click", async () => {
 			const text = await (await fetch(b.dataset.copyMd!)).text();
-			await navigator.clipboard.writeText(text);
-			const label = b.querySelector("span")!;
-			const prev = label.textContent;
-			label.textContent = "Copied";
-			setTimeout(() => (label.textContent = prev), 1500);
+			await copyWithFeedback(b.querySelector("span")!, text);
 		});
 	}
 </script>

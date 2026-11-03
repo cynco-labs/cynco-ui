@@ -49,3 +49,24 @@ export interface DemoPropsMessage {
 	type: "cynco-demo-props";
 	overrides: ControlValues;
 }
+
+/** Control values set in the page URL (`?layout=minimal&loading=1`), so a configured playground can be linked. */
+export function controlsFromQuery(controls: Controls, query: URLSearchParams): ControlValues {
+	const values: ControlValues = {};
+	for (const [key, c] of Object.entries(controls)) {
+		const raw = query.get(key);
+		if (raw === null) continue;
+		if (isToggle(c)) {
+			if (raw === "1" || raw === "0") values[key] = raw === "1";
+		} else if (c.options.some((o) => o.value === raw)) values[key] = raw;
+	}
+	return values;
+}
+
+/** `query` with the controls' keys replaced by the values set by hand; other parameters are kept. */
+export function controlsToQuery(controls: Controls, overrides: ControlValues, query: URLSearchParams): URLSearchParams {
+	const next = new URLSearchParams(query);
+	for (const key of Object.keys(controls)) next.delete(key);
+	for (const [key, v] of Object.entries(overrides)) if (key in controls) next.set(key, typeof v === "boolean" ? (v ? "1" : "0") : v);
+	return next;
+}

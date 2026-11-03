@@ -31,6 +31,7 @@ const SPAN = {
 			<button
 				type="button"
 				data-copy-text={installPrompt()}
+				data-with-theme
 				data-copy-label="Copied. Paste it into your agent"
 				class="inline-flex h-9 items-center gap-2 rounded-lg bg-foreground px-3.5 text-[13.5px] font-medium text-background transition-opacity hover:opacity-90"
 			>
@@ -92,14 +93,15 @@ const SPAN = {
 </Docs>
 
 <script>
+	import { readSettings, themePrompt } from "../lib/settings";
+	import { copyText, copyWithFeedback } from "../lib/copy";
+
 	for (const b of document.querySelectorAll<HTMLButtonElement>("[data-copy-text]")) {
 		b.addEventListener("click", async () => {
-			await navigator.clipboard.writeText(b.dataset.copyText!);
+			const text = b.dataset.copyText! + ("withTheme" in b.dataset ? themePrompt(readSettings()) : "");
 			const label = b.querySelector("span");
-			if (!label || !b.dataset.copyLabel) return;
-			const before = label.textContent;
-			label.textContent = b.dataset.copyLabel;
-			setTimeout(() => (label.textContent = before), 2000);
+			if (label && b.dataset.copyLabel) await copyWithFeedback(label, text, b.dataset.copyLabel, 2000);
+			else await copyText(text);
 		});
 	}
 </script>

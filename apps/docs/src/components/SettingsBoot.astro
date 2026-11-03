@@ -1,0 +1,12 @@
+---
+import { SETTINGS_BOOT, THEME_STYLE_ID } from "../lib/settings";
+---
+
+<style is:inline id={THEME_STYLE_ID}></style>
+<script is:inline set:html={SETTINGS_BOOT} />
+<script>
+	import { applySettings, cacheTheme, readSettings } from "../lib/settings";
+
+	// Refreshes the cached theme CSS, which the boot script may have painted from an older build.
+	cacheTheme(applySettings(readSettings()));
+</script>

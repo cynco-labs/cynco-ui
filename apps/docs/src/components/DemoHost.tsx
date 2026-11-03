@@ -42,7 +42,8 @@ function Ready({ children }: { children: ReactNode }) {
 let cached: SiteSettings | null = null;
 const subscribe = (onChange: () => void) =>
 	onSettings((s) => {
-		cached = s;
+		// Demos read only density and locale; keeping the snapshot otherwise lets React skip the re-render.
+		if (!cached || cached.density !== s.density || cached.locale !== s.locale) cached = s;
 		onChange();
 	});
 const snapshot = () => (cached ??= readSettings());

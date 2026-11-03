@@ -816,7 +816,7 @@ function solveEquation(terms: readonly BankEquationTerm[], check?: BankEquationC
 /** A loading placeholder; `label` is what a screen reader hears in its place. */
 function Shimmer({ className, label = "Loading" }: { className?: string; label?: string }) {
 	return (
-		<span className={cn("inline-block animate-pulse rounded bg-foreground/8", className)}>
+		<span className={cn("inline-block animate-pulse rounded-md bg-foreground/8", className)}>
 			<span className="sr-only">{label}</span>
 		</span>
 	);

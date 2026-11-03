@@ -92,9 +92,14 @@ const controlEntries = Object.entries(controls ?? {});
 						</div>
 					),
 				)}
-				<button type="button" data-controls-reset hidden class="ml-auto inline-flex h-7 items-center rounded-md px-2 text-[12.5px] font-medium text-tertiary-foreground hover:bg-muted hover:text-foreground">
-					Reset
-				</button>
+				<div class="ml-auto flex items-center gap-1" data-controls-actions hidden>
+					<button type="button" data-controls-link class="inline-flex h-7 items-center rounded-md px-2 text-[12.5px] font-medium text-tertiary-foreground hover:bg-muted hover:text-foreground" title="Copy a link to this page with these values">
+						Copy link
+					</button>
+					<button type="button" data-controls-reset class="inline-flex h-7 items-center rounded-md px-2 text-[12.5px] font-medium text-tertiary-foreground hover:bg-muted hover:text-foreground">
+						Reset
+					</button>
+				</div>
 			</div>
 		)
 	}
@@ -105,8 +110,9 @@ const controlEntries = Object.entries(controls ?? {});
 </div>
 
 <script>
-	import { isToggle, resolveControls, type ControlValues, type Controls, type DemoPropsMessage } from "../lib/controls";
+	import { controlsFromQuery, controlsToQuery, isToggle, resolveControls, type ControlValues, type Controls, type DemoPropsMessage } from "../lib/controls";
 	import { onSettings, readSettings } from "../lib/settings";
+	import { copyWithFeedback } from "../lib/copy";
 
 	function siteTheme() {
 		return document.documentElement.classList.contains("dark") ? "dark" : "light";
@@ -163,15 +169,23 @@ const controlEntries = Object.entries(controls ?? {});
 		let overrides: ControlValues = {};
 		const postProps = () => iframe.contentWindow?.postMessage({ type: "cynco-demo-props", overrides } satisfies DemoPropsMessage, location.origin);
 		if (controls && panel) {
+			const actions = panel.querySelector<HTMLElement>("[data-controls-actions]")!;
 			const reset = panel.querySelector<HTMLButtonElement>("[data-controls-reset]")!;
+			const link = panel.querySelector<HTMLButtonElement>("[data-controls-link]")!;
+			overrides = controlsFromQuery(controls, new URLSearchParams(location.search));
 			const sync = () => {
 				const values = resolveControls(controls, readSettings(), overrides);
 				for (const b of panel.querySelectorAll<HTMLButtonElement>("[data-control]")) {
 					const v = values[b.dataset.control!];
 					b.setAttribute("aria-pressed", String(typeof v === "boolean" ? v : v === b.dataset.value));
 				}
-				reset.hidden = Object.keys(overrides).length === 0;
+				actions.hidden = Object.keys(overrides).length === 0;
+				const query = controlsToQuery(controls, overrides, new URLSearchParams(location.search)).toString();
+				history.replaceState(history.state, "", `${location.pathname}${query ? `?${query}` : ""}${location.hash}`);
 			};
+			link.addEventListener("click", async () => {
+				await copyWithFeedback(link, location.href);
+			});
 			panel.addEventListener("click", (e) => {
 				const b = (e.target as Element).closest<HTMLButtonElement>("[data-control]");
 				if (!b) return;
@@ -229,10 +243,7 @@ const controlEntries = Object.entries(controls ?? {});
 			});
 		}
 		copy.addEventListener("click", async () => {
-			await navigator.clipboard.writeText(el.querySelector<HTMLTextAreaElement>("[data-source]")!.value);
-			const label = copy.querySelector("span")!;
-			label.textContent = "Copied";
-			setTimeout(() => (label.textContent = "Copy"), 1500);
+			await copyWithFeedback(copy.querySelector("span")!, el.querySelector<HTMLTextAreaElement>("[data-source]")!.value);
 		});
 	}
 </script>

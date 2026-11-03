@@ -11,7 +11,7 @@ export function FilterChip({
 	onRemove: () => void;
 }) {
 	return (
-		<span className="flex h-5 max-w-56 shrink-0 items-center gap-1 rounded bg-active-primary pr-0.5 pl-1.5 text-xs">
+		<span className="flex h-5 max-w-56 shrink-0 items-center gap-1 rounded-md bg-active-primary pr-0.5 pl-1.5 text-xs">
 			<span className="shrink-0 text-subtle">{label}</span>
 			<span className="truncate text-foreground">{value}</span>
 			<button

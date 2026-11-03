@@ -54,6 +54,8 @@ const { prev, next } = neighbours(current);
 </Base>
 
 <script>
+	import { copyWithFeedback } from "../lib/copy";
+
 	// ← and → step through pages in reading order, as the arrows beside a component's title do.
 	document.addEventListener("keydown", (e) => {
 		const t = e.target as HTMLElement;
@@ -71,12 +73,10 @@ const { prev, next } = neighbours(current);
 		wrap.append(pre);
 		const b = document.createElement("button");
 		b.type = "button";
-		b.className = "absolute right-2 top-2 rounded-md border border-border bg-background px-2 py-0.5 text-[11.5px] font-medium text-tertiary-foreground opacity-0 transition-opacity hover:text-foreground focus-visible:opacity-100 group-hover/code:opacity-100";
+		b.className = "absolute right-2 top-2 rounded-md border border-border bg-background px-2 py-0.5 text-[11.5px] font-medium text-tertiary-foreground opacity-0 transition-opacity hover:text-foreground focus-visible:opacity-100 group-hover/code:opacity-100 no-hover:opacity-100";
 		b.textContent = "Copy";
 		b.addEventListener("click", async () => {
-			await navigator.clipboard.writeText(pre.innerText);
-			b.textContent = "Copied";
-			setTimeout(() => (b.textContent = "Copy"), 1500);
+			await copyWithFeedback(b, pre.innerText);
 		});
 		wrap.append(b);
 	}

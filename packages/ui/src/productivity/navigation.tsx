@@ -998,7 +998,7 @@ export function SavedViewsBar({
 									<span>{v.name}</span>
 									<span className="sr-only">{v.shared ? ", shared with team" : !v.locked ? ", personal" : ""}</span>
 									{count != null && (
-										<span className="rounded bg-muted px-1 text-2xs leading-4 font-normal tabular-nums text-muted-foreground">
+										<span className="rounded-md bg-muted px-1 text-2xs leading-4 font-normal tabular-nums text-muted-foreground">
 											<span className="sr-only">, </span>
 											{count}
 											<span className="sr-only"> rows</span>

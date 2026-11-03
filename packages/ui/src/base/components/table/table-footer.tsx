@@ -9,7 +9,7 @@ import {
 import type { ReactNode } from "react";
 
 const navBtnBase =
-	"inline-flex items-center justify-center size-5 rounded text-subtle transition-colors hover:text-muted-foreground disabled:pointer-events-none disabled:opacity-30";
+	"inline-flex items-center justify-center size-5 rounded-md text-subtle transition-colors hover:text-muted-foreground disabled:pointer-events-none disabled:opacity-30";
 
 export const TableFooter = <TData,>({
 	table,
@@ -45,7 +45,7 @@ export const TableFooter = <TData,>({
 								<select
 									value={pageSize}
 									onChange={(e) => table.setPageSize(Number(e.target.value))}
-									className="h-5 cursor-pointer appearance-none rounded bg-transparent px-1 text-tiny font-medium text-tertiary-foreground outline-none hover:text-muted-foreground focus-ring"
+									className="h-5 cursor-pointer appearance-none rounded-md bg-transparent px-1 text-tiny font-medium text-tertiary-foreground outline-none hover:text-muted-foreground focus-ring"
 								>
 									{pageSizeOptions.map((opt) => (
 										<option key={opt} value={opt}>

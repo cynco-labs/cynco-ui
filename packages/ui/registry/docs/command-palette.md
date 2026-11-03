@@ -81,7 +81,7 @@ export default function CommandPaletteDemo() {
 			<div className="flex flex-wrap items-center gap-3 rounded-xl border border-border bg-card px-3 py-2">
 				<span className="text-sm font-semibold text-foreground">Cynco</span>
 				{sandbox && (
-					<span className="rounded bg-active-primary px-1.5 text-xs text-primary">Sandbox</span>
+					<span className="rounded-md bg-active-primary px-1.5 text-xs text-primary">Sandbox</span>
 				)}
 				<CommandPaletteTrigger
 					onClick={() => {

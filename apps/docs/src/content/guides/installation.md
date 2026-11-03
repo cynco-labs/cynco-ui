@@ -97,6 +97,26 @@ Light is the default. Themes are CSS variables switched by a class or a `data-th
 
 Tailwind's `dark:` variant follows the same class and attribute. Printed documents always stay black on white, whatever the app theme.
 
+### Accent and radius
+
+The accent is one variable. Hover tints, selection fills, focus rings and the first chart colour are mixed from `--primary`, so overriding it rebrands every component. Dark mode takes its own fill and a lighter `--primary-text`. Corners read the radius scale, `--radius-sm` to `--radius-2xl`. Put the overrides after the theme import:
+
+```css
+@import "@cynco-labs/ui/theme.css";
+
+:root {
+	--primary: #117c39;
+	--radius-md: 7px;
+}
+.dark:not(.react-flow),
+[data-theme$="dark"] {
+	--primary: #12823b;
+	--primary-text: #4ade80;
+}
+```
+
+Keep white text on `--primary` at 4.5:1, `--primary` at 3:1 against the dark surfaces (it is also the focus ring), and `--primary-text` at 4.5:1. The settings panel on this site picks values that pass, and **Copy theme** writes this block for you.
+
 ## Providers
 
 Most components work on their own. A few features need a provider near the root of your app:

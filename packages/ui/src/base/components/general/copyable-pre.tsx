@@ -61,7 +61,7 @@ export function CopyableSpan({
 				onClick={handleClick}
 			>
 				<span className="pr-2">{text}</span>
-				<span className="ml-1 p-0.5 rounded transition bg-transparent size-6 z-[1] static bg-none shadow-none border-none flex items-center justify-center">
+				<span className="ml-1 p-0.5 rounded-md transition bg-transparent size-6 z-[1] static bg-none shadow-none border-none flex items-center justify-center">
 					{copied ? (
 						<Check size={copySize} className="text-muted-foreground" />
 					) : (

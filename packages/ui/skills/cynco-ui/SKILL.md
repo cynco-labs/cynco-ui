@@ -41,6 +41,8 @@ pnpm add @cynco-labs/ui @phosphor-icons/react
 
 Without Tailwind, `import "@cynco-labs/ui/styles.css"` once at the root. Wrap the app once in
 `<TooltipProvider>`. Dark mode is the `dark` class on `<html>`; the Modern theme adds `preset-modern`.
+To rebrand, override `--primary` (and `--primary` plus `--primary-text` under `.dark`) after the theme import;
+hover, selection and focus tints are mixed from it. Corners follow `--radius-sm` … `--radius-2xl`.
 `DensityProvider` sets row density for lists; `DocumentBrandProvider` sets company, layout and language
 (`"en"`, `"ms"` or `"en-ms"`) for every document inside.
 

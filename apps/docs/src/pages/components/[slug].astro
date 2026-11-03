@@ -76,6 +76,7 @@ const arrow = "inline-flex size-7 items-center justify-center rounded-md text-te
 			<button
 				type="button"
 				data-copy-text={componentPrompt(entry, source)}
+				data-with-theme
 				data-copy-label="Copied"
 				title="Install steps, import, props, an example and the house rules, for a coding agent"
 				class="inline-flex h-auto min-h-10 items-center gap-2 rounded-lg border border-border bg-interactive-secondary px-3.5 text-[13px] font-medium text-foreground transition-colors hover:bg-interactive-secondary-hover"
@@ -111,14 +112,15 @@ const arrow = "inline-flex size-7 items-center justify-center rounded-md text-te
 </Docs>
 
 <script>
+	import { readSettings, themePrompt } from "../../lib/settings";
+	import { copyText, copyWithFeedback } from "../../lib/copy";
+
 	for (const b of document.querySelectorAll<HTMLButtonElement>("[data-copy-text]")) {
 		b.addEventListener("click", async () => {
-			await navigator.clipboard.writeText(b.dataset.copyText!);
+			const text = b.dataset.copyText! + ("withTheme" in b.dataset ? themePrompt(readSettings()) : "");
 			const label = b.querySelector("span");
-			if (!label || !b.dataset.copyLabel) return;
-			const before = label.textContent;
-			label.textContent = b.dataset.copyLabel;
-			setTimeout(() => (label.textContent = before), 1500);
+			if (label && b.dataset.copyLabel) await copyWithFeedback(label, text, b.dataset.copyLabel, 1500);
+			else await copyText(text);
 		});
 	}
 </script>

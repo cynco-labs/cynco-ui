@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "node ../../scripts/extract-props.mjs && node ../../scripts/build-registry.mjs && astro dev --port 4321",
     "build": "node ../../scripts/extract-props.mjs && node ../../scripts/build-registry.mjs && astro build",
-    "preview": "astro preview --port 4321"
+    "preview": "astro preview --port 4321",
+    "test": "node --experimental-strip-types --disable-warning=ExperimentalWarning --test 'src/**/*.test.ts'"
   },
   "dependencies": {
     "@astrojs/react": "^4",
