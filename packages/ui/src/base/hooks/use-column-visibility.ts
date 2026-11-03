@@ -1,19 +1,21 @@
+"use client";
+
 import type {
 	ColumnDef,
 	Updater,
 	VisibilityState,
 } from "@tanstack/react-table";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState, useSyncExternalStore } from "react";
 
 const STORAGE_PREFIX = "cynco-ui:table-columns:";
 
 type StoredColumnValue = boolean | { visible: boolean; name: string };
 
-function loadFromStorage(storageKey: string): VisibilityState | null {
-	try {
-		const saved = localStorage.getItem(`${STORAGE_PREFIX}${storageKey}`);
-		if (!saved) return null;
+const NONE: VisibilityState = {};
 
+function parseStored(saved: string | null): VisibilityState {
+	if (!saved) return NONE;
+	try {
 		const parsed = JSON.parse(saved) as Record<string, StoredColumnValue>;
 		const visibility: VisibilityState = {};
 		for (const [key, value] of Object.entries(parsed)) {
@@ -21,42 +23,42 @@ function loadFromStorage(storageKey: string): VisibilityState | null {
 		}
 		return visibility;
 	} catch {
-		return null;
+		return NONE;
 	}
 }
 
-/** Get all visible usage columns with their names from storage */
-export function getVisibleUsageColumnsFromStorage({
-	storageKey,
-}: {
-	storageKey: string;
-}): Array<{ featureId: string; featureName: string }> {
+// useSyncExternalStore needs the same object back while storage is unchanged.
+const snapshots = new Map<string, { raw: string | null; value: VisibilityState }>();
+
+function readStored(storageKey: string): VisibilityState {
+	let raw: string | null = null;
 	try {
-		const saved = localStorage.getItem(`${STORAGE_PREFIX}${storageKey}`);
-		if (!saved) return [];
-
-		const parsed = JSON.parse(saved) as Record<string, StoredColumnValue>;
-		return Object.entries(parsed)
-			.filter(
-				([key, value]) =>
-					key.startsWith("usage_") &&
-					(typeof value === "boolean" ? value : value.visible),
-			)
-			.map(([key, value]) => {
-				const featureId = key.replace("usage_", "");
-				const name = typeof value === "object" ? value.name : featureId;
-				return { featureId, featureName: name };
-			});
-	} catch {
-		return [];
-	}
+		raw = localStorage.getItem(`${STORAGE_PREFIX}${storageKey}`);
+	} catch {}
+	const hit = snapshots.get(storageKey);
+	if (hit && hit.raw === raw) return hit.value;
+	const value = parseStored(raw);
+	snapshots.set(storageKey, { raw, value });
+	return value;
 }
+
+// "storage" fires only in other tabs; SAVED tells tables in this tab that share the key.
+const SAVED = "cynco-ui:table-columns-saved";
+
+const subscribeToStorage = (onChange: () => void) => {
+	window.addEventListener("storage", onChange);
+	window.addEventListener(SAVED, onChange);
+	return () => {
+		window.removeEventListener("storage", onChange);
+		window.removeEventListener(SAVED, onChange);
+	};
+};
 
 function saveToStorage(
 	storageKey: string,
 	state: VisibilityState,
 	columns: { id?: string; header?: unknown }[],
-): void {
+): boolean {
 	try {
 		const out: Record<string, StoredColumnValue> = {};
 		for (const [id, visible] of Object.entries(state)) {
@@ -65,7 +67,11 @@ function saveToStorage(
 			out[id] = header ? { visible, name: header } : visible;
 		}
 		localStorage.setItem(`${STORAGE_PREFIX}${storageKey}`, JSON.stringify(out));
-	} catch {}
+		window.dispatchEvent(new Event(SAVED));
+		return true;
+	} catch {
+		return false;
+	}
 }
 
 /** Defines a group of columns to be rendered together in a submenu */
@@ -88,14 +94,17 @@ export function useColumnVisibility<T>({
 	storageKey,
 	columnGroups = [],
 }: UseColumnVisibilityOptions<T>) {
-	const [savedVisibility, setSavedVisibility] = useState<VisibilityState>(
-		() => {
-			if (!storageKey) return {};
-			return loadFromStorage(storageKey) ?? {};
-		},
+	// The server and hydration render the defaults (there is no storage there); the browser then
+	// re-renders with the saved columns. Client-only renders get the saved columns straight away.
+	const stored = useSyncExternalStore(
+		subscribeToStorage,
+		() => (storageKey ? readStored(storageKey) : NONE),
+		() => NONE,
 	);
-
-	const [isDirty, setIsDirty] = useState(false);
+	// Toggles not yet saved; null when the table shows what storage holds.
+	const [edited, setEdited] = useState<VisibilityState | null>(null);
+	const savedVisibility = edited ?? stored;
+	const isDirty = edited !== null;
 
 	// Derive effective visibility synchronously — fills in defaults for any
 	// column not yet in savedVisibility, so there's never a render frame where
@@ -124,16 +133,15 @@ export function useColumnVisibility<T>({
 				typeof updaterOrValue === "function"
 					? updaterOrValue(columnVisibilityRef.current)
 					: updaterOrValue;
-			setSavedVisibility(newState);
-			setIsDirty(true);
+			setEdited(newState);
 		},
 		[],
 	);
 
 	const saveColumnVisibility = useCallback(() => {
 		if (!storageKey) return;
-		saveToStorage(storageKey, columnVisibilityRef.current, columns);
-		setIsDirty(false);
+		// A failed write (storage full or blocked) keeps the toggles on screen, still marked unsaved.
+		if (saveToStorage(storageKey, columnVisibilityRef.current, columns)) setEdited(null);
 	}, [storageKey, columns]);
 
 	return {

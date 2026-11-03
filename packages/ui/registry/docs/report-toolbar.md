@@ -30,32 +30,32 @@ export default function ReportToolbarDemo() {
 			<ReportToolbar
 				title="Profit & loss"
 				meta="October 2026 · MYR"
-				period="2026-10"
+				defaultPeriod="2026-10"
 				periods={periods}
 				fiscalYearEnd="12-31"
-				view="monthly"
+				defaultView="monthly"
 				views={[
 					{ value: "monthly", label: "Monthly" },
 					{ value: "ytd", label: "YTD" },
 				]}
-				compare
-				comparePeriod="2026-09"
+				defaultCompare
+				defaultComparePeriod="2026-09"
 				freshness={{ mode: "live", lastPostingAt: "2026-10-30T06:10:00Z" }}
 				now="2026-10-30T09:25:00Z"
 			/>
 			<ReportToolbar
 				title="Trial balance"
 				meta="As at 31 Oct 2026 · MYR · 11 accounts"
-				period="2026-10"
+				defaultPeriod="2026-10"
 				periods={periods}
 				fiscalYearEnd="06-30"
-				view="standard"
+				defaultView="standard"
 				views={[
 					{ value: "standard", label: "Standard" },
 					{ value: "extended", label: "Extended" },
 				]}
-				compare={false}
-				showSaveSnapshot
+				defaultCompare={false}
+				onSaveSnapshot={() => {}}
 				freshness={{ mode: "snapshot", takenAt: "2026-10-30T09:12:00Z" }}
 				now="2026-10-30T09:25:00Z"
 			/>
@@ -72,16 +72,24 @@ Top of every financial statement page (ReportShell header).
 
 period ('YYYY-MM'), periods[]; optional title, meta, fiscalYearEnd ('MM-DD'), view + views[{value,label}], compare, comparePeriod, showSaveSnapshot, freshness {mode:'live', lastPostingAt} | {mode:'snapshot', takenAt}, now, onExport(format); plus className and native element props (spread on the root).
 
-- `period`: `string`
 - `periods`: `string[]`
 - `title?`: `ReactNode`
 - `meta?`: `ReactNode`. Quiet sub-line, e.g. "October 2026 · MYR".
+- `period?`: `string`. Controlled reporting period (e.g. "2026-03").
+- `defaultPeriod?`: `string`. Initial period for uncontrolled use.
+- `onPeriodChange?`: `(period: string) => void`. Called when the user changes the reporting period.
 - `fiscalYearEnd?`: `string | null`. "MM-DD"; groups the period list by fiscal year.
-- `view?`: `string`. Current view (P&L Monthly/YTD, TB Standard/Extended).
+- `view?`: `string`. Controlled view (P&L Monthly/YTD, TB Standard/Extended).
+- `defaultView?`: `string`. Initial view for uncontrolled use.
+- `onViewChange?`: `(view: string) => void`. Called when the user switches the report view.
 - `views?`: `{ value: string; label: string }[]`
-- `compare?`: `boolean`. Compare toggle; omit to hide it (reports without a comparative).
-- `comparePeriod?`: `string`
-- `showSaveSnapshot?`: `boolean`
+- `compare?`: `boolean`. Controlled compare toggle; omit the prop entirely to hide the Compare button.
+- `defaultCompare?`: `boolean`. Initial compare value for uncontrolled use.
+- `onCompareChange?`: `(compare: boolean) => void`. Called when the user toggles the compare mode.
+- `comparePeriod?`: `string`. Controlled comparison period.
+- `defaultComparePeriod?`: `string`. Initial comparison period for uncontrolled use.
+- `onComparePeriodChange?`: `(period: string) => void`. Called when the user changes the comparison period.
+- `onSaveSnapshot?`: `() => void`. Called when the user clicks "Save snapshot"; omit to hide the button.
 - `freshness?`: `ReportFreshness | null`
 - `now?`: `string | number`. Clock for the freshness label (defaults to Date.now()).
 - `onExport?`: `(format: "pdf" | "excel") => void`

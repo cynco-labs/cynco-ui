@@ -3,6 +3,8 @@ import { PartyOverviewHeader } from "@cynco-labs/ui";
 export default function PartyOverviewHeaderDemo() {
 	return (
 		<PartyOverviewHeader
+			onStatement={() => {}}
+			onCreate={() => {}}
 			role="customer"
 			name="Kedai Runcit Mesra Sdn Bhd"
 			balance={48250.4}

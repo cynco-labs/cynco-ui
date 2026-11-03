@@ -10,29 +10,90 @@ import { ShortcutsDialog } from "@cynco-labs/ui";
 
 ```tsx
 import { Fragment, useState } from "react";
-import { Button, CYNCO_GOTO_ROUTES, Kbd, ShortcutsDialog, useCharacterKeyShortcuts, useGoToShortcuts } from "@cynco-labs/ui";
+import { Button, Kbd, ShortcutsDialog, useCharacterKeyShortcuts, useGoToShortcuts } from "@cynco-labs/ui";
+
+// G then a letter goes to a page; C then a letter creates something. Keys are the letter after "g", or a full sequence.
+const ROUTES = {
+	d: "/dashboard",
+	i: "/invoices",
+	q: "/quotations",
+	c: "/customers",
+	v: "/vendors",
+	b: "/banking",
+	"c i": "/invoices/new",
+	"c q": "/quotations/new",
+	"c j": "/journal/new",
+	"c c": "/customers/new",
+};
 
 const LABELS = {
 	"/dashboard": "Dashboard",
-	"/dashboard/invoicing": "Invoices",
-	"/dashboard/quotations": "Quotations",
-	"/dashboard/customers": "Customers",
-	"/dashboard/vendors": "Vendors",
-	"/dashboard/banking": "Banking",
-	"/dashboard/accounting": "Accounting workbench",
-	"/dashboard/dataroom": "Data room",
-	"/dashboard/invoicing-new": "New invoice",
-	"/dashboard/quotations-new": "New quotation",
-	"/dashboard/accounting/journal/new": "New journal entry",
-	"/dashboard/customers?action=create": "New customer",
+	"/invoices": "Invoices",
+	"/quotations": "Quotations",
+	"/customers": "Customers",
+	"/vendors": "Vendors",
+	"/banking": "Banking",
+	"/invoices/new": "New invoice",
+	"/quotations/new": "New quotation",
+	"/journal/new": "New journal entry",
+	"/customers/new": "New customer",
 };
+
+const SECTIONS = [
+	{
+		title: "Global",
+		items: [
+			{ keys: "mod+k", label: "Open command palette" },
+			{ keys: "?", label: "Show keyboard shortcuts" },
+			{ keys: "esc", label: "Close dialog or clear selection" },
+		],
+	},
+	{
+		title: "Go to",
+		items: [
+			{ keys: "g d", label: "Dashboard" },
+			{ keys: "g i", label: "Invoices" },
+			{ keys: "g q", label: "Quotations" },
+			{ keys: "g c", label: "Customers" },
+			{ keys: "g v", label: "Vendors" },
+			{ keys: "g b", label: "Banking" },
+		],
+	},
+	{
+		title: "Create",
+		items: [
+			{ keys: "c i", label: "New invoice" },
+			{ keys: "c q", label: "New quotation" },
+			{ keys: "c j", label: "New journal entry" },
+			{ keys: "c c", label: "New customer" },
+		],
+	},
+	{
+		title: "Lists",
+		items: [
+			{ keys: ["j", "down"], label: "Next row" },
+			{ keys: ["k", "up"], label: "Previous row" },
+			{ keys: "x", label: "Select row" },
+			{ keys: "enter", label: "Open row" },
+		],
+	},
+	{
+		title: "Journal entry",
+		items: [
+			{ keys: "Tab", label: "Next cell" },
+			{ keys: "alt+b", label: "Balance this line" },
+			{ keys: "=", label: "Start a formula (=1200*1.08)", focusScoped: true },
+			{ keys: "mod+enter", label: "Post entry" },
+		],
+	},
+];
 
 export default function ShortcutsDialogDemo() {
 	const [open, setOpen] = useState(false);
 	const [went, setWent] = useState(null);
 	// The user's single-key switch lives in the dialog's footer; it also gates "?" and G/C sequences.
 	const [characterKeys] = useCharacterKeyShortcuts();
-	const g = useGoToShortcuts(CYNCO_GOTO_ROUTES, (path, seq) => {
+	const g = useGoToShortcuts(ROUTES, (path, seq) => {
 		setWent({ path, seq });
 	});
 	return (
@@ -126,7 +187,7 @@ export default function ShortcutsDialogDemo() {
 					</div>
 				))}
 			</div>
-			<ShortcutsDialog open={open} onOpenChange={setOpen} />
+			<ShortcutsDialog open={open} onOpenChange={setOpen} sections={SECTIONS} />
 		</div>
 	);
 }
@@ -134,16 +195,16 @@ export default function ShortcutsDialogDemo() {
 
 ## Use
 
-Mount once in the app shell. Pass your own sections or use CYNCO_SHORTCUT_SECTIONS (Global, Go to, Create, Lists, Journal entry). Call useGoToShortcuts(CYNCO_GOTO_ROUTES, navigate) in the shell so G then I opens Invoices and C then J starts a journal entry.
+Mount once in the app shell. Pass your app's sections (Global, Go to, Create, Lists…). Call useGoToShortcuts(routes, navigate) in the shell with your own route map, e.g. { i: "/invoices", "c j": "/journal/new" }, so G then I opens Invoices and C then J starts a journal entry.
 
 ## Props
 
 ShortcutsDialog: open / defaultOpen / onOpenChange; sections ([{title, items: [{keys, label}]}], keys like "mod+enter", "g i" for a sequence, or an array of alternatives); hotkey (default "?", false to bind your own); title; className. useGoToShortcuts(map, navigate, {enabled, timeout = 1200 ms, leader = "g"}): map keys are a letter after the leader or a full sequence ("c i"); returns {pending} so you can show “G…” while it waits. Items take an optional focusScoped: true for keys that only fire inside their own field (never shown as off). KeyboardShortcutsProvider (characterKeys / defaultCharacterKeys = true / onCharacterKeysChange) and useCharacterKeyShortcuts() → [enabled, setEnabled] control the single-key switch; isCharacterKeyShortcut(keys) tells you whether your own shortcut should honour it.
 
+- `sections`: `ShortcutsDialogSection[]`. Your shortcuts, grouped. The single-key switch is always shown under them.
 - `open?`: `boolean`
 - `defaultOpen?`: `boolean`. Default `false`.
 - `onOpenChange?`: `(open: boolean) => void`
-- `sections?`: `ShortcutsDialogSection[]`. Defaults to CYNCO_SHORTCUT_SECTIONS. Default `CYNCO_SHORTCUT_SECTIONS`.
 - `hotkey?`: `string | false | string[]`. Key that opens the sheet. Default "?" (Shift+/); `false` to bind your own. Default `"?"`.
 - `title?`: `string`. Default `"Keyboard shortcuts"`.
 

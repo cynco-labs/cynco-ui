@@ -1,3 +1,5 @@
+"use client";
+
 import { LiveStatus } from "../general/live-status";
 import { TableColumnVisibility } from "./table-column-visibility";
 import {

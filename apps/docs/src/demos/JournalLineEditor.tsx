@@ -128,7 +128,7 @@ export default function JournalLineEditorDemo() {
 			accounts={ACCTS}
 			recentIds={["a14", "a8", "a1"]}
 			fieldErrors={{ "l5.accountId": "Confirm the account before posting" }}
-			lines={[
+			defaultLines={[
 				{
 					key: "l1",
 					accountId: "a14",

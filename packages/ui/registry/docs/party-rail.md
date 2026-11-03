@@ -14,6 +14,9 @@ import { PartyRail } from "@cynco-labs/ui";
 export default function PartyRailDemo() {
 	return (
 		<PartyRail
+			onSetPrimaryContact={() => {}}
+			onEditContact={() => {}}
+			onAddContact={() => {}}
 			role="customer"
 			className="max-w-[640px]"
 			ledgerBalance={48250.4}
@@ -75,6 +78,9 @@ role, currency, ledgerBalance, openItemsTotal, aging {current, days1to30, days31
 - `creditNotesHref?`: `string`. Where "View credit notes" goes; renders it as a real link.
 - `onViewCreditNotes?`: `() => void`. In-app handler for "View credit notes" when there is no URL; renders it as a button. Without either, the action is hidden.
 - `contacts?`: `PartyContact[]`
+- `onSetPrimaryContact?`: `(contact: PartyContact) => void`. Called from a contact's star button; omit to hide it.
+- `onEditContact?`: `(contact: PartyContact) => void`. Called from a contact's edit button; omit to hide it.
+- `onAddContact?`: `() => void`. Called from "Add contact"; omit to hide it.
 - Also accepts `ComponentProps<"aside">`.
 
 ## Notes

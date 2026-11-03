@@ -10,6 +10,7 @@ export default function EInvoiceStatusCardDemo() {
 						status: "valid",
 						documentUuid: "F9D425P6DS7D8IU7G1H2K3L4M5",
 						longId: "QJGYW3DSNJ9K2TMR0VBX8E7Y10Q5HT61702381293",
+						validationUrl: "https://example.com/myinvois/share/QJGYW3DSNJ9K2TMR0VBX8E7Y10Q5HT61702381293",
 						validatedAt: "2026-10-29T10:42:00+08:00",
 						withinCancelWindow: true,
 					},

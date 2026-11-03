@@ -57,6 +57,7 @@ export default function InvoiceListTableDemo() {
 	}
 	return (
 		<InvoiceListTable
+			onRowAction={() => {}}
 			invoices={rows}
 			selectedIds={sel}
 			onToggleRow={toggle}
@@ -85,7 +86,9 @@ invoices (invoiceNumber, customerName, invoiceDate, dueDate, total, currency, st
 - `sortField?`: `string`. Default `"invoice_date"`.
 - `sortDirection?`: `"asc" | "desc"`. Default `"desc"`.
 - `onSort?`: `(field: string) => void`
+- `onRowAction?`: `(invoice: SalesInvoiceRow) => void`. Called from a row's actions button; omit to hide the button.
 - `footer?`: `ReactNode`
+- Also accepts `ComponentProps<"div">`.
 
 ## Notes
 

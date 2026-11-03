@@ -1,3 +1,5 @@
+"use client";
+
 import { useTableContext } from "./table-context";
 import { TableFooter } from "./table-footer";
 

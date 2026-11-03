@@ -292,6 +292,8 @@
 /* Registers these utilities; tokens.css (unlayered) sets the values every theme uses. */
 @theme {
 	--text-2xs: 11px;
+	/* Hero figures only (a dashboard's headline amount); everything else stays on 2xs–xl. */
+	--text-display: 28px;
 	--color-panel-icon-background: var(--primary);
 	--color-primary-btn-hover: var(--primary);
 	--color-primary-btn-active: var(--primary);

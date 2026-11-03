@@ -36,11 +36,13 @@ Opt-in settings that need explanation (rounding, auto-numbering).
 `title`, `checked`, `onCheckedChange`; optional `description`, `disabled` + `disabledReason` (tooltip), `children` (shown when checked).
 
 - `title`: `string`
-- `checked?`: `boolean`. Default `false`.
+- `checked?`: `boolean`
+- `defaultChecked?`: `boolean`. Initial state for uncontrolled use. Default `false`.
 - `onCheckedChange?`: `(checked: boolean) => void`
 - `disabled?`: `boolean`. Default `false`.
 - `disabledReason?`: `string`
 - `hide?`: `boolean`. Default `false`.
 - `description?`: `string`
+- Also accepts `ComponentProps<"div">`.
 
 Category: Components · Selection. Source: `packages/ui/src/base/components/general/area-checkbox.tsx`.

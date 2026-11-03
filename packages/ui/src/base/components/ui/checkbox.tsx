@@ -1,8 +1,8 @@
 "use client";
 
+import { CheckIcon } from "@phosphor-icons/react";
 import { cn, hasSubmitShortcutModifier } from "../../lib/utils";
 import { Checkbox as CheckboxPrimitive } from "@base-ui/react/checkbox";
-import { CheckIcon } from "lucide-react";
 
 interface CheckboxProps extends CheckboxPrimitive.Root.Props {
 	size?: "sm" | "md" | "lg";

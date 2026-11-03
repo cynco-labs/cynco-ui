@@ -1,3 +1,5 @@
+"use client";
+
 import { TableColumnVisibility } from "./table-column-visibility";
 import {
 	TableContext,

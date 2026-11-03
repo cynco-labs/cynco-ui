@@ -1,8 +1,9 @@
 "use client";
 
-import { cn, useIsClient } from "../../lib/utils";
+import { XIcon } from "@phosphor-icons/react";
+import { useIsClient } from "../../hooks/use-platform";
+import { cn } from "../../lib/utils";
 import { Dialog as SheetPrimitive } from "@base-ui/react/dialog";
-import { XIcon } from "lucide-react";
 import * as React from "react";
 
 function Sheet({ ...props }: SheetPrimitive.Root.Props) {

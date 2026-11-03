@@ -1,12 +1,12 @@
 "use client";
 
+import { CaretDownIcon, MagnifyingGlassIcon } from "@phosphor-icons/react";
 import {
 	Collapsible,
 	CollapsibleContent,
 	CollapsibleTrigger,
 } from "../ui/collapsible";
 import { cn } from "../../lib/utils";
-import { ChevronDownIcon, SearchIcon } from "lucide-react";
 import type { ComponentProps } from "react";
 
 export type TaskItemFileProps = ComponentProps<"div">;
@@ -62,9 +62,9 @@ export const TaskTrigger = ({
 				className="flex w-full cursor-pointer items-center gap-2 text-left text-muted-foreground text-sm transition-colors hover:text-foreground"
 				type="button"
 			>
-				<SearchIcon className="size-4" />
+				<MagnifyingGlassIcon className="size-4" />
 				<span className="text-sm">{title}</span>
-				<ChevronDownIcon className="size-4 transition-transform group-data-[state=open]:rotate-180" />
+				<CaretDownIcon className="size-4 transition-transform group-data-[state=open]:rotate-180" />
 			</button>
 		)}
 	</CollapsibleTrigger>

@@ -1,19 +1,13 @@
 import { cn } from "../../lib/utils";
 
-interface SectionTagProps {
-	children: React.ReactNode;
-	className?: string;
-}
-
-export const SectionTag = ({ children, className }: SectionTagProps) => {
+export const SectionTag = ({ className, ...props }: React.ComponentProps<"div">) => {
 	return (
 		<div
 			className={cn(
 				"text-xs text-tertiary-foreground font-medium px-2 mb-2 bg-muted w-fit rounded-lg py-0.25",
 				className,
 			)}
-		>
-			{children}
-		</div>
+			{...props}
+		/>
 	);
 };

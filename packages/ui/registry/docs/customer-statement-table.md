@@ -108,6 +108,7 @@ transactions [{date, transactionType, details, currency, amount, payment, balanc
 - `balanceDue?`: `number`. Shown on the last page in single-currency mode.
 - `page?`: `number`
 - `totalPages?`: `number`
+- Also accepts `ComponentProps<"div">`.
 
 ## Notes
 

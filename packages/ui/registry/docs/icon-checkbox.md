@@ -43,6 +43,7 @@ Toggling views and options in toolbars and attach/cancel forms.
 
 Button props plus `checked`, `onCheckedChange`, `icon`, `iconOrientation` (`left` with a label, `center` icon-only, which needs an `aria-label`).
 
+- `defaultChecked?`: `boolean`. Initial state for uncontrolled use. Default `false`.
 - `variant?`: `"primary" | "secondary" | "skeleton" | "muted" | "destructive" | "dotted"`. Default `"secondary"`.
 - `size?`: `"sm" | "default" | "mini" | "icon"`. Default `"sm"`.
 - `icon?`: `ReactNode`
@@ -54,7 +55,7 @@ Button props plus `checked`, `onCheckedChange`, `icon`, `iconOrientation` (`left
 - `render?`: `ReactElement`
 - `focusableWhenDisabled?`: `boolean`. Keep the button in the tab order while disabled (Base UI). Set automatically while `isLoading`.
 - `iconOrientation?`: `"left" | "center" | "right"`. Default `"center"`.
-- `checked?`: `boolean`. Default `false`.
+- `checked?`: `boolean`
 - `onCheckedChange?`: `(checked: boolean) => void`
 - Also accepts `ComponentProps<"button">`.
 

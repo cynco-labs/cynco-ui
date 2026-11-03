@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * Cynco UI — workflow quality-of-life primitives.
  *
@@ -22,7 +24,8 @@ import {
 	LiveStatus,
 } from "../base";
 import { ArrowCounterClockwiseIcon, DotsThreeIcon, PrinterIcon, XIcon } from "@phosphor-icons/react";
-import { isMacPlatform, useIsMac } from "../base/lib/utils";
+import { isMacPlatform } from "../base/lib/utils";
+import { useIsMac } from "../base/hooks/use-platform";
 import { Kbd, formatCurrency, formatDate, parseAmount, sumAmounts, useHotkey, type Density } from "../lib/shared";
 
 /* ───────────── local helpers ───────────── */

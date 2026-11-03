@@ -99,7 +99,7 @@ export default function BankFeedRowDemo() {
 	return (
 		<div className="rounded-lg border border-table-surface-border bg-table-surface overflow-hidden">
 			{rows.map((r) => (
-				<BankFeedRow key={r.id} tx={r} showAccount />
+				<BankFeedRow key={r.id} tx={r} showAccount onRestore={() => {}} />
 			))}
 		</div>
 	);

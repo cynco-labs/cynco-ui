@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { BankReconciliationYearStrip } from "@cynco-labs/ui";
 
 const MONTHS = [
@@ -16,10 +17,14 @@ const MONTHS = [
 ];
 
 export default function BankReconciliationYearStripDemo() {
+	const [selected, setSelected] = useState<string | null>("2026-09");
 	return (
 		<BankReconciliationYearStrip
 			months={MONTHS}
-			selected="2026-09"
+			selected={selected}
+			onMonthSelect={setSelected}
+			onPreviousYear={() => {}}
+			onNextYear={() => {}}
 			yearLabel="FY 2026"
 			accountName="Maybank Current"
 			selectedSummary={{ nextStep: "7 lines are posted and waiting to reconcile." }}

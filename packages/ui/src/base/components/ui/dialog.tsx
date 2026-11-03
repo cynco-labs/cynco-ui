@@ -1,8 +1,8 @@
 "use client";
 
+import { XIcon } from "@phosphor-icons/react";
 import { cn } from "../../lib/utils";
 import { Dialog as DialogPrimitive } from "@base-ui/react/dialog";
-import { XIcon } from "lucide-react";
 import * as React from "react";
 
 function Dialog({ ...props }: DialogPrimitive.Root.Props) {
@@ -132,7 +132,8 @@ function DialogFooter({ className, ...props }: React.ComponentProps<"div">) {
 		<div
 			data-slot="dialog-footer"
 			className={cn(
-				"flex flex-col-reverse gap-2 pt-1 sm:flex-row *:flex-1",
+				// Side by side while they fit; otherwise stacked with the last (primary) action on top.
+				"flex flex-wrap-reverse gap-2 pt-1 *:grow *:basis-36",
 				className,
 			)}
 			{...props}
@@ -164,7 +165,7 @@ const DialogDescription = React.forwardRef<
 		ref={ref}
 		data-slot="dialog-description"
 		className={cn(
-			"text-[12.5px] text-tertiary-foreground leading-[18px]",
+			"text-sm text-tertiary-foreground leading-[18px]",
 			className,
 		)}
 		{...props}

@@ -70,6 +70,7 @@ The Recurring Invoices page.
 templates ({id, customerName, customerEmail, frequency, nextGenerationDate, totalAmount, currency, totalGenerated, status}); className.
 
 - `templates`: `SalesRecurringTemplate[]`
+- Also accepts `ComponentProps<"div">`.
 
 ## Notes
 

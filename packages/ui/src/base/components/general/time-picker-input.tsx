@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * Individual time-segment input (hours / minutes / 12hours).
  * Adapted from openstatusHQ/time-picker (MIT).

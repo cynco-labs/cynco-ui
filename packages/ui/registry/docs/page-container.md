@@ -35,6 +35,4 @@ Wrapping each page's content.
 
 Children.
 
-- `children`: `ReactNode`
-
 Category: Components · Layout. Source: `packages/ui/src/base/components/general/page-container.tsx`.

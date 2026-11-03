@@ -105,7 +105,7 @@ export const ModelSelectorSeparator = (props: ModelSelectorSeparatorProps) => (
 	<CommandSeparator {...props} />
 );
 
-export type ModelSelectorLogoProps = Omit<ComponentProps<"img">, "src"> & {
+export type ModelSelectorLogoProps = ComponentProps<"img"> & {
 	provider:
 		| "moonshotai-cn"
 		| "lucidquery"
@@ -166,10 +166,15 @@ export type ModelSelectorLogoProps = Omit<ComponentProps<"img">, "src"> & {
 		| (string & {});
 };
 
+/**
+ * The provider's logo. By default it loads from models.dev at render; pass `src` to serve it yourself
+ * (a strict Content-Security-Policy blocks the default, and it tells models.dev who is viewing).
+ */
 export const ModelSelectorLogo = ({
 	provider,
 	className,
 	alt,
+	src = `https://models.dev/logos/${provider}.svg`,
 	...props
 }: ModelSelectorLogoProps) => (
 	<img
@@ -178,7 +183,7 @@ export const ModelSelectorLogo = ({
 		alt={alt ?? `${provider} logo`}
 		className={cn("size-3 dark:invert", className)}
 		height={12}
-		src={`https://models.dev/logos/${provider}.svg`}
+		src={src}
 		width={12}
 	/>
 );

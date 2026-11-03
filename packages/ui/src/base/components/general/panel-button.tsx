@@ -1,3 +1,5 @@
+"use client";
+
 import { cn } from "../../lib/utils";
 import { SelectedMark } from "./selected-mark";
 import type { ComponentProps, ReactNode } from "react";
@@ -26,8 +28,8 @@ export function PanelButton({
 			onClick={onClick}
 			data-state={isSelected ? "open" : "closed"}
 			className={cn(
-				// Fixed dimensions
-				"w-[124px] h-[72px] relative flex items-center justify-center flex-shrink-0 cursor-pointer ",
+				// Up to 124×72; shrinks with its row down to 80px wide, keeping the proportions.
+				"w-full max-w-[124px] min-w-20 aspect-[31/18] relative flex items-center justify-center cursor-pointer",
 
 				// Thicker border for panel effect
 				"!rounded-[0.5rem] !border-[0.09375rem]",

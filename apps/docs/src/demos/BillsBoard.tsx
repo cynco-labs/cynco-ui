@@ -5,6 +5,7 @@ export default function BillsBoardDemo() {
 	const [s, setS] = useState(["b5"]);
 	return (
 		<BillsBoard
+			onPaidFilterClick={() => {}}
 			columns={["in_review", "awaiting_payment"]}
 			selectedIds={s}
 			onToggleBill={(id) => {

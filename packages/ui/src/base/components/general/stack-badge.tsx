@@ -1,3 +1,5 @@
+"use client";
+
 import { cn } from "../../lib/utils";
 import { SelectedMark } from "./selected-mark";
 import type * as React from "react";
@@ -70,7 +72,7 @@ export function StackBadge({
 			</div>
 			<div
 				className={cn(
-					"justify-start text-xs font-medium font-['Inter']",
+					"justify-start text-xs font-medium",
 					isSelected ? "text-primary" : "text-muted-foreground",
 				)}
 			>

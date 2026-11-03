@@ -143,11 +143,15 @@ Monthly payslips from a pay run, printed, emailed as PDF or shown in the employe
 payslip: PayslipData { number?, periodFrom, periodTo, payDate, currency?, employer? {epfNo?, socsoNo?, taxNo?}, employee: {name, staffId?, icNo?, position?, department?, epfNo?, socsoNo?, taxNo?, bankName?, bankAccount?}, earnings, deductions, employerContributions?: {label, detail?, amount}[], grossPay, totalDeductions, netPay, totalEmployerContributions?, ytd?: {label, amount}[], note? }; plus brand?, size? (a4 | a5), stamp?, fit?, isolate?, className.
 
 - `payslip`: `PayslipDocumentData`
+- `stamp?`: `"copy" | "paid" | "void" | "draft" | "overdue"`. A diagonal stamp across the page: Paid, Void, Draft, Copy, Overdue.
 - `brand?`: `Partial<DocBrand>`. Overrides the provider's brand (merged over it).
-- `stamp?`: `"paid" | "void" | "draft" | "copy" | "overdue"`
-- `fit?`: `"width" | "none"`
-- `isolate?`: `boolean`
+- `fit?`: `"width" | "none"`. On screen: scale the sheet down to fit its container ("width") or keep 100% and scroll ("none"). Controlled; pair with `onFitChange`. Leave unset to let the zoom control switch it.
+- `defaultFit?`: `"width" | "none"`. Uncontrolled starting fit. Default "width".
+- `onFitChange?`: `(fit: DocumentFit) => void`
+- `zoomControl?`: `boolean`. Show "Fit width / Actual size" above the sheet while it is scaled down. Default true. Fit-to-width cancels browser zoom, so readers need a way back to 100% to enlarge the text (WCAG 1.4.4). Hidden in print, and when `fit` is controlled without `onFitChange`.
+- `isolate?`: `boolean`. When printing, hide the rest of the app and print only this page. Default true.
 - `size?`: `"a4" | "a5"`. Default `"a4"`.
+- Also accepts `ComponentProps<"article">`.
 
 ## Notes
 

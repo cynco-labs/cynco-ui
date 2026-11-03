@@ -1,5 +1,6 @@
 "use client";
 
+import { CaretDownIcon, PaperclipIcon } from "@phosphor-icons/react";
 import { Button } from "../ui/button";
 import {
 	Collapsible,
@@ -8,7 +9,6 @@ import {
 } from "../ui/collapsible";
 import { ScrollArea } from "../ui/scroll-area";
 import { cn } from "../../lib/utils";
-import { ChevronDownIcon, PaperclipIcon } from "lucide-react";
 import type { ComponentProps } from "react";
 
 export type QueueMessagePart = {
@@ -246,7 +246,7 @@ export const QueueSectionLabel = ({
 	...props
 }: QueueSectionLabelProps) => (
 	<span className={cn("flex items-center gap-2", className)} {...props}>
-		<ChevronDownIcon className="group-data-[state=closed]:-rotate-90 size-4 transition-transform" />
+		<CaretDownIcon className="group-data-[state=closed]:-rotate-90 size-4 transition-transform" />
 		{icon}
 		<span>
 			{count} {label}

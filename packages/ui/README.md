@@ -19,6 +19,8 @@ import { Button, DataList, TaxInvoiceDocument, formatCurrency } from "@cynco-lab
 import { Conversation, PromptInput } from "@cynco-labs/ui/ai";
 ```
 
+The `/ai` entry needs its own peers: `pnpm add ai streamdown shiki use-stick-to-bottom tokenlens nanoid @xyflow/react`.
+
 Themes: light by default; add `class="dark"` or `data-theme="dark" | "modern" | "modern-dark"` on a parent.
 
 CLI: `npx cynco-ui list`, `npx cynco-ui docs data-list`, `npx cynco-ui search payslip`.

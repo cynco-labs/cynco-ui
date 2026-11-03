@@ -96,6 +96,7 @@ customers [{name, email, phone, location, isActive, currency, creditLimit, recei
 - `defaultSelectedIds?`: `string[]`
 - `marginWindowDays?`: `number`. Default `90`.
 - `onRowClick?`: `(row: CyncoCustomerRow) => void`
+- Also accepts `ComponentProps<"div">`.
 
 ## Notes
 

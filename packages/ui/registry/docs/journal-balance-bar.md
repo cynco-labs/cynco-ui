@@ -36,8 +36,8 @@ Pinned under the line editor so the user always sees whether the entry balances 
 
 totalDebit, totalCredit, currency?, hasAmounts?, showError?, autoSave? (saving|saved), className? (merged on the root) and native props.
 
-- `totalDebit`: `number`
-- `totalCredit`: `number`
+- `totalDebit`: `Amount`
+- `totalCredit`: `Amount`
 - `autoSave?`: `"saving" | "saved" | null`. The auto-save line above the bar.
 - `currency?`: `string`. Default `"MYR"`.
 - `hasAmounts?`: `boolean`

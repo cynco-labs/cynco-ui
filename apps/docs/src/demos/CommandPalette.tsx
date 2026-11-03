@@ -1,5 +1,41 @@
 import { useState } from "react";
 import { CommandPalette, CommandPaletteTrigger, Kbd } from "@cynco-labs/ui";
+import {
+	BankIcon,
+	BooksIcon,
+	ChartLineUpIcon,
+	CircleHalfIcon,
+	FlaskIcon,
+	HandCoinsIcon,
+	HouseIcon,
+	InvoiceIcon,
+	KeyboardIcon,
+	NotebookIcon,
+	PlusIcon,
+	ReceiptIcon,
+	ScalesIcon,
+	UserIcon,
+	UserPlusIcon,
+} from "@phosphor-icons/react";
+
+// Your app's places, create actions and commands. `shortcut` shows a keycap; route in onSelect.
+const items = [
+	{ id: "go-dashboard", group: "Go to", label: "Dashboard", href: "/dashboard", icon: <HouseIcon />, keywords: ["home", "overview"], shortcut: "g d" },
+	{ id: "go-invoices", group: "Go to", label: "Invoices", href: "/invoices", icon: <InvoiceIcon />, keywords: ["billing", "sales", "receivables"], shortcut: "g i" },
+	{ id: "go-bills", group: "Go to", label: "Bills", href: "/bills", icon: <ReceiptIcon />, keywords: ["expenses", "payables"] },
+	{ id: "go-customers", group: "Go to", label: "Customers", href: "/customers", icon: <UserIcon />, keywords: ["clients"], shortcut: "g c" },
+	{ id: "go-ledger", group: "Go to", label: "General ledger", href: "/ledger", icon: <BooksIcon />, keywords: ["GL", "transactions"] },
+	{ id: "go-banking", group: "Go to", label: "Banking", href: "/banking", icon: <BankIcon />, keywords: ["reconcile", "feeds"], shortcut: "g b" },
+	{ id: "go-pl", group: "Go to", label: "Profit & loss", href: "/reports/profit-loss", icon: <ChartLineUpIcon />, keywords: ["P&L", "income statement"] },
+	{ id: "go-tb", group: "Go to", label: "Trial balance", href: "/reports/trial-balance", icon: <ScalesIcon />, keywords: ["TB"] },
+	{ id: "new-invoice", group: "Create", label: "New invoice", href: "/invoices/new", icon: <PlusIcon />, keywords: ["create"], shortcut: "c i" },
+	{ id: "new-journal", group: "Create", label: "New journal entry", href: "/journal/new", icon: <NotebookIcon />, keywords: ["JE", "manual"], shortcut: "c j" },
+	{ id: "record-payment", group: "Create", label: "Record payment", href: "/invoices?action=payment", icon: <HandCoinsIcon />, keywords: ["receive", "collect"] },
+	{ id: "new-customer", group: "Create", label: "New customer", href: "/customers/new", icon: <UserPlusIcon />, keywords: ["client"] },
+	{ id: "act-sandbox", group: "Actions", label: "Switch to sandbox", icon: <FlaskIcon />, keywords: ["test", "demo"] },
+	{ id: "act-theme", group: "Actions", label: "Toggle theme", icon: <CircleHalfIcon />, keywords: ["dark", "light"] },
+	{ id: "act-shortcuts", group: "Actions", label: "Keyboard shortcuts", icon: <KeyboardIcon />, keywords: ["help", "keys"], shortcut: "?" },
+];
 
 const recent = [
 	{
@@ -88,11 +124,11 @@ export default function CommandPaletteDemo() {
 					<span className="text-foreground">{last}</span>
 				</span>
 			</p>
-			<CommandPalette open={open} onOpenChange={setOpen} recent={recent} onSelect={onSelect} />
+			<CommandPalette open={open} onOpenChange={setOpen} items={items} recent={recent} onSelect={onSelect} />
 			<div className="text-xs font-medium text-tertiary-foreground">
 				Inline (inline prop) — same palette embedded in a page
 			</div>
-			<CommandPalette inline recent={recent} onSelect={onSelect} />
+			<CommandPalette inline items={items} recent={recent} onSelect={onSelect} />
 		</div>
 	);
 }

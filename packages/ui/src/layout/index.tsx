@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * Cynco UI — layout primitives.
  *
@@ -8,7 +10,10 @@
  */
 import * as React from "react";
 import { cn, useMergedRef, useShortcutAllowed } from "../base";
-import { isMacPlatform, useIsMac } from "../base/lib/utils";
+import { isMacPlatform } from "../base/lib/utils";
+import { useIsMac } from "../base/hooks/use-platform";
+import { type StatusTone } from "../base";
+import { useNeedsScrollStop } from "./scroll-stop";
 
 /* ───────────── Surfaces ───────────── */
 
@@ -144,35 +149,8 @@ export function ActionBar({ className, ...props }: React.ComponentProps<"div">) 
 	return <div data-slot="cy-action-bar" className={cn("flex min-w-0 flex-wrap items-center gap-2", className)} {...props} />;
 }
 
-const FOCUSABLE = 'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"]),[contenteditable="true"]';
 const SCROLL_STOP_RING = "outline-none focus-ring-inset";
 
-/**
- * True while `ref` overflows and holds nothing focusable. Such a scroller needs its own tab stop,
- * or keyboard users (Safari, older Chrome) can't scroll to the hidden part. Re-checked when the
- * scroller resizes or its content is added or removed, not on every render.
- */
-export function useNeedsScrollStop<E extends HTMLElement>(ref: React.RefObject<E | null>) {
-	const [needs, setNeeds] = React.useState(false);
-	React.useLayoutEffect(() => {
-		const el = ref.current;
-		if (!el) return;
-		const check = () => {
-			const overflows = el.scrollWidth > el.clientWidth + 1 || el.scrollHeight > el.clientHeight + 1;
-			setNeeds(overflows && !el.querySelector(FOCUSABLE));
-		};
-		check();
-		const resize = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(check);
-		resize?.observe(el);
-		const content = new MutationObserver(check);
-		content.observe(el, { childList: true, subtree: true });
-		return () => {
-			resize?.disconnect();
-			content.disconnect();
-		};
-	}, [ref]);
-	return needs;
-}
 
 /**
  * A single row that scrolls sideways when it doesn't fit (tabs, chips, steppers). When it overflows
@@ -219,15 +197,14 @@ export function StatGrid({ min = "md", mode = "fit", className, role, ...props }
 	return <div data-slot="cy-stat-grid" role={role ?? (named ? "group" : undefined)} className={cn("grid gap-3", STAT_MIN[mode][min], className)} {...props} />;
 }
 
-export type StatusToneName = "green" | "blue" | "red" | "orange" | "amber" | "yellow" | "purple" | "pink" | "fuchsia" | "neutral";
 /** Background class for each status tone (dots, bars, legend keys). */
-export const toneBg: Record<StatusToneName, string> = {
+export const toneBg: Record<StatusTone, string> = {
 	green: "bg-status-green", blue: "bg-status-blue", red: "bg-status-red", orange: "bg-status-orange", amber: "bg-status-amber",
 	yellow: "bg-status-yellow", purple: "bg-status-purple", pink: "bg-status-pink", fuchsia: "bg-status-fuchsia", neutral: "bg-status-neutral",
 };
 
 export type ToneDotProps = Omit<React.ComponentProps<"span">, "children"> & {
-	tone: StatusToneName;
+	tone: StatusTone;
 	/** Square corners (StatusChip style) instead of a round dot. */
 	square?: boolean;
 };
@@ -247,7 +224,7 @@ export type StatTileProps = Omit<React.ComponentProps<"div">, "title"> & {
 	/** Chip or delta at the top right. */
 	badge?: React.ReactNode;
 	/** Leading status dot, by status tone. */
-	tone?: StatusToneName;
+	tone?: StatusTone;
 	/** Leading status dot as any CSS colour or var() (prefer `tone`). */
 	dot?: string;
 	/** Paint the value as negative/error text. */
@@ -554,9 +531,9 @@ export function DataList<T>({
 /* ───────────── Key / value ───────────── */
 
 /** A label/value list that stacks the label above the value on narrow containers. */
-export function KeyValueList({ items, className }: { items: Array<{ label: React.ReactNode; value: React.ReactNode; negative?: boolean; strong?: boolean }>; className?: string }) {
+export function KeyValueList({ items, className, ...props }: Omit<React.ComponentProps<"dl">, "children"> & { items: Array<{ label: React.ReactNode; value: React.ReactNode; negative?: boolean; strong?: boolean }> }) {
 	return (
-		<dl data-slot="cy-kv" className={cn("@container divide-y divide-table-row-divider text-sm", className)}>
+		<dl data-slot="cy-kv" className={cn("@container divide-y divide-table-row-divider text-sm", className)} {...props}>
 			{items.map((it, i) => (
 				<div key={i} className="flex flex-col gap-0.5 py-2 @[16rem]:flex-row @[16rem]:items-baseline @[16rem]:justify-between @[16rem]:gap-4">
 					<dt className={cn("text-tertiary-foreground", it.strong && "font-medium text-foreground")}>{it.label}</dt>

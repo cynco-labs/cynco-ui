@@ -1,3 +1,5 @@
+"use client";
+
 import { IconButton } from "../general/icon-button";
 import { useTableContext } from "./table-context";
 import { Button } from "../ui/button";
@@ -17,8 +19,7 @@ import {
 } from "../../lib/overlay-classes";
 import { cn } from "../../lib/utils";
 import { Menu as MenuPrimitive } from "@base-ui/react/menu";
-import { FadersHorizontalIcon } from "@phosphor-icons/react";
-import { CheckIcon } from "lucide-react";
+import { CheckIcon, FadersHorizontalIcon } from "@phosphor-icons/react";
 import type { Column } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
 

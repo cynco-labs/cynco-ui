@@ -1,6 +1,8 @@
+"use client";
+
+import { MinusIcon } from "@phosphor-icons/react";
 import { cn } from "../../lib/utils";
 import { OTPInput, OTPInputContext } from "input-otp";
-import { MinusIcon } from "lucide-react";
 import * as React from "react";
 
 function InputOTP({

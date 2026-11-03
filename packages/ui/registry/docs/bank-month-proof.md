@@ -22,6 +22,7 @@ export default function BankMonthProofDemo() {
 				inTransit={{ count: 2, net: -1500 }}
 				ledger={206364.85}
 				link={{ kind: "linked", code: "1000-001", name: "Maybank Current" }}
+				onUploadStatement={() => {}}
 			/>
 			<BankMonthProof
 				monthName="June"
@@ -53,6 +54,8 @@ monthName, asOf, statementClosing (null = no statement), unpostedNet, inTransit 
 - `inTransit?`: `{ count: number; net: number }`
 - `currency?`: `string`. Default `"MYR"`.
 - `state?`: `"no_statement" | "in_progress" | "covered" | "needs_work" | "ready" | "closed"`
+- `onUploadStatement?`: `() => void`. Called when the user clicks "Upload statement"; omit to hide the button.
+- `onLinkLedgerAccount?`: `() => void`. Called when the user clicks "Link a ledger account"; omit to hide the button.
 - Also accepts `ComponentProps<"section">`.
 
 ## Notes

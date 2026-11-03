@@ -1,10 +1,12 @@
+"use client";
+
+import { DotsThreeVerticalIcon } from "@phosphor-icons/react";
 import { Button } from "../ui/button";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import { EllipsisVertical } from "lucide-react";
 
 export function TableDropdownMenuCell({
 	children,
@@ -23,7 +25,7 @@ export function TableDropdownMenuCell({
 					className="p-0 size-4"
 					onClick={(e) => e.stopPropagation()}
 				>
-					<EllipsisVertical size={12} />
+					<DotsThreeVerticalIcon size={12} />
 				</Button>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent align="end">{children}</DropdownMenuContent>

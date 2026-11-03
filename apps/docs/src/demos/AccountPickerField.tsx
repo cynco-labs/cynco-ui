@@ -128,7 +128,7 @@ export default function AccountPickerFieldDemo() {
 			label="Account"
 			accounts={ACCTS}
 			recentIds={["a14", "a8", "a1"]}
-			selectedId="a14"
+			defaultSelectedId="a14"
 			defaultOpen
 		/>
 	);

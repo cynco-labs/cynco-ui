@@ -20,7 +20,7 @@ export default function TagSelectDemo() {
 			<TagSelect
 				id="tag-select-branches"
 				value={s}
-				onChange={setS}
+				onValueChange={setS}
 				placeholder="Select branches"
 				options={[
 					{ value: "kl", label: "Kuala Lumpur" },
@@ -42,7 +42,7 @@ Choosing several known options (tags, branches, tax codes).
 `value`, `onChange`, `options` [{value,label}], `placeholder`, optional `formatTag`, `renderContent`, `className` (the field box). Label it with `id` + a `<label htmlFor>` (FormLabel, FieldLabel), or `aria-label` / `aria-labelledby`; `aria-describedby` and `aria-invalid` also go on the trigger.
 
 - `value`: `string[]`. Default `[]`.
-- `onChange`: `(values: string[]) => void`
+- `onValueChange`: `(values: string[]) => void`
 - `options`: `TagSelectOption[]`
 - `placeholder?`: `string`. Default `"Select..."`.
 - `formatTag?`: `(value: string) => string`

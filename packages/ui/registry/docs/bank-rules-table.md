@@ -14,6 +14,9 @@ import { BankRulesTable } from "@cynco-labs/ui";
 export default function BankRulesTableDemo() {
 	return (
 		<BankRulesTable
+			onApplyToUnposted={() => {}}
+			onNewRule={() => {}}
+			onRowAction={() => {}}
 			rules={[
 				{
 					id: "r1",
@@ -86,8 +89,15 @@ Banking → Rules.
 rules [{id, matchType, pattern, account {code, name} | null, category, priority, source, isActive, timesApplied, timesOverridden}], search, status, className and native props (spread on the root).
 
 - `rules`: `BankRuleRow[]`
-- `search?`: `string`. Default `""`.
-- `status?`: `"all" | "active" | "inactive"`. Default `"all"`.
+- `query?`: `string`. Controlled search query.
+- `defaultQuery?`: `string`. Initial search query for uncontrolled use.
+- `onQueryChange?`: `(query: string) => void`. Called when the user types in the search box.
+- `status?`: `"all" | "active" | "inactive"`. Controlled status filter.
+- `defaultStatus?`: `"all" | "active" | "inactive"`. Initial status filter for uncontrolled use.
+- `onStatusChange?`: `(status: "all" | "active" | "inactive") => void`. Called when the user changes the status filter.
+- `onApplyToUnposted?`: `() => void`. Called when the user clicks "Apply to unposted lines".
+- `onNewRule?`: `() => void`. Called when the user clicks "New rule".
+- `onRowAction?`: `(rule: BankRuleRow) => void`. Called when the user triggers the action menu on a rule row.
 - Also accepts `ComponentProps<"div">`.
 
 ## Notes

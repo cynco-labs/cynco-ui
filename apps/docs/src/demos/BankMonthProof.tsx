@@ -11,6 +11,7 @@ export default function BankMonthProofDemo() {
 				inTransit={{ count: 2, net: -1500 }}
 				ledger={206364.85}
 				link={{ kind: "linked", code: "1000-001", name: "Maybank Current" }}
+				onUploadStatement={() => {}}
 			/>
 			<BankMonthProof
 				monthName="June"

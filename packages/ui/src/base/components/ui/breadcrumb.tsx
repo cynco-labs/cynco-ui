@@ -1,7 +1,9 @@
+"use client";
+
+import { CaretRightIcon, DotsThreeIcon } from "@phosphor-icons/react";
 import { cn } from "../../lib/utils";
 import { mergeProps } from "@base-ui/react/merge-props";
 import { useRender } from "@base-ui/react/use-render";
-import { ChevronRight, MoreHorizontal } from "lucide-react";
 import * as React from "react";
 
 function Breadcrumb({ ...props }: React.ComponentProps<"nav">) {
@@ -82,7 +84,7 @@ function BreadcrumbSeparator({
 			className={cn("[&>svg]:size-3.5", className)}
 			{...props}
 		>
-			{children ?? <ChevronRight />}
+			{children ?? <CaretRightIcon />}
 		</li>
 	);
 }
@@ -98,7 +100,7 @@ function BreadcrumbEllipsis({
 			{...props}
 		>
 			{/* The text stays exposed so a menu trigger wrapping the ellipsis has a name. */}
-			<MoreHorizontal className="size-4" />
+			<DotsThreeIcon className="size-4" />
 			<span className="sr-only">More</span>
 		</span>
 	);

@@ -1,10 +1,12 @@
+"use client";
+
+import { XIcon } from "@phosphor-icons/react";
 import {
 	Select,
 	SelectContent,
 	SelectTrigger,
 } from "../ui/select";
 import { cn } from "../../lib/utils";
-import { X } from "lucide-react";
 import * as React from "react";
 
 interface TagSelectOption {
@@ -18,9 +20,10 @@ type TagSelectA11yProps = Pick<
 	"id" | "aria-label" | "aria-labelledby" | "aria-describedby" | "aria-invalid"
 >;
 
+/** Controlled only: you add values from `renderContent`; the chips' remove buttons report through `onValueChange`. */
 interface TagSelectProps extends TagSelectA11yProps {
 	value: string[];
-	onChange: (values: string[]) => void;
+	onValueChange: (values: string[]) => void;
 	options: TagSelectOption[];
 	placeholder?: string;
 	formatTag?: (value: string) => string;
@@ -37,7 +40,7 @@ interface TagSelectProps extends TagSelectA11yProps {
  */
 export function TagSelect({
 	value = [],
-	onChange,
+	onValueChange,
 	options,
 	placeholder = "Select...",
 	formatTag,
@@ -60,7 +63,7 @@ export function TagSelect({
 		const neighbour = item?.nextElementSibling ?? item?.previousElementSibling;
 		const next = neighbour?.querySelector("button") ?? triggerRef.current;
 		next?.focus();
-		onChange(value.filter((v) => v !== tagValue));
+		onValueChange(value.filter((v) => v !== tagValue));
 	};
 
 	const showTags = !showAllProducts && value.length > 0;
@@ -105,7 +108,7 @@ export function TagSelect({
 									className="pointer-events-auto -my-1.5 -mr-1.5 inline-flex size-6 shrink-0 cursor-pointer items-center justify-center rounded-sm focus-ring"
 									onClick={(e) => removeTag(val, e.currentTarget)}
 								>
-									<X aria-hidden="true" className="size-3 text-subtle" />
+									<XIcon aria-hidden="true" className="size-3 text-subtle" />
 								</button>
 							</li>
 						);

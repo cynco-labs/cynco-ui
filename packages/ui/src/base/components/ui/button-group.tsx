@@ -1,3 +1,5 @@
+"use client";
+
 import { Separator } from "./separator";
 import { cn } from "../../lib/utils";
 import { mergeProps } from "@base-ui/react/merge-props";

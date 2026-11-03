@@ -48,7 +48,8 @@ Create or edit a purchase order; `readOnly` on the PO detail.
 
 `lineItems` [{id, description, quantity, unitPrice, amount}]; optional `onChange` (uncontrolled when omitted), `readOnly`, `currency`, `taxAmount`; optional `className` and native div props on the root.
 
-- `lineItems`: `POLine[]`
+- `lineItems?`: `POLine[]`. Controlled lines.
+- `defaultLineItems?`: `POLine[]`. Initial lines for uncontrolled use. Default `[]`.
 - `onChange?`: `(items: POLine[]) => void`
 - `readOnly?`: `boolean`. Default `false`.
 - `currency?`: `string`. Default `"MYR"`.

@@ -41,6 +41,7 @@ Totals blocks, document detail rails, payment summaries.
 items ({label, value, negative, strong}), className.
 
 - `items`: `Array<{ label: ReactNode; value: ReactNode; negative?: boolean; strong?: boolean }>`
+- Also accepts `ComponentProps<"dl">`.
 
 ## Notes
 

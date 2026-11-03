@@ -4,7 +4,9 @@ export default function BankAccountRailDemo() {
 	return (
 		<BankAccountRail
 			className="max-w-60"
-			selectedId="mbb"
+			defaultSelectedId="mbb"
+			onAddAccount={() => {}}
+			onConnectProvider={() => {}}
 			net={[{ amount: 270250.75, currency: "MYR" }]}
 			cashFlow={[
 				{ month: "May", net: 12400 },

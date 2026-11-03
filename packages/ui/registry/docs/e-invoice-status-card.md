@@ -21,6 +21,7 @@ export default function EInvoiceStatusCardDemo() {
 						status: "valid",
 						documentUuid: "F9D425P6DS7D8IU7G1H2K3L4M5",
 						longId: "QJGYW3DSNJ9K2TMR0VBX8E7Y10Q5HT61702381293",
+						validationUrl: "https://example.com/myinvois/share/QJGYW3DSNJ9K2TMR0VBX8E7Y10Q5HT61702381293",
 						validatedAt: "2026-10-29T10:42:00+08:00",
 						withinCancelWindow: true,
 					},
@@ -55,6 +56,8 @@ Invoice and credit/debit note detail sidebars (NoteEInvoiceCard).
 - `byEnvironment`: `Partial<Record<EnvName, EInvoiceEnvStatus>>`
 - `documentLabel?`: `string`. Default `"invoice"`.
 - `hasCorrection?`: `boolean`. Default `true`.
+- `credentialsHref?`: `string`. Where MyInvois credentials are set up; links the "not configured" message.
+- `correctionHref?`: `string`. Where to raise the correcting credit note; links the "window has passed" message.
 - `onSubmit?`: `(env: EnvName) => void`
 - `onCancel?`: `(env: EnvName, reason: string) => void`
 - `onCheck?`: `(env: EnvName) => void`

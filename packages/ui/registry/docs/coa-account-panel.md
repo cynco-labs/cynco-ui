@@ -14,6 +14,7 @@ import { CoaAccountPanel } from "@cynco-labs/ui";
 export default function CoaAccountPanelDemo() {
 	return (
 		<CoaAccountPanel
+			onActiveChange={() => {}}
 			className="max-w-96"
 			currency="MYR"
 			currentBalance={248315.4}
@@ -71,6 +72,7 @@ account { accountCode, accountName, accountType, normalBalance, isActive, descri
 - `transactions?`: `{ id: string; date: string; description: string; type: "debit" | "credit"; amount: number; source?: string }[]`. Default `[]`.
 - `defaultEditing?`: `boolean`
 - `onClose?`: `() => void`
+- `onActiveChange?`: `(active: boolean) => void`. Called from Activate / Deactivate with the new state; omit to hide the button. The panel shows `account.isActive`.
 - Also accepts `ComponentProps<"aside">`.
 
 ## Notes

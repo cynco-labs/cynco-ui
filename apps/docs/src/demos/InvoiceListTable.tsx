@@ -46,6 +46,7 @@ export default function InvoiceListTableDemo() {
 	}
 	return (
 		<InvoiceListTable
+			onRowAction={() => {}}
 			invoices={rows}
 			selectedIds={sel}
 			onToggleRow={toggle}

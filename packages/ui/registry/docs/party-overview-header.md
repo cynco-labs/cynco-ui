@@ -14,6 +14,8 @@ import { PartyOverviewHeader } from "@cynco-labs/ui";
 export default function PartyOverviewHeaderDemo() {
 	return (
 		<PartyOverviewHeader
+			onStatement={() => {}}
+			onCreate={() => {}}
 			role="customer"
 			name="Kedai Runcit Mesra Sdn Bhd"
 			balance={48250.4}
@@ -49,8 +51,11 @@ role, name, isActive, balance, overdue, overdueSince, openCount, trendTotal, pay
 - `category?`: `string | null`
 - `since?`: `string | null`. YYYY-MM-DD the party was created.
 - `currency?`: `string`. Default `"MYR"`.
-- `tab?`: `"activity" | "ledger" | "details"`
-- `onTabChange?`: `(tab: string) => void`
+- `tab?`: `"details" | "ledger" | "activity"`. Controlled tab.
+- `defaultTab?`: `"details" | "ledger" | "activity"`. Initial tab for uncontrolled use. Default `"activity"`.
+- `onTabChange?`: `(tab: PartyTab) => void`
+- `onStatement?`: `() => void`. Called from the Statement button; omit to hide it.
+- `onCreate?`: `() => void`. Called from New invoice (customer) or New bill (vendor); omit to hide it.
 - Also accepts `ComponentProps<"div">`.
 
 ## Notes

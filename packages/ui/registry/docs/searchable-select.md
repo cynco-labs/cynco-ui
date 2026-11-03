@@ -47,11 +47,12 @@ Choosing an account, item or customer from a long or remote list.
 
 `value`, `onValueChange`, `options`, `getOptionValue`, `getOptionLabel`; optional `renderOption`, `renderValue`, `onSearchChange` (server search), `header`/`footer`, `trigger`.
 
-- `value`: `string | null`
-- `onValueChange`: `(value: string) => void`
 - `options`: `T[]`
 - `getOptionValue`: `(option: T) => string`
 - `getOptionLabel`: `(option: T) => string`
+- `value?`: `string | null`. Controlled selection; null for none.
+- `defaultValue?`: `string | null`. Initial selection for uncontrolled use. Default `null`.
+- `onValueChange?`: `(value: string) => void`
 - `getOptionSearchTerms?`: `(option: T) => (string | null | undefined)[]`. Extra strings to match on, alongside the option's label and value.
 - `getOptionDisabled?`: `(option: T) => boolean`
 - `renderOption?`: `(option: T, isSelected: boolean) => ReactNode`

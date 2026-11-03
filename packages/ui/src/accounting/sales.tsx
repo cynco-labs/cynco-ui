@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * Cynco UI — invoicing & sales.
  * Ports of cynco-labs/cynco remix/app/components/{invoice,creditDebitNotes,quotations,recurring-invoices}.
@@ -72,12 +74,24 @@ import {
 	type StatusEntry,
 	ToneDot,
 } from "../lib/shared";
+import { currencySymbol } from "../documents/format";
+import { type Amount, fromSen, sumAmounts, toSen } from "../lib/money";
+import { DEFAULT_SALES_TAX_CODES, type SalesLineItem, type SalesTaxCode, type SalesTotalRow, salesLineAmount } from "./sales-math";
+
+export * from "./sales-math";
 
 /* ------------------------------------------------------------------ helpers */
 
+/** What is left to pay, exact and never below zero. */
+function owed(total: Amount, paid: Amount | null | undefined): string {
+	const sen = toSen(total) - toSen(paid);
+	return fromSen(sen > 0n ? sen : 0n);
+}
+
 /** Signed money in a totals list: "−RM 120.00" for a deduction. */
-function signedTotal(value: number, currency: string, negative?: boolean) {
-	return `${negative ? "−" : ""}${formatCurrency(Math.abs(value), currency)}`;
+function signedTotal(value: Amount, currency: string, negative?: boolean) {
+	const sen = toSen(value);
+	return `${negative !== (sen < 0n) ? "−" : ""}${formatCurrency(fromSen(sen < 0n ? -sen : sen), currency)}`;
 }
 
 /** cynco QUOTATION_STATUS (components/quotations/quotationStatusConfig.ts). */
@@ -180,8 +194,10 @@ export function InvoiceListTable({
 	sortField = "invoice_date",
 	sortDirection = "desc",
 	onSort,
+	onRowAction,
 	footer,
 	className,
+	...props
 }: {
 	invoices: SalesInvoiceRow[];
 	selectedIds?: string[];
@@ -190,9 +206,10 @@ export function InvoiceListTable({
 	sortField?: string;
 	sortDirection?: "asc" | "desc";
 	onSort?: (field: string) => void;
+	/** Called from a row's actions button; omit to hide the button. */
+	onRowAction?: (invoice: SalesInvoiceRow) => void;
 	footer?: React.ReactNode;
-	className?: string;
-}) {
+} & Omit<React.ComponentProps<"div">, "children">) {
 	const selected = new Set(selectedIds);
 	const all = invoices.length > 0 && invoices.every((i) => selected.has(i.id));
 	const sh = (id: string, label: string) => <SortHeader id={id} label={label} sortField={sortField} sortDirection={sortDirection} onSort={onSort} />;
@@ -209,6 +226,7 @@ export function InvoiceListTable({
 	return (
 		<DataList
 			className={className}
+			{...props}
 			caption="Invoices"
 			columns={columns}
 			rows={invoices}
@@ -218,45 +236,13 @@ export function InvoiceListTable({
 			isRowSelected={(r) => selected.has(r.id)}
 			leadingHeader={<Checkbox aria-label="Select all invoices" checked={all} indeterminate={!all && selected.size > 0} onCheckedChange={() => onToggleAll?.()} />}
 			leading={(r) => <Checkbox aria-label={`Select invoice ${r.invoiceNumber}`} checked={selected.has(r.id)} onCheckedChange={() => onToggleRow?.(r.id)} />}
-			trailing={(r) => <ToolbarButton aria-label={`Actions for ${r.invoiceNumber}`} />}
+			trailing={onRowAction && ((r) => <ToolbarButton aria-label={`Actions for ${r.invoiceNumber}`} onClick={() => onRowAction(r)} />)}
 			footer={footer}
 		/>
 	);
 }
 
 /* --------------------------------------------------------- InvoiceLineItems */
-
-export type SalesLineItem = {
-	name: string;
-	description?: string;
-	quantity: number;
-	price: number;
-	discount?: number;
-	discountType?: "percentage" | "fixed";
-	/** Tax code value from `taxCodes`, or "exempt". */
-	taxCode?: string;
-	/** Estimated profit health from item cost (ADR 0010). */
-	margin?: "healthy" | "below_target" | "below_cost";
-};
-
-export type SalesTaxCode = { value: string; label: string; rate: number };
-
-const DEFAULT_TAX_CODES: SalesTaxCode[] = [
-	{ value: "none", label: "No tax", rate: 0 },
-	{ value: "sst8", label: "SST 8%", rate: 8 },
-	{ value: "sst6", label: "SST 6%", rate: 6 },
-	{ value: "st10", label: "Sales 10%", rate: 10 },
-	{ value: "exempt", label: "Exempt", rate: 0 },
-];
-
-/** Line amount incl. per-line discount and tax (cynco calculateLineItemTotal). */
-export function salesLineAmount(item: SalesLineItem, taxCodes: SalesTaxCode[] = DEFAULT_TAX_CODES) {
-	const gross = item.quantity * item.price;
-	const disc = item.discountType === "fixed" ? item.discount ?? 0 : (gross * (item.discount ?? 0)) / 100;
-	const net = Math.max(0, gross - disc);
-	const rate = taxCodes.find((t) => t.value === item.taxCode)?.rate ?? 0;
-	return Math.round((net + (net * rate) / 100) * 100) / 100;
-}
 
 const MARGIN_TONE = { healthy: "green", below_target: "amber", below_cost: "red" } as const;
 const MARGIN_GLYPH = { healthy: "check", below_target: "alert", below_cost: "x" } as const;
@@ -276,7 +262,7 @@ export function InvoiceLineItems({
 	items,
 	onChange,
 	currency = "MYR",
-	taxCodes = DEFAULT_TAX_CODES,
+	taxCodes = DEFAULT_SALES_TAX_CODES,
 	readOnly = false,
 	estimatedProfit,
 	onAddItem,
@@ -287,7 +273,7 @@ export function InvoiceLineItems({
 	items: SalesLineItem[];
 	onChange?: (items: SalesLineItem[]) => void;
 	currency?: string;
-	taxCodes?: SalesTaxCode[];
+	taxCodes?: readonly SalesTaxCode[];
 	readOnly?: boolean;
 	/** Document-level estimated profit line under the total. */
 	estimatedProfit?: { amount: number; percent: number; health: NonNullable<SalesLineItem["margin"]> };
@@ -309,7 +295,7 @@ export function InvoiceLineItems({
 		const n = Number(t);
 		return t !== "" && Number.isInteger(n) && n >= 1 ? n : null;
 	};
-	const total = items.reduce((s, it) => s + salesLineAmount(it, taxCodes), 0);
+	const total = sumAmounts(items.map((it) => salesLineAmount(it, taxCodes)));
 	const grid = readOnly ? LINE_GRID_RO : LINE_GRID;
 	const ro = "flex h-input items-center justify-end tabular-nums text-sm @3xl:justify-end";
 
@@ -416,7 +402,7 @@ export function InvoiceLineItems({
 									) : (
 										<div className="relative">
 											<Input id={`${id}-d`} aria-label={`Discount for ${label}`} aria-describedby={`${id}-du`} type="number" min={0} value={it.discount ?? 0} onChange={(e) => update(i, { discount: Math.max(0, +e.target.value || 0) })} className={cn(NUM, "!pr-6")} />
-											<span id={`${id}-du`} className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-2xs text-subtle">{it.discountType === "fixed" ? "RM" : "%"}</span>
+											<span id={`${id}-du`} className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-2xs text-subtle">{it.discountType === "fixed" ? currencySymbol(currency) : "%"}</span>
 										</div>
 									)}
 								</div>
@@ -480,32 +466,13 @@ export function InvoiceLineItems({
 
 /* ------------------------------------------------------- InvoiceTotalsPanel */
 
-export type SalesTotalRow = { label: string; value: number; bold?: boolean; accent?: boolean; negative?: boolean };
-
-/** Build cynco's totals rows (domain/invoice/totals.ts): Subtotal, Discount, tax, Total, Deposit, Balance Due. */
-export function buildSalesTotals(input: { subtotal: number; discount?: number; discountPercent?: number; taxes?: { label: string; amount: number }[]; deposit?: number }): SalesTotalRow[] {
-	const rows: SalesTotalRow[] = [{ label: "Subtotal", value: input.subtotal }];
-	const d = input.discount ?? 0;
-	if (d > 0) rows.push({ label: `Discount${input.discountPercent ? ` (${input.discountPercent}%)` : ""}`, value: d, negative: true });
-	let tax = 0;
-	for (const t of input.taxes ?? []) if (t.amount > 0) { rows.push({ label: t.label, value: t.amount }); tax += t.amount; }
-	const total = input.subtotal - d + tax;
-	rows.push({ label: "Total", value: total, bold: true });
-	if ((input.deposit ?? 0) > 0) {
-		rows.push({ label: "Deposit", value: input.deposit!, negative: true });
-		const bal = total - input.deposit!;
-		rows.push({ label: "Balance Due", value: Math.abs(bal), bold: true, accent: true, negative: bal < 0 });
-	}
-	return rows;
-}
-
 /** The document totals block under the line items (cynco InvoiceTotalsBreakdown). */
 export function InvoiceTotalsPanel({ rows, currency = "MYR", className, ...props }: React.ComponentProps<"dl"> & { rows: SalesTotalRow[]; currency?: string }) {
 	if (rows.length === 0) return null;
 	return (
 		<dl className={cn("flex min-w-0 flex-col gap-1.5 rounded-lg border bg-card px-3 py-2.5", className)} {...props}>
 			{rows.map((r, i) => (
-				<div key={`${r.label}-${i}`} className={cn("flex flex-wrap items-baseline justify-between gap-x-3 text-sm tabular-nums", r.bold ? "text-foreground" : "text-tertiary-foreground", r.label === "Total" && "mt-0.5 border-t border-table-row-divider pt-1.5 font-semibold", r.accent && "font-semibold text-primary")}>
+				<div key={`${r.label}-${i}`} className={cn("flex flex-wrap items-baseline justify-between gap-x-3 text-sm tabular-nums", r.bold ? "text-foreground" : "text-tertiary-foreground", r.kind === "total" && "mt-0.5 border-t border-table-row-divider pt-1.5 font-semibold", r.accent && "font-semibold text-primary")}>
 					<dt className="min-w-0">{r.label}</dt>
 					<dd className="ml-auto whitespace-nowrap">{signedTotal(r.value, currency, r.negative)}</dd>
 				</div>
@@ -624,11 +591,11 @@ export function InvoiceSummaryRail({
 	defaultOpen?: boolean;
 }) {
 	const [open, setOpen] = React.useState(defaultOpen);
-	const pick = (l: string) => rows.find((r) => r.label.startsWith(l));
-	const subtotal = pick("Subtotal")?.value ?? 0;
-	const discount = pick("Discount")?.value ?? 0;
-	const tax = rows.filter((r) => !["Subtotal", "Total", "Deposit", "Balance Due"].includes(r.label) && !r.label.startsWith("Discount")).reduce((s, r) => s + r.value, 0);
-	const total = pick("Total")?.value ?? 0;
+	const sum = (kind: SalesTotalRow["kind"]) => sumAmounts(rows.filter((r) => r.kind === kind).map((r) => r.value));
+	const subtotal = sum("subtotal");
+	const discount = sum("discount");
+	const tax = sum("tax");
+	const totalRow = rows.find((r) => r.kind === "total");
 	const hasItems = rows.length > 0;
 	return (
 		<div className={cn("@container min-w-0 overflow-hidden rounded-xl border bg-card shadow-sm", className)} {...props}>
@@ -648,12 +615,12 @@ export function InvoiceSummaryRail({
 					<button type="button" aria-expanded={open} onClick={() => setOpen(!open)} className="group/rail -mx-2 flex min-w-0 flex-[1_1_14rem] cursor-pointer items-center gap-4 rounded-lg px-2 py-1 text-left outline-none transition-colors hover:bg-interactive-secondary-hover focus-ring">
 						<span className="hidden min-w-0 items-center gap-3 whitespace-nowrap text-2xs tabular-nums text-tertiary-foreground @xl:flex">
 							<span>Subtotal <span className="text-foreground">{formatCurrency(subtotal, currency)}</span></span>
-							{discount > 0 && <span>Discount <span className="text-foreground">−{formatCurrency(discount, currency)}</span></span>}
-							{tax > 0 && <span>Tax <span className="text-foreground">{formatCurrency(tax, currency)}</span></span>}
+							{toSen(discount) > 0n && <span>Discount <span className="text-foreground">−{formatCurrency(discount, currency)}</span></span>}
+							{toSen(tax) > 0n && <span>Tax <span className="text-foreground">{formatCurrency(tax, currency)}</span></span>}
 						</span>
 						<span className="ml-auto flex shrink-0 items-baseline gap-2">
 							<SectionLabel>Total</SectionLabel>
-							<span className="text-md font-semibold tabular-nums text-foreground">{formatCurrency(Math.abs(total), currency)}</span>
+							<span className="text-md font-semibold tabular-nums text-foreground">{totalRow ? signedTotal(totalRow.value, currency, totalRow.negative) : formatCurrency("0", currency)}</span>
 							<CaretDownIcon size={14} aria-hidden="true" className={cn("self-center text-tertiary-foreground transition-transform", open && "rotate-180")} />
 						</span>
 						<span className="sr-only">{open ? ", hide amount breakdown" : ", show amount breakdown"}</span>
@@ -809,7 +776,7 @@ export function MarkAsPaidDialog({
 							{!!invoice.paidAmount && invoice.paidAmount > 0 && (
 								<>
 									<dt className="text-tertiary-foreground">Balance to record</dt>
-									<dd className="tabular-nums text-foreground">{formatCurrency(Math.max(0, invoice.total - invoice.paidAmount), cur)}</dd>
+									<dd className="tabular-nums text-foreground">{formatCurrency(owed(invoice.total, invoice.paidAmount), cur)}</dd>
 								</>
 							)}
 						</dl>
@@ -975,9 +942,9 @@ function NoteRow({ label, value, strong, total }: { label: string; value: string
 /** A credit/debit note's totals and where its money went (cynco NoteMoneySummary + NotePaymentsList). */
 export function CreditNoteSummary({ note, payments = [], className, ...props }: React.ComponentProps<"div"> & { note: SalesNote; payments?: SalesNotePayment[] }) {
 	const cur = note.currency || "MYR";
-	const m = (n: number | undefined) => formatCurrency(n ?? 0, cur);
+	const m = (n: Amount | undefined) => formatCurrency(n ?? 0, cur);
 	const settled = note.status !== "draft" && note.status !== "voided" && !note.isInvoiceAmendment;
-	const owed = Math.max(0, note.totalAmount - (note.paidAmount ?? 0));
+	const outstanding = owed(note.totalAmount, note.paidAmount);
 	return (
 		<div className={cn("flex min-w-0 flex-col gap-4", className)} {...props}>
 			<dl className="ml-auto flex w-full max-w-xs flex-col gap-1.5">
@@ -994,7 +961,7 @@ export function CreditNoteSummary({ note, payments = [], className, ...props }: 
 				) : (
 					<>
 						<NoteRow label="Paid" value={m(note.paidAmount)} />
-						<NoteRow label="Still owed" value={m(owed)} strong />
+						<NoteRow label="Still owed" value={m(outstanding)} strong />
 					</>
 				))}
 			</dl>
@@ -1036,7 +1003,18 @@ function NoteTypeTag({ type }: { type: "credit" | "debit" }) {
 }
 
 /** The credit & debit notes list (cynco CreditDebitNoteTable): Note, Type, Customer, Amount, Status, Date. */
-export function CreditDebitNoteList({ notes, onOpen, className }: { notes: SalesNoteRow[]; onOpen?: (id: string) => void; className?: string }) {
+export function CreditDebitNoteList({
+	notes,
+	onOpen,
+	onRowAction,
+	className,
+	...props
+}: {
+	notes: SalesNoteRow[];
+	onOpen?: (id: string) => void;
+	/** Called from a row's actions button; omit to hide the button. */
+	onRowAction?: (note: SalesNoteRow) => void;
+} & Omit<React.ComponentProps<"div">, "children">) {
 	const columns: DataColumn<SalesNoteRow>[] = [
 		{ key: "note", header: "Note", mobile: "title", className: "whitespace-nowrap", cell: (n) => <span className={n.noteNumber ? "text-tiny-id text-foreground" : "text-tiny-id text-tertiary-foreground"}>{n.noteNumber || "Draft"}</span> },
 		{ key: "type", header: "Type", mobile: "badge", cell: (n) => <NoteTypeTag type={n.noteType} /> },
@@ -1048,6 +1026,7 @@ export function CreditDebitNoteList({ notes, onOpen, className }: { notes: Sales
 	return (
 		<DataList
 			className={className}
+			{...props}
 			caption="Credit and debit notes"
 			columns={columns}
 			rows={notes}
@@ -1055,7 +1034,7 @@ export function CreditDebitNoteList({ notes, onOpen, className }: { notes: Sales
 			stackBelow="3xl"
 			dense
 			onRowClick={onOpen ? (n) => onOpen(n.id) : undefined}
-			trailing={(n) => <ToolbarButton aria-label={`Actions for ${n.noteNumber || "Draft"}`} />}
+			trailing={onRowAction && ((n) => <ToolbarButton aria-label={`Actions for ${n.noteNumber || "Draft"}`} onClick={() => onRowAction(n)} />)}
 			empty="No credit or debit notes"
 		/>
 	);
@@ -1111,7 +1090,7 @@ const BOARD_COLUMNS = {
 /** A Kanban column of the quotations board (cynco QuotationsBoardView column): header count, cards, column total. */
 export function QuotationBoardColumn({ column, quotations, currency = "MYR", now, onOpen, className, ...props }: React.ComponentProps<"section"> & { column: keyof typeof BOARD_COLUMNS; quotations: SalesQuotation[]; currency?: string; now?: string; onOpen?: (id: string) => void }) {
 	const def = BOARD_COLUMNS[column];
-	const total = quotations.reduce((s, q) => s + (q.totalAmount ?? 0), 0);
+	const total = sumAmounts(quotations.map((q) => q.totalAmount));
 	return (
 		<section aria-label={def.label} className={cn("flex min-w-0 flex-1 flex-col", className)} {...props}>
 			<div className="mb-2 flex items-center gap-2 px-1">
@@ -1162,7 +1141,7 @@ const FREQUENCY_LABELS: Record<string, string> = { weekly: "Weekly", biweekly: "
 export type SalesRecurringTemplate = { id: string; customerName: string; customerEmail?: string; frequency: string; nextGenerationDate?: string | null; totalAmount?: number | null; currency?: string; totalGenerated: number; status: string };
 
 /** Recurring invoice templates list (cynco RECURRING_TEMPLATE_COLUMNS). */
-export function RecurringTemplateTable({ templates, className }: { templates: SalesRecurringTemplate[]; className?: string }) {
+export function RecurringTemplateTable({ templates, className, ...props }: { templates: SalesRecurringTemplate[] } & Omit<React.ComponentProps<"div">, "children">) {
 	const columns: DataColumn<SalesRecurringTemplate>[] = [
 		{
 			key: "customer", header: "Customer", mobile: "title",
@@ -1179,5 +1158,5 @@ export function RecurringTemplateTable({ templates, className }: { templates: Sa
 		{ key: "generated", header: "Generated", align: "right", mobile: "meta", cell: (t) => <span className="tabular-nums text-tertiary-foreground">{t.totalGenerated}</span> },
 		{ key: "status", header: "Status", mobile: "badge", className: "whitespace-nowrap", cell: (t) => <DocStatus status={t.status} config={LIFECYCLE_STATUS} /> },
 	];
-	return <DataList className={className} caption="Recurring invoice templates" columns={columns} rows={templates} getKey={(t) => t.id} stackBelow="xl" />;
+	return <DataList className={className} {...props} caption="Recurring invoice templates" columns={columns} rows={templates} getKey={(t) => t.id} stackBelow="xl" />;
 }

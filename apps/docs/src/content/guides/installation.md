@@ -148,7 +148,11 @@ For agents that load skills, the package ships one at `node_modules/@cynco-labs/
 
 ## AI components
 
-Chat, reasoning, tool-call and workflow-canvas components are a separate entry point so apps that don't use them never load their dependencies:
+Chat, reasoning, tool-call and workflow-canvas components are a separate entry point so apps that don't use them never load, or install, their dependencies. Add those peers when you use it:
+
+```bash
+pnpm add ai streamdown shiki use-stick-to-bottom tokenlens nanoid @xyflow/react
+```
 
 ```tsx
 import { Conversation, Message, MessageContent, PromptInput } from "@cynco-labs/ui/ai";

@@ -139,7 +139,7 @@ export default function AccountPickerFieldDemo() {
 			label="Account"
 			accounts={ACCTS}
 			recentIds={["a14", "a8", "a1"]}
-			selectedId="a14"
+			defaultSelectedId="a14"
 			defaultOpen
 		/>
 	);
@@ -156,7 +156,8 @@ accounts [{ id, accountCode, accountName, accountType, normalBalance }], recentI
 
 - `accounts`: `LedgerPickerAccount[]`
 - `recentIds?`: `string[]`
-- `selectedId?`: `string`
+- `selectedId?`: `string`. Controlled selection.
+- `defaultSelectedId?`: `string`. Initial selection for uncontrolled use.
 - `defaultOpen?`: `boolean`
 - `label?`: `string`
 - `onSelect?`: `(a: LedgerPickerAccount) => void`

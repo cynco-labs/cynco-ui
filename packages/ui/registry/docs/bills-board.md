@@ -16,6 +16,7 @@ export default function BillsBoardDemo() {
 	const [s, setS] = useState(["b5"]);
 	return (
 		<BillsBoard
+			onPaidFilterClick={() => {}}
 			columns={["in_review", "awaiting_payment"]}
 			selectedIds={s}
 			onToggleBill={(id) => {
@@ -92,6 +93,7 @@ bills, columns (subset of board keys, in order), selectedIds + onToggleBill, pai
 - `selectedIds?`: `string[]`
 - `onToggleBill?`: `(id: string) => void`
 - `paidFilterLabel?`: `string`. Default `"Past 30 Days"`.
+- `onPaidFilterClick?`: `() => void`. Called from the paid column's filter button (e.g. to change the period); without it the label is plain text.
 - Also accepts `ComponentProps<"div">`.
 
 ## Notes

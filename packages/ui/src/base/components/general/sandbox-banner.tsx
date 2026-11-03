@@ -1,5 +1,5 @@
 import { cn } from "../../lib/utils";
-import { ArrowUpRightIcon, FlaskIcon } from "@phosphor-icons/react";
+import { ArrowUpRightIcon, FlaskIcon } from "@phosphor-icons/react/ssr";
 
 export function SandboxBanner({
 	children,
@@ -7,12 +7,13 @@ export function SandboxBanner({
 	icon,
 	color,
 	className,
-}: {
-	children?: React.ReactNode;
+	style,
+	...props
+}: React.ComponentProps<"div"> & {
 	label?: string;
 	icon?: React.ReactNode;
+	/** Background colour, e.g. to tell environments apart. */
 	color?: string;
-	className?: string;
 }) {
 	return (
 		<div className="pointer-events-none z-50 flex justify-center sm:absolute sm:inset-x-0 sm:top-0">
@@ -21,7 +22,8 @@ export function SandboxBanner({
 					"pointer-events-auto flex h-[26px] items-center gap-2.5 rounded-b-lg bg-sandbox pr-1 pb-0.5 pl-2.5 text-sandbox-foreground",
 					className,
 				)}
-				style={color ? { backgroundColor: color } : undefined}
+				style={color ? { backgroundColor: color, ...style } : style}
+				{...props}
 			>
 				<div className="flex items-center gap-1.5">
 					{icon ?? (

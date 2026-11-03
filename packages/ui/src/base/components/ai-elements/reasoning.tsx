@@ -1,5 +1,6 @@
 "use client";
 
+import { BrainIcon, CaretDownIcon } from "@phosphor-icons/react";
 import { Shimmer } from "./shimmer";
 import {
 	Collapsible,
@@ -8,7 +9,6 @@ import {
 } from "../ui/collapsible";
 import { useControllableState } from "../../hooks/use-controllable-state";
 import { cn } from "../../lib/utils";
-import { BrainIcon, ChevronDownIcon } from "lucide-react";
 import type { ComponentProps, ReactNode } from "react";
 import { createContext, memo, useContext, useEffect, useRef, useState } from "react";
 import { Streamdown } from "streamdown";
@@ -158,7 +158,7 @@ export const ReasoningTrigger = memo(
 					<>
 						<BrainIcon className="size-4" />
 						{getThinkingMessage(isStreaming, duration)}
-						<ChevronDownIcon
+						<CaretDownIcon
 							className={cn(
 								"size-4 transition-transform",
 								isOpen ? "rotate-180" : "rotate-0",

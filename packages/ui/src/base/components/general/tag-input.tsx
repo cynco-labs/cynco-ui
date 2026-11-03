@@ -1,13 +1,19 @@
+"use client";
+
+import { XIcon } from "@phosphor-icons/react";
 import { LiveStatus } from "./live-status";
+import { useControllableState } from "../../hooks/use-controllable-state";
 import { cn } from "../../lib/utils";
-import { X } from "lucide-react";
 import * as React from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 
 interface TagInputProps
-	extends Omit<React.ComponentProps<"input">, "value" | "onChange"> {
-	value: string[];
-	onChange: (tags: string[]) => void;
+	extends Omit<React.ComponentProps<"input">, "value" | "defaultValue" | "onChange"> {
+	/** Controlled tags. */
+	value?: string[];
+	/** Initial tags for uncontrolled use. */
+	defaultValue?: string[];
+	onValueChange?: (tags: string[]) => void;
 	inputValue?: string;
 	onInputChange?: (value: string) => void;
 	placeholder?: string;
@@ -17,8 +23,9 @@ interface TagInputProps
 
 function TagInput({
 	className,
-	value = [],
-	onChange,
+	value: valueProp,
+	defaultValue = [],
+	onValueChange,
 	inputValue: controlledInputValue,
 	onInputChange,
 	placeholder = "Add a tag...",
@@ -26,6 +33,7 @@ function TagInput({
 	onTagRemove,
 	...props
 }: TagInputProps) {
+	const [value = defaultValue, setValue] = useControllableState({ prop: valueProp, defaultProp: defaultValue, onChange: onValueChange });
 	const [internalInputValue, setInternalInputValue] = React.useState("");
 	const [isFocused, setIsFocused] = React.useState(false);
 	// Tags change without focus moving (Space, paste, Backspace), so announce them.
@@ -41,23 +49,23 @@ function TagInput({
 	const addTag = React.useCallback(() => {
 		const trimmedValue = inputValue.trim();
 		if (trimmedValue && !value.includes(trimmedValue)) {
-			onChange([...value, trimmedValue]);
+			setValue([...value, trimmedValue]);
 			setInputValue("");
 			setAnnouncement(`${trimmedValue} added`);
 			onTagAdd?.();
 		}
-	}, [inputValue, value, onChange, setInputValue, onTagAdd]);
+	}, [inputValue, value, setValue, setInputValue, onTagAdd]);
 
 	const removeTag = React.useCallback(
 		(index: number) => {
 			const removed = value[index];
 			if (removed === undefined) return;
 			const newTags = value.filter((_, i) => i !== index);
-			onChange(newTags);
+			setValue(newTags);
 			setAnnouncement(`${removed} removed`);
 			onTagRemove?.(index);
 		},
-		[value, onChange, onTagRemove],
+		[value, setValue, onTagRemove],
 	);
 
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -67,7 +75,7 @@ function TagInput({
 		if (newValue.endsWith(" ")) {
 			const trimmedValue = newValue.trim();
 			if (trimmedValue && !value.includes(trimmedValue)) {
-				onChange([...value, trimmedValue]);
+				setValue([...value, trimmedValue]);
 				setInputValue("");
 				setAnnouncement(`${trimmedValue} added`);
 				onTagAdd?.();
@@ -91,7 +99,7 @@ function TagInput({
 				.filter((tag) => tag && !value.includes(tag));
 
 			if (newTags.length > 0) {
-				onChange([...value, ...newTags]);
+				setValue([...value, ...newTags]);
 				setInputValue("");
 				setAnnouncement(`${newTags.join(", ")} added`);
 				// Call onTagAdd for each tag added
@@ -149,7 +157,7 @@ function TagInput({
 								inputRef.current?.focus();
 							}}
 						>
-							<X size={12} className="size-3 text-subtle" />
+							<XIcon size={12} className="size-3 text-subtle" />
 						</button>
 					</div>
 				);

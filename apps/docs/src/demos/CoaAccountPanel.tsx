@@ -3,6 +3,7 @@ import { CoaAccountPanel } from "@cynco-labs/ui";
 export default function CoaAccountPanelDemo() {
 	return (
 		<CoaAccountPanel
+			onActiveChange={() => {}}
 			className="max-w-96"
 			currency="MYR"
 			currentBalance={248315.4}

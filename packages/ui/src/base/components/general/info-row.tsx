@@ -1,19 +1,18 @@
 import { cn } from "../../lib/utils";
 
-interface InfoRowProps {
+type InfoRowProps = Omit<React.ComponentProps<"div">, "children"> & {
 	icon?: React.ReactNode;
 	label: string;
-	value: string | number | React.ReactNode;
-	className?: string;
+	value: React.ReactNode;
+	/** Classes for the value (`className` goes on the row). */
+	valueClassName?: string;
 	mono?: boolean;
-}
+};
 
-export function InfoRow({ icon, label, value, className, mono }: InfoRowProps) {
-	const isReactNode =
-		typeof value !== "string" && typeof value !== "number" && value !== null;
-
+export function InfoRow({ icon, label, value, className, valueClassName, mono, ...props }: InfoRowProps) {
+	const isText = typeof value === "string" || typeof value === "number";
 	return (
-		<div className="flex items-center gap-2 min-w-0 overflow-hidden">
+		<div className={cn("flex items-center gap-2 min-w-0 overflow-hidden", className)} {...props}>
 			{icon && (
 				<div aria-hidden="true" className="text-subtle shrink-0">
 					{icon}
@@ -23,23 +22,9 @@ export function InfoRow({ icon, label, value, className, mono }: InfoRowProps) {
 				<div className="text-tertiary-foreground text-sm font-medium w-24 shrink-0 whitespace-nowrap">
 					{label}
 				</div>
-				{isReactNode ? (
-					<div
-						className={cn("text-foreground text-sm wrap-break-word", className)}
-					>
-						{value}
-					</div>
-				) : (
-					<div
-						className={cn(
-							"text-foreground text-sm wrap-break-word",
-							mono && "font-mono text-xs",
-							className,
-						)}
-					>
-						{value}
-					</div>
-				)}
+				<div className={cn("text-foreground text-sm wrap-break-word", isText && mono && "font-mono text-xs", valueClassName)}>
+					{value}
+				</div>
 			</div>
 		</div>
 	);

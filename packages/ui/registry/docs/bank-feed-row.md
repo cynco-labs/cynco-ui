@@ -110,7 +110,7 @@ export default function BankFeedRowDemo() {
 	return (
 		<div className="rounded-lg border border-table-surface-border bg-table-surface overflow-hidden">
 			{rows.map((r) => (
-				<BankFeedRow key={r.id} tx={r} showAccount />
+				<BankFeedRow key={r.id} tx={r} showAccount onRestore={() => {}} />
 			))}
 		</div>
 	);
@@ -129,6 +129,7 @@ tx (BankFeedTransaction: payeeName, description, reference, type, amount, status
 - `selected?`: `boolean`. Whether the row's checkbox is ticked (controlled).
 - `defaultSelected?`: `boolean`. Initial tick state when uncontrolled. Default `false`.
 - `onSelectedChange?`: `(selected: boolean) => void`. Called when the checkbox is toggled by click or Space.
+- `onRestore?`: `(tx: BankFeedTransaction) => void`. Called from an excluded line's Restore button; omit to hide it.
 - `showAccount?`: `boolean`. Default `false`.
 - Also accepts `ComponentProps<"div">`.
 

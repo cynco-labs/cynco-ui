@@ -1,3 +1,5 @@
+"use client";
+
 import type { ColumnGroup } from "../../hooks/use-column-visibility";
 import { useIsMobile } from "../../hooks/use-is-mobile";
 import type { Table as TanstackTable } from "@tanstack/react-table";

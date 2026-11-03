@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * Cynco UI — document kit.
  *
@@ -28,17 +30,30 @@
  */
 import * as React from "react";
 import { GroupedTabButton, cn, useControllableState } from "../base";
-import { parseDate } from "../base/lib/utils";
-import { toSen, fromSen, isDecimalString, parseAmount, sumAmounts } from "../lib/money";
+import { type DocLocale, amountInWords, currencySymbol, docLabelText, formatDocAmount, isDocLabelKey } from "./format";
 import { DOC_LABELS, type DocLabelKey, type DocText } from "./labels";
 
+export {
+	amountInWords,
+	currencySymbol,
+	docLabelText,
+	draftLineTotals,
+	formatDocAmount,
+	formatDocDate,
+	formatReportDate,
+	formatStatementValue,
+	isDocLabelKey,
+	type DocLocale,
+	type DraftLine,
+	type StatementTableFormat,
+	type StatementTableValue,
+} from "./format";
 export { DOC_LABELS, type DocLabelKey, type DocText };
 
 /* ═════════════ Brand ═════════════ */
 
 export type DocLayout = "modern" | "classic" | "minimal";
 export type DocFont = "inter" | "geist" | "serif";
-export type DocLocale = "en" | "ms" | "en-ms";
 export type PaperSize = "a4" | "a4-landscape" | "a5" | "letter" | "receipt";
 
 export type DocParty = {
@@ -72,9 +87,11 @@ export type DocBrand = {
 	signature?: DocSignatory;
 	/** A line printed in every footer (e.g. "Thank you for your business."). */
 	footerNote?: React.ReactNode;
+	/** The company's functional currency (ISO code): documents in any other currency print their equivalents in it. */
+	baseCurrency?: string;
 };
 
-const DEFAULT_BRAND: Required<Pick<DocBrand, "layout" | "locale">> = { layout: "minimal", locale: "en" };
+const DEFAULT_BRAND: Required<Pick<DocBrand, "layout" | "locale" | "baseCurrency">> = { layout: "minimal", locale: "en", baseCurrency: "MYR" };
 
 const BrandContext = React.createContext<DocBrand | null>(null);
 
@@ -97,9 +114,6 @@ export function useDocumentBrand() {
 /* ═════════════ Labels (EN / BM / bilingual) ═════════════ */
 
 
-
-/** Is this string a key of the shared label dictionary? */
-export const isDocLabelKey = (k: unknown): k is DocLabelKey => typeof k === "string" && Object.prototype.hasOwnProperty.call(DOC_LABELS, k);
 
 function renderPair(pair: readonly [string, string], locale: DocLocale, stacked?: boolean): React.ReactNode {
 	if (locale === "en") return pair[0];
@@ -153,38 +167,7 @@ export function useDocLabelNode() {
 	);
 }
 
-/** Plain-string label (for aria labels and titles). */
-export function docLabelText(key: DocLabelKey | DocText, locale: DocLocale = "en") {
-	if (typeof key === "object") return locale === "ms" ? key.ms : locale === "en-ms" && key.en !== key.ms ? `${key.en} / ${key.ms}` : key.en;
-	if (!isDocLabelKey(key)) return String(key);
-	const [en, ms] = DOC_LABELS[key];
-	return locale === "ms" ? ms : locale === "en-ms" && en !== ms ? `${en} / ${ms}` : en;
-}
-
 /* ═════════════ Formatting ═════════════ */
-
-const MONTHS_EN = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-const MONTHS_MS = ["Jan", "Feb", "Mac", "Apr", "Mei", "Jun", "Jul", "Ogo", "Sep", "Okt", "Nov", "Dis"];
-
-/** "2026-10-28" → "28 Oct 2026" (no timezone shift: date-only strings are read as calendar dates). */
-export function formatDocDate(value: string | Date | undefined, locale: DocLocale = "en"): string {
-	if (!value) return "";
-	const dt = parseDate(value);
-	if (Number.isNaN(dt.getTime())) return String(value);
-	return `${dt.getDate()} ${(locale === "ms" ? MONTHS_MS : MONTHS_EN)[dt.getMonth()]} ${dt.getFullYear()}`;
-}
-
-const NUM = new Intl.NumberFormat("en-MY", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-/** Decimal string → "1,234.50"; negative → "(1,234.50)" when `brackets`. Exact (no float round-trip). */
-export function formatDocAmount(value: string | number | undefined | null, opts: { brackets?: boolean; zero?: string } = {}): string {
-	if (value == null || value === "") return "";
-	const s = fromSen(toSen(value));
-	if (opts.zero !== undefined && toSen(s) === 0n) return opts.zero;
-	const neg = s.startsWith("-");
-	const abs = neg ? s.slice(1) : s;
-	const out = isDecimalString(abs) ? NUM.format(abs) : abs;
-	return neg ? (opts.brackets ? `(${out})` : `-${out}`) : out;
-}
 
 /**
  * A formatted figure as printed, with bracketed negatives made audible: "(1,234.00)" prints as is, and a screen
@@ -203,89 +186,6 @@ export function DocSignedFigure({ text }: { text: string }) {
 			<span aria-hidden="true">)</span>
 		</>
 	);
-}
-
-/** "RM" for MYR, the ISO code otherwise. */
-export const currencySymbol = (currency = "MYR") => (currency === "MYR" ? "RM" : currency);
-
-/* Amount in words — English and Bahasa Melayu, exact to the sen. */
-const EN_ONES = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
-const EN_TENS = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
-const MS_ONES = ["", "Satu", "Dua", "Tiga", "Empat", "Lima", "Enam", "Tujuh", "Lapan", "Sembilan"];
-
-function en999(n: number): string {
-	const h = Math.floor(n / 100), r = n % 100;
-	const rest = r < 20 ? EN_ONES[r] : EN_TENS[Math.floor(r / 10)] + (r % 10 ? "-" + EN_ONES[r % 10] : "");
-	return [h ? EN_ONES[h] + " Hundred" : "", rest].filter(Boolean).join(" ");
-}
-function ms999(n: number): string {
-	const h = Math.floor(n / 100), r = n % 100;
-	const hs = h === 0 ? "" : h === 1 ? "Seratus" : MS_ONES[h] + " Ratus";
-	let rs = "";
-	if (r === 10) rs = "Sepuluh";
-	else if (r === 11) rs = "Sebelas";
-	else if (r > 11 && r < 20) rs = MS_ONES[r - 10] + " Belas";
-	else if (r >= 20) rs = MS_ONES[Math.floor(r / 10)] + " Puluh" + (r % 10 ? " " + MS_ONES[r % 10] : "");
-	else rs = MS_ONES[r];
-	return [hs, rs].filter(Boolean).join(" ");
-}
-function intWords(n: bigint, lang: "en" | "ms"): string {
-	if (n === 0n) return lang === "en" ? "Zero" : "Kosong";
-	const scales = lang === "en" ? ["", "Thousand", "Million", "Billion", "Trillion"] : ["", "Ribu", "Juta", "Bilion", "Trilion"];
-	const parts: string[] = [];
-	let i = 0;
-	while (n > 0n) {
-		const chunk = Number(n % 1000n);
-		if (chunk) {
-			if (lang === "ms" && i === 1 && chunk === 1) parts.unshift("Seribu");
-			else parts.unshift([lang === "en" ? en999(chunk) : ms999(chunk), scales[i]].filter(Boolean).join(" "));
-		}
-		n /= 1000n;
-		i++;
-	}
-	return parts.join(" ");
-}
-
-/** "Ringgit Malaysia One Thousand Two Hundred Thirty-Four and Sen Fifty Only" (or Bahasa Melayu). */
-export function amountInWords(amount: string | number, opts: { currency?: string; lang?: "en" | "ms" } = {}): string {
-	const lang = opts.lang ?? "en";
-	const sen = toSen(amount);
-	const abs = sen < 0n ? -sen : sen;
-	const whole = abs / 100n, cents = Number(abs % 100n);
-	const cur = (opts.currency ?? "MYR") === "MYR" ? (lang === "en" ? ["Ringgit Malaysia", "Sen"] : ["Ringgit Malaysia", "Sen"]) : [opts.currency ?? "", lang === "en" ? "Cents" : "Sen"];
-	const and = lang === "en" ? "and" : "dan";
-	const only = lang === "en" ? "Only" : "Sahaja";
-	const minus = sen < 0n ? (lang === "en" ? "Minus " : "Negatif ") : "";
-	return `${minus}${cur[0]} ${intWords(whole, lang)}${cents ? ` ${and} ${cur[1]} ${intWords(BigInt(cents), lang)}` : ""} ${only}`;
-}
-
-/* ═════════════ Draft maths (unsaved documents only) ═════════════ */
-
-export type DraftLine = { quantity: string | number; unitPrice: string; discount?: string; taxRate?: string | number };
-
-/** For drafts the user is still editing. Posted documents pass their stored totals instead. */
-export function draftLineTotals(lines: DraftLine[], opts: { rounding?: "none" | "5sen" } = {}) {
-	const exact = (e: string) => {
-		const r = parseAmount(e);
-		return r.ok && r.value ? r.value : "0.00";
-	};
-	const rows = lines.map((l) => {
-		const gross = exact(`${l.quantity}*${l.unitPrice}`);
-		const net = l.discount ? exact(`${gross}-${l.discount}`) : gross;
-		const rate = Number(l.taxRate ?? 0) || 0;
-		return { net, rate, tax: rate ? exact(`${net}*${rate}/100`) : "0.00" };
-	});
-	const subtotal = sumAmounts(rows.map((r) => r.net));
-	const byRate = new Map<number, string[]>();
-	for (const r of rows) if (r.rate) byRate.set(r.rate, [...(byRate.get(r.rate) ?? []), r.tax]);
-	const taxes = [...byRate.entries()].sort((a, b) => a[0] - b[0]).map(([rate, list]) => ({ rate, amount: sumAmounts(list) }));
-	const beforeRounding = sumAmounts([subtotal, ...taxes.map((t) => t.amount)]);
-	let rounding = "0.00";
-	if (opts.rounding === "5sen") {
-		const s = toSen(beforeRounding), r = ((s % 5n) + 5n) % 5n;
-		rounding = fromSen(r >= 3n ? 5n - r : -r);
-	}
-	return { lineNet: rows.map((r) => r.net), subtotal, taxes, rounding, total: sumAmounts([beforeRounding, rounding]) };
 }
 
 /* ═════════════ Page ═════════════ */
@@ -656,8 +556,8 @@ export function Letterhead({ title, number, subtitle, hideCompany, className, ..
 /* ═════════════ Small building blocks ═════════════ */
 
 /** Uppercase micro-label used above every block. A block-level span, so it is valid inside a heading or a `<dt>`. */
-export function DocLabel({ children, className }: { children: React.ReactNode; className?: string }) {
-	return <span className={cn("block text-[6.75pt] leading-tight font-semibold tracking-[0.12em] uppercase", "text-[var(--doc-subtle)]", className)}>{children}</span>;
+export function DocLabel({ className, ...props }: React.ComponentProps<"span">) {
+	return <span className={cn("block text-[6.75pt] leading-tight font-semibold tracking-[0.12em] uppercase", "text-[var(--doc-subtle)]", className)} {...props} />;
 }
 
 /** A titled block with consistent spacing. */
@@ -872,9 +772,9 @@ export function DocumentTable<T>({ columns, rows, sections, getKey, numbered, em
 }
 
 /** Description cell with an optional quieter second line. */
-export function DocItem({ title, detail, className }: { title: React.ReactNode; detail?: React.ReactNode; className?: string }) {
+export function DocItem({ title, detail, className, ...props }: Omit<React.ComponentProps<"div">, "title" | "children"> & { title: React.ReactNode; detail?: React.ReactNode }) {
 	return (
-		<div className={cn("min-w-0", className)}>
+		<div className={cn("min-w-0", className)} {...props}>
 			<div className="font-medium">{title}</div>
 			{detail && <div className="mt-0.5 text-[7.5pt] leading-snug text-[var(--doc-muted)]">{detail}</div>}
 		</div>
@@ -1130,7 +1030,7 @@ export function DocColumns({ className, ...props }: React.ComponentProps<"div">)
 /* ═════════════ More shared parts ═════════════ */
 
 /** A horizontal separator: hairline, strong, or dashed (receipts, tear lines). */
-export function DocRule({ dashed, strong, className }: { dashed?: boolean; strong?: boolean; className?: string }) {
+export function DocRule({ dashed, strong, className, ...props }: React.ComponentProps<"hr"> & { dashed?: boolean; strong?: boolean }) {
 	return (
 		<hr
 			aria-hidden
@@ -1140,6 +1040,7 @@ export function DocRule({ dashed, strong, className }: { dashed?: boolean; stron
 				strong ? "border-[var(--doc-rule-strong)]" : dashed ? "border-[var(--doc-subtle)]" : "border-[var(--doc-rule)]",
 				className,
 			)}
+			{...props}
 		/>
 	);
 }
@@ -1167,13 +1068,13 @@ const FIELD_SPAN = { 1: "", 2: "col-span-2", 3: "col-span-3", 4: "col-span-4" } 
  * - `columns`: micro-label above value in an even, auto-fitting row (references, delivery details).
  * - `grid`: quiet label above value in a fixed number of columns (employee particulars, bank details).
  */
-export function DocFields({ items, variant = "rows", columns = 3, dashed, className }: { items: DocFieldItem[]; variant?: "rows" | "columns" | "grid"; columns?: 1 | 2 | 3 | 4 | 5; dashed?: boolean; className?: string }) {
+export function DocFields({ items, variant = "rows", columns = 3, dashed, className, ...props }: Omit<React.ComponentProps<"dl">, "children"> & { items: DocFieldItem[]; variant?: "rows" | "columns" | "grid"; columns?: 1 | 2 | 3 | 4 | 5; dashed?: boolean }) {
 	const node = useDocLabelNode();
 	const shown = items.filter((i) => i.value != null && i.value !== "" && i.value !== false);
 	const value = (f: DocFieldItem) => <span className={cn(f.figures && "cy-doc-num whitespace-nowrap")}>{f.value}</span>;
 	if (variant === "grid")
 		return (
-			<dl data-slot="cy-doc-fields" className={cn("grid gap-x-[6mm] gap-y-[2.6mm]", FIELD_COLS[columns], className)}>
+			<dl data-slot="cy-doc-fields" className={cn("grid gap-x-[6mm] gap-y-[2.6mm]", FIELD_COLS[columns], className)} {...props}>
 				{shown.map((f, i) => (
 					<div key={i} className={cn("min-w-0", f.span && FIELD_SPAN[f.span])}>
 						<dt className="text-[7pt] leading-tight text-[var(--doc-subtle)]">{node(f.label)}</dt>
@@ -1185,7 +1086,7 @@ export function DocFields({ items, variant = "rows", columns = 3, dashed, classN
 		);
 	if (variant === "columns")
 		return (
-			<dl data-slot="cy-doc-fields" className={cn("grid grid-cols-[repeat(auto-fit,minmax(26mm,1fr))] gap-x-5 gap-y-3", className)}>
+			<dl data-slot="cy-doc-fields" className={cn("grid grid-cols-[repeat(auto-fit,minmax(26mm,1fr))] gap-x-5 gap-y-3", className)} {...props}>
 				{shown.map((f, i) => (
 					<div key={i} className="min-w-0">
 						<dt>
@@ -1198,7 +1099,7 @@ export function DocFields({ items, variant = "rows", columns = 3, dashed, classN
 			</dl>
 		);
 	return (
-		<dl data-slot="cy-doc-fields" className={cn("flex flex-col", className)}>
+		<dl data-slot="cy-doc-fields" className={cn("flex flex-col", className)} {...props}>
 			{shown.map((f, i) => (
 				<div key={i} className={cn("flex items-baseline justify-between gap-3 py-[0.9mm]", dashed && i > 0 && "border-t border-dashed border-[var(--doc-rule)]")}>
 					<dt className="shrink-0 text-[var(--doc-muted)]">{node(f.label)}</dt>
@@ -1246,7 +1147,7 @@ export type DocFigure = {
  * A row of key figures read left to right, ending in the one that matters (aging buckets → total due,
  * gross → deductions → net pay). `quiet` for secondary figures (employer contributions, year to date).
  */
-export function DocFigureStrip({ items, currency = "MYR", quiet, zero, className }: { items: DocFigure[]; currency?: string; quiet?: boolean; zero?: string; className?: string }) {
+export function DocFigureStrip({ items, currency = "MYR", quiet, zero, className, ...props }: Omit<React.ComponentProps<"dl">, "children"> & { items: DocFigure[]; currency?: string; quiet?: boolean; zero?: string }) {
 	const { layout } = useDocumentBrand();
 	const L = useDocLabel();
 	const sym = currencySymbol(currency);
@@ -1257,7 +1158,7 @@ export function DocFigureStrip({ items, currency = "MYR", quiet, zero, className
 
 	if (quiet)
 		return (
-			<dl data-slot="cy-doc-figures" style={cols} className={cn("cy-doc-break-avoid grid border-t border-[var(--doc-rule)]", className)}>
+			<dl data-slot="cy-doc-figures" style={cols} className={cn("cy-doc-break-avoid grid border-t border-[var(--doc-rule)]", className)} {...props}>
 				{items.map((f, i) => (
 					<div key={i} className={cn("flex min-w-0 flex-col justify-between pt-[2.2mm]", i > 0 && "border-l border-[var(--doc-rule)] pl-[3mm]", layout === "classic" && "text-center")}>
 						<dt className="text-[7pt] leading-tight text-[var(--doc-subtle)]">{label(f)}</dt>
@@ -1278,6 +1179,7 @@ export function DocFigureStrip({ items, currency = "MYR", quiet, zero, className
 				layout === "minimal" && "gap-[4mm] border-t border-[var(--doc-rule-strong)]",
 				className,
 			)}
+			{...props}
 		>
 			{items.map((f, i) => {
 				const strong = f.emphasis;
@@ -1320,11 +1222,11 @@ export function DocFigureStrip({ items, currency = "MYR", quiet, zero, className
 }
 
 /** An amount spelled out — "Ringgit Malaysia … Only" — in the brand's language (both lines when bilingual). */
-export function DocAmountWords({ amount, currency = "MYR", label = "amountInWords", align = "left", className }: { amount: string; currency?: string; label?: DocLabelKey | DocText; align?: "left" | "right"; className?: string }) {
+export function DocAmountWords({ amount, currency = "MYR", label = "amountInWords", align = "left", className, ...props }: Omit<React.ComponentProps<"div">, "children"> & { amount: string; currency?: string; label?: DocLabelKey | DocText; align?: "left" | "right" }) {
 	const { locale } = useDocumentBrand();
 	const L = useDocLabel();
 	return (
-		<div data-slot="cy-doc-words" className={cn("cy-doc-break-avoid text-[7.5pt] leading-snug", align === "right" && "ml-auto max-w-[115mm] text-right", className)}>
+		<div data-slot="cy-doc-words" className={cn("cy-doc-break-avoid text-[7.5pt] leading-snug", align === "right" && "ml-auto max-w-[115mm] text-right", className)} {...props}>
 			<DocLabel className="mb-0.5">{L(label)}</DocLabel>
 			<div className="text-[var(--doc-ink)] italic">{amountInWords(amount, { currency, lang: locale === "ms" ? "ms" : "en" })}</div>
 			{locale === "en-ms" && (

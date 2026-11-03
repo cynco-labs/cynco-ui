@@ -9,7 +9,7 @@ export default function PeriodCloseAttentionCardDemo() {
 				accounts: [{ code: "1000-002", name: "CIMB Business Account" }],
 				why: "The feed for CIMB Business Account has no balance dated to this period, so there is no bank figure to compare.",
 				risk: "This bank balance was not checked against the ledger.",
-				fixes: [{ label: "Upload a statement" }, { label: "Reconnect the bank feed" }],
+				fixes: [{ label: "Upload a statement", href: "/banking/statements" }, { label: "Reconnect the bank feed" }],
 			}}
 		/>
 	);

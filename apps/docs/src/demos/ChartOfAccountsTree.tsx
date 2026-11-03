@@ -52,7 +52,7 @@ export default function ChartOfAccountsTreeDemo() {
 		<ChartOfAccountsTree
 			nodes={TREE}
 			currency="MYR"
-			selectedId="1000-001"
+			defaultSelectedId="1000-001"
 			defaultExpandedIds={["1000", "1500", "2000"]}
 		/>
 	);

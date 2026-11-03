@@ -1,5 +1,4 @@
 import { type ClassValue, clsx } from "clsx";
-import { useSyncExternalStore } from "react";
 import { extendTailwindMerge } from "tailwind-merge";
 
 /**
@@ -44,8 +43,18 @@ export function parseDate(value: string | Date): Date {
 	return m ? new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3] ?? 1)) : new Date(value);
 }
 
-// Browser-only values for render: the server snapshot is used on the server and during hydration, so the
-// hydrated markup always matches the server HTML; React then re-renders with the real value.
-const noSubscribe = () => () => {};
-export const useIsMac = () => useSyncExternalStore(noSubscribe, isMacPlatform, () => false);
-export const useIsClient = () => useSyncExternalStore(noSubscribe, () => true, () => false);
+/** Today's calendar date in the user's time zone, as "2026-10-30" (toISOString would give the UTC date). */
+export function todayISO(): string {
+	const d = new Date();
+	return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+/** Write text to the clipboard. False when the browser refuses (permission denied, or not a secure origin). */
+export async function copyToClipboard(text: string): Promise<boolean> {
+	try {
+		await navigator.clipboard.writeText(text);
+		return true;
+	} catch {
+		return false;
+	}
+}

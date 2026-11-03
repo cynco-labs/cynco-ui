@@ -45,7 +45,7 @@ export function InvoicePage({ invoice }) {
 | Typeface | Inter, Geist or Newsreader |
 | Language | English (`en`), Bahasa Melayu (`ms`) or both (`en-ms`, labels stacked or slashed) |
 
-[`DocumentStudio`](/components/document-studio) is the editor for the brand, with a live preview of any document at any paper size and stamp. `brandFromCyncoTemplate` maps a stored Cynco invoice template onto a brand (its colour setting is deliberately ignored).
+[`DocumentStudio`](/components/document-studio) is the editor for the brand, with a live preview of any document at any paper size and stamp.
 
 ## The documents
 

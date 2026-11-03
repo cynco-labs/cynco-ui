@@ -8,6 +8,7 @@ describe("formatCurrency", () => {
 	test("formats decimal strings exactly, rounding half-up", () => {
 		expect(formatCurrency("1234.565")).toBe(`RM${NB}1,234.57`);
 		expect(formatCurrency("0.10")).toBe(`RM${NB}0.10`);
+		expect(formatCurrency("1,234,567.50")).toBe(`RM${NB}1,234,567.50`);
 	});
 	test("formats numbers with the currency's locale", () => {
 		expect(formatCurrency(-1234.5)).toBe(`-RM${NB}1,234.50`);
@@ -21,7 +22,7 @@ describe("formatCurrency", () => {
 	});
 	test("invalid input prints zero rather than NaN", () => {
 		expect(formatCurrency("abc")).toBe(`RM${NB}0.00`);
-		expect(formatCurrency("1,234")).toBe(`RM${NB}0.00`);
+		expect(formatCurrency("1,2,3")).toBe(`RM${NB}0.00`);
 		expect(formatCurrency(Number.NaN)).toBe(`RM${NB}0.00`);
 		expect(formatCurrency(Number.POSITIVE_INFINITY)).toBe(`RM${NB}0.00`);
 	});

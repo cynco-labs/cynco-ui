@@ -1,5 +1,6 @@
 "use client";
 
+import { CaretUpDownIcon } from "@phosphor-icons/react";
 import { Shimmer } from "./shimmer";
 import { Button } from "../ui/button";
 import {
@@ -17,7 +18,6 @@ import {
 	CollapsibleTrigger,
 } from "../ui/collapsible";
 import { cn } from "../../lib/utils";
-import { ChevronsUpDownIcon } from "lucide-react";
 import type { ComponentProps } from "react";
 import { createContext, useContext } from "react";
 
@@ -138,7 +138,7 @@ export const PlanTrigger = ({ className, ...props }: PlanTriggerProps) => (
 		}
 		{...props}
 	>
-		<ChevronsUpDownIcon className="size-4" />
+		<CaretUpDownIcon className="size-4" />
 		<span className="sr-only">Toggle plan</span>
 	</CollapsibleTrigger>
 );

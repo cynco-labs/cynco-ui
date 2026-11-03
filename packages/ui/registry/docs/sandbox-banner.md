@@ -30,9 +30,10 @@ Shown on every page while working in a sandbox or demo company.
 
 Optional `label`, `icon`, `color`; `SandboxBannerAction` children.
 
+- `color?`: `string`. Background colour, e.g. to tell environments apart.
 - `label?`: `string`. Default `"Sandbox"`.
 - `icon?`: `ReactNode`
-- `color?`: `string`
+- Also accepts `ComponentProps<"div">`.
 
 ## Notes
 

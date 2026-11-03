@@ -29,4 +29,9 @@ Next to the title of a feature in beta.
 
 Optional `className`.
 
+- `variant?`: `"default" | "secondary" | "muted"`. Default `"default"`.
+- `size?`: `"sm" | "default"`. Default `"default"`.
+- `asChild?`: `boolean`
+- Also accepts `useRender.ComponentProps<"span">`.
+
 Category: Components · Data display. Source: `packages/ui/src/base/components/general/beta-badge.tsx`.

@@ -1,5 +1,7 @@
+"use client";
+
 import { motion, useReducedMotion } from "motion/react";
-import { useIsClient } from "../../lib/utils";
+import { useIsClient } from "../../hooks/use-platform";
 
 export const MotionTbody = motion.create("tbody");
 

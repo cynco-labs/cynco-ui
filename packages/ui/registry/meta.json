@@ -856,7 +856,7 @@
 		"height": 600,
 		"summary": "A ⌘K / Ctrl+K command palette on Cynco UI's CommandDialog: jump to any area, create documents, reopen recent records and run app actions, with fuzzy search across labels, keywords, document numbers and amounts.",
 		"use": "Mount once in the app shell and put a CommandPaletteTrigger in the header. Feed it recently opened records so accountants can type “inv 0142” or an amount like “3240” and land on the document. Use `inline` to embed the same search on a page (an empty state, a “Jump to” screen).",
-		"provide": "CommandPalette: open / defaultOpen / onOpenChange; items (CommandPaletteItem[]: id, group — “Go to” | “Create” | “Recent” | “Actions” or your own heading, label, keywords, icon, shortcut such as \"mod+k\" or \"g i\", hint, href, disabled, onSelect; defaults to CYNCO_PALETTE_ITEMS, Cynco's registry paths, keywords and keybinds); recent (CommandPaletteRecord[]: id, type — invoice | quotation | bill | credit_note | customer | vendor | journal | payment | item | account, number, label, status, amount as a decimal string, currency, keywords, href, onSelect); recentLimit (default 5); onSelect(item) to route with item.href / item.id; hotkey (default \"mod+k\", false to bind your own); placeholder; inline; className. CommandPaletteTrigger: label, shortcut, className and any button props (wire onClick).",
+		"provide": "CommandPalette: open / defaultOpen / onOpenChange; items (CommandPaletteItem[]: id, group — “Go to” | “Create” | “Recent” | “Actions” or your own heading, label, keywords, icon, shortcut such as \"mod+k\" or \"g i\", hint, href, disabled, onSelect); recent (CommandPaletteRecord[]: id, type — invoice | quotation | bill | credit_note | customer | vendor | journal | payment | item | account, number, label, status, amount as a decimal string, currency, keywords, href, onSelect); recentLimit (default 5); onSelect(item) to route with item.href / item.id; hotkey (default \"mod+k\", false to bind your own); placeholder; inline; className. CommandPaletteTrigger: label, shortcut, className and any button props (wire onClick).",
 		"notes": "Keys: ⌘K / Ctrl+K toggles, ↑ ↓ move, Enter runs, Esc closes (clears the query when inline), a leading “>” narrows to actions. Search: every word must match a label, keyword, number or amount (prefix > word start > fuzzy subsequence; acronyms like “gl”, “pl”); groups re-rank by best match. Focus returns to whatever opened it. Rows drop status, amount, type and keycaps as the dialog narrows (container queries), so it stays one line from 320px up. Shortcut keycaps made of printable keys alone (\"?\", \"g i\") are hidden while the user has single-key shortcuts turned off; a printable-only `hotkey` is unbound then too."
 	},
 	{
@@ -865,7 +865,7 @@
 		"group": "Productivity",
 		"height": 420,
 		"summary": "A searchable dialog listing every keyboard shortcut in sections, opened with “?”, plus useGoToShortcuts for two-key “g then i” navigation.",
-		"use": "Mount once in the app shell. Pass your own sections or use CYNCO_SHORTCUT_SECTIONS (Global, Go to, Create, Lists, Journal entry). Call useGoToShortcuts(CYNCO_GOTO_ROUTES, navigate) in the shell so G then I opens Invoices and C then J starts a journal entry.",
+		"use": "Mount once in the app shell. Pass your app's sections (Global, Go to, Create, Lists…). Call useGoToShortcuts(routes, navigate) in the shell with your own route map, e.g. { i: \"/invoices\", \"c j\": \"/journal/new\" }, so G then I opens Invoices and C then J starts a journal entry.",
 		"provide": "ShortcutsDialog: open / defaultOpen / onOpenChange; sections ([{title, items: [{keys, label}]}], keys like \"mod+enter\", \"g i\" for a sequence, or an array of alternatives); hotkey (default \"?\", false to bind your own); title; className. useGoToShortcuts(map, navigate, {enabled, timeout = 1200 ms, leader = \"g\"}): map keys are a letter after the leader or a full sequence (\"c i\"); returns {pending} so you can show “G…” while it waits. Items take an optional focusScoped: true for keys that only fire inside their own field (never shown as off). KeyboardShortcutsProvider (characterKeys / defaultCharacterKeys = true / onCharacterKeysChange) and useCharacterKeyShortcuts() → [enabled, setEnabled] control the single-key switch; isCharacterKeyShortcut(keys) tells you whether your own shortcut should honour it.",
 		"notes": "Keys: “?” opens (never while typing), type to filter by label, key or section, Esc closes and returns focus. Sequences are ignored while typing, inside dialogs and menus, and with ⌘/Ctrl/Alt held; any other key or the timeout cancels. Sections flow into two columns once the dialog is 36rem wide. WCAG 2.1.4: the footer has a “Single-key shortcuts” switch. Off unbinds “?”, every useGoToShortcuts sequence and bare-letter ShortcutButtons, and marks those rows Off; ⌘/Ctrl chords and named keys are unaffected. With no provider the choice is saved in localStorage (cy-character-key-shortcuts) and syncs across tabs; pass characterKeys to store it yourself. When it is off, the dialog opens from the command palette or a button. Gate your own printable-only page shortcuts on useCharacterKeyShortcuts()."
 	},
@@ -926,7 +926,7 @@
 		"height": 1180,
 		"summary": "The brand editor for every printed document: logo, layout, typeface, language and footer note, with a live preview of any document at any paper size and stamp.",
 		"use": "Settings → Documents (invoice templates). One brand drives invoices, receipts, statements, payslips and reports, so customers set it once.",
-		"provide": "brand / defaultBrand / onBrandChange (DocBrand), documents ([{id, label, render({stamp, size}), sizes?, stamps?}]), defaultDocumentId, onPrint. brandFromCyncoTemplate(template, company) maps Cynco's stored invoice template onto a DocBrand.",
+		"provide": "brand / defaultBrand / onBrandChange (DocBrand), documents ([{id, label, render({stamp, size}), sizes?, stamps?}]), defaultDocumentId, onPrint.",
 		"notes": "Controls stack above the preview below 48rem of container width. Logo upload reads the file to a data URL (production should upload it and store the URL). Layout thumbnails and Inter / Geist / Newsreader; documents stay black ink, so there is no colour picker. Print prints only the previewed document."
 	},
 	{
@@ -1074,10 +1074,10 @@
 		"category": "Documents",
 		"group": "Documents",
 		"height": 1060,
-		"summary": "Printable aged receivables by customer: current, 1–30, 31–60, 61–90 and 90+ days with a total column, a totals row with double rule, a % of total row, and a bucket summary with proportional bars.",
+		"summary": "Printable aged receivables by customer: current, 1–30, 31–60, 61–90 and 90+ days with a total column, a totals row with double rule, a % of total row, and a bucket summary of totals and shares.",
 		"use": "Credit-control meetings, month-end receivables review, bank covenant and auditor packs.",
 		"provide": "report: AgedReceivablesData — period (kind 'asAt'), customers [{name, detail?, current, days1to30, days31to60, days61to90, over90, total}], totals {…same buckets}, percentages {…same buckets, e.g. '49.2'}, summary?, basis?, currency?, filters?, preparedBy?, preparedOn?, notes?; plus brand?, size?, stamp?, fit?, isolate?, className.",
-		"notes": "Bucket bars deepen from light to dark grey with age (black ink only). Percentages are supplied by the ledger, not calculated. Customer detail line suits code and terms ('C-0012 · Net 30'). A4 portrait by default (very long names wrap; pass size='a4-landscape' for wide ledgers)."
+		"notes": "The bucket summary prints each bucket's total and share of the whole. Percentages are supplied by the ledger, not calculated. Customer detail line suits code and terms ('C-0012 · Net 30'). A4 portrait by default (very long names wrap; pass size='a4-landscape' for wide ledgers)."
 	},
 	{
 		"name": "CashFlowReport",

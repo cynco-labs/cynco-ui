@@ -38,6 +38,8 @@ Detail panels (customer, invoice).
 - `label`: `string`
 - `value`: `ReactNode`
 - `icon?`: `ReactNode`
+- `valueClassName?`: `string`. Classes for the value (`className` goes on the row).
 - `mono?`: `boolean`
+- Also accepts `ComponentProps<"div">`.
 
 Category: Components · Data display. Source: `packages/ui/src/base/components/general/info-row.tsx`.

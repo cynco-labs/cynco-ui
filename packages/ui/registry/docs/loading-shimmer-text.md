@@ -25,6 +25,7 @@ Long-running background work ("Syncing bank feed…").
 `text`.
 
 - `text`: `string`
+- Also accepts `ComponentProps<"div">`.
 
 ## Notes
 

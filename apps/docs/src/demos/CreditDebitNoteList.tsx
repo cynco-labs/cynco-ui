@@ -3,6 +3,7 @@ import { CreditDebitNoteList } from "@cynco-labs/ui";
 export default function CreditDebitNoteListDemo() {
 	return (
 		<CreditDebitNoteList
+			onRowAction={() => {}}
 			notes={[
 				{
 					id: "1",

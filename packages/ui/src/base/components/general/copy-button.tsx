@@ -1,3 +1,5 @@
+"use client";
+
 import { LiveStatus } from "./live-status";
 import {
 	IconButton,
@@ -6,10 +8,9 @@ import {
 import {
 	Tooltip,
 	TooltipContent,
-	TooltipProvider,
 	TooltipTrigger,
 } from "../ui/tooltip";
-import { cn } from "../../lib/utils";
+import { cn, copyToClipboard } from "../../lib/utils";
 import { CheckIcon, CopyIcon } from "@phosphor-icons/react";
 import { useCallback, useEffect, useState } from "react";
 
@@ -34,8 +35,7 @@ const useCopyAnimation = ({
 		(e: React.MouseEvent<HTMLButtonElement>) => {
 			e.preventDefault();
 			e.stopPropagation();
-			navigator.clipboard.writeText(text);
-			setCopied(true);
+			void copyToClipboard(text).then(setCopied);
 		},
 		[text],
 	);
@@ -99,7 +99,7 @@ export const CopyButton = ({
 	const { copied, handleCopy } = useCopyAnimation({ text });
 
 	return (
-		<TooltipProvider>
+		<>
 			<Tooltip open={copied} onOpenChange={() => {}}>
 				<TooltipTrigger asChild>
 					<IconButton
@@ -127,7 +127,7 @@ export const CopyButton = ({
 				</TooltipContent>
 			</Tooltip>
 			<LiveStatus>{copied ? "Copied" : ""}</LiveStatus>
-		</TooltipProvider>
+		</>
 	);
 };
 
@@ -146,7 +146,7 @@ export const CopyIconButton = ({
 	const { copied, handleCopy } = useCopyAnimation({ text });
 
 	return (
-		<TooltipProvider>
+		<>
 			<Tooltip open={copied} onOpenChange={() => {}}>
 				<TooltipTrigger asChild>
 					<IconButton
@@ -174,7 +174,7 @@ export const CopyIconButton = ({
 				</TooltipContent>
 			</Tooltip>
 			<LiveStatus>{copied ? "Copied" : ""}</LiveStatus>
-		</TooltipProvider>
+		</>
 	);
 };
 

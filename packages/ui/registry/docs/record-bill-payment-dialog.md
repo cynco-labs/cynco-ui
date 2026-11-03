@@ -36,9 +36,9 @@ Recording a full or partial payment against an approved bill.
 
 billAmount, paidAmount, currency, bankAccounts {id, accountCode, accountName}, defaultOpen, defaultDate, disabled, onSubmit; className (trigger button), contentClassName (sheet panel).
 
-- `billAmount`: `number`
+- `billAmount`: `Amount`
 - `bankAccounts`: `CyncoBankAccount[]`
-- `paidAmount?`: `number`. Default `0`.
+- `paidAmount?`: `Amount`. Default `0`.
 - `currency?`: `string`. Default `"MYR"`.
 - `defaultOpen?`: `boolean`. Default `false`.
 - `defaultDate?`: `string`. YYYY-MM-DD; defaults to today.

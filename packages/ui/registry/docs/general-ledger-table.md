@@ -93,6 +93,7 @@ rows [{ id, date, entryNumber, description, counterparty?, debit, credit, curren
 - `openingBalance?`: `number`
 - `openingDate?`: `string`
 - `closingDate?`: `string`
+- Also accepts `ComponentProps<"div">`.
 
 ## Notes
 

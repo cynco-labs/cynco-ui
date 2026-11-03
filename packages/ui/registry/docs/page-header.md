@@ -36,5 +36,6 @@ Top of every list page; matches DataTable.Toolbar.
 - `icon`: `ReactNode`
 - `title`: `string`
 - `titleAccessory?`: `ReactNode`
+- Also accepts `ComponentProps<"div">`.
 
 Category: Components · Layout. Source: `packages/ui/src/base/components/general/page-header.tsx`.

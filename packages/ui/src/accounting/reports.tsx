@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * Cynco UI — financial reports & the CFO dashboard.
  *
@@ -36,6 +38,7 @@ import {
 	TooltipContent,
 	TooltipTrigger,
 	cn,
+	useControllableState,
 	type StatusGlyph,
 	type StatusTone,
 } from "../base";
@@ -77,9 +80,8 @@ import {
 	type DataColumn,
 	ToneDot,
 	toneBg,
-	type StatusToneName,
-	useNeedsScrollStop,
 } from "../lib/shared";
+import { useNeedsScrollStop } from "../layout/scroll-stop";
 
 /* ────────────────────────────────────────────────────────────────────────── */
 /* Local furniture                                                            */
@@ -320,7 +322,7 @@ export function TrialBalanceReport({
 				flush
 				title={period ? `${title} · ${period}` : title}
 				description={description ?? `${rows.length} accounts with balances`}
-				actions={<CheckChip ok={ok}>{badgeLabel ? `${badgeLabel} ${status}` : status[0]!.toUpperCase() + status.slice(1)}</CheckChip>}
+				actions={<CheckChip ok={ok}>{badgeLabel ? `${badgeLabel} ${status}` : status.charAt(0).toUpperCase() + status.slice(1)}</CheckChip>}
 			>
 				<DataList
 					className="px-1.5 pb-1.5"
@@ -692,13 +694,21 @@ export function ReportToolbar({
 	title,
 	meta,
 	period: periodProp,
+	defaultPeriod,
+	onPeriodChange,
 	periods,
 	fiscalYearEnd,
 	view: viewProp,
+	defaultView,
+	onViewChange,
 	views,
 	compare: compareProp,
+	defaultCompare,
+	onCompareChange,
 	comparePeriod: comparePeriodProp,
-	showSaveSnapshot,
+	defaultComparePeriod,
+	onComparePeriodChange,
+	onSaveSnapshot,
 	freshness,
 	now,
 	onExport,
@@ -708,26 +718,45 @@ export function ReportToolbar({
 	title?: React.ReactNode;
 	/** Quiet sub-line, e.g. "October 2026 · MYR". */
 	meta?: React.ReactNode;
-	period: string;
+	/** Controlled reporting period (e.g. "2026-03"). */
+	period?: string;
+	/** Initial period for uncontrolled use. */
+	defaultPeriod?: string;
+	/** Called when the user changes the reporting period. */
+	onPeriodChange?: (period: string) => void;
 	periods: string[];
 	/** "MM-DD"; groups the period list by fiscal year. */
 	fiscalYearEnd?: string | null;
-	/** Current view (P&L Monthly/YTD, TB Standard/Extended). */
+	/** Controlled view (P&L Monthly/YTD, TB Standard/Extended). */
 	view?: string;
+	/** Initial view for uncontrolled use. */
+	defaultView?: string;
+	/** Called when the user switches the report view. */
+	onViewChange?: (view: string) => void;
 	views?: { value: string; label: string }[];
-	/** Compare toggle; omit to hide it (reports without a comparative). */
+	/** Controlled compare toggle; omit the prop entirely to hide the Compare button. */
 	compare?: boolean;
+	/** Initial compare value for uncontrolled use. */
+	defaultCompare?: boolean;
+	/** Called when the user toggles the compare mode. */
+	onCompareChange?: (compare: boolean) => void;
+	/** Controlled comparison period. */
 	comparePeriod?: string;
-	showSaveSnapshot?: boolean;
+	/** Initial comparison period for uncontrolled use. */
+	defaultComparePeriod?: string;
+	/** Called when the user changes the comparison period. */
+	onComparePeriodChange?: (period: string) => void;
+	/** Called when the user clicks "Save snapshot"; omit to hide the button. */
+	onSaveSnapshot?: () => void;
 	freshness?: ReportFreshness | null;
 	/** Clock for the freshness label (defaults to Date.now()). */
 	now?: string | number;
 	onExport?: (format: "pdf" | "excel") => void;
 }) {
-	const [period, setPeriod] = React.useState(periodProp);
-	const [view, setView] = React.useState(viewProp);
-	const [compare, setCompare] = React.useState(compareProp);
-	const [comparePeriod, setComparePeriod] = React.useState(comparePeriodProp);
+	const [period = "", setPeriod] = useControllableState({ prop: periodProp, defaultProp: defaultPeriod, onChange: onPeriodChange });
+	const [view, setView] = useControllableState({ prop: viewProp, defaultProp: defaultView, onChange: onViewChange });
+	const [compare, setCompare] = useControllableState({ prop: compareProp, defaultProp: defaultCompare, onChange: onCompareChange });
+	const [comparePeriod, setComparePeriod] = useControllableState({ prop: comparePeriodProp, defaultProp: defaultComparePeriod, onChange: onComparePeriodChange });
 	const groups = React.useMemo(() => groupPeriodsByFY(periods, fiscalYearEnd), [periods, fiscalYearEnd]);
 	const items = React.useMemo(() => Object.fromEntries([...periods, period].map((p) => [p, periodShort(p)])), [periods, period]);
 	const clock = now != null ? new Date(now).getTime() : Date.now();
@@ -771,7 +800,7 @@ export function ReportToolbar({
 				<SelectContent>{options()}</SelectContent>
 			</Select>
 			{views && view !== undefined && (
-					<GroupedTabButton aria-label="Report view" className="w-auto" value={view} onValueChange={setView} options={views} />
+				<GroupedTabButton aria-label="Report view" className="w-auto" value={view} onValueChange={setView} options={views} />
 			)}
 			{compare !== undefined && (
 				<>
@@ -788,8 +817,8 @@ export function ReportToolbar({
 					)}
 				</>
 			)}
-			{showSaveSnapshot && (
-				<Button variant="secondary">
+			{onSaveSnapshot && (
+				<Button variant="secondary" onClick={onSaveSnapshot}>
 					<CameraIcon size={14} aria-hidden="true" />
 					Save snapshot
 				</Button>
@@ -885,7 +914,7 @@ const SUB_ICON = {
 	warn: <ToneDot tone="amber" />,
 	muted: null,
 };
-const BADGE_DOT: Partial<Record<StatusTone, StatusToneName>> = { green: "green", red: "red", amber: "amber", blue: "blue", orange: "orange" };
+const BADGE_DOT: Partial<Record<StatusTone, StatusTone>> = { green: "green", red: "red", amber: "amber", blue: "blue", orange: "orange" };
 
 /**
  * A row of KPI tiles (cynco ui-v2/kpi KpiRow + KpiTile, reports/KpiTile):
@@ -1245,6 +1274,7 @@ export function CashFlowOverview({
 	currency = "MYR",
 	hasActivity = true,
 	defaultRange = "6",
+	onConnectBank,
 	className,
 	...props
 }: React.ComponentProps<"section"> & {
@@ -1253,6 +1283,8 @@ export function CashFlowOverview({
 	currency?: string;
 	hasActivity?: boolean;
 	defaultRange?: "3" | "6";
+	/** Called from the empty state's "Connect bank"; omit to hide the button. */
+	onConnectBank?: () => void;
 }) {
 	const [range, setRange] = React.useState<string>(defaultRange);
 	const windowed = React.useMemo(() => points.slice(-Number(range)), [points, range]);
@@ -1342,7 +1374,11 @@ export function CashFlowOverview({
 						<span className="text-sm font-semibold text-foreground">Connect a bank account</span>
 						<span className="text-2xs text-tertiary-foreground">See money moving in and out, month by month</span>
 					</div>
-					<Button variant="secondary">Connect bank</Button>
+					{onConnectBank && (
+						<Button variant="secondary" onClick={onConnectBank}>
+							Connect bank
+						</Button>
+					)}
 				</div>
 			)}
 		</SectionPanel>
@@ -1400,8 +1436,7 @@ export function CashRunwayPosition({
 			<div className="flex flex-col gap-3 @md:flex-row @md:items-start @md:justify-between @md:gap-4">
 				<div className="min-w-0">
 					<span className="text-2xs text-tertiary-foreground">Cash on hand</span>
-					{/* Off-scale on purpose: Cynco's hero figure (text-3xl), above Cynco UI's text-xl step. */}
-					<p className="text-2xl font-semibold leading-tight tabular-nums break-words text-foreground @sm:text-[28px]">{cash == null ? "—" : formatCurrency(cash, currency)}</p>
+					<p className="text-xl font-semibold leading-tight tabular-nums break-words text-foreground @sm:text-display">{cash == null ? "—" : formatCurrency(cash, currency)}</p>
 					<span className="text-2xs text-tertiary-foreground">{accounts == null ? "Balance unavailable" : `across ${accounts} account${accounts === 1 ? "" : "s"}`}</span>
 				</div>
 				<div className="w-full shrink-0 @md:w-36 @md:text-end">
@@ -1636,7 +1671,7 @@ export function RecentActivityFeed({
 						const sign = item.direction === "out" ? "−" : "+";
 						const chip = (
 							<StatusChip tone={st.tone} glyph={st.glyph}>
-								{label[0]!.toUpperCase() + label.slice(1)}
+								{label.charAt(0).toUpperCase() + label.slice(1)}
 							</StatusChip>
 						);
 						return (

@@ -1,5 +1,6 @@
 "use client";
 
+import { CaretDownIcon } from "@phosphor-icons/react";
 import { Button } from "../ui/button";
 import {
 	Collapsible,
@@ -10,11 +11,9 @@ import { Input } from "../ui/input";
 import {
 	Tooltip,
 	TooltipContent,
-	TooltipProvider,
 	TooltipTrigger,
 } from "../ui/tooltip";
 import { cn } from "../../lib/utils";
-import { ChevronDownIcon } from "lucide-react";
 import type { ComponentProps, ReactNode } from "react";
 import { createContext, useContext, useEffect, useState } from "react";
 
@@ -103,26 +102,24 @@ export const WebPreviewNavigationButton = ({
 	children,
 	...props
 }: WebPreviewNavigationButtonProps) => (
-	<TooltipProvider>
-		<Tooltip>
-			<TooltipTrigger asChild>
-				<Button
-					aria-label={tooltip}
-					className="h-8 w-8 p-0 hover:text-foreground"
-					disabled={disabled}
-					onClick={onClick}
-					size="sm"
-					variant="skeleton"
-					{...props}
-				>
-					{children}
-				</Button>
-			</TooltipTrigger>
-			<TooltipContent>
-				<p>{tooltip}</p>
-			</TooltipContent>
-		</Tooltip>
-	</TooltipProvider>
+	<Tooltip>
+		<TooltipTrigger asChild>
+			<Button
+				aria-label={tooltip}
+				className="h-8 w-8 p-0 hover:text-foreground"
+				disabled={disabled}
+				onClick={onClick}
+				size="sm"
+				variant="skeleton"
+				{...props}
+			>
+				{children}
+			</Button>
+		</TooltipTrigger>
+		<TooltipContent>
+			<p>{tooltip}</p>
+		</TooltipContent>
+	</Tooltip>
 );
 
 export type WebPreviewUrlProps = ComponentProps<typeof Input>;
@@ -222,7 +219,7 @@ export const WebPreviewConsole = ({
 					variant="skeleton"
 				>
 					Console
-					<ChevronDownIcon
+					<CaretDownIcon
 						className={cn(
 							"h-4 w-4 transition-transform duration-200",
 							consoleOpen && "rotate-180",

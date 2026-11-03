@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * Cynco UI — general ledger & journals.
  * Hand-written presentational ports of cynco-labs/cynco
@@ -11,6 +13,7 @@
 import * as React from "react";
 import { parseDate } from "../base/lib/utils";
 import {
+	useControllableState,
 	Alert,
 	AlertDescription,
 	AlertTitle,
@@ -31,7 +34,6 @@ import {
 	Popover,
 	PopoverContent,
 	PopoverTrigger,
-	STATUS_TONES,
 	StatusChip,
 	StatusChipIcon,
 	Textarea,
@@ -83,6 +85,9 @@ import {
 	type StatusEntry,
 	ToneDot,
 } from "../lib/shared";
+import { STATUS_TONES } from "../base/components/general/status-chip";
+import { type Amount, fromSen, sumAmounts, toSen } from "../lib/money";
+import { AmountInput } from "../productivity/entry";
 
 /* ------------------------------------------------------------------ helpers */
 
@@ -121,14 +126,11 @@ function TypeDot({ type, className }: { type: string; className?: string }) {
 const UNAVAILABLE = "aria-disabled:cursor-not-allowed aria-disabled:opacity-50";
 
 /** "50,000.00" — the journal's plain two-decimal figure (journal/types formatCurrency). */
-function plain(n: number) {
-	return n.toLocaleString("en-MY", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+function plain(amount: Amount) {
+	return new Intl.NumberFormat("en-MY", { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(fromSen(toSen(amount)));
 }
 
-function toNum(v: string | number | null | undefined) {
-	const n = typeof v === "number" ? v : parseFloat(v ?? "");
-	return Number.isFinite(n) ? Math.round(n * 100) / 100 : 0;
-}
+const isPositive = (v: Amount | null | undefined) => toSen(v) > 0n;
 
 /** "29 Oct 2026, 14:32" */
 function formatDateTime(d: string) {
@@ -329,7 +331,10 @@ function PickerTriggerLabel({ account, placeholder = "Select account...", id }: 
 export type AccountPickerFieldProps = Omit<React.ComponentProps<"div">, "onSelect"> & {
 	accounts: LedgerPickerAccount[];
 	recentIds?: string[];
+	/** Controlled selection. */
 	selectedId?: string;
+	/** Initial selection for uncontrolled use. */
+	defaultSelectedId?: string;
 	defaultOpen?: boolean;
 	label?: string;
 	onSelect?: (a: LedgerPickerAccount) => void;
@@ -337,9 +342,9 @@ export type AccountPickerFieldProps = Omit<React.ComponentProps<"div">, "onSelec
 };
 
 /** journal/AccountPicker.tsx — combobox over the chart of accounts, grouped by type. */
-export function AccountPickerField({ accounts, recentIds, selectedId, defaultOpen, label, onSelect, onCreate, className, ...props }: AccountPickerFieldProps) {
+export function AccountPickerField({ accounts, recentIds, selectedId, defaultSelectedId, defaultOpen, label, onSelect, onCreate, className, ...props }: AccountPickerFieldProps) {
 	const [open, setOpen] = React.useState(!!defaultOpen);
-	const [value, setValue] = React.useState(selectedId);
+	const [value, setValue] = useControllableState({ prop: selectedId, defaultProp: defaultSelectedId });
 	const selected = accounts.find((a) => a.id === value) ?? null;
 	const id = React.useId();
 	return (
@@ -392,32 +397,6 @@ export type JournalEditorLine = {
 	creditAmount?: string;
 };
 
-/** "1.2.3" → "1.23", "RM 5,000" → "5000"; a leading minus is kept (LineItemEditor toAmountString). */
-function toAmountString(raw: string) {
-	const sign = raw.trim().startsWith("-") ? "-" : "";
-	const [whole = "", ...fraction] = raw.replace(/[^\d.]/g, "").split(".");
-	return fraction.length > 0 ? `${sign}${whole}.${fraction.join("").slice(0, 2)}` : `${sign}${whole}`;
-}
-
-/** Raw number while editing, grouped (50,000.00) otherwise. */
-function AmountInput({ value, onValueChange, placeholder, label, className }: { value: string; onValueChange: (v: string) => void; placeholder: string; label?: string; className?: string }) {
-	const [editing, setEditing] = React.useState(false);
-	const n = Number(value);
-	const display = editing || value === "" || !Number.isFinite(n) ? value : plain(n);
-	return (
-		<Input
-			inputMode="decimal"
-			aria-label={label ?? placeholder}
-			placeholder={placeholder}
-			value={display}
-			onFocus={() => setEditing(true)}
-			onBlur={() => setEditing(false)}
-			onChange={(e) => onValueChange(toAmountString(e.target.value))}
-			className={cn("min-w-24 text-right tabular-nums", className)}
-		/>
-	);
-}
-
 /**
  * Wide container: one grid row per line (Account · Description · Debit · Credit · remove).
  * Narrow container: each line is a small card — account and description full width, debit and credit side by side.
@@ -425,7 +404,10 @@ function AmountInput({ value, onValueChange, placeholder, label, className }: { 
 const LINE_GRID_WIDE = "@xl:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)_7rem_7rem_1.5rem] @xl:items-center";
 
 export type JournalLineEditorProps = Omit<React.ComponentProps<"div">, "onChange"> & {
-	lines: JournalEditorLine[];
+	/** Controlled lines. */
+	lines?: JournalEditorLine[];
+	/** Initial lines for uncontrolled use. */
+	defaultLines?: JournalEditorLine[];
 	accounts?: LedgerPickerAccount[];
 	recentIds?: string[];
 	/** Keyed `${line.key}.accountId`. */
@@ -434,13 +416,9 @@ export type JournalLineEditorProps = Omit<React.ComponentProps<"div">, "onChange
 };
 
 /** journal/LineItemEditor.tsx — spreadsheet-style debit/credit grid with account picker cells. */
-export function JournalLineEditor({ lines: initial, accounts = [], recentIds, fieldErrors = {}, onLinesChange, className, ...props }: JournalLineEditorProps) {
-	const [lines, setLinesState] = React.useState(initial);
+export function JournalLineEditor({ lines: linesProp, defaultLines = [], accounts = [], recentIds, fieldErrors = {}, onLinesChange, className, ...props }: JournalLineEditorProps) {
+	const [lines = defaultLines, setLines] = useControllableState({ prop: linesProp, defaultProp: defaultLines, onChange: onLinesChange });
 	const [openKey, setOpenKey] = React.useState<string | null>(null);
-	const setLines = (next: JournalEditorLine[]) => {
-		setLinesState(next);
-		onLinesChange?.(next);
-	};
 	const counter = React.useRef(0);
 	const id = React.useId();
 	const listRef = React.useRef<HTMLDivElement>(null);
@@ -465,8 +443,8 @@ export function JournalLineEditor({ lines: initial, accounts = [], recentIds, fi
 				if (l.key !== key) return l;
 				const u = { ...l, [field]: value };
 				// Auto-clear the opposite amount field.
-				if (field === "debitAmount" && toNum(value) > 0) u.creditAmount = "";
-				if (field === "creditAmount" && toNum(value) > 0) u.debitAmount = "";
+				if (field === "debitAmount" && isPositive(value)) u.creditAmount = "";
+				if (field === "creditAmount" && isPositive(value)) u.debitAmount = "";
 				return u;
 			}),
 		);
@@ -541,8 +519,8 @@ export function JournalLineEditor({ lines: initial, accounts = [], recentIds, fi
 									onChange={(e) => update(line.key, "description", e.target.value)}
 									className="col-span-3 @xl:col-span-1"
 								/>
-								<AmountInput placeholder="Debit" label={`Debit, line ${n}`} value={line.debitAmount ?? ""} onValueChange={(v) => update(line.key, "debitAmount", v)} />
-								<AmountInput placeholder="Credit" label={`Credit, line ${n}`} value={line.creditAmount ?? ""} onValueChange={(v) => update(line.key, "creditAmount", v)} />
+								<AmountInput placeholder="Debit" aria-label={`Debit, line ${n}`} messages="overlay" allowNegative inputClassName="min-w-24" value={line.debitAmount ?? ""} onValueChange={(v) => update(line.key, "debitAmount", v)} />
+								<AmountInput placeholder="Credit" aria-label={`Credit, line ${n}`} messages="overlay" allowNegative inputClassName="min-w-24" value={line.creditAmount ?? ""} onValueChange={(v) => update(line.key, "creditAmount", v)} />
 								<IconButton
 									variant="skeleton"
 									size="icon"
@@ -575,8 +553,8 @@ export function JournalLineEditor({ lines: initial, accounts = [], recentIds, fi
 /* --------------------------------------------------------- JournalBalanceBar */
 
 export type JournalBalanceBarProps = React.ComponentProps<"div"> & {
-	totalDebit: number;
-	totalCredit: number;
+	totalDebit: Amount;
+	totalCredit: Amount;
 	currency?: string;
 	hasAmounts?: boolean;
 	showError?: boolean;
@@ -586,9 +564,10 @@ export type JournalBalanceBarProps = React.ComponentProps<"div"> & {
 
 /** journal/BalanceBar.tsx + JournalDraftStatus AutoSaveIndicator — DR = CR footer of the journal form. */
 export function JournalBalanceBar({ totalDebit, totalCredit, currency = "MYR", hasAmounts, showError, autoSave, className, ...props }: JournalBalanceBarProps) {
-	const difference = Math.round((totalDebit - totalCredit) * 100) / 100;
-	const isBalanced = difference === 0;
-	const any = hasAmounts ?? (totalDebit > 0 || totalCredit > 0);
+	const differenceSen = toSen(totalDebit) - toSen(totalCredit);
+	const difference = fromSen(differenceSen < 0n ? -differenceSen : differenceSen);
+	const isBalanced = differenceSen === 0n;
+	const any = hasAmounts ?? (isPositive(totalDebit) || isPositive(totalCredit));
 	return (
 		<div className={cn("flex min-w-0 flex-col overflow-hidden", surfaces.card, className)} {...props}>
 			{/* Live regions stay mounted, so "Draft saved" and the balance state are announced when they change. */}
@@ -601,7 +580,7 @@ export function JournalBalanceBar({ totalDebit, totalCredit, currency = "MYR", h
 				)}
 			</div>
 			<LiveStatus>
-				{any ? (isBalanced ? "Balanced" : `Off by ${currency} ${plain(Math.abs(difference))}`) : ""}
+				{any ? (isBalanced ? "Balanced" : `Off by ${currency} ${plain(difference)}`) : ""}
 			</LiveStatus>
 			{!any ? (
 				<div className="m-1 flex items-center justify-center gap-2 rounded-lg border border-dashed px-4 py-2.5 text-sm text-tertiary-foreground">
@@ -632,7 +611,7 @@ export function JournalBalanceBar({ totalDebit, totalCredit, currency = "MYR", h
 						) : (
 							<StatusChip tone="red" glyph="alert">
 								<span className="tabular-nums">
-									Off by {currency} {plain(Math.abs(difference))}
+									Off by {currency} {plain(difference)}
 								</span>
 							</StatusChip>
 						)}
@@ -686,8 +665,8 @@ export type JournalPostedLine = {
 };
 
 /** The amount a line carries, marked by side — the one figure a stacked line shows. */
-function SidedAmount({ debit, credit, currency }: { debit: number; credit: number; currency: string }) {
-	const isCredit = credit > 0 && !(debit > 0);
+function SidedAmount({ debit, credit, currency }: { debit: Amount; credit: Amount; currency: string }) {
+	const isCredit = isPositive(credit) && !isPositive(debit);
 	return (
 		<span className="inline-flex items-baseline gap-1 tabular-nums">
 			{formatCurrency(isCredit ? credit : debit, currency)}
@@ -700,10 +679,10 @@ export type JournalLinesTableProps = React.ComponentProps<"section"> & { lines: 
 
 /** journal/JournalLineItemsTable.tsx — the read-only lines of a saved entry with totals. */
 export function JournalLinesTable({ lines, currency = "MYR", className, ...props }: JournalLinesTableProps) {
-	const dr = lines.reduce((s, l) => s + toNum(l.debitAmount), 0);
-	const cr = lines.reduce((s, l) => s + toNum(l.creditAmount), 0);
-	const balanced = Math.round((dr - cr) * 100) === 0;
-	const money = (v: string | number) => (toNum(v) > 0 ? formatCurrency(toNum(v), currency) : "");
+	const dr = sumAmounts(lines.map((l) => l.debitAmount));
+	const cr = sumAmounts(lines.map((l) => l.creditAmount));
+	const balanced = toSen(dr) === toSen(cr);
+	const money = (v: Amount) => (isPositive(v) ? formatCurrency(fromSen(toSen(v)), currency) : "");
 	const columns: DataColumn<JournalPostedLine>[] = [
 		{ key: "n", header: "#", className: "w-9 text-tertiary-foreground tabular-nums", mobile: "hidden", cell: (l) => l.lineNumber },
 		{
@@ -726,7 +705,7 @@ export function JournalLinesTable({ lines, currency = "MYR", className, ...props
 		{ key: "debit", header: "Debit", align: "right", mobile: "hidden", cell: (l) => money(l.debitAmount) },
 		{ key: "credit", header: "Credit", align: "right", mobile: "hidden", cell: (l) => money(l.creditAmount) },
 		// Stacked layout only: one figure per line, marked Dr/Cr.
-		{ key: "amount", header: "Amount", className: "hidden", mobile: "value", cell: (l) => <SidedAmount debit={toNum(l.debitAmount)} credit={toNum(l.creditAmount)} currency={currency} /> },
+		{ key: "amount", header: "Amount", className: "hidden", mobile: "value", cell: (l) => <SidedAmount debit={l.debitAmount} credit={l.creditAmount} currency={currency} /> },
 	];
 	return (
 		<section className={cn("flex min-w-0 flex-col gap-2", className)} {...props}>
@@ -1001,14 +980,17 @@ export type ChartOfAccountsTreeProps = Omit<React.ComponentProps<"div">, "onSele
 	nodes: CoaTreeNode[];
 	currency?: string;
 	defaultExpandedIds?: string[];
+	/** Controlled selection. */
 	selectedId?: string;
+	/** Initial selection for uncontrolled use. */
+	defaultSelectedId?: string;
 	onSelect?: (id: string) => void;
 };
 
 /** CoaAccountTreeRow.tsx — the nested Chart of Accounts with codes, type and balance. */
-export function ChartOfAccountsTree({ nodes, currency = "MYR", defaultExpandedIds, selectedId: initialSelected, onSelect, className, ...props }: ChartOfAccountsTreeProps) {
+export function ChartOfAccountsTree({ nodes, currency = "MYR", defaultExpandedIds, selectedId: selectedIdProp, defaultSelectedId, onSelect, className, ...props }: ChartOfAccountsTreeProps) {
 	const [expanded, setExpanded] = React.useState(() => new Set(defaultExpandedIds ?? nodes.map((n) => n.id)));
-	const [selectedId, setSelected] = React.useState(initialSelected);
+	const [selectedId, setSelected] = useControllableState({ prop: selectedIdProp, defaultProp: defaultSelectedId });
 	const toggle = (id: string) =>
 		setExpanded((prev) => {
 			const next = new Set(prev);
@@ -1141,6 +1123,8 @@ export type CoaAccountPanelProps = React.ComponentProps<"aside"> & {
 	transactions?: { id: string; date: string; description: string; type: "debit" | "credit"; amount: number; source?: string }[];
 	defaultEditing?: boolean;
 	onClose?: () => void;
+	/** Called from Activate / Deactivate with the new state; omit to hide the button. The panel shows `account.isActive`. */
+	onActiveChange?: (active: boolean) => void;
 };
 
 /** CoaAccountDetailPanel.tsx — the right-hand panel for the selected account. */
@@ -1154,11 +1138,12 @@ export function CoaAccountPanel({
 	transactions = [],
 	defaultEditing,
 	onClose,
+	onActiveChange,
 	className,
 	...props
 }: CoaAccountPanelProps) {
 	const [editing, setEditing] = React.useState(!!defaultEditing);
-	const [active, setActive] = React.useState(account.isActive);
+	const active = account.isActive;
 	const editRef = React.useRef<HTMLButtonElement>(null);
 	/** Save and Cancel unmount with the form, so focus returns to the Edit button that opened it. */
 	const closeEditor = () => {
@@ -1250,9 +1235,11 @@ export function CoaAccountPanel({
 							<div className="flex flex-wrap items-center gap-1.5 text-sm text-foreground">
 								<ToneDot tone={active ? "green" : "neutral"} />
 								{active ? "Active" : "Inactive"}
-								<IconButton variant="skeleton" size="sm" className="ml-auto" icon={<PowerIcon weight="bold" />} onClick={() => setActive(!active)}>
-									{active ? "Deactivate" : "Activate"}
-								</IconButton>
+								{onActiveChange && (
+									<IconButton variant="skeleton" size="sm" className="ml-auto" icon={<PowerIcon weight="bold" />} onClick={() => onActiveChange(!active)}>
+										{active ? "Deactivate" : "Activate"}
+									</IconButton>
+								)}
 							</div>
 						</div>
 					</div>
@@ -1375,10 +1362,10 @@ export type GeneralLedgerTableProps = {
 	openingBalance?: number;
 	openingDate?: string;
 	closingDate?: string;
-};
+} & Omit<React.ComponentProps<"div">, "children">;
 
 /** routes/dashboard.accounting.ledger.tsx + ledger-explorer/LedgerRegister — the GL register with running balance. */
-export function GeneralLedgerTable({ rows, baseCurrency = "MYR", showAccount, openingBalance, openingDate, closingDate, className }: GeneralLedgerTableProps) {
+export function GeneralLedgerTable({ rows, baseCurrency = "MYR", showAccount, openingBalance, openingDate, closingDate, className, ...props }: GeneralLedgerTableProps) {
 	const dr = rows.reduce((s, r) => s + (r.baseDebit ?? r.debit), 0);
 	const cr = rows.reduce((s, r) => s + (r.baseCredit ?? r.credit), 0);
 	const closing = rows.length ? rows[rows.length - 1]!.runningBalance : openingBalance ?? 0;
@@ -1486,6 +1473,7 @@ export function GeneralLedgerTable({ rows, baseCurrency = "MYR", showAccount, op
 	return (
 		<DataList
 			className={className}
+			{...props}
 			caption="General ledger"
 			columns={columns}
 			rows={list}
@@ -1730,7 +1718,8 @@ export type CloseAttentionCard = {
 	accounts?: { code: string; name: string }[];
 	why: string;
 	risk: string;
-	fixes?: { label: string }[];
+	/** Ways to fix it; each with an `href` opens in a new tab, one without is plain text. */
+	fixes?: { label: string; href?: string }[];
 	fallback?: string;
 };
 export type CloseCheckItem = {
@@ -1785,11 +1774,15 @@ function CloseAttention({ card, note, onNote, className, ...props }: { card: Clo
 					<ul className="flex flex-wrap gap-x-4 gap-y-1">
 						{card.fixes.map((f) => (
 							<li key={f.label}>
-								<a href="#" className="inline-flex items-center gap-1 text-sm text-primary hover:underline focus-visible:rounded-sm focus-ring" onClick={(e) => e.preventDefault()}>
-									{f.label}
-									<ArrowSquareOutIcon size={12} aria-hidden="true" />
-									<span className="sr-only">(opens in a new tab)</span>
-								</a>
+								{f.href ? (
+									<a href={f.href} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-sm text-primary hover:underline focus-visible:rounded-sm focus-ring">
+										{f.label}
+										<ArrowSquareOutIcon size={12} aria-hidden="true" />
+										<span className="sr-only">(opens in a new tab)</span>
+									</a>
+								) : (
+									<span className="text-sm text-foreground">{f.label}</span>
+								)}
 							</li>
 						))}
 					</ul>
@@ -1812,19 +1805,23 @@ function CloseAttention({ card, note, onNote, className, ...props }: { card: Clo
 	);
 }
 
-export type PeriodCloseAttentionCardProps = Omit<React.ComponentProps<"div">, "children"> & { card: CloseAttentionCard; note?: string; onNoteChange?: (n: string) => void };
+export type PeriodCloseAttentionCardProps = Omit<React.ComponentProps<"div">, "children"> & {
+	card: CloseAttentionCard;
+	/** Controlled note. */
+	note?: string;
+	/** Initial note for uncontrolled use. */
+	defaultNote?: string;
+	onNoteChange?: (n: string) => void;
+};
 
 /** periods/AttentionCardView.tsx — a check Cynco could not verify, with fixes and the closer's note. */
-export function PeriodCloseAttentionCard({ card, note: initialNote = "", onNoteChange, ...props }: PeriodCloseAttentionCardProps) {
-	const [note, setNote] = React.useState(initialNote);
+export function PeriodCloseAttentionCard({ card, note: noteProp, defaultNote = "", onNoteChange, ...props }: PeriodCloseAttentionCardProps) {
+	const [note = defaultNote, setNote] = useControllableState({ prop: noteProp, defaultProp: defaultNote, onChange: onNoteChange });
 	return (
 		<CloseAttention
 			card={card}
 			note={note}
-			onNote={(n) => {
-				setNote(n);
-				onNoteChange?.(n);
-			}}
+			onNote={setNote}
 			{...props}
 		/>
 	);

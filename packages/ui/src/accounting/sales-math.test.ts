@@ -1,0 +1,46 @@
+import { describe, expect, test } from "vitest";
+import { buildSalesTotals, salesLineAmount, type SalesLineItem } from "./sales-math";
+
+const line = (patch: Partial<SalesLineItem>): SalesLineItem => ({ name: "Item", quantity: 1, price: "0", ...patch });
+
+describe("salesLineAmount", () => {
+	test.each<[Partial<SalesLineItem>, string]>([
+		[{ price: 1.15, taxCode: "st10" }, "1.27"],
+		[{ price: "4.35", taxCode: "st10" }, "4.79"],
+		[{ quantity: 3, price: "0.10" }, "0.30"],
+		[{ quantity: 2, price: "100", discount: 10 }, "180.00"],
+		[{ quantity: 2, price: "100", discount: "15.50", discountType: "fixed", taxCode: "sst8" }, "199.26"],
+		[{ price: "10", discount: "20", discountType: "fixed" }, "0.00"],
+	])("%o → %s", (patch, expected) => {
+		expect(salesLineAmount(line(patch))).toBe(expected);
+	});
+
+	test("uses the tax codes it is given", () => {
+		expect(salesLineAmount(line({ price: "100", taxCode: "gst" }), [{ value: "gst", label: "GST 9%", rate: 9 }])).toBe("109.00");
+	});
+});
+
+describe("buildSalesTotals", () => {
+	const value = (rows: ReturnType<typeof buildSalesTotals>, kind: string) => rows.find((r) => r.kind === kind);
+
+	test("a deposit equal to the total leaves a zero balance, not a negative one", () => {
+		const rows = buildSalesTotals({ subtotal: "0.70", taxes: [{ label: "Tax", amount: "0.10" }], deposit: "0.80" });
+		expect(value(rows, "balance")).toMatchObject({ value: "0.00", negative: false });
+	});
+
+	test("totals are exact and every row says what it is", () => {
+		const rows = buildSalesTotals({ subtotal: 0.1, discount: "0.03", taxes: [{ label: "SST 8%", amount: 0.2 }, { label: "Zero", amount: 0 }], deposit: "1.00" });
+		expect(rows.map((r) => [r.kind, r.value, r.negative ?? false])).toEqual([
+			["subtotal", "0.10", false],
+			["discount", "0.03", true],
+			["tax", "0.20", false],
+			["total", "0.27", false],
+			["deposit", "1.00", true],
+			["balance", "0.73", true],
+		]);
+	});
+
+	test("labels can be translated", () => {
+		expect(value(buildSalesTotals({ subtotal: "1" }, { total: "Jumlah" }), "total")?.label).toBe("Jumlah");
+	});
+});

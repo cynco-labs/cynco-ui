@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * Cynco UI — Expenses & parties.
  * Hand-written presentational ports of cynco remix/app/components/{expenses,vendors,
@@ -7,9 +9,11 @@
  * Every component responds to its own container width (container queries), not the viewport.
  */
 import * as React from "react";
-import { parseDate } from "../base/lib/utils";
+import { parseDate, todayISO } from "../base/lib/utils";
+import { type Amount, fromSen, parseAmount, toSen } from "../lib/money";
 import {
 	Alert,
+	useControllableState,
 	AlertDescription,
 	AlertTitle,
 	Button,
@@ -143,8 +147,10 @@ export type CyncoBill = {
 
 const POSTED_STATUSES = new Set(["approved", "awaiting_payment", "partially_paid", "scheduled", "paid"]);
 
-function outstandingOf(b: Pick<CyncoBill, "totalAmount" | "paidAmount">): number {
-	return Math.max(Math.round((b.totalAmount - (b.paidAmount ?? 0)) * 100), 0) / 100;
+/** What is left to pay on a bill, exact and never below zero. */
+function outstandingOf(b: { totalAmount: Amount; paidAmount?: Amount | null }): string {
+	const sen = toSen(b.totalAmount) - toSen(b.paidAmount);
+	return fromSen(sen > 0n ? sen : 0n);
 }
 
 function initialsOf(name: string | null | undefined): string {
@@ -291,10 +297,10 @@ function NameCell({ name, subtitle, inactiveLabel, inactive }: { name: string; s
 }
 
 /** Per-currency totals, compact, at most two (cynco formatCurrencyTotals). */
-function currencyTotals(bills: CyncoBill[], amount: (b: CyncoBill) => number, compact = true): string {
-	const by = new Map<string, number>();
-	for (const b of bills) by.set(b.currency ?? "MYR", (by.get(b.currency ?? "MYR") ?? 0) + amount(b));
-	const parts = [...by].map(([c, v]) => (compact ? formatCurrencyCompact(v, c) : formatCurrency(v, c)));
+function currencyTotals(bills: CyncoBill[], amount: (b: CyncoBill) => Amount, compact = true): string {
+	const by = new Map<string, bigint>();
+	for (const b of bills) by.set(b.currency ?? "MYR", (by.get(b.currency ?? "MYR") ?? 0n) + toSen(amount(b)));
+	const parts = [...by].map(([c, sen]) => (compact ? formatCurrencyCompact(Number(fromSen(sen)), c) : formatCurrency(fromSen(sen), c)));
 	return parts.length > 2 ? `${parts.slice(0, 2).join(" · ")} +${parts.length - 2}` : parts.join(" · ");
 }
 
@@ -471,10 +477,12 @@ export type BillsBoardProps = React.ComponentProps<"div"> & {
 	selectedIds?: string[];
 	onToggleBill?: (id: string) => void;
 	paidFilterLabel?: string;
+	/** Called from the paid column's filter button (e.g. to change the period); without it the label is plain text. */
+	onPaidFilterClick?: () => void;
 };
 
 /** Columns side by side on a wide container; stacked sections (cynco's phone layout) when narrow. */
-export function BillsBoard({ bills, columns, selectedIds, onToggleBill, paidFilterLabel = "Past 30 Days", className, ...props }: BillsBoardProps) {
+export function BillsBoard({ bills, columns, selectedIds, onToggleBill, paidFilterLabel = "Past 30 Days", onPaidFilterClick, className, ...props }: BillsBoardProps) {
 	const cols = BOARD_COLUMNS.filter((c) => !columns || columns.includes(c.key));
 	const selected = new Set(selectedIds ?? []);
 	return (
@@ -490,11 +498,14 @@ export function BillsBoard({ bills, columns, selectedIds, onToggleBill, paidFilt
 									<h3 className="truncate text-sm font-medium text-foreground">{col.label}</h3>
 									{list.length > 0 && <span className="rounded-full bg-muted px-1.5 py-0.5 text-2xs leading-none tabular-nums text-tertiary-foreground">{list.length}</span>}
 								</div>
-								{col.key === "paid" && (
-									<Button variant="skeleton" size="sm" className="text-tertiary-foreground">
-										{paidFilterLabel}
-									</Button>
-								)}
+								{col.key === "paid" &&
+									(onPaidFilterClick ? (
+										<Button variant="skeleton" size="sm" className="text-tertiary-foreground" onClick={onPaidFilterClick}>
+											{paidFilterLabel}
+										</Button>
+									) : (
+										<span className="text-xs text-tertiary-foreground">{paidFilterLabel}</span>
+									))}
 							</div>
 							<div className="flex flex-1 flex-col rounded-xl border border-table-tray-border bg-table-tray">
 								{list.length === 0 ? (
@@ -753,7 +764,7 @@ export type PayRunTableProps = React.ComponentProps<"div"> & {
 
 export function PayRunTable({ bills, selectedIds, onSelectedChange, defaultSelectedIds, scheduledDate, today, bankAccounts, onSchedule, isSubmitting, className, ...props }: PayRunTableProps) {
 	const { ids: sel, toggle, set } = useSelection(selectedIds, defaultSelectedIds, onSelectedChange);
-	const todayStr = today ?? new Date().toISOString().slice(0, 10);
+	const todayStr = today ?? todayISO();
 	const [date, setDate] = React.useState(scheduledDate ?? todayStr);
 	const [bank, setBank] = React.useState(bankAccounts?.[0]?.id ?? "");
 
@@ -920,8 +931,8 @@ function FormField({ label, htmlFor, error, hint, children }: { label: string; h
 }
 
 export type RecordBillPaymentDialogProps = {
-	billAmount: number;
-	paidAmount?: number;
+	billAmount: Amount;
+	paidAmount?: Amount;
 	currency?: string;
 	bankAccounts: CyncoBankAccount[];
 	defaultOpen?: boolean;
@@ -937,10 +948,10 @@ export type RecordBillPaymentDialogProps = {
 
 export function RecordBillPaymentDialog({ billAmount, paidAmount = 0, currency = "MYR", bankAccounts, defaultOpen = false, defaultDate, disabled, onSubmit, className, contentClassName }: RecordBillPaymentDialogProps) {
 	const outstanding = outstandingOf({ totalAmount: billAmount, paidAmount });
-	const hasPrior = paidAmount > 0;
+	const hasPrior = toSen(paidAmount) > 0n;
 	const [open, setOpen] = React.useState(defaultOpen);
-	const [amount, setAmount] = React.useState(outstanding.toFixed(2));
-	const [date, setDate] = React.useState(defaultDate ?? new Date().toISOString().slice(0, 10));
+	const [amount, setAmount] = React.useState(outstanding);
+	const [date, setDate] = React.useState(defaultDate ?? todayISO);
 	const [method, setMethod] = React.useState("__none__");
 	const [bank, setBank] = React.useState("__none__");
 	const [reference, setReference] = React.useState("");
@@ -951,12 +962,12 @@ export function RecordBillPaymentDialog({ billAmount, paidAmount = 0, currency =
 	const uid = React.useId();
 	const fid = (k: string) => `${uid}-${k}`;
 
-	const n = Number(amount.trim());
+	const parsed = parseAmount(amount);
 	const errors = {
 		amount:
-			amount.trim() === "" || isNaN(n) || n <= 0
+			!parsed.ok || parsed.value === "" || toSen(parsed.value) <= 0n
 				? "Enter an amount greater than zero."
-				: Math.round(n * 100) > Math.round(outstanding * 100)
+				: toSen(parsed.value) > toSen(outstanding)
 					? `Enter ${formatCurrency(outstanding, currency)} or less, the amount still outstanding.`
 					: null,
 		date: date ? null : "Choose a payment date.",
@@ -979,7 +990,7 @@ export function RecordBillPaymentDialog({ billAmount, paidAmount = 0, currency =
 		setAttempted(false);
 		onSubmit?.({
 			paymentDate: date,
-			paymentAmount: amount.trim(),
+			paymentAmount: parsed.value ?? "",
 			paymentMethod: method === "__none__" ? undefined : method,
 			paymentReference: reference || undefined,
 			bankAccountId: bank,
@@ -1010,7 +1021,7 @@ export function RecordBillPaymentDialog({ billAmount, paidAmount = 0, currency =
 							]}
 						/>
 						<FormField label="Payment Amount *" htmlFor={fid("amount")} error={shown("amount")} hint={currency !== "MYR" ? <p className="text-xs text-tertiary-foreground">Exchange rate applied at time of recording</p> : null}>
-							<Input id={fid("amount")} type="number" step="0.01" min="0.01" value={amount} onChange={(e) => setAmount(e.target.value)} {...invalidProps("amount")} required className="tabular-nums" />
+							<Input id={fid("amount")} type="text" inputMode="decimal" autoComplete="off" value={amount} onChange={(e) => setAmount(e.target.value)} {...invalidProps("amount")} required className="tabular-nums" />
 						</FormField>
 						<FormField label="Payment date *" htmlFor={fid("date")} error={shown("date")}>
 							<Input id={fid("date")} type="date" value={date} onChange={(e) => setDate(e.target.value)} {...invalidProps("date")} required className="tabular-nums" />
@@ -1261,9 +1272,18 @@ export type PartyOverviewHeaderProps = React.ComponentProps<"div"> & {
 	/** YYYY-MM-DD the party was created. */
 	since?: string | null;
 	currency?: string;
-	tab?: "activity" | "ledger" | "details";
-	onTabChange?: (tab: string) => void;
+	/** Controlled tab. */
+	tab?: PartyTab;
+	/** Initial tab for uncontrolled use. */
+	defaultTab?: PartyTab;
+	onTabChange?: (tab: PartyTab) => void;
+	/** Called from the Statement button; omit to hide it. */
+	onStatement?: () => void;
+	/** Called from New invoice (customer) or New bill (vendor); omit to hide it. */
+	onCreate?: () => void;
 };
+
+export type PartyTab = "activity" | "ledger" | "details";
 
 export function PartyOverviewHeader({
 	role,
@@ -1279,12 +1299,15 @@ export function PartyOverviewHeader({
 	since,
 	currency = "MYR",
 	tab: tabProp,
+	defaultTab = "activity",
 	onTabChange,
+	onStatement,
+	onCreate,
 	className,
 	...props
 }: PartyOverviewHeaderProps) {
 	const isVendor = role === "vendor";
-	const [tab, setTab] = React.useState(tabProp ?? "activity");
+	const [tab = defaultTab, setTab] = useControllableState({ prop: tabProp, defaultProp: defaultTab, onChange: onTabChange });
 	return (
 		<div className={cn("@container flex min-w-0 flex-col gap-4", className)} {...props}>
 			<div className="min-w-0">
@@ -1303,12 +1326,16 @@ export function PartyOverviewHeader({
 						)}
 					</div>
 					<ActionBar>
-						<IconButton variant="secondary" icon={<FileTextIcon size={14} />}>
-							Statement
-						</IconButton>
-						<IconButton variant="primary" icon={<PlusIcon size={14} weight="bold" />}>
-							{isVendor ? "New bill" : "New invoice"}
-						</IconButton>
+						{onStatement && (
+							<IconButton variant="secondary" icon={<FileTextIcon size={14} />} onClick={onStatement}>
+								Statement
+							</IconButton>
+						)}
+						{onCreate && (
+							<IconButton variant="primary" icon={<PlusIcon size={14} weight="bold" />} onClick={onCreate}>
+								{isVendor ? "New bill" : "New invoice"}
+							</IconButton>
+						)}
 					</ActionBar>
 				</div>
 			</div>
@@ -1333,9 +1360,8 @@ export function PartyOverviewHeader({
 				<ScrollRow>
 					<Tabs
 						value={tab}
-						onValueChange={(v: string) => {
-							setTab(v as typeof tab);
-							onTabChange?.(v);
+						onValueChange={(v: unknown) => {
+							if (v === "activity" || v === "ledger" || v === "details") setTab(v);
 						}}
 					>
 						<TabsList variant="underline" className="border-b-0">
@@ -1397,10 +1423,16 @@ export type PartyRailProps = React.ComponentProps<"aside"> & {
 	/** In-app handler for "View credit notes" when there is no URL; renders it as a button. Without either, the action is hidden. */
 	onViewCreditNotes?: () => void;
 	contacts?: PartyContact[];
+	/** Called from a contact's star button; omit to hide it. */
+	onSetPrimaryContact?: (contact: PartyContact) => void;
+	/** Called from a contact's edit button; omit to hide it. */
+	onEditContact?: (contact: PartyContact) => void;
+	/** Called from "Add contact"; omit to hide it. */
+	onAddContact?: () => void;
 };
 
 /** One column as a rail; two (then three) columns when its container is wide. */
-export function PartyRail({ role, currency = "MYR", ledgerBalance, openItemsTotal, aging, trend, credits, creditNotesHref, onViewCreditNotes, contacts, className, ...props }: PartyRailProps) {
+export function PartyRail({ role, currency = "MYR", ledgerBalance, openItemsTotal, aging, trend, credits, creditNotesHref, onViewCreditNotes, contacts, onSetPrimaryContact, onEditContact, onAddContact, className, ...props }: PartyRailProps) {
 	const isVendor = role === "vendor";
 	const tiesOut = Math.round(ledgerBalance * 100) === Math.round(openItemsTotal * 100);
 	const agingTotal = AGING_BUCKETS.reduce((s, b) => s + aging[b.key], 0);
@@ -1514,9 +1546,11 @@ export function PartyRail({ role, currency = "MYR", ledgerBalance, openItemsTota
 					<RailCard
 						title="Contacts"
 						trailing={
-							<IconButton variant="skeleton" size="sm" icon={<PlusIcon size={12} weight="bold" />} className="-my-1 text-tertiary-foreground">
-								Add contact
-							</IconButton>
+							onAddContact && (
+								<IconButton variant="skeleton" size="sm" icon={<PlusIcon size={12} weight="bold" />} className="-my-1 text-tertiary-foreground" onClick={onAddContact}>
+									Add contact
+								</IconButton>
+							)
 						}
 					>
 						{contacts.length === 0 ? (
@@ -1551,14 +1585,16 @@ export function PartyRail({ role, currency = "MYR", ledgerBalance, openItemsTota
 											</div>
 										</div>
 										<div className="flex shrink-0 items-center opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 no-hover:opacity-100">
-											{!c.isPrimary && (
-												<Button variant="skeleton" size="icon" aria-label={`Set ${c.name} as primary`}>
+											{!c.isPrimary && onSetPrimaryContact && (
+												<Button variant="skeleton" size="icon" aria-label={`Set ${c.name} as primary`} onClick={() => onSetPrimaryContact(c)}>
 													<StarIcon size={13} aria-hidden="true" />
 												</Button>
 											)}
-											<Button variant="skeleton" size="icon" aria-label={`Edit contact ${c.name}`}>
-												<PencilSimpleIcon size={13} aria-hidden="true" />
-											</Button>
+											{onEditContact && (
+												<Button variant="skeleton" size="icon" aria-label={`Edit contact ${c.name}`} onClick={() => onEditContact(c)}>
+													<PencilSimpleIcon size={13} aria-hidden="true" />
+												</Button>
+											)}
 										</div>
 									</li>
 								))}
@@ -1667,9 +1703,9 @@ export function PartyTimeline({ events, role, currency = "MYR", className, ...pr
 
 export type PartyLedgerRow = { id: string; entryDate: string; event: string; documentNumber?: string | null; documentType?: string; amount: number; runningBalance: number };
 
-export type PartyLedgerTableProps = { rows: PartyLedgerRow[]; currency?: string; className?: string };
+export type PartyLedgerTableProps = { rows: PartyLedgerRow[]; currency?: string; className?: string } & Omit<React.ComponentProps<"div">, "children">;
 
-export function PartyLedgerTable({ rows, currency = "MYR", className }: PartyLedgerTableProps) {
+export function PartyLedgerTable({ rows, currency = "MYR", className, ...props }: PartyLedgerTableProps) {
 	// Statement arrives oldest-first (running balance order); show newest first.
 	const list = [...rows].reverse();
 	const columns: DataColumn<PartyLedgerRow>[] = [
@@ -1682,6 +1718,7 @@ export function PartyLedgerTable({ rows, currency = "MYR", className }: PartyLed
 	return (
 		<DataList
 			className={className}
+			{...props}
 			caption="Ledger"
 			columns={columns}
 			rows={list}
@@ -1730,9 +1767,9 @@ export type CustomerListTableProps = {
 	marginWindowDays?: number;
 	onRowClick?: (row: CyncoCustomerRow) => void;
 	className?: string;
-};
+} & Omit<React.ComponentProps<"div">, "children">;
 
-export function CustomerListTable({ customers, selectedIds, onSelectedChange, defaultSelectedIds, marginWindowDays = 90, onRowClick, className }: CustomerListTableProps) {
+export function CustomerListTable({ customers, selectedIds, onSelectedChange, defaultSelectedIds, marginWindowDays = 90, onRowClick, className, ...props }: CustomerListTableProps) {
 	const { ids, toggle, set } = useSelection(selectedIds, defaultSelectedIds, onSelectedChange);
 	const columns: DataColumn<CyncoCustomerRow>[] = [
 		{
@@ -1802,6 +1839,7 @@ export function CustomerListTable({ customers, selectedIds, onSelectedChange, de
 	return (
 		<DataList
 			className={className}
+			{...props}
 			caption="Customers"
 			columns={columns}
 			rows={customers}
@@ -1852,9 +1890,9 @@ export type VendorListTableProps = {
 	currency?: string;
 	onRowClick?: (row: CyncoVendorRow) => void;
 	className?: string;
-};
+} & Omit<React.ComponentProps<"div">, "children">;
 
-export function VendorListTable({ vendors, selectedIds, onSelectedChange, defaultSelectedIds, currency = "MYR", onRowClick, className }: VendorListTableProps) {
+export function VendorListTable({ vendors, selectedIds, onSelectedChange, defaultSelectedIds, currency = "MYR", onRowClick, className, ...props }: VendorListTableProps) {
 	const { ids, toggle, set } = useSelection(selectedIds, defaultSelectedIds, onSelectedChange);
 	const columns: DataColumn<CyncoVendorRow>[] = [
 		{
@@ -1890,6 +1928,7 @@ export function VendorListTable({ vendors, selectedIds, onSelectedChange, defaul
 	return (
 		<DataList
 			className={className}
+			{...props}
 			caption="Vendors"
 			columns={columns}
 			rows={vendors}
@@ -1993,9 +2032,9 @@ export type CustomerStatementTableProps = {
 	page?: number;
 	totalPages?: number;
 	className?: string;
-};
+} & Omit<React.ComponentProps<"div">, "children">;
 
-export function CustomerStatementTable({ transactions, currency = "MYR", isSingleCurrency = true, balanceDue, page, totalPages, className }: CustomerStatementTableProps) {
+export function CustomerStatementTable({ transactions, currency = "MYR", isSingleCurrency = true, balanceDue, page, totalPages, className, ...props }: CustomerStatementTableProps) {
 	const lastPage = !totalPages || page === totalPages;
 	const showBalance = lastPage && isSingleCurrency && balanceDue != null;
 	const columns: DataColumn<StatementTransaction>[] = [
@@ -2010,6 +2049,7 @@ export function CustomerStatementTable({ transactions, currency = "MYR", isSingl
 	return (
 		<DataList
 			className={className}
+			{...props}
 			caption="Statement of account"
 			columns={columns}
 			rows={transactions}

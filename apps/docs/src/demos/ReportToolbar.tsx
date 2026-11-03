@@ -19,32 +19,32 @@ export default function ReportToolbarDemo() {
 			<ReportToolbar
 				title="Profit & loss"
 				meta="October 2026 · MYR"
-				period="2026-10"
+				defaultPeriod="2026-10"
 				periods={periods}
 				fiscalYearEnd="12-31"
-				view="monthly"
+				defaultView="monthly"
 				views={[
 					{ value: "monthly", label: "Monthly" },
 					{ value: "ytd", label: "YTD" },
 				]}
-				compare
-				comparePeriod="2026-09"
+				defaultCompare
+				defaultComparePeriod="2026-09"
 				freshness={{ mode: "live", lastPostingAt: "2026-10-30T06:10:00Z" }}
 				now="2026-10-30T09:25:00Z"
 			/>
 			<ReportToolbar
 				title="Trial balance"
 				meta="As at 31 Oct 2026 · MYR · 11 accounts"
-				period="2026-10"
+				defaultPeriod="2026-10"
 				periods={periods}
 				fiscalYearEnd="06-30"
-				view="standard"
+				defaultView="standard"
 				views={[
 					{ value: "standard", label: "Standard" },
 					{ value: "extended", label: "Extended" },
 				]}
-				compare={false}
-				showSaveSnapshot
+				defaultCompare={false}
+				onSaveSnapshot={() => {}}
 				freshness={{ mode: "snapshot", takenAt: "2026-10-30T09:12:00Z" }}
 				now="2026-10-30T09:25:00Z"
 			/>

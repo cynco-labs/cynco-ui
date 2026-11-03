@@ -1009,7 +1009,7 @@ Settings → Documents (invoice templates). One brand drives invoices, receipts,
 
 ## Props
 
-brand / defaultBrand / onBrandChange (DocBrand), documents ([{id, label, render({stamp, size}), sizes?, stamps?}]), defaultDocumentId, onPrint. brandFromCyncoTemplate(template, company) maps Cynco's stored invoice template onto a DocBrand.
+brand / defaultBrand / onBrandChange (DocBrand), documents ([{id, label, render({stamp, size}), sizes?, stamps?}]), defaultDocumentId, onPrint.
 
 - `documents`: `StudioDocument[]`
 - `brand?`: `DocBrand`. Controlled brand.

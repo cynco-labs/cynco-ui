@@ -15,7 +15,9 @@ export default function BankAccountRailDemo() {
 	return (
 		<BankAccountRail
 			className="max-w-60"
-			selectedId="mbb"
+			defaultSelectedId="mbb"
+			onAddAccount={() => {}}
+			onConnectProvider={() => {}}
 			net={[{ amount: 270250.75, currency: "MYR" }]}
 			cashFlow={[
 				{ month: "May", net: 12400 },
@@ -76,7 +78,11 @@ accounts [{id, accountName, accountType, balance, currency, institution, counts,
 
 - `accounts`: `BankRailAccount[]`
 - `net`: `{ amount: number; currency: string }[]`. One entry per currency; never summed across currencies.
-- `selectedId?`: `string | null`. Default `null`.
+- `selectedId?`: `string | null`. Controlled selection: an account id, or null for "All accounts".
+- `defaultSelectedId?`: `string | null`. Initial selection for uncontrolled use. Default `null`.
+- `onSelectedIdChange?`: `(id: string | null) => void`
+- `onAddAccount?`: `() => void`. Called from "Add account"; omit to hide it.
+- `onConnectProvider?`: `() => void`. Called from "Connect a payment provider"; omit to hide it.
 - `cashFlow?`: `{ month: string; net: number }[]`. Default `[]`.
 - Also accepts `ComponentProps<"div">`.
 

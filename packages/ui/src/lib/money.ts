@@ -6,8 +6,9 @@
  * everything here is BigInt at a fixed 6-decimal working scale, rounded half-up to 2 decimals at the end.
  */
 
+import { SCALE as W, fixed, roundToSen } from "./decimal";
+
 const WORK = 6; // working decimals inside expressions
-const W = 10n ** BigInt(WORK);
 
 /**
  * True for a plain decimal string ("-1234.50"). Intl.NumberFormat formats such strings exactly, with no
@@ -17,28 +18,24 @@ export function isDecimalString(s: string): s is `${number}` {
 	return /^-?\d+(\.\d+)?$/.test(s);
 }
 
-/** "1234.5" | 1234.5 → 123450n (sen). Invalid → 0n. */
-export function toSen(amount: string | number | bigint | null | undefined): bigint {
-	if (amount == null || amount === "") return 0n;
+/** A money amount as given: a decimal string ("1234.50") or a number. Strings are exact; prefer them. */
+export type Amount = string | number;
+
+/** "1234.5" | 1234.5 → 123450n (sen), half-up. Invalid → 0n. */
+export function toSen(amount: Amount | bigint | null | undefined): bigint {
 	if (typeof amount === "bigint") return amount;
-	const s = typeof amount === "number" ? amount.toFixed(2) : String(amount).trim();
-	const m = /^(-)?(\d*)(?:\.(\d*))?$/.exec(s.replace(/,/g, ""));
-	if (!m) return 0n;
-	const frac = ((m[3] ?? "") + "000").slice(0, 3);
-	let sen = BigInt(m[2] || "0") * 100n + BigInt(frac.slice(0, 2));
-	if (Number(frac[2]) >= 5) sen += 1n; // half-up on the third decimal
-	return m[1] ? -sen : sen;
+	return roundToSen(fixed(amount));
 }
 
 /** 123450n → "1234.50" */
-export function fromSen(sen: bigint): string {
+export function fromSen(sen: bigint): `${number}` {
 	const neg = sen < 0n;
 	const a = neg ? -sen : sen;
-	return `${neg ? "-" : ""}${a / 100n}.${String(a % 100n).padStart(2, "0")}`;
+	return `${neg ? "-" : ""}${a / 100n}.${String(a % 100n).padStart(2, "0")}` as `${number}`;
 }
 
 /** Sum any mix of decimal strings/numbers exactly: sumAmounts(["0.10","0.20"]) → "0.30". */
-export function sumAmounts(values: Array<string | number | null | undefined>): string {
+export function sumAmounts(values: ReadonlyArray<Amount | null | undefined>): `${number}` {
 	return fromSen(values.reduce<bigint>((t, v) => t + toSen(v), 0n));
 }
 
@@ -62,13 +59,7 @@ export function parseAmount(input: string): ParsedAmount {
 		const p = new Parser(s);
 		const v = p.expr();
 		if (!p.done()) throw new Error("Unexpected “" + s.slice(p.i) + "”");
-		// v is scaled by W; round half-up (away from zero) to sen.
-		const neg = v < 0n;
-		const a = neg ? -v : v;
-		const step = W / 100n;
-		let sen = a / step;
-		if ((a % step) * 2n >= step) sen += 1n;
-		return { ok: true, value: fromSen(neg ? -sen : sen), isExpression };
+		return { ok: true, value: fromSen(roundToSen(v)), isExpression };
 	} catch (e) {
 		return { ok: false, error: e instanceof Error ? e.message : "Not a number" };
 	}
@@ -132,4 +123,11 @@ class Parser {
 		if (suf === "m") v *= 1_000_000n;
 		return v;
 	}
+}
+
+/** Debit and credit totals of journal lines, and debit minus credit, exact to the sen. */
+export function journalTotals(lines: ReadonlyArray<{ debit?: Amount | null; credit?: Amount | null }>) {
+	const debit = sumAmounts(lines.map((l) => l.debit));
+	const credit = sumAmounts(lines.map((l) => l.credit));
+	return { debit, credit, difference: fromSen(toSen(debit) - toSen(credit)) };
 }

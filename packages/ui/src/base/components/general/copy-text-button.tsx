@@ -1,7 +1,9 @@
+"use client";
+
+import { CheckIcon, CopyIcon } from "@phosphor-icons/react";
 import { LiveStatus } from "./live-status";
 import { Button, type ButtonProps } from "../ui/button";
-import { cn } from "../../lib/utils";
-import { Check, Copy } from "lucide-react";
+import { cn, copyToClipboard } from "../../lib/utils";
 import type React from "react";
 import { useEffect, useState } from "react";
 
@@ -23,9 +25,9 @@ export function CopyTextButton({
 	const [copied, setCopied] = useState(false);
 
 	useEffect(() => {
-		setTimeout(() => {
-			setCopied(false);
-		}, 1000);
+		if (!copied) return;
+		const timer = setTimeout(() => setCopied(false), 1000);
+		return () => clearTimeout(timer);
 	}, [copied]);
 
 	return (
@@ -41,16 +43,15 @@ export function CopyTextButton({
 				onClick={(e) => {
 					e.preventDefault();
 					e.stopPropagation();
-					navigator.clipboard.writeText(text);
-					setCopied(true);
+					void copyToClipboard(text).then(setCopied);
 				}}
 			>
 				{children && <span className="truncate block">{children}</span>}
 				<div className="flex items-center justify-center">
 					{copied ? (
-						<Check size={copySize || 13} className="text-foreground" />
+						<CheckIcon size={copySize || 13} className="text-foreground" />
 					) : (
-						<Copy size={copySize || 13} />
+						(icon ?? <CopyIcon size={copySize || 13} />)
 					)}
 				</div>
 			</Button>

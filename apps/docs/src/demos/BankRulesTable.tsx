@@ -3,6 +3,9 @@ import { BankRulesTable } from "@cynco-labs/ui";
 export default function BankRulesTableDemo() {
 	return (
 		<BankRulesTable
+			onApplyToUnposted={() => {}}
+			onNewRule={() => {}}
+			onRowAction={() => {}}
 			rules={[
 				{
 					id: "r1",

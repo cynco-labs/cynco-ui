@@ -1,11 +1,14 @@
+"use client";
+
+import { CheckIcon, CopyIcon, type IconProps } from "@phosphor-icons/react";
+import { cn, copyToClipboard } from "../../lib/utils";
 import { LiveStatus } from "./live-status";
 import { CopyButton } from "./copy-button";
-import { Check, Copy } from "lucide-react";
 import React from "react";
 
-export function CopyablePre({ text }: { text: string }) {
+export function CopyablePre({ text, className, ...props }: Omit<React.ComponentProps<"div">, "children"> & { text: string }) {
 	return (
-		<div className="relative w-full min-w-0">
+		<div className={cn("relative w-full min-w-0", className)} {...props}>
 			<pre className="text-sm bg-muted/50 p-4 rounded-lg overflow-auto border w-full h-full">
 				<CopyButton
 					text={text}
@@ -32,23 +35,20 @@ export function CopyableSpan({
 	text: string;
 	className?: string;
 	copySize?: number;
-	copyProps?: React.ComponentProps<typeof import("lucide-react").Copy>;
+	copyProps?: IconProps;
 }) {
 	const [copied, setCopied] = React.useState(false);
 
 	React.useEffect(() => {
-		if (copied) {
-			setTimeout(() => {
-				setCopied(false);
-			}, 1000);
-		}
+		if (!copied) return;
+		const timer = setTimeout(() => setCopied(false), 1000);
+		return () => clearTimeout(timer);
 	}, [copied]);
 
 	const handleClick = (e: React.MouseEvent) => {
 		e.preventDefault();
 		e.stopPropagation();
-		navigator.clipboard.writeText(text);
-		setCopied(true);
+		void copyToClipboard(text).then(setCopied);
 	};
 
 	return (
@@ -63,9 +63,9 @@ export function CopyableSpan({
 				<span className="pr-2">{text}</span>
 				<span className="ml-1 p-0.5 rounded-md transition bg-transparent size-6 z-[1] static bg-none shadow-none border-none flex items-center justify-center">
 					{copied ? (
-						<Check size={copySize} className="text-muted-foreground" />
+						<CheckIcon size={copySize} className="text-muted-foreground" />
 					) : (
-						<Copy size={copySize} className="text-muted-foreground" />
+						<CopyIcon size={copySize} className="text-muted-foreground" />
 					)}
 				</span>
 			</button>

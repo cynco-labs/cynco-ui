@@ -1,3 +1,5 @@
+"use client";
+
 import { Background, ReactFlow, type ReactFlowProps } from "@xyflow/react";
 import { type ReactNode, useSyncExternalStore } from "react";
 import "@xyflow/react/dist/style.css";

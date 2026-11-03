@@ -139,7 +139,7 @@ export default function JournalLineEditorDemo() {
 			accounts={ACCTS}
 			recentIds={["a14", "a8", "a1"]}
 			fieldErrors={{ "l5.accountId": "Confirm the account before posting" }}
-			lines={[
+			defaultLines={[
 				{
 					key: "l1",
 					accountId: "a14",
@@ -198,7 +198,8 @@ Inside the journal entry form, above the balance bar, for creating or editing a 
 
 lines [{ key, accountId?, accountCode?, accountName?, description?, debitAmount?, creditAmount? }], accounts (picker list), recentIds?, fieldErrors? keyed `${key}.accountId`, onLinesChange?, className? (merged on the root) and native props.
 
-- `lines`: `JournalEditorLine[]`
+- `lines?`: `JournalEditorLine[]`. Controlled lines.
+- `defaultLines?`: `JournalEditorLine[]`. Initial lines for uncontrolled use. Default `[]`.
 - `accounts?`: `LedgerPickerAccount[]`. Default `[]`.
 - `recentIds?`: `string[]`
 - `fieldErrors?`: `Record<string, string>`. Keyed `${line.key}.accountId`. Default `{}`.

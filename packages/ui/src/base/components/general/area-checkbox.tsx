@@ -7,12 +7,14 @@ import {
 	TooltipContent,
 	TooltipTrigger,
 } from "../ui/tooltip";
+import { useControllableState } from "../../hooks/use-controllable-state";
 import { cn } from "../../lib/utils";
 import React from "react";
 
-interface AreaCheckboxProps {
-	className?: string;
+type AreaCheckboxProps = Omit<React.ComponentProps<"div">, "title" | "children" | "defaultChecked"> & {
 	checked?: boolean;
+	/** Initial state for uncontrolled use. */
+	defaultChecked?: boolean;
 	onCheckedChange?: (checked: boolean) => void;
 	title: string;
 	disabled?: boolean;
@@ -20,10 +22,11 @@ interface AreaCheckboxProps {
 	hide?: boolean;
 	description?: string;
 	children?: React.ReactNode;
-}
+};
 
 function AreaCheckbox({
-	checked = false,
+	checked: checkedProp,
+	defaultChecked = false,
 	onCheckedChange,
 	title,
 	disabled = false,
@@ -31,7 +34,10 @@ function AreaCheckbox({
 	hide = false,
 	description,
 	children,
+	className,
+	...props
 }: AreaCheckboxProps) {
+	const [checked = false, setChecked] = useControllableState({ prop: checkedProp, defaultProp: defaultChecked, onChange: onCheckedChange });
 	const id = React.useId();
 	const reasonId = `${id}-reason`;
 
@@ -40,14 +46,12 @@ function AreaCheckbox({
 	const isDisabled = disabled || !!disabledReason;
 
 	const content = (
-		<div className="flex items-start gap-[6px] text-sm">
+		<div className={cn("flex items-start gap-[6px] text-sm", className)} {...props}>
 			<Checkbox
 				id={id}
 				checked={checked}
-				onCheckedChange={(checked) => {
-					if (!isDisabled && onCheckedChange) {
-						onCheckedChange(checked as boolean);
-					}
+				onCheckedChange={(next) => {
+					if (!isDisabled) setChecked(next === true);
 				}}
 				disabled={isDisabled}
 				aria-describedby={disabledReason ? reasonId : undefined}

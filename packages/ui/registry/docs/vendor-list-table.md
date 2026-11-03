@@ -88,6 +88,7 @@ vendors [{name, email, phone, category, city, country, isActive, outstanding, ov
 - `defaultSelectedIds?`: `string[]`
 - `currency?`: `string`. Default `"MYR"`.
 - `onRowClick?`: `(row: CyncoVendorRow) => void`
+- Also accepts `ComponentProps<"div">`.
 
 ## Notes
 

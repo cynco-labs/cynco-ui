@@ -1,6 +1,8 @@
+"use client";
+
+import { DotsThreeVerticalIcon } from "@phosphor-icons/react";
 import { Button, type ButtonProps } from "../ui/button";
 import { cn } from "../../lib/utils";
-import { EllipsisVertical } from "lucide-react";
 import { forwardRef } from "react";
 
 export const ToolbarButton = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -24,7 +26,7 @@ export const ToolbarButton = forwardRef<HTMLButtonElement, ButtonProps>(
 					props.onClick?.(e);
 				}}
 			>
-				<EllipsisVertical size={12} />
+				<DotsThreeVerticalIcon size={12} />
 			</Button>
 		);
 	},

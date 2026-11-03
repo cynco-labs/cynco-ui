@@ -14,6 +14,7 @@ import { CreditDebitNoteList } from "@cynco-labs/ui";
 export default function CreditDebitNoteListDemo() {
 	return (
 		<CreditDebitNoteList
+			onRowAction={() => {}}
 			notes={[
 				{
 					id: "1",
@@ -67,6 +68,8 @@ notes ({id, noteNumber, noteType, customerName, totalAmount, currency, status, d
 
 - `notes`: `SalesNoteRow[]`
 - `onOpen?`: `(id: string) => void`
+- `onRowAction?`: `(note: SalesNoteRow) => void`. Called from a row's actions button; omit to hide the button.
+- Also accepts `ComponentProps<"div">`.
 
 ## Notes
 

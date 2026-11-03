@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * Cynco UI — operational documents, assembled from the document kit (./documents via ./shared).
  *
@@ -22,6 +24,7 @@ import { ScissorsIcon } from "@phosphor-icons/react";
 import { cn } from "../base";
 import {
 	DocumentPage,
+	type DocumentPageProps,
 	Letterhead,
 	DocLabel,
 	DocSection,
@@ -50,10 +53,8 @@ import {
 	formatDocAmount,
 	currencySymbol,
 	amountInWords,
-	type DocBrand,
 	type DocParty,
 	type DocSignatory,
-	type DocumentStamp,
 	type DocColumn,
 	type DocLabelKey,
 	type TotalsRow,
@@ -63,14 +64,8 @@ import {
 /* ═════════════ Shared types ═════════════ */
 
 /** Presentation props every document here accepts. */
-export type OpsDocumentProps = {
-	/** Overrides the provider's brand (merged over it). */
-	brand?: Partial<DocBrand>;
-	stamp?: DocumentStamp;
-	fit?: "width" | "none";
-	isolate?: boolean;
-	className?: string;
-};
+/** Page options (brand, stamp, fit, zoom control, print isolation) and native props for the document's root `<article>`. */
+export type OpsDocumentProps = Omit<DocumentPageProps, "size" | "children">;
 
 /** Posted totals, printed as given. Discounts arrive negative ("-120.00"). */
 export type OpsDocTotals = {
@@ -123,10 +118,10 @@ export type DocRemittanceSlipProps = {
 };
 
 /** Tear-off remittance advice: a dashed cut line, who is paying and how much, and a blank for the amount enclosed. */
-export function DocRemittanceSlip({ payTo, fields, amountDue, currency = "MYR", note, className }: DocRemittanceSlipProps) {
-	const { company, layout } = useDocumentBrand();
+export function DocRemittanceSlip({ payTo, fields, amountDue, currency, note, className }: DocRemittanceSlipProps) {
+	const { company, layout, baseCurrency } = useDocumentBrand();
 	const L = useDocLabel();
-	const sym = currencySymbol(currency);
+	const sym = currencySymbol(currency ?? baseCurrency);
 	return (
 		<section data-slot="cy-doc-remittance" className={cn("cy-doc-break-avoid mt-[7mm]", className)}>
 			{/* The cut line is decoration; the instruction on it is content. */}
@@ -214,9 +209,9 @@ export type PurchaseOrderData = {
 };
 
 function PurchaseOrderBody({ order }: { order: PurchaseOrderData }) {
-	const { locale } = useDocumentBrand();
+	const { locale , baseCurrency } = useDocumentBrand();
 	const L = useDocLabel();
-	const currency = order.currency ?? "MYR";
+	const currency = order.currency ?? baseCurrency;
 	const rows = useTotalsRows(order.totals);
 
 	const columns: DocColumn<PurchaseOrderLine>[] = [
@@ -309,9 +304,9 @@ function PurchaseOrderBody({ order }: { order: PurchaseOrderData }) {
 }
 
 /** A purchase order to a vendor: deliver-to, required-by date, requester, priced lines with SST, posted totals, terms and signatures. */
-export function PurchaseOrderDocument({ order, size = "a4", brand, stamp, fit, isolate, className }: OpsDocumentProps & { order: PurchaseOrderData; size?: "a4" | "letter" }) {
+export function PurchaseOrderDocument({ order, size = "a4", stamp, className, ...page }: OpsDocumentProps & { order: PurchaseOrderData; size?: "a4" | "letter" }) {
 	return (
-		<DocumentPage brand={brand} size={size} stamp={stamp} fit={fit} isolate={isolate} className={className}>
+		<DocumentPage {...page} size={size} stamp={stamp} className={className}>
 			<PurchaseOrderBody order={order} />
 		</DocumentPage>
 	);
@@ -365,9 +360,9 @@ export type PaymentVoucherData = {
 const METHOD_LABEL: Record<PaymentVoucherMethod["kind"], DocLabelKey> = { bank_transfer: "bankTransfer", cheque: "cheque", cash: "cash", duitnow: "duitnow", card: "card" };
 
 function PaymentVoucherBody({ voucher }: { voucher: PaymentVoucherData }) {
-	const { locale } = useDocumentBrand();
+	const { locale , baseCurrency } = useDocumentBrand();
 	const L = useDocLabel();
-	const currency = voucher.currency ?? "MYR";
+	const currency = voucher.currency ?? baseCurrency;
 	const rows = useTotalsRows(voucher.totals, "totalPaid");
 	const m = voucher.method;
 
@@ -467,9 +462,9 @@ function PaymentVoucherBody({ voucher }: { voucher: PaymentVoucherData }) {
 }
 
 /** A payment voucher: payee and bank details, method (transfer / cheque / cash), the bills paid with account codes, total in words and four signatures. */
-export function PaymentVoucherDocument({ voucher, size = "a4", brand, stamp, fit, isolate, className }: OpsDocumentProps & { voucher: PaymentVoucherData; size?: "a4" | "letter" }) {
+export function PaymentVoucherDocument({ voucher, size = "a4", stamp, className, ...page }: OpsDocumentProps & { voucher: PaymentVoucherData; size?: "a4" | "letter" }) {
 	return (
-		<DocumentPage brand={brand} size={size} stamp={stamp} fit={fit} isolate={isolate} className={className}>
+		<DocumentPage {...page} size={size} stamp={stamp} className={className}>
 			<PaymentVoucherBody voucher={voucher} />
 		</DocumentPage>
 	);
@@ -520,9 +515,9 @@ export type StatementOfAccountData = {
 type StatementLine = StatementTransactionRow & { opening?: true };
 
 function StatementOfAccountBody({ statement: s }: { statement: StatementOfAccountData }) {
-	const { locale } = useDocumentBrand();
+	const { locale , baseCurrency } = useDocumentBrand();
 	const L = useDocLabel();
-	const currency = s.currency ?? "MYR";
+	const currency = s.currency ?? baseCurrency;
 	const role = s.role ?? "customer";
 	const remittance = s.remittance ?? role === "customer";
 	const amt = (v?: string) => (v == null ? "" : formatDocAmount(v, { zero: "" }));
@@ -561,7 +556,7 @@ function StatementOfAccountBody({ statement: s }: { statement: StatementOfAccoun
 						{ label: L("period"), value: period(s.periodFrom, s.periodTo, locale) },
 						{ label: L("accountNo"), value: s.accountNo },
 						{ label: L("terms"), value: s.terms },
-						{ label: L("currency"), value: currency === "MYR" ? "MYR (RM)" : currency },
+						{ label: L("currency"), value: currencySymbol(currency) === currency ? currency : `${currency} (${currencySymbol(currency)})` },
 					]}
 				/>
 				<TotalsBlock rows={summary} currency={currency} aside={<PartyBlock heading={L(role === "vendor" ? "vendor" : "customer")} party={s.party} />} />
@@ -631,9 +626,9 @@ function StatementOfAccountBody({ statement: s }: { statement: StatementOfAccoun
  * closing balance, an aging strip ending in the total due, and a tear-off remittance slip.
  * Long statements flow onto more pages; the table header repeats on each printed page.
  */
-export function StatementOfAccountDocument({ statement, size = "a4", brand, stamp, fit, isolate, className }: OpsDocumentProps & { statement: StatementOfAccountData; size?: "a4" | "letter" }) {
+export function StatementOfAccountDocument({ statement, size = "a4", stamp, className, ...page }: OpsDocumentProps & { statement: StatementOfAccountData; size?: "a4" | "letter" }) {
 	return (
-		<DocumentPage brand={brand} size={size} stamp={stamp} fit={fit} isolate={isolate} className={className}>
+		<DocumentPage {...page} size={size} stamp={stamp} className={className}>
 			<StatementOfAccountBody statement={statement} />
 		</DocumentPage>
 	);
@@ -685,9 +680,9 @@ export type PayslipDocumentData = {
 };
 
 function PayslipBody({ payslip: p, size }: { payslip: PayslipDocumentData; size: "a4" | "a5" }) {
-	const { locale } = useDocumentBrand();
+	const { locale , baseCurrency } = useDocumentBrand();
 	const L = useDocLabel();
-	const currency = p.currency ?? "MYR";
+	const currency = p.currency ?? baseCurrency;
 	const a5 = size === "a5";
 	// Bilingual payslips stack the line label (English, Malay beneath); the basis line stays in English to keep rows short.
 	const detail = (d?: DocText) => (d == null ? undefined : typeof d === "object" && locale === "en-ms" ? d.en : L(d));
@@ -875,9 +870,9 @@ function PayslipBody({ payslip: p, size }: { payslip: PayslipDocumentData; size:
  * side by side, gross / deductions / net pay (net in words), employer EPF/SOCSO/EIS/HRDF contributions, year to date.
  * A4 by default; A5 for the half-sheet many SMEs print.
  */
-export function PayslipDocument({ payslip, size = "a4", brand, stamp, fit, isolate, className }: OpsDocumentProps & { payslip: PayslipDocumentData; size?: "a4" | "a5" }) {
+export function PayslipDocument({ payslip, size = "a4", stamp, className, ...page }: OpsDocumentProps & { payslip: PayslipDocumentData; size?: "a4" | "a5" }) {
 	return (
-		<DocumentPage brand={brand} size={size} stamp={stamp} fit={fit} isolate={isolate} className={cn(size === "a5" && "text-[7.5pt]", className)}>
+		<DocumentPage {...page} size={size} stamp={stamp} className={cn(size === "a5" && "text-[7.5pt]", className)}>
 			<PayslipBody payslip={payslip} size={size} />
 		</DocumentPage>
 	);

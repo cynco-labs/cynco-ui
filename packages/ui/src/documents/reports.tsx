@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * Cynco UI — printable financial reports, assembled from the document kit.
  *
@@ -5,7 +7,7 @@
  *   <BalanceSheetReport report={…} />      Statement of Financial Position, comparative, balance check
  *   <TrialBalanceDocument report={…} />    Trial balance with Balanced / Out-by check
  *   <GeneralLedgerReport report={…} />     Per-account ledger, running balances, A4 landscape
- *   <AgedReceivablesReport report={…} />   Ageing by customer, totals, % of total, bucket bars
+ *   <AgedReceivablesReport report={…} />   Ageing by customer, totals, % of total, bucket summary
  *   <CashFlowReport report={…} />          Statement of Cash Flows, indirect method
  *
  * Two new parts carry the reports and belong in the kit:
@@ -31,8 +33,10 @@ import {
 	DocSignedFigure,
 	NotesBlock,
 	currencySymbol,
-	formatDocAmount,
 	formatDocDate,
+	formatReportDate,
+	type StatementTableFormat,
+	type StatementTableValue,
 	DOC_LABELS,
 	useDocLabel,
 	useDocumentBrand,
@@ -40,25 +44,13 @@ import {
 	type DocLabelKey,
 	type DocumentPageProps,
 } from "./kit";
-import { toSen } from "../lib/money";
+import { formatDocAmount, formatStatementValue, isZero } from "./format";
 
 /* ═════════════ Labels (shared dictionary: ./doc-labels) ═════════════ */
 
 const label = (t: ReturnType<typeof useDocLabel>, v: React.ReactNode, stacked?: boolean) => (typeof v === "string" ? t(v, { stacked }) : v);
 
 /* ═════════════ Periods ═════════════ */
-
-const MONTHS_LONG = {
-	en: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
-	ms: ["Januari", "Februari", "Mac", "April", "Mei", "Jun", "Julai", "Ogos", "September", "Oktober", "November", "Disember"],
-};
-
-/** "2026-10-31" → "31 October 2026" / "31 Oktober 2026" — the long form statements use. */
-export function formatReportDate(iso: string, lang: "en" | "ms" = "en"): string {
-	const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso);
-	if (!m) return iso;
-	return `${Number(m[3])} ${MONTHS_LONG[lang][Number(m[2]) - 1]} ${m[1]}`;
-}
 
 /**
  * What a report covers. `year`/`month`/`months` end on `end`; `range` runs `start`→`end`; `asAt` is a point in time.
@@ -227,8 +219,6 @@ export function ReportHeader({ title, period, basis = "accrual", currency = "MYR
 
 /* ═════════════ StatementTable ═════════════ */
 
-export type StatementTableFormat = "amount" | "percent";
-
 export type StatementTableColumn = {
 	key: string;
 	/** Label key or text, e.g. "Oct 2026", "variance". */
@@ -245,9 +235,6 @@ export type StatementTableColumn = {
 	/** What a zero prints as. Default "—". */
 	zero?: string;
 };
-
-/** A figure as a decimal string; null/undefined prints nothing. Negative → (1,234.00); zero → —. */
-export type StatementTableValue = string | null | undefined;
 
 type FigureRowBase = {
 	key?: string;
@@ -283,18 +270,6 @@ export type StatementTableProps = Omit<React.ComponentProps<"table">, "children"
 	ruled?: boolean;
 	dense?: boolean;
 };
-
-const isZero = (v: string) => /^-?\d+(\.\d+)?$/.test(v.trim()) && toSen(v) === 0n;
-
-/** A statement figure as printed: (1,234.00) for negatives, — for zero, "12.4%" / "(3.1%)" for percentages. */
-export function formatStatementValue(v: StatementTableValue, format: StatementTableFormat = "amount", zero = "—"): string {
-	if (v == null || v.trim() === "") return "";
-	const s = v.trim();
-	if (!/^-?\d+(\.\d+)?$/.test(s)) return s;
-	if (isZero(s)) return zero;
-	if (format === "percent") return s.startsWith("-") ? `(${s.slice(1)}%)` : `${s}%`;
-	return formatDocAmount(s, { brackets: true });
-}
 
 /**
  * The financial-statement table. Period columns of figures; rows are headings, lines (indented, with note refs
@@ -873,41 +848,32 @@ export type AgedReceivablesData = ReportBaseData & {
 	totals: AgeingBuckets;
 	/** Share of the total per bucket, e.g. "49.2" (as calculated by the ledger). */
 	percentages: AgeingBuckets;
-	/** Bucket bars above the table. Default true. */
+	/** Bucket totals and shares above the table. Default true. */
 	summary?: boolean;
 };
 
 const BUCKETS = ["current", "days1to30", "days31to60", "days61to90", "over90"] as const;
 
-/** Bucket summary: amount, share and a proportional bar per ageing bucket — older buckets in a deeper accent. */
+/** Bucket summary: amount and share of total per ageing bucket. */
 function AgeingSummary({ totals, percentages }: { totals: AgeingBuckets; percentages: AgeingBuckets }) {
 	const t = useDocLabel();
 	const { layout } = useDocumentBrand();
 	return (
 		<dl className={cn("cy-doc-break-avoid grid grid-cols-5 gap-x-[5mm]", layout === "modern" && "border-y border-[var(--doc-rule)] py-[3.5mm]", layout === "classic" && "border-y border-[var(--doc-rule)] py-[3mm]")}>
-			{BUCKETS.map((b, i) => {
-				const p = Math.max(0, Math.min(100, Number(percentages[b]) || 0));
-				return (
-					<div key={b} className="min-w-0">
-						<dt>
-							<DocLabel>{t(b)}</DocLabel>
-						</dt>
-						<dd className="cy-doc-num mt-[1.2mm] text-[10pt] leading-none font-semibold">{formatDocAmount(totals[b])}</dd>
-						<dd>
-							{/* The bar repeats the percentage printed under it. */}
-							<div aria-hidden="true" className="mt-[2mm] h-[1.4mm] overflow-hidden rounded-full bg-[var(--doc-rule)]">
-								<div className="h-full rounded-full" style={{ width: `${p}%`, background: `color-mix(in srgb, var(--doc-ink) ${22 + i * 16}%, #fff)` }} />
-							</div>
-							<div className="cy-doc-num mt-[1mm] text-[7pt] text-[var(--doc-muted)]">{formatStatementValue(percentages[b], "percent", "0%")}</div>
-						</dd>
-					</div>
-				);
-			})}
+			{BUCKETS.map((b) => (
+				<div key={b} className="min-w-0">
+					<dt>
+						<DocLabel>{t(b)}</DocLabel>
+					</dt>
+					<dd className="cy-doc-num mt-[1.2mm] text-[10pt] leading-none font-semibold">{formatDocAmount(totals[b])}</dd>
+					<dd className="cy-doc-num mt-[1mm] text-[7pt] text-[var(--doc-muted)]">{formatStatementValue(percentages[b], "percent", "0%")}</dd>
+				</div>
+			))}
 		</dl>
 	);
 }
 
-/** Aged receivables by customer: current, 1–30, 31–60, 61–90, over 90, total; totals and % of total; bucket bars. */
+/** Aged receivables by customer: current, 1–30, 31–60, 61–90, over 90, total; totals and % of total; bucket summary. */
 export function AgedReceivablesReport({ report: d, ...page }: ReportDocumentProps & { report: AgedReceivablesData }) {
 	const sym = currencySymbol(d.currency);
 	const cols: StatementTableColumn[] = [...BUCKETS.map((b) => ({ key: b, header: b, sublabel: sym, width: "20.5mm" })), { key: "total", header: "total", sublabel: sym, width: "24mm", emphasis: true }];

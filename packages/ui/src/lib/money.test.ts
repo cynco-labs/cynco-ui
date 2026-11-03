@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { fromSen, isDecimalString, parseAmount, sumAmounts, toSen } from "./money";
+import { fromSen, isDecimalString, journalTotals, parseAmount, sumAmounts, toSen } from "./money";
 
 describe("toSen", () => {
 	test.each<[string | number | bigint | null | undefined, bigint]>([
@@ -17,6 +17,14 @@ describe("toSen", () => {
 		[undefined, 0n],
 		["abc", 0n],
 		[5n, 5n],
+		[1.005, 101n],
+		[-1.005, -101n],
+		[0.1 + 0.2, 30n],
+		// One rounding, at the sen: digits past the sixth never push a value over the half.
+		["1.0049995", 100n],
+		["-1.0049995", -100n],
+		["1.004999999", 100n],
+		[Number.NaN, 0n],
 	])("%s → %s", (input, sen) => {
 		expect(toSen(input)).toBe(sen);
 	});
@@ -104,5 +112,12 @@ describe("isDecimalString", () => {
 		["RM 1", false],
 	])("%s → %s", (input, ok) => {
 		expect(isDecimalString(input)).toBe(ok);
+	});
+});
+
+describe("journalTotals", () => {
+	test("sums debits and credits exactly and reports the difference", () => {
+		expect(journalTotals([{ debit: "0.10" }, { debit: 0.2 }, { credit: "0.30" }, { credit: "" }])).toEqual({ debit: "0.30", credit: "0.30", difference: "0.00" });
+		expect(journalTotals([{ debit: "100" }, { credit: "99.99" }]).difference).toBe("0.01");
 	});
 });

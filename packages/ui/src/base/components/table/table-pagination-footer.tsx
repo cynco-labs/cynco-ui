@@ -1,3 +1,5 @@
+"use client";
+
 import {
 	CursorPagination,
 	PageSizeSelector,
@@ -45,20 +47,20 @@ export function TablePaginationFooter({
 		: currentPage * pageSize;
 
 	return (
-		<div className={cn(TABLE_TRAY_FOOTER_CLASS, className)}>
+		<div className={cn("@container", TABLE_TRAY_FOOTER_CLASS, className)}>
 			{hasTotal && (
 				// Announces the new range when the page or page size changes.
 				<span
 					className="min-w-0 truncate text-xs text-tertiary-foreground tabular-nums"
 					role="status"
 				>
-					<span className="hidden sm:inline">Showing </span>
+					<span className="hidden @md:inline">Showing </span>
 					{`${numberFormat.format(firstRowNumber)}–${numberFormat.format(lastRowNumber)} of ${isTotalCountApproximate ? "~" : ""}${numberFormat.format(totalCount)}`}
 				</span>
 			)}
 			<div className="ml-auto flex items-center gap-3">
 				<div className="flex items-center gap-1.5 text-xs text-tertiary-foreground">
-					<span className="hidden sm:inline">Rows</span>
+					<span className="hidden @md:inline">Rows</span>
 					<PageSizeSelector
 						pageSize={pageSize}
 						options={pageSizeOptions}

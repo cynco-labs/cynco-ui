@@ -89,6 +89,7 @@ rows [{entryDate, event, documentNumber, documentType, amount, runningBalance}] 
 
 - `rows`: `PartyLedgerRow[]`
 - `currency?`: `string`. Default `"MYR"`.
+- Also accepts `ComponentProps<"div">`.
 
 ## Notes
 

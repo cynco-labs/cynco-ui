@@ -63,7 +63,7 @@ export default function ChartOfAccountsTreeDemo() {
 		<ChartOfAccountsTree
 			nodes={TREE}
 			currency="MYR"
-			selectedId="1000-001"
+			defaultSelectedId="1000-001"
 			defaultExpandedIds={["1000", "1500", "2000"]}
 		/>
 	);
@@ -81,7 +81,8 @@ nodes [{ id, accountCode, accountName, accountType, balance?, isHeaderAccount?, 
 - `nodes`: `CoaTreeNode[]`
 - `currency?`: `string`. Default `"MYR"`.
 - `defaultExpandedIds?`: `string[]`
-- `selectedId?`: `string`
+- `selectedId?`: `string`. Controlled selection.
+- `defaultSelectedId?`: `string`. Initial selection for uncontrolled use.
 - `onSelect?`: `(id: string) => void`
 - Also accepts `ComponentProps<"div">`.
 

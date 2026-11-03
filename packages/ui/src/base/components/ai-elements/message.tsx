@@ -1,5 +1,6 @@
 "use client";
 
+import { CaretLeftIcon, CaretRightIcon, PaperclipIcon, XIcon } from "@phosphor-icons/react";
 import { Button } from "../ui/button";
 import {
 	ButtonGroup,
@@ -8,17 +9,10 @@ import {
 import {
 	Tooltip,
 	TooltipContent,
-	TooltipProvider,
 	TooltipTrigger,
 } from "../ui/tooltip";
 import { cn } from "../../lib/utils";
 import type { FileUIPart, UIMessage } from "ai";
-import {
-	ChevronLeftIcon,
-	ChevronRightIcon,
-	PaperclipIcon,
-	XIcon,
-} from "lucide-react";
 import type { ComponentProps, HTMLAttributes, ReactElement } from "react";
 import { createContext, memo, useContext, useEffect, useState } from "react";
 import { Streamdown } from "streamdown";
@@ -94,14 +88,12 @@ export const MessageAction = ({
 
 	if (tooltip) {
 		return (
-			<TooltipProvider>
-				<Tooltip>
-					<TooltipTrigger asChild>{button}</TooltipTrigger>
-					<TooltipContent>
-						<p>{tooltip}</p>
-					</TooltipContent>
-				</Tooltip>
-			</TooltipProvider>
+			<Tooltip>
+				<TooltipTrigger asChild>{button}</TooltipTrigger>
+				<TooltipContent>
+					<p>{tooltip}</p>
+				</TooltipContent>
+			</Tooltip>
 		);
 	}
 
@@ -256,7 +248,7 @@ export const MessageBranchPrevious = ({
 			variant="skeleton"
 			{...props}
 		>
-			{children ?? <ChevronLeftIcon size={14} />}
+			{children ?? <CaretLeftIcon size={14} />}
 		</Button>
 	);
 };
@@ -280,7 +272,7 @@ export const MessageBranchNext = ({
 			variant="skeleton"
 			{...props}
 		>
-			{children ?? <ChevronRightIcon size={14} />}
+			{children ?? <CaretRightIcon size={14} />}
 		</Button>
 	);
 };

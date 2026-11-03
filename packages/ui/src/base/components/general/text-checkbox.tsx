@@ -1,3 +1,5 @@
+"use client";
+
 import { Checkbox } from "../ui/checkbox";
 import { cn } from "../../lib/utils";
 import type * as React from "react";

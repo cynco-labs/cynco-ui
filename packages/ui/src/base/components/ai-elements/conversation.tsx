@@ -1,9 +1,9 @@
 "use client";
 
+import { ArrowDownIcon } from "@phosphor-icons/react";
 import { LiveStatus } from "../general/live-status";
 import { Button } from "../ui/button";
 import { cn } from "../../lib/utils";
-import { ArrowDownIcon } from "lucide-react";
 import { useReducedMotion } from "motion/react";
 import type { ComponentProps } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";

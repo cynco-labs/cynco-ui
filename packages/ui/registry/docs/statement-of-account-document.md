@@ -213,11 +213,15 @@ Month-end customer statements and dunning, or vendor statements for reconciliati
 statement: StatementOfAccountData { number?, date, periodFrom, periodTo, accountNo?, terms?, currency?, role? (customer | vendor), party: DocParty, openingBalance, totalDebit?, totalCredit?, closingBalance, transactions: {date, type, number?, description?, debit?, credit?, balance}[], aging: {current, days1to30, days31to60, days61to90, days90plus}, totalDue, payment? {bankName?, accountName?, accountNumber?, reference?, qr?}, notes?, remittance? }; plus brand?, size?, stamp?, fit?, isolate?, className.
 
 - `statement`: `StatementOfAccountData`
+- `stamp?`: `"copy" | "paid" | "void" | "draft" | "overdue"`. A diagonal stamp across the page: Paid, Void, Draft, Copy, Overdue.
 - `brand?`: `Partial<DocBrand>`. Overrides the provider's brand (merged over it).
-- `stamp?`: `"paid" | "void" | "draft" | "copy" | "overdue"`
-- `fit?`: `"width" | "none"`
-- `isolate?`: `boolean`
+- `fit?`: `"width" | "none"`. On screen: scale the sheet down to fit its container ("width") or keep 100% and scroll ("none"). Controlled; pair with `onFitChange`. Leave unset to let the zoom control switch it.
+- `defaultFit?`: `"width" | "none"`. Uncontrolled starting fit. Default "width".
+- `onFitChange?`: `(fit: DocumentFit) => void`
+- `zoomControl?`: `boolean`. Show "Fit width / Actual size" above the sheet while it is scaled down. Default true. Fit-to-width cancels browser zoom, so readers need a way back to 100% to enlarge the text (WCAG 1.4.4). Hidden in print, and when `fit` is controlled without `onFitChange`.
+- `isolate?`: `boolean`. When printing, hide the rest of the app and print only this page. Default true.
 - `size?`: `"a4" | "letter"`. Default `"a4"`.
+- Also accepts `ComponentProps<"article">`.
 
 ## Notes
 

@@ -105,9 +105,9 @@ const DAYS = [
 export default function BankFeedListDemo() {
 	return (
 		<BankFeedList
+			onRestore={() => {}}
 			days={DAYS}
 			total={248}
-			statusLabel="All statuses"
 			showAccount
 			defaultSelectedIds={["t2"]}
 		/>

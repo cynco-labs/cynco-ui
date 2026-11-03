@@ -1,3 +1,6 @@
+"use client";
+
+import { CalendarBlankIcon, ClockIcon } from "@phosphor-icons/react";
 import { TimePickerInput } from "./time-picker-input";
 import {
 	display12HourValue,
@@ -12,7 +15,6 @@ import {
 } from "../ui/popover";
 import { cn } from "../../lib/utils";
 import { format } from "date-fns";
-import { CalendarIcon, Clock } from "lucide-react";
 import { type ComponentProps, useRef, useState } from "react";
 
 /** Lets a form label the trigger and point it at an error message. */
@@ -53,7 +55,7 @@ function TimePicker({
 	return (
 		<div className="border-t px-3 py-3">
 			<div className="flex items-center rounded-lg h-input input-base input-shadow-default input-state-focus-within px-2 bg-popover">
-				<Clock className="size-3.5 shrink-0 text-tertiary-foreground mr-1" />
+				<ClockIcon className="size-3.5 shrink-0 text-tertiary-foreground mr-1" />
 				<TimePickerInput
 					picker={use24Hour ? "hours" : "12hours"}
 					period={use24Hour ? undefined : period}
@@ -199,7 +201,7 @@ export const DateInputUnix = ({
 						className,
 					)}
 				>
-					<CalendarIcon className="size-3.5 shrink-0 text-tertiary-foreground ml-1" />
+					<CalendarBlankIcon className="size-3.5 shrink-0 text-tertiary-foreground ml-1" />
 					{unixDate ? (
 						format(new Date(unixDate), displayFormat)
 					) : (
@@ -214,13 +216,14 @@ export const DateInputUnix = ({
 					mode="single"
 					selected={dateObj}
 					onSelect={handleDaySelect}
+					defaultMonth={dateObj}
 					disabled={[
 						...(disablePastDates && minDay ? [{ before: minDay }] : []),
 						...(disableFutureDates && maxDay ? [{ after: maxDay }] : []),
 					]}
-					captionLayout="dropdown-buttons"
-					fromYear={fromYear ?? new Date().getFullYear()}
-					toYear={new Date().getFullYear() + 10}
+					captionLayout="dropdown"
+					startMonth={new Date(fromYear ?? new Date().getFullYear(), 0)}
+					endMonth={new Date(new Date().getFullYear() + 10, 11)}
 				/>
 				{withTime && (
 					<TimePicker

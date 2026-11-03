@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * Cynco UI — fast data entry (group "Cynco · Productivity").
  *
@@ -15,8 +17,10 @@
 import * as React from "react";
 import { Button, IconButton, Input, InputGroup, InputGroupAddon, InputGroupInput, StatusChip, cn, LiveStatus } from "../base";
 import { CaretUpDownIcon, CheckIcon, CircleNotchIcon, PencilSimpleIcon, PlusIcon, TrashIcon } from "@phosphor-icons/react";
-import { isMacPlatform, useIsMac } from "../base/lib/utils";
-import { Kbd, ToneDot, formatCurrency, fromSen, isDecimalString, parseAmount, sumAmounts, surfaces, toSen, type StatusToneName } from "../lib/shared";
+import { isMacPlatform } from "../base/lib/utils";
+import { useIsMac } from "../base/hooks/use-platform";
+import { Kbd, ToneDot, formatCurrency, fromSen, isDecimalString, parseAmount, sumAmounts, surfaces, toSen } from "../lib/shared";
+import { type StatusTone } from "../base";
 
 /* ------------------------------------------------------------------ helpers */
 
@@ -275,7 +279,7 @@ export type JournalGridLine = { id: string; accountId?: string; description?: st
 type Col = "account" | "description" | "debit" | "credit";
 const COLS: Col[] = ["account", "description", "debit", "credit"];
 
-const TYPE_TONE: Record<string, StatusToneName> = { asset: "blue", liability: "amber", equity: "purple", revenue: "green", income: "green", expense: "red" };
+const TYPE_TONE: Record<string, StatusTone> = { asset: "blue", liability: "amber", equity: "purple", revenue: "green", income: "green", expense: "red" };
 const toneOf = (type: string) => TYPE_TONE[type.replace(/^contra_/, "")] ?? (type.includes("expense") || type.includes("cost") ? "red" : "neutral");
 
 /** Matches on code (with or without the dash) first, then name and type. */
@@ -1010,10 +1014,3 @@ export function InlineEditCell({
 		</div>
 	);
 }
-
-/** Dr/Cr totals and difference for a set of journal lines (exact, via sumAmounts). */
-export const journalTotals = (lines: JournalGridLine[]) => {
-	const debit = sumAmounts(lines.map((l) => l.debit));
-	const credit = sumAmounts(lines.map((l) => l.credit));
-	return { debit, credit, difference: fromSen(toSen(debit) - toSen(credit)) };
-};

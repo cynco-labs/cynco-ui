@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * Cynco UI — Document studio: the brand editor for every printed document.
  *
@@ -6,9 +8,6 @@
  * statements, payslips and reports alike. The studio edits that brand with a live preview of any document,
  * so it can sit in Settings → Documents. It is controlled or uncontrolled and knows nothing about the
  * documents themselves: you pass `documents` as render functions.
- *
- * `brandFromCyncoTemplate` maps Cynco's stored invoice template (logoUrl, message, designName, signatureUrl)
- * onto a DocBrand, so existing templates keep working. Its `color` is intentionally not used.
  */
 import * as React from "react";
 import { Button, GroupedTabButton, Input, cn } from "../base";
@@ -41,23 +40,6 @@ export type DocumentStudioProps = Omit<React.ComponentProps<"div">, "defaultValu
 	/** Called when the user presses Print (defaults to window.print, which prints only the previewed document). */
 	onPrint?: () => void;
 };
-
-/** Map Cynco's stored invoice template onto a DocBrand (company details come from the organisation). */
-export function brandFromCyncoTemplate(
-	template: { logoUrl?: string | null; color?: string | null; message?: string | null; designName?: string | null; signatureUrl?: string | null },
-	company: DocBrand["company"],
-	extra: Partial<DocBrand> = {},
-): DocBrand {
-	const layout: DocLayout = template.designName && /classic|traditional|formal/i.test(template.designName) ? "classic" : template.designName && /minimal|simple|clean/i.test(template.designName) ? "minimal" : "modern";
-	return {
-		company,
-		logo: template.logoUrl || undefined,
-		layout,
-		footerNote: template.message || undefined,
-		signature: template.signatureUrl ? { image: template.signatureUrl, ...extra.signature } : extra.signature,
-		...extra,
-	};
-}
 
 /* ═════════════ Small controls ═════════════ */
 

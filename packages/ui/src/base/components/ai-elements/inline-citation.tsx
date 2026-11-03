@@ -1,5 +1,6 @@
 "use client";
 
+import { ArrowLeftIcon, ArrowRightIcon } from "@phosphor-icons/react";
 import { Badge } from "../ui/badge";
 import {
 	Carousel,
@@ -9,7 +10,6 @@ import {
 } from "../ui/carousel";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { cn } from "../../lib/utils";
-import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
 import {
 	type ComponentProps,
 	createContext,

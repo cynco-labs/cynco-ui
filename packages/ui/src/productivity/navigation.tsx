@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * Cynco UI — navigation productivity: the ⌘K command palette, the "?" shortcuts sheet with
  * two-key "g then i" jumps, and saved views for any list.
@@ -46,37 +48,22 @@ import {
 } from "../base";
 import {
 	ArrowCounterClockwiseIcon,
-	BankIcon,
-	BooksIcon,
-	BuildingsIcon,
-	ChartLineUpIcon,
-	CircleHalfIcon,
 	CopyIcon,
 	DotsThreeIcon,
 	FileTextIcon,
-	FlaskIcon,
-	GearIcon,
 	HandCoinsIcon,
-	HourglassMediumIcon,
-	HouseIcon,
-	IdentificationCardIcon,
 	InvoiceIcon,
-	KeyboardIcon,
 	LockSimpleIcon,
 	MagnifyingGlassIcon,
 	NotebookIcon,
 	PackageIcon,
 	PencilSimpleIcon,
-	PercentIcon,
 	PlusIcon,
 	ReceiptIcon,
-	ScalesIcon,
-	SidebarSimpleIcon,
 	StorefrontIcon,
 	TrashIcon,
 	TreeStructureIcon,
 	UserIcon,
-	UserPlusIcon,
 	UsersThreeIcon,
 } from "@phosphor-icons/react";
 import { ActionBar, DocStatus, FieldError, INVOICE_STATUS, Kbd, Money, ScrollRow, parseAmount, useHotkey } from "../lib/shared";
@@ -243,47 +230,6 @@ const RECORD_META: Record<CommandPaletteRecordType, { label: string; icon: React
 	account: { label: "Account", icon: <TreeStructureIcon /> },
 };
 
-const nav = (id: string, label: string, href: string, icon: React.ReactNode, keywords: string[] = [], shortcut?: string): CommandPaletteItem => ({ id, group: "Go to", label, href, icon, keywords, shortcut });
-const make = (id: string, label: string, href: string, icon: React.ReactNode, keywords: string[] = [], shortcut?: string): CommandPaletteItem => ({ id, group: "Create", label, href, icon, keywords, shortcut });
-
-/**
- * Cynco's palette commands: main areas, create actions and app actions, with the registry's own
- * paths, keybinds and keywords. Pass to `CommandPalette items` (spread and add your own), then
- * route in `onSelect` with `item.href` / `item.id`.
- */
-export const CYNCO_PALETTE_ITEMS: CommandPaletteItem[] = [
-	nav("go-dashboard", "Dashboard", "/dashboard", <HouseIcon />, ["home", "overview"], "g d"),
-	nav("go-invoices", "Invoices", "/dashboard/invoicing", <InvoiceIcon />, ["billing", "revenue", "sales", "receivables"], "g i"),
-	nav("go-quotations", "Quotations", "/dashboard/quotations", <FileTextIcon />, ["quotes", "estimates"], "g q"),
-	nav("go-bills", "Bills", "/dashboard/expenses", <ReceiptIcon />, ["expenses", "purchases", "payables"]),
-	nav("go-customers", "Customers", "/dashboard/customers", <UserIcon />, ["clients", "contacts"], "g c"),
-	nav("go-vendors", "Vendors", "/dashboard/vendors", <StorefrontIcon />, ["suppliers"], "g v"),
-	nav("go-journal", "Journal entries", "/dashboard/accounting/journal", <NotebookIcon />, ["JE", "journal", "manual entries"]),
-	nav("go-coa", "Chart of accounts", "/dashboard/chart-of-accounts", <TreeStructureIcon />, ["COA", "accounts"]),
-	nav("go-ledger", "General ledger", "/dashboard/accounting/ledger", <BooksIcon />, ["GL", "ledger", "transactions"]),
-	nav("go-banking", "Banking", "/dashboard/banking", <BankIcon />, ["bank", "cards", "reconcile", "feeds"], "g b"),
-	nav("go-pl", "Profit & loss", "/dashboard/reports/profit-loss", <ChartLineUpIcon />, ["P&L", "PnL", "income statement", "report"]),
-	nav("go-bs", "Balance sheet", "/dashboard/reports/balance-sheet", <ScalesIcon />, ["BS", "financial position", "report"]),
-	nav("go-tb", "Trial balance", "/dashboard/reports/trial-balance", <ScalesIcon />, ["TB", "report"]),
-	nav("go-aging", "Aging receivable", "/dashboard/reports/aging-receivable", <HourglassMediumIcon />, ["AR aging", "ageing", "overdue", "report"]),
-	nav("go-aging-ap", "Aging payable", "/dashboard/reports/aging-payable", <HourglassMediumIcon />, ["AP aging", "ageing", "report"]),
-	nav("go-tax", "Tax", "/dashboard/settings/tax", <PercentIcon />, ["SST", "service tax", "LHDN", "e-invoice", "MyInvois"]),
-	nav("go-assets", "Fixed assets", "/dashboard/accounting/fixed-assets", <BuildingsIcon />, ["asset register", "depreciation", "capital allowance"]),
-	nav("go-items", "Items", "/dashboard/items", <PackageIcon />, ["products", "services", "inventory"]),
-	nav("go-payroll", "Payroll", "/dashboard/payroll", <IdentificationCardIcon />, ["salary", "payslip", "EPF", "SOCSO", "EIS", "PCB"]),
-	nav("go-settings", "Settings", "/dashboard/settings", <GearIcon />, ["preferences", "company", "configuration"], "mod+,"),
-	make("new-invoice", "New invoice", "/dashboard/invoicing-new", <PlusIcon />, ["create", "add", "bill customer"], "c i"),
-	make("new-quotation", "New quotation", "/dashboard/quotations-new", <PlusIcon />, ["create", "quote", "estimate"], "c q"),
-	make("new-bill", "New bill", "/dashboard/expenses/new", <PlusIcon />, ["create", "expense", "purchase"]),
-	make("new-journal", "New journal entry", "/dashboard/accounting/journal/new", <PlusIcon />, ["create", "JE", "manual"], "c j"),
-	make("record-payment", "Record payment", "/dashboard/invoicing?action=payment", <HandCoinsIcon />, ["receive", "receipt", "collect", "pay"]),
-	make("new-customer", "New customer", "/dashboard/customers?action=create", <UserPlusIcon />, ["create", "add", "client"], "c c"),
-	make("new-vendor", "New vendor", "/dashboard/vendors?action=create", <UserPlusIcon />, ["create", "add", "supplier"]),
-	{ id: "act-sandbox", group: "Actions", label: "Switch to sandbox", icon: <FlaskIcon />, keywords: ["test", "demo", "live", "environment"] },
-	{ id: "act-theme", group: "Actions", label: "Toggle theme", icon: <CircleHalfIcon />, keywords: ["dark", "light", "appearance"] },
-	{ id: "act-sidebar", group: "Actions", label: "Toggle sidebar", icon: <SidebarSimpleIcon />, keywords: ["collapse", "expand"], shortcut: "mod+b" },
-	{ id: "act-shortcuts", group: "Actions", label: "Keyboard shortcuts", icon: <KeyboardIcon />, keywords: ["help", "keys", "hotkeys"], shortcut: "?" },
-];
 
 const GROUP_ORDER = ["Recent", "Go to", "Create", "Actions"];
 
@@ -348,8 +294,8 @@ export type CommandPaletteProps = {
 	open?: boolean;
 	defaultOpen?: boolean;
 	onOpenChange?: (open: boolean) => void;
-	/** Commands. Defaults to CYNCO_PALETTE_ITEMS. */
-	items?: CommandPaletteItem[];
+	/** Commands: places to go, things to create, actions. Route in `onSelect` with `item.href` / `item.id`. */
+	items: CommandPaletteItem[];
 	/** Recently opened records, newest first. Searchable by number, name, status and amount. */
 	recent?: CommandPaletteRecord[];
 	/** How many recent records to list before the user types. Default 5. */
@@ -373,7 +319,7 @@ export function CommandPalette({
 	open: openProp,
 	defaultOpen = false,
 	onOpenChange,
-	items = CYNCO_PALETTE_ITEMS,
+	items,
 	recent = [],
 	recentLimit = 5,
 	onSelect,
@@ -544,70 +490,13 @@ export type ShortcutsDialogItem = {
 };
 export type ShortcutsDialogSection = { title: string; items: ShortcutsDialogItem[] };
 
-/** Cynco's shortcut map: the registry's go-to and create sequences plus list and journal keys. */
-export const CYNCO_SHORTCUT_SECTIONS: ShortcutsDialogSection[] = [
-	{
-		title: "Global",
-		items: [
-			{ keys: "mod+k", label: "Open command palette" },
-			{ keys: "?", label: "Show keyboard shortcuts" },
-			{ keys: "mod+b", label: "Toggle sidebar" },
-			{ keys: "mod+,", label: "Settings" },
-			{ keys: "esc", label: "Close dialog or clear selection" },
-		],
-	},
-	{
-		title: "Go to",
-		items: [
-			{ keys: "g d", label: "Dashboard" },
-			{ keys: "g i", label: "Invoices" },
-			{ keys: "g q", label: "Quotations" },
-			{ keys: "g c", label: "Customers" },
-			{ keys: "g v", label: "Vendors" },
-			{ keys: "g b", label: "Banking" },
-			{ keys: "g a", label: "Accounting workbench" },
-			{ keys: "g r", label: "Data room" },
-		],
-	},
-	{
-		title: "Create",
-		items: [
-			{ keys: "c i", label: "New invoice" },
-			{ keys: "c q", label: "New quotation" },
-			{ keys: "c j", label: "New journal entry" },
-			{ keys: "c c", label: "New customer" },
-		],
-	},
-	{
-		title: "Lists",
-		items: [
-			{ keys: ["j", "down"], label: "Next row" },
-			{ keys: ["k", "up"], label: "Previous row" },
-			{ keys: "x", label: "Select row" },
-			{ keys: "shift+x", label: "Select range" },
-			{ keys: "enter", label: "Open row" },
-			{ keys: "/", label: "Search this list" },
-		],
-	},
-	{
-		title: "Journal entry",
-		items: [
-			{ keys: "Tab", label: "Next cell" },
-			{ keys: "enter", label: "New line" },
-			{ keys: "alt+b", label: "Balance this line" },
-			{ keys: "=", label: "Start a formula (=1200*1.08)", focusScoped: true },
-			{ keys: "mod+enter", label: "Post entry" },
-			{ keys: "mod+s", label: "Save draft" },
-		],
-	},
-];
 
 export type ShortcutsDialogProps = {
 	open?: boolean;
 	defaultOpen?: boolean;
 	onOpenChange?: (open: boolean) => void;
-	/** Defaults to CYNCO_SHORTCUT_SECTIONS. */
-	sections?: ShortcutsDialogSection[];
+	/** Your shortcuts, grouped. The single-key switch is always shown under them. */
+	sections: ShortcutsDialogSection[];
 	/** Key that opens the sheet. Default "?" (Shift+/); `false` to bind your own. */
 	hotkey?: string | string[] | false;
 	title?: string;
@@ -619,7 +508,7 @@ export function ShortcutsDialog({
 	open: openProp,
 	defaultOpen = false,
 	onOpenChange,
-	sections = CYNCO_SHORTCUT_SECTIONS,
+	sections,
 	hotkey = "?",
 	title = "Keyboard shortcuts",
 	className,
@@ -732,21 +621,6 @@ const isTypingTarget = (t: EventTarget | null) => {
 	return !!el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.tagName === "SELECT" || el.isContentEditable);
 };
 
-/** Cynco's go-to routes for useGoToShortcuts (letter after "g", or a full "c i" sequence). */
-export const CYNCO_GOTO_ROUTES: Record<string, string> = {
-	d: "/dashboard",
-	i: "/dashboard/invoicing",
-	q: "/dashboard/quotations",
-	c: "/dashboard/customers",
-	v: "/dashboard/vendors",
-	b: "/dashboard/banking",
-	a: "/dashboard/accounting",
-	r: "/dashboard/dataroom",
-	"c i": "/dashboard/invoicing-new",
-	"c q": "/dashboard/quotations-new",
-	"c j": "/dashboard/accounting/journal/new",
-	"c c": "/dashboard/customers?action=create",
-};
 
 /**
  * Two-key sequences, Linear/GitHub style: press G, then I within `timeout` ms to go to Invoices.

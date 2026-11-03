@@ -1,5 +1,6 @@
 "use client";
 
+import { CaretDownIcon, CheckCircleIcon, CircleIcon, ClockIcon, WrenchIcon, XCircleIcon } from "@phosphor-icons/react";
 import { CodeBlock } from "./code-block";
 import { Badge } from "../ui/badge";
 import {
@@ -9,14 +10,6 @@ import {
 } from "../ui/collapsible";
 import { cn } from "../../lib/utils";
 import type { ToolUIPart } from "ai";
-import {
-	CheckCircleIcon,
-	ChevronDownIcon,
-	CircleIcon,
-	ClockIcon,
-	WrenchIcon,
-	XCircleIcon,
-} from "lucide-react";
 import type { ComponentProps, ReactNode } from "react";
 import { isValidElement } from "react";
 
@@ -86,7 +79,7 @@ export const ToolHeader = ({
 			</span>
 			{getStatusBadge(state)}
 		</div>
-		<ChevronDownIcon className="size-4 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
+		<CaretDownIcon className="size-4 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
 	</CollapsibleTrigger>
 );
 

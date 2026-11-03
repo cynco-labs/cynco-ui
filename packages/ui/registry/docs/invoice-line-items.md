@@ -55,7 +55,7 @@ items (name, description, quantity, price, discount, discountType, taxCode, marg
 - `items`: `SalesLineItem[]`
 - `onChange?`: `(items: SalesLineItem[]) => void`
 - `currency?`: `string`. Default `"MYR"`.
-- `taxCodes?`: `SalesTaxCode[]`. Default `DEFAULT_TAX_CODES`.
+- `taxCodes?`: `readonly SalesTaxCode[]`. Default `DEFAULT_SALES_TAX_CODES`.
 - `readOnly?`: `boolean`. Default `false`.
 - `estimatedProfit?`: `{ amount: number; percent: number; health: NonNullable<SalesLineItem["margin"]> }`. Document-level estimated profit line under the total.
 - `onAddItem?`: `() => void`

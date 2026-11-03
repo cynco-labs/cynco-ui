@@ -4,28 +4,32 @@ import { cn } from "../../lib/utils";
 import { Tooltip as TooltipPrimitive } from "@base-ui/react/tooltip";
 import * as React from "react";
 
+const InsideProvider = React.createContext(false);
+
 function TooltipProvider({
 	delay = 0,
 	...props
 }: TooltipPrimitive.Provider.Props) {
 	return (
-		<TooltipPrimitive.Provider
-			data-slot="tooltip-provider"
-			delay={delay}
-			{...props}
-		/>
+		<InsideProvider.Provider value={true}>
+			<TooltipPrimitive.Provider
+				data-slot="tooltip-provider"
+				delay={delay}
+				{...props}
+			/>
+		</InsideProvider.Provider>
 	);
 }
 
+/** Uses the nearest TooltipProvider's delay; `delayDuration` overrides it for this tooltip alone. */
 function Tooltip({
 	delayDuration,
 	...props
 }: TooltipPrimitive.Root.Props & { delayDuration?: number }) {
-	return (
-		<TooltipProvider delay={delayDuration}>
-			<TooltipPrimitive.Root data-slot="tooltip" {...props} />
-		</TooltipProvider>
-	);
+	const insideProvider = React.useContext(InsideProvider);
+	const root = <TooltipPrimitive.Root data-slot="tooltip" {...props} />;
+	if (insideProvider && delayDuration === undefined) return root;
+	return <TooltipProvider delay={delayDuration}>{root}</TooltipProvider>;
 }
 
 function TooltipTrigger({
@@ -73,7 +77,7 @@ function TooltipContent({
 					className={cn(
 						`overflow-hidden rounded-[6px] px-2 py-[3px] text-muted-foreground border
          bg-interactive-secondary dark:bg-card
-          text-[13px] font-medium leading-[1.6] tracking-[-0.039px]
+          text-sm font-medium leading-[1.6] tracking-[-0.039px]
           shadow-glow
           animate-in fade-in-0 zoom-in-95
           data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95

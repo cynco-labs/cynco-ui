@@ -153,11 +153,15 @@ receipt: ReceiptData { number, status, date, currency?, receivedFrom, payment {m
 
 - `receipt`: `ReceiptData`
 - `brand?`: `Partial<DocBrand>`. Overrides the provider's brand (merged over it).
-- `stamp?`: `"paid" | "void" | "draft" | "copy" | "overdue" | null`. Overrides the stamp derived from the document status. `null` hides it.
-- `fit?`: `"width" | "none"`
-- `isolate?`: `boolean`
+- `fit?`: `"width" | "none"`. On screen: scale the sheet down to fit its container ("width") or keep 100% and scroll ("none"). Controlled; pair with `onFitChange`. Leave unset to let the zoom control switch it.
+- `defaultFit?`: `"width" | "none"`. Uncontrolled starting fit. Default "width".
+- `onFitChange?`: `(fit: DocumentFit) => void`
+- `zoomControl?`: `boolean`. Show "Fit width / Actual size" above the sheet while it is scaled down. Default true. Fit-to-width cancels browser zoom, so readers need a way back to 100% to enlarge the text (WCAG 1.4.4). Hidden in print, and when `fit` is controlled without `onFitChange`.
+- `isolate?`: `boolean`. When printing, hide the rest of the app and print only this page. Default true.
+- `stamp?`: `"copy" | "paid" | "void" | "draft" | "overdue" | null`. Overrides the stamp derived from the document status. `null` hides it.
 - `size?`: `"a4" | "a5" | "receipt"`. A4, A5, or an 80mm thermal roll ("receipt"). Default `"a4"`.
 - `monochrome?`: `boolean`. Print in ink only (thermal printers are monochrome). Default: true for `size="receipt"`.
+- Also accepts `ComponentProps<"article">`.
 
 ## Notes
 

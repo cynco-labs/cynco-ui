@@ -37,6 +37,7 @@ points [{label, credits, debits, net}] oldest → newest; optional currency, has
 - `currency?`: `string`. Default `"MYR"`.
 - `hasActivity?`: `boolean`. Default `true`.
 - `defaultRange?`: `"3" | "6"`. Default `"6"`.
+- `onConnectBank?`: `() => void`. Called from the empty state's "Connect bank"; omit to hide the button.
 - Also accepts `ComponentProps<"section">`.
 
 ## Notes

@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { cn } from "../../lib/utils";
 
 /**
  * Shared page header: leading icon + title on the left, optional actions on
@@ -9,14 +10,15 @@ export function PageHeader({
 	title,
 	titleAccessory,
 	children,
-}: {
+	className,
+	...props
+}: Omit<React.ComponentProps<"div">, "title"> & {
 	icon: ReactNode;
 	title: string;
 	titleAccessory?: ReactNode;
-	children?: ReactNode;
 }) {
 	return (
-		<div className="flex flex-wrap items-center gap-2 min-h-10 pb-4">
+		<div className={cn("flex flex-wrap items-center gap-2 min-h-10 pb-4", className)} {...props}>
 			<div className="flex w-full justify-between items-center">
 				<div className="text-muted-foreground text-md py-0 px-2 rounded-lg flex gap-2 items-center">
 					{icon}

@@ -1,14 +1,13 @@
 "use client";
 
+import { XIcon, type Icon } from "@phosphor-icons/react";
 import { Button } from "../ui/button";
 import {
 	Tooltip,
 	TooltipContent,
-	TooltipProvider,
 	TooltipTrigger,
 } from "../ui/tooltip";
 import { cn } from "../../lib/utils";
-import { type LucideIcon, XIcon } from "lucide-react";
 import type { ComponentProps, HTMLAttributes } from "react";
 
 export type ArtifactProps = HTMLAttributes<HTMLDivElement>;
@@ -92,7 +91,7 @@ export const ArtifactActions = ({
 export type ArtifactActionProps = ComponentProps<typeof Button> & {
 	tooltip?: string;
 	label?: string;
-	icon?: LucideIcon;
+	icon?: Icon;
 };
 
 export const ArtifactAction = ({
@@ -123,14 +122,12 @@ export const ArtifactAction = ({
 
 	if (tooltip) {
 		return (
-			<TooltipProvider>
-				<Tooltip>
-					<TooltipTrigger asChild>{button}</TooltipTrigger>
-					<TooltipContent>
-						<p>{tooltip}</p>
-					</TooltipContent>
-				</Tooltip>
-			</TooltipProvider>
+			<Tooltip>
+				<TooltipTrigger asChild>{button}</TooltipTrigger>
+				<TooltipContent>
+					<p>{tooltip}</p>
+				</TooltipContent>
+			</Tooltip>
 		);
 	}
 

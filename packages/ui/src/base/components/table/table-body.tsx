@@ -1,3 +1,5 @@
+"use client";
+
 import { useTableContext } from "./table-context";
 import { MotionTbody, useTableFadeIn } from "./table-motion";
 import {

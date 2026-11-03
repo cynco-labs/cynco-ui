@@ -1,9 +1,9 @@
 "use client";
 
+import { CaretDownIcon } from "@phosphor-icons/react";
 import { Separator } from "../ui/separator";
 import { cn } from "../../lib/utils";
 import { Accordion as AccordionPrimitive } from "@base-ui/react/accordion";
-import { ChevronDownIcon } from "lucide-react";
 import type * as React from "react";
 
 interface SheetAccordionProps {
@@ -77,7 +77,7 @@ function SheetAccordionItem({
 							<span className="text-body-secondary text-sm">{description}</span>
 						)}
 					</span>
-					<ChevronDownIcon className="text-tertiary-foreground pointer-events-none size-4 shrink-0 translate-y-0.5 transition-all duration-200 group-hover:text-foreground" />
+					<CaretDownIcon className="text-tertiary-foreground pointer-events-none size-4 shrink-0 translate-y-0.5 transition-all duration-200 group-hover:text-foreground" />
 				</AccordionPrimitive.Trigger>
 			</AccordionPrimitive.Header>
 			<AccordionPrimitive.Panel className="data-closed:animate-accordion-up data-open:animate-accordion-down overflow-hidden">

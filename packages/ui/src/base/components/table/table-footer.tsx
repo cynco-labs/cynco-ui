@@ -1,11 +1,8 @@
+"use client";
+
+import { CaretLeftIcon, CaretLineLeftIcon, CaretLineRightIcon, CaretRightIcon } from "@phosphor-icons/react";
 import { cn } from "../../lib/utils";
 import type { Table as TanstackTable } from "@tanstack/react-table";
-import {
-	ChevronFirstIcon,
-	ChevronLastIcon,
-	ChevronLeftIcon,
-	ChevronRightIcon,
-} from "lucide-react";
 import type { ReactNode } from "react";
 
 const navBtnBase =
@@ -70,7 +67,7 @@ export const TableFooter = <TData,>({
 								disabled={!table.getCanPreviousPage()}
 								onClick={() => table.firstPage()}
 							>
-								<ChevronFirstIcon size={14} />
+								<CaretLineLeftIcon size={14} />
 							</button>
 							<button
 								type="button"
@@ -79,7 +76,7 @@ export const TableFooter = <TData,>({
 								disabled={!table.getCanPreviousPage()}
 								onClick={() => table.previousPage()}
 							>
-								<ChevronLeftIcon size={14} />
+								<CaretLeftIcon size={14} />
 							</button>
 							<span className="min-w-10 text-center text-tiny font-medium text-tertiary-foreground">
 								<span aria-hidden="true">
@@ -96,7 +93,7 @@ export const TableFooter = <TData,>({
 								disabled={!table.getCanNextPage()}
 								onClick={() => table.nextPage()}
 							>
-								<ChevronRightIcon size={14} />
+								<CaretRightIcon size={14} />
 							</button>
 							<button
 								type="button"
@@ -105,7 +102,7 @@ export const TableFooter = <TData,>({
 								disabled={!table.getCanNextPage()}
 								onClick={() => table.lastPage()}
 							>
-								<ChevronLastIcon size={14} />
+								<CaretLineRightIcon size={14} />
 							</button>
 						</div>
 					</div>

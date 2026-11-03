@@ -32,5 +32,6 @@ Inside search bars and toolbars to show applied filters.
 - `label`: `string`
 - `value`: `string`
 - `onRemove`: `() => void`
+- Also accepts `ComponentProps<"span">`.
 
 Category: Components · Data display. Source: `packages/ui/src/base/components/general/filter-chip.tsx`.

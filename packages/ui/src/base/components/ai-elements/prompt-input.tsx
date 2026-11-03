@@ -1,5 +1,6 @@
 "use client";
 
+import { ArrowBendDownLeftIcon, ImageIcon, MicrophoneIcon, PaperclipIcon, PlusIcon, SpinnerGapIcon, SquareIcon, XIcon } from "@phosphor-icons/react";
 import { LiveStatus } from "../general/live-status";
 import { Button } from "../ui/button";
 import {
@@ -31,16 +32,6 @@ import {
 } from "../ui/select";
 import { cn } from "../../lib/utils";
 import type { ChatStatus, FileUIPart } from "ai";
-import {
-	CornerDownLeftIcon,
-	ImageIcon,
-	Loader2Icon,
-	MicIcon,
-	PaperclipIcon,
-	PlusIcon,
-	SquareIcon,
-	XIcon,
-} from "lucide-react";
 import { nanoid } from "nanoid";
 import {
 	type ChangeEvent,
@@ -1101,12 +1092,12 @@ export const PromptInputSubmit = ({
 	children,
 	...props
 }: PromptInputSubmitProps) => {
-	let Icon = <CornerDownLeftIcon className="size-4" />;
+	let Icon = <ArrowBendDownLeftIcon className="size-4" />;
 	// The icon alone carries the state; name the action it will take.
 	const isGenerating = status === "submitted" || status === "streaming";
 
 	if (status === "submitted") {
-		Icon = <Loader2Icon className="size-4 animate-spin" />;
+		Icon = <SpinnerGapIcon className="size-4 animate-spin" />;
 	} else if (status === "streaming") {
 		Icon = <SquareIcon className="size-4" />;
 	} else if (status === "error") {
@@ -1133,14 +1124,10 @@ interface SpeechRecognition extends EventTarget {
 	lang: string;
 	start(): void;
 	stop(): void;
-	onstart: ((this: SpeechRecognition, ev: Event) => any) | null;
-	onend: ((this: SpeechRecognition, ev: Event) => any) | null;
-	onresult:
-		| ((this: SpeechRecognition, ev: SpeechRecognitionEvent) => any)
-		| null;
-	onerror:
-		| ((this: SpeechRecognition, ev: SpeechRecognitionErrorEvent) => any)
-		| null;
+	onstart: ((this: SpeechRecognition, ev: Event) => void) | null;
+	onend: ((this: SpeechRecognition, ev: Event) => void) | null;
+	onresult: ((this: SpeechRecognition, ev: SpeechRecognitionEvent) => void) | null;
+	onerror: ((this: SpeechRecognition, ev: SpeechRecognitionErrorEvent) => void) | null;
 }
 
 interface SpeechRecognitionEvent extends Event {
@@ -1170,15 +1157,13 @@ interface SpeechRecognitionErrorEvent extends Event {
 	error: string;
 }
 
-declare global {
-	interface Window {
-		SpeechRecognition: {
-			new (): SpeechRecognition;
-		};
-		webkitSpeechRecognition: {
-			new (): SpeechRecognition;
-		};
-	}
+type SpeechRecognitionConstructor = new () => SpeechRecognition;
+
+/** The browser's speech recognition, prefixed or not; undefined where there is none (Firefox, the server). */
+function speechRecognitionConstructor(): SpeechRecognitionConstructor | undefined {
+	if (typeof window === "undefined") return undefined;
+	const w: Window & { SpeechRecognition?: SpeechRecognitionConstructor; webkitSpeechRecognition?: SpeechRecognitionConstructor } = window;
+	return w.SpeechRecognition ?? w.webkitSpeechRecognition;
 }
 
 export type PromptInputSpeechButtonProps = ComponentProps<
@@ -1186,12 +1171,15 @@ export type PromptInputSpeechButtonProps = ComponentProps<
 > & {
 	textareaRef?: RefObject<HTMLTextAreaElement | null>;
 	onTranscriptionChange?: (text: string) => void;
+	/** Called when recognition stops with an error: "not-allowed", "no-speech", "network", "aborted"… */
+	onSpeechError?: (error: string) => void;
 };
 
 export const PromptInputSpeechButton = ({
 	className,
 	textareaRef,
 	onTranscriptionChange,
+	onSpeechError,
 	...props
 }: PromptInputSpeechButtonProps) => {
 	const [isListening, setIsListening] = useState(false);
@@ -1199,14 +1187,12 @@ export const PromptInputSpeechButton = ({
 		null,
 	);
 	const recognitionRef = useRef<SpeechRecognition | null>(null);
+	const onSpeechErrorRef = useRef(onSpeechError);
+	onSpeechErrorRef.current = onSpeechError;
 
 	useEffect(() => {
-		if (
-			typeof window !== "undefined" &&
-			("SpeechRecognition" in window || "webkitSpeechRecognition" in window)
-		) {
-			const SpeechRecognition =
-				window.SpeechRecognition || window.webkitSpeechRecognition;
+		const SpeechRecognition = speechRecognitionConstructor();
+		if (SpeechRecognition) {
 			const speechRecognition = new SpeechRecognition();
 
 			speechRecognition.continuous = true;
@@ -1237,15 +1223,16 @@ export const PromptInputSpeechButton = ({
 					const newValue =
 						currentValue + (currentValue ? " " : "") + finalTranscript;
 
-					textarea.value = newValue;
+					// Through the native setter, so React's onChange sees the new value on a controlled textarea.
+					Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, "value")?.set?.call(textarea, newValue);
 					textarea.dispatchEvent(new Event("input", { bubbles: true }));
 					onTranscriptionChange?.(newValue);
 				}
 			};
 
 			speechRecognition.onerror = (event) => {
-				console.error("Speech recognition error:", event.error);
 				setIsListening(false);
+				onSpeechErrorRef.current?.(event.error);
 			};
 
 			recognitionRef.current = speechRecognition;
@@ -1284,7 +1271,7 @@ export const PromptInputSpeechButton = ({
 			onClick={toggleListening}
 			{...props}
 		>
-			<MicIcon className="size-4" />
+			<MicrophoneIcon className="size-4" />
 		</PromptInputButton>
 	);
 };

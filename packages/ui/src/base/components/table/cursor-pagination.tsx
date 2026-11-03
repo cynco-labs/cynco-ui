@@ -1,3 +1,5 @@
+"use client";
+
 import { IconButton } from "../general/icon-button";
 import {
 	Pagination,

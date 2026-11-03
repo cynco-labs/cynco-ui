@@ -34,13 +34,12 @@ export * from "./components/general/sheet-close-button";
 export * from "./components/general/shortcut-button";
 export * from "./components/general/small-spinner";
 export * from "./components/general/stack-badge";
-export * from "./components/general/status-chip";
+export { StatusChip, StatusChipIcon, StatusRing, type StatusGlyph, type StatusTone } from "./components/general/status-chip";
 export * from "./components/general/step-badge";
 export * from "./components/general/tag-input";
 export * from "./components/general/tag-select";
 export * from "./components/general/text-checkbox";
 export * from "./components/general/time-picker-input";
-export * from "./components/general/time-picker-utils";
 export * from "./components/general/toolbar-button";
 export * from "./components/ui/accordion";
 export * from "./components/ui/alert";
@@ -90,6 +89,6 @@ export { useIsMobile } from "./hooks/use-is-mobile";
 export {
 	cn,
 	getMetaKey,
-	useIsMac,
 	hasSubmitShortcutModifier,
 } from "./lib/utils";
+export { useIsMac } from "./hooks/use-platform";

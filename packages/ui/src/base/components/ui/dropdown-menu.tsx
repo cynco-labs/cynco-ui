@@ -1,5 +1,6 @@
 "use client";
 
+import { CaretRightIcon, CheckIcon } from "@phosphor-icons/react";
 import { SmallSpinner } from "../general/small-spinner";
 import {
 	type ShortcutEntry,
@@ -19,7 +20,6 @@ import { cn } from "../../lib/utils";
 import { useMergedRef } from "../../hooks/use-merged-ref";
 import { Menu as MenuPrimitive } from "@base-ui/react/menu";
 import { cva, type VariantProps } from "class-variance-authority";
-import { Check, ChevronRight } from "lucide-react";
 import * as React from "react";
 
 const DropdownMenuContext = React.createContext<{
@@ -157,7 +157,7 @@ const DropdownMenuSubTrigger = React.forwardRef<
 		>
 			{children}
 			{withIcon && (
-				<ChevronRight className="-mr-0.5 ml-auto size-3.5 text-tertiary-foreground" />
+				<CaretRightIcon className="-mr-0.5 ml-auto size-3.5 text-tertiary-foreground" />
 			)}
 		</MenuPrimitive.SubmenuTrigger>
 	);
@@ -352,7 +352,7 @@ const DropdownMenuCheckboxItem = React.forwardRef<
 			{children}
 			<span className={overlayItemIndicatorClassName}>
 				<MenuPrimitive.CheckboxItemIndicator>
-					<Check className="text-foreground" />
+					<CheckIcon className="text-foreground" />
 				</MenuPrimitive.CheckboxItemIndicator>
 			</span>
 		</MenuPrimitive.CheckboxItem>
@@ -379,7 +379,7 @@ const DropdownMenuRadioItem = React.forwardRef<
 		>
 			<span className={overlayItemIndicatorClassName}>
 				<MenuPrimitive.RadioItemIndicator>
-					<Check className="text-foreground" />
+					<CheckIcon className="text-foreground" />
 				</MenuPrimitive.RadioItemIndicator>
 			</span>
 			{children}

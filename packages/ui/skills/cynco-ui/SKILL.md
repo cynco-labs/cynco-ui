@@ -53,7 +53,7 @@ hover, selection and focus tints are mixed from it. Corners follow `--radius-sm`
    `border-border`, `text-error-text`. No hex values, no Tailwind palette colours (`text-gray-500`,
    `bg-blue-600`). Charts use `var(--chart-series-N)`.
 2. **Type scale.** `text-2xs` 11 · `text-xs` 12 · `text-sm` 13 · `text-md` 15 · `text-lg` 17 ·
-   `text-xl` 20. No arbitrary sizes like `text-[13px]`.
+   `text-xl` 20, and `text-display` 28 for a hero figure only. No arbitrary sizes like `text-[13px]`.
 3. **Money is exact.** Amounts are decimal strings (`"1234.50"`), never floats. Add with
    `sumAmounts`, convert with `toSen`/`fromSen`, parse input with `parseAmount`, display with
    `formatCurrency`. Use `AmountInput` for entry. Figures are tabular and right-aligned.

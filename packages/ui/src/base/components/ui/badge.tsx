@@ -1,3 +1,5 @@
+"use client";
+
 import { cn } from "../../lib/utils";
 import { mergeProps } from "@base-ui/react/merge-props";
 import { useRender } from "@base-ui/react/use-render";
@@ -17,7 +19,7 @@ const badgeVariants = cva(
 			},
 			size: {
 				default: "px-1.5 py-0.5 text-xs",
-				sm: "px-1.5 py-0.5 text-[10px]",
+				sm: "px-1.5 py-0.5 text-2xs",
 			},
 		},
 		defaultVariants: {

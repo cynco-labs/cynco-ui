@@ -1,6 +1,8 @@
+"use client";
+
 import { AnimatePresence, motion } from "motion/react";
 import { createPortal } from "react-dom";
-import { useIsClient } from "../../lib/utils";
+import { useIsClient } from "../../hooks/use-platform";
 
 const SHEET_BACKDROP_Z_INDEX = 40;
 

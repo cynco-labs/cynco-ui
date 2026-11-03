@@ -116,9 +116,9 @@ const DAYS = [
 export default function BankFeedListDemo() {
 	return (
 		<BankFeedList
+			onRestore={() => {}}
 			days={DAYS}
 			total={248}
-			statusLabel="All statuses"
 			showAccount
 			defaultSelectedIds={["t2"]}
 		/>
@@ -136,13 +136,19 @@ days [{date, net?, rows: BankFeedTransaction[]}], total, statusLabel, search, sh
 
 - `days`: `BankFeedDay[]`
 - `total`: `number`
-- `statusLabel?`: `string`. Default `"All statuses"`.
-- `search?`: `string`
+- `query?`: `string`. Controlled search query: the list shows the rows you pass, so filter them (or refetch) in `onQueryChange`. Uncontrolled, the list filters by payee, description and reference itself.
+- `defaultQuery?`: `string`. Initial search query for uncontrolled use.
+- `onQueryChange?`: `(query: string) => void`. Called when the user types in the search box.
+- `status?`: `"all" | "posted" | "imported" | "categorized" | "reconciled" | "excluded"`. Controlled status filter: the list shows the rows you pass, so filter them (or refetch) in `onStatusChange`. Uncontrolled, the list filters itself.
+- `defaultStatus?`: `"all" | "posted" | "imported" | "categorized" | "reconciled" | "excluded"`. Initial status filter for uncontrolled use.
+- `onStatusChange?`: `(status: BankFeedStatus | "all") => void`. Called when the user changes the status filter.
 - `showAccount?`: `boolean`. Default `true`.
 - `selectedIds?`: `string[]`. Ids of the ticked rows (controlled).
 - `defaultSelectedIds?`: `string[]`. Initially ticked row ids when uncontrolled. Default `[]`.
 - `onSelectedChange?`: `(ids: string[]) => void`. Called with the new ids when a row is ticked or unticked.
-- `postAll?`: `string`. "RM 4,210.00 in · RM 1,180.40 out" shown on Post all, when filtered to To post.
+- `postAll?`: `string`. "RM 4,210.00 in · RM 1,180.40 out" shown on Post all; omit to hide the button.
+- `onPostAll?`: `() => void`. Called when the user clicks "Post all".
+- `onRestore?`: `(tx: BankFeedTransaction) => void`. Called from an excluded line's Restore button; omit to hide it.
 - Also accepts `ComponentProps<"div">`.
 
 ## Notes

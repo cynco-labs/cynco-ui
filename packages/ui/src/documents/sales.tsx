@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * Cynco UI — sales documents, assembled from the document kit (./documents).
  *
@@ -29,6 +31,7 @@ import {
 	amountInWords,
 	docLabelText,
 	DocumentPage,
+	type DocumentPageProps,
 	Letterhead,
 	DocLabel,
 	DocSection,
@@ -45,7 +48,6 @@ import {
 	DocumentFooter,
 	DocStack,
 	DocColumns,
-	type DocBrand,
 	type DocLabelKey,
 	type DocLocale,
 	type DocParty,
@@ -124,26 +126,39 @@ export function AcceptanceBlock({ title, statement, signatureLabel = "customerSi
 	);
 }
 
+/** The posted tax and total equivalents, labelled for the base currency ("SST (MYR)", or "Tax (SGD)"). */
+function exchangeRows(x: { taxMyr?: string; totalMyr: string }, base: string, t: ReturnType<typeof useDocLabel>): ForeignCurrencyNoteProps["rows"] {
+	const myr = base === "MYR";
+	return [
+		...(x.taxMyr ? [{ label: myr ? "sstMyr" : <>{t("tax")} ({base})</>, value: x.taxMyr }] : []),
+		{ label: myr ? "totalMyr" : <>{t("total")} ({base})</>, value: x.totalMyr, strong: true },
+	];
+}
+
 export type ForeignCurrencyNoteProps = Omit<React.ComponentProps<"div">, "children"> & {
 	/** Document currency, e.g. "USD". */
 	currency: string;
-	/** MYR per one unit of `currency`, as posted (e.g. "4.4350"). */
+	/** Base-currency units per one unit of `currency`, as posted (e.g. "4.4350"). */
 	rate: string;
 	/** Rate date (ISO). */
 	rateDate?: string;
 	/** Where the rate comes from, e.g. "Bank Negara Malaysia". */
 	source?: string;
-	/** MYR equivalents, as posted: [{ label: "sstMyr", value: "1036.73" }, { label: "totalMyr", value: "13995.84" }]. */
+	/** Base-currency equivalents, as posted: [{ label: "sstMyr", value: "1036.73" }, { label: "totalMyr", value: "13995.84" }]. */
 	rows: Array<{ label: DocLabelKey | (string & {}) | React.ReactNode; value: string; strong?: boolean }>;
+	/** The currency `rate` converts into. Defaults to the brand's `baseCurrency` (MYR). */
+	baseCurrency?: string;
 };
 
 /**
- * Exchange rate and the MYR equivalents of tax and total on a foreign-currency document. LHDN requires the tax
- * amount in MYR on e-invoices issued in another currency; the values are printed as posted.
+ * Exchange rate and the base-currency equivalents of tax and total on a foreign-currency document. LHDN requires
+ * the tax amount in MYR on e-invoices issued in another currency; the values are printed as posted.
  */
-export function ForeignCurrencyNote({ currency, rate, rateDate, source, rows, className, ...props }: ForeignCurrencyNoteProps) {
+export function ForeignCurrencyNote({ currency, rate, rateDate, source, rows, baseCurrency, className, ...props }: ForeignCurrencyNoteProps) {
 	const t = useDocLabel();
-	const { locale, layout } = useDocumentBrand();
+	const brand = useDocumentBrand();
+	const { locale, layout } = brand;
+	const base = baseCurrency ?? brand.baseCurrency;
 	return (
 		<div data-slot="cy-doc-fx" className={cn("cy-doc-break-avoid text-[7.75pt]", className)} {...props}>
 			<div className={cn("rounded-[2mm] px-[3.5mm] py-[2.5mm]", "border border-[var(--doc-rule)]")}>
@@ -153,7 +168,7 @@ export function ForeignCurrencyNote({ currency, rate, rateDate, source, rows, cl
 							<DocLabel>{t("exchangeRate")}</DocLabel>
 						</dt>
 						<dd className="cy-doc-num font-medium whitespace-nowrap">
-							1 {currency} = {rate} MYR
+							1 {currency} = {rate} {base}
 						</dd>
 					</div>
 				</dl>
@@ -163,7 +178,7 @@ export function ForeignCurrencyNote({ currency, rate, rateDate, source, rows, cl
 						<div key={i} className={cn("flex items-baseline justify-between gap-3 py-[0.6mm]", r.strong && "font-semibold")}>
 							<dt className={r.strong ? "" : "text-[var(--doc-muted)]"}>{typeof r.label === "string" ? t(r.label) : r.label}</dt>
 							<dd className="cy-doc-num whitespace-nowrap">
-								<span className="mr-1 text-[0.85em] font-medium text-[var(--doc-muted)]">RM</span>
+								<span className="mr-1 text-[0.85em] font-medium text-[var(--doc-muted)]">{currencySymbol(base)}</span>
 								{formatDocAmount(r.value)}
 							</dd>
 						</div>
@@ -199,14 +214,10 @@ export type SalesDocLine = {
 
 export type SalesDocStatus = "draft" | "issued" | "sent" | "paid" | "partially_paid" | "overdue" | "void";
 
-export type SalesDocPresentation = {
-	/** Overrides the provider's brand (merged over it). */
-	brand?: Partial<DocBrand>;
+/** Page options (brand, fit, zoom control, print isolation) and native props for the document's root `<article>`. */
+export type SalesDocPresentation = Omit<DocumentPageProps, "size" | "stamp" | "children"> & {
 	/** Overrides the stamp derived from the document status. `null` hides it. */
 	stamp?: DocumentStamp | null;
-	fit?: "width" | "none";
-	isolate?: boolean;
-	className?: string;
 };
 
 export type EInvoiceInfo = Pick<EInvoiceBlockProps, "status" | "uuid" | "validatedAt" | "url" | "qr">;
@@ -313,6 +324,7 @@ export type TaxInvoiceData = {
 	/** Print the grand total (or balance) in words. Default true. */
 	amountInWords?: boolean;
 	/** Foreign-currency invoices: the posted rate and MYR equivalents of SST and total. */
+	/** `taxMyr` and `totalMyr` are in the base currency: MYR unless the brand sets `baseCurrency`. */
 	exchange?: { rate: string; rateDate?: string; source?: string; taxMyr?: string; totalMyr: string };
 	payment?: PaymentInstructions;
 	einvoice?: EInvoiceInfo;
@@ -325,9 +337,9 @@ export type TaxInvoiceData = {
 export type TaxInvoiceDocumentProps = SalesDocPresentation & { invoice: TaxInvoiceData; size?: "a4" | "letter" };
 
 /** Malaysian tax invoice (or plain invoice for a seller not registered for SST). */
-export function TaxInvoiceDocument({ invoice: inv, size = "a4", brand, stamp, fit, isolate, className }: TaxInvoiceDocumentProps) {
+export function TaxInvoiceDocument({ invoice: inv, size = "a4", stamp, className, ...page }: TaxInvoiceDocumentProps) {
 	return (
-		<DocumentPage brand={brand} size={size} stamp={stampFor(inv.status, stamp)} fit={fit} isolate={isolate} className={className}>
+		<DocumentPage {...page} size={size} stamp={stampFor(inv.status, stamp)} className={className}>
 			<TaxInvoiceBody inv={inv} />
 		</DocumentPage>
 	);
@@ -335,9 +347,9 @@ export function TaxInvoiceDocument({ invoice: inv, size = "a4", brand, stamp, fi
 
 function TaxInvoiceBody({ inv }: { inv: TaxInvoiceData }) {
 	const t = useDocLabel();
-	const { locale, signature: brandSig } = useDocumentBrand();
-	const currency = inv.currency ?? "MYR";
-	const foreign = currency !== "MYR";
+	const { locale, signature: brandSig, baseCurrency } = useDocumentBrand();
+	const currency = inv.currency ?? baseCurrency;
+	const foreign = currency !== baseCurrency;
 	const columns = useLineColumns(inv.lines);
 	const sig = signatoryFor(inv.signature, brandSig);
 	const meta: DocumentMetaItem[] = [
@@ -347,9 +359,7 @@ function TaxInvoiceBody({ inv }: { inv: TaxInvoiceData }) {
 		{ label: "reference", value: inv.reference },
 		...(foreign ? [{ label: "currency", value: currency }] : []),
 	];
-	const fxRows = inv.exchange
-		? [...(inv.exchange.taxMyr ? [{ label: "sstMyr", value: inv.exchange.taxMyr }] : []), { label: "totalMyr", value: inv.exchange.totalMyr, strong: true }]
-		: [];
+	const fxRows = inv.exchange ? exchangeRows(inv.exchange, baseCurrency, t) : [];
 
 	return (
 		<>
@@ -441,10 +451,10 @@ export type QuotationData = {
 export type QuotationDocumentProps = SalesDocPresentation & { quotation: QuotationData; size?: "a4" | "letter" };
 
 /** Quotation: grouped lines with subtotals, optional items, T&Cs, and customer acceptance beside the issuer's signature. */
-export function QuotationDocument({ quotation: q, size = "a4", brand, stamp, fit, isolate, className }: QuotationDocumentProps) {
+export function QuotationDocument({ quotation: q, size = "a4", stamp, className, ...page }: QuotationDocumentProps) {
 	const st = stamp !== undefined ? stamp ?? undefined : q.status === "draft" ? "draft" : q.status === "declined" || q.status === "expired" ? "void" : undefined;
 	return (
-		<DocumentPage brand={brand} size={size} stamp={st} fit={fit} isolate={isolate} className={className}>
+		<DocumentPage {...page} size={size} stamp={st} className={className}>
 			<QuotationBody q={q} />
 		</DocumentPage>
 	);
@@ -452,8 +462,8 @@ export function QuotationDocument({ quotation: q, size = "a4", brand, stamp, fit
 
 function QuotationBody({ q }: { q: QuotationData }) {
 	const t = useDocLabel();
-	const { locale, company, signature: brandSig } = useDocumentBrand();
-	const currency = q.currency ?? "MYR";
+	const { locale, company, signature: brandSig, baseCurrency } = useDocumentBrand();
+	const currency = q.currency ?? baseCurrency;
 	const all = [...(q.lines ?? []), ...(q.sections ?? []).flatMap((s) => s.lines), ...(q.optionalItems ?? [])];
 	const columns = useLineColumns(all);
 	const sections: DocTableSection<SalesDocLine>[] = q.sections?.length
@@ -483,7 +493,7 @@ function QuotationBody({ q }: { q: QuotationData }) {
 						{ label: "validUntil", value: formatDocDate(q.validUntil, locale), emphasis: true },
 						{ label: "reference", value: q.reference },
 						{ label: "terms", value: q.terms },
-						...(currency !== "MYR" ? [{ label: "currency", value: currency }] : []),
+						...(currency !== baseCurrency ? [{ label: "currency", value: currency }] : []),
 						...(q.preparedBy ? [{ label: "preparedBy", value: q.preparedBy }] : []),
 					]}
 				/>
@@ -572,10 +582,10 @@ export type AdjustmentNoteData = {
 export type AdjustmentNoteDocumentProps = SalesDocPresentation & { note: AdjustmentNoteData; size?: "a4" | "letter" };
 
 /** Credit note or debit note against an original invoice. Under MyInvois both are e-invoices in their own right. */
-export function AdjustmentNoteDocument({ note, size = "a4", brand, stamp, fit, isolate, className }: AdjustmentNoteDocumentProps) {
+export function AdjustmentNoteDocument({ note, size = "a4", stamp, className, ...page }: AdjustmentNoteDocumentProps) {
 	const st = stamp !== undefined ? stamp ?? undefined : note.status === "draft" ? "draft" : note.status === "void" ? "void" : undefined;
 	return (
-		<DocumentPage brand={brand} size={size} stamp={st} fit={fit} isolate={isolate} className={className}>
+		<DocumentPage {...page} size={size} stamp={st} className={className}>
 			<AdjustmentNoteBody n={note} />
 		</DocumentPage>
 	);
@@ -583,8 +593,8 @@ export function AdjustmentNoteDocument({ note, size = "a4", brand, stamp, fit, i
 
 function AdjustmentNoteBody({ n }: { n: AdjustmentNoteData }) {
 	const t = useDocLabel();
-	const { locale, signature: brandSig } = useDocumentBrand();
-	const currency = n.currency ?? "MYR";
+	const { locale, signature: brandSig, baseCurrency } = useDocumentBrand();
+	const currency = n.currency ?? baseCurrency;
 	const columns = useLineColumns(n.lines);
 	const sig = signatoryFor(n.signature, brandSig);
 	return (
@@ -605,7 +615,7 @@ function AdjustmentNoteBody({ n }: { n: AdjustmentNoteData }) {
 						},
 						{ label: t("originalAmount"), value: <span className="cy-doc-num">{`${currencySymbol(currency)} ${formatDocAmount(n.originalInvoice.amount)}`}</span> },
 						{ label: "reference", value: n.reference },
-						...(currency !== "MYR" ? [{ label: "currency", value: currency }] : []),
+						...(currency !== baseCurrency ? [{ label: "currency", value: currency }] : []),
 					]}
 				/>
 				<div className="grid grid-cols-2 items-start gap-8">
@@ -621,14 +631,14 @@ function AdjustmentNoteBody({ n }: { n: AdjustmentNoteData }) {
 				<DocumentTable numbered columns={columns} rows={n.lines} />
 				<div className="flex flex-col gap-[3.5mm]">
 					<TotalsBlock rows={localiseRows(n.totals, t)} currency={currency} words={n.amountInWords !== false} aside={n.einvoice && <EInvoiceBlock {...n.einvoice} />} />
-					{n.exchange && currency !== "MYR" && (
+					{n.exchange && currency !== baseCurrency && (
 						<ForeignCurrencyNote
 							className="ml-auto w-[78mm]"
 							currency={currency}
 							rate={n.exchange.rate}
 							rateDate={n.exchange.rateDate}
 							source={n.exchange.source}
-							rows={[...(n.exchange.taxMyr ? [{ label: "sstMyr", value: n.exchange.taxMyr }] : []), { label: "totalMyr", value: n.exchange.totalMyr, strong: true }]}
+							rows={exchangeRows(n.exchange, baseCurrency, t)}
 						/>
 					)}
 				</div>
@@ -690,12 +700,12 @@ export type ReceiptDocumentProps = SalesDocPresentation & {
 const METHOD_KEY: Record<ReceiptPaymentMethod, DocLabelKey> = { cash: "cash", cheque: "cheque", bank_transfer: "bankTransfer", duitnow: "duitnow", card: "card", fpx: "fpx" };
 
 /** Official receipt: A4 / A5 with allocation table and received-by signature, or a compact 80mm thermal slip. */
-export function ReceiptDocument({ receipt, size = "a4", monochrome, brand, stamp, fit, isolate, className }: ReceiptDocumentProps) {
+export function ReceiptDocument({ receipt, size = "a4", monochrome, brand, stamp, className, ...page }: ReceiptDocumentProps) {
 	const mono = monochrome ?? size === "receipt";
 	const b = mono ? { ...brand, accent: "#16181d" } : brand;
 	const st = stamp !== undefined ? stamp ?? undefined : receipt.status === "void" ? "void" : receipt.status === "draft" ? "draft" : undefined;
 	return (
-		<DocumentPage brand={b} size={size} stamp={st} fit={fit} isolate={isolate} className={className}>
+		<DocumentPage {...page} brand={b} size={size} stamp={st} className={className}>
 			{size === "receipt" ? <ThermalReceiptBody r={receipt} /> : <ReceiptBody r={receipt} size={size} />}
 		</DocumentPage>
 	);
@@ -719,8 +729,8 @@ function usePaymentLines(r: ReceiptData) {
 
 function ReceiptBody({ r, size }: { r: ReceiptData; size: "a4" | "a5" }) {
 	const t = useDocLabel();
-	const { locale, layout, signature: brandSig } = useDocumentBrand();
-	const currency = r.currency ?? "MYR";
+	const { locale, layout, signature: brandSig, baseCurrency } = useDocumentBrand();
+	const currency = r.currency ?? baseCurrency;
 	const sym = currencySymbol(currency);
 	const payLines = usePaymentLines(r);
 	const signer = r.receivedBy === false ? null : r.receivedBy && r.receivedBy !== true ? { label: "receivedBy", ...r.receivedBy } : { label: "receivedBy", ...brandSig, image: brandSig?.image };
@@ -798,8 +808,8 @@ const THERMAL_TOTALS = "[&>div:first-child]:gap-0";
 
 function ThermalReceiptBody({ r }: { r: ReceiptData }) {
 	const t = useDocLabel();
-	const { locale } = useDocumentBrand();
-	const currency = r.currency ?? "MYR";
+	const { locale , baseCurrency } = useDocumentBrand();
+	const currency = r.currency ?? baseCurrency;
 	const payLines = usePaymentLines(r);
 	const allocations = r.allocations ?? [];
 	return (
@@ -884,10 +894,10 @@ export type DeliveryOrderData = {
 export type DeliveryOrderDocumentProps = SalesDocPresentation & { order: DeliveryOrderData; size?: "a4" | "a5" | "letter" };
 
 /** Delivery order: no prices; ordered / delivered / back-ordered quantities and a goods-received sign-off. */
-export function DeliveryOrderDocument({ order, size = "a4", brand, stamp, fit, isolate, className }: DeliveryOrderDocumentProps) {
+export function DeliveryOrderDocument({ order, size = "a4", stamp, className, ...page }: DeliveryOrderDocumentProps) {
 	const st = stamp !== undefined ? stamp ?? undefined : order.status === "draft" ? "draft" : order.status === "void" ? "void" : undefined;
 	return (
-		<DocumentPage brand={brand} size={size} stamp={st} fit={fit} isolate={isolate} className={className}>
+		<DocumentPage {...page} size={size} stamp={st} className={className}>
 			<DeliveryOrderBody o={order} />
 		</DocumentPage>
 	);

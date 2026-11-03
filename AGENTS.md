@@ -14,7 +14,7 @@ Guidance for coding agents and contributors. Read it before changing anything.
 
 ## Rules
 1. **Tokens only.** Colours, radii and shadows come from the theme (`bg-card`, `text-muted-foreground`, `border-border`, `text-error-text`…). No hex values or Tailwind palette colours in components, except chart fills via `var(--chart-series-N)`.
-2. **Type scale.** `text-2xs` 11 · `text-xs` 12 · `text-sm` 13 · `text-md` 15 · `text-lg` 17 · `text-xl` 20. No `text-[13px]`.
+2. **Type scale.** `text-2xs` 11 · `text-xs` 12 · `text-sm` 13 · `text-md` 15 · `text-lg` 17 · `text-xl` 20, and `text-display` 28 for a hero figure only. No `text-[13px]`.
 3. **Responsive by container.** Roots set `@container`; use `@sm:`…`@3xl:` variants. Every component must work from 320px to a full page of its own width. No fixed pixel layouts.
 4. **Composable.** Every exported component accepts `className` (merged with `cn()`) and spreads native props on its root. Stateful components support controlled and uncontrolled use (`value` / `defaultValue` / `onValueChange`).
 5. **Money.** Amounts are decimal strings (`"1234.50"`), never floats. Use `parseAmount`, `sumAmounts`, `toSen`/`fromSen`, `formatCurrency`. Documents print totals exactly as given and never recalculate posted figures.

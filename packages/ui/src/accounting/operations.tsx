@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * Cynco UI — tax, fixed assets, items/inventory, purchase orders,
  * payroll and LHDN MyInvois e-invoice. Presentational ports of
@@ -29,6 +31,7 @@ import {
 	cn,
 	type StatusTone,
 	type StatusGlyph,
+	useControllableState,
 } from "../base";
 import {
 	ArrowSquareOutIcon,
@@ -63,6 +66,8 @@ import {
 	type DataColumn,
 	type StatusEntry,
 } from "../lib/shared";
+import { fixed, mul, roundToSen } from "../lib/decimal";
+import { fromSen, isDecimalString, sumAmounts } from "../lib/money";
 
 /* ------------------------------------------------------------------ helpers */
 
@@ -78,9 +83,11 @@ function num(v: Num): number {
 /** cynco formatAmount: "1,234.00", "—" for null. */
 function amt(v: Num): string {
 	if (v === null || v === undefined || v === "") return "—";
-	const n = typeof v === "string" ? parseFloat(v) : v;
-	if (!Number.isFinite(n)) return "—";
-	return new Intl.NumberFormat("en-MY", { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n);
+	const f = new Intl.NumberFormat("en-MY", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+	if (typeof v === "number") return Number.isFinite(v) ? f.format(v) : "—";
+	// Decimal strings format exactly; Intl takes them without a float round-trip.
+	const s = v.trim();
+	return isDecimalString(s) ? f.format(s) : "—";
 }
 function qty4(v: Num): string {
 	return num(v).toFixed(4);
@@ -816,10 +823,26 @@ const fmt2 = (n: number | null) => (n != null ? new Intl.NumberFormat("en-MY", {
 const PO_GRID = "@xl:grid-cols-[minmax(0,1fr)_5.5rem_7.5rem_7.5rem_1.75rem]";
 
 /** PO line items editor (description, qty, unit price, amount auto-calculated) with totals. */
-export function PurchaseOrderLines({ lineItems, onChange, readOnly = false, currency = "MYR", taxAmount, className, ...props }: DivProps<{ lineItems: POLine[]; onChange?: (items: POLine[]) => void; readOnly?: boolean; currency?: string; taxAmount?: number }>) {
-	const [local, setLocal] = React.useState(lineItems);
-	const lines = onChange ? lineItems : local;
-	const set = (next: POLine[]) => (onChange ? onChange(next) : setLocal(next));
+export function PurchaseOrderLines({
+	lineItems,
+	defaultLineItems = [],
+	onChange,
+	readOnly = false,
+	currency = "MYR",
+	taxAmount,
+	className,
+	...props
+}: DivProps<{
+	/** Controlled lines. */
+	lineItems?: POLine[];
+	/** Initial lines for uncontrolled use. */
+	defaultLineItems?: POLine[];
+	onChange?: (items: POLine[]) => void;
+	readOnly?: boolean;
+	currency?: string;
+	taxAmount?: number;
+}>) {
+	const [lines = defaultLineItems, set] = useControllableState({ prop: lineItems, defaultProp: defaultLineItems, onChange });
 	const update = (i: number, field: keyof POLine, raw: string) => {
 		const next = [...lines];
 		const it = { ...next[i]! };
@@ -827,11 +850,11 @@ export function PurchaseOrderLines({ lineItems, onChange, readOnly = false, curr
 		else if (field === "quantity") it.quantity = parseFloat(raw) || 0;
 		else if (field === "unitPrice") it.unitPrice = raw === "" ? null : parseFloat(raw) || 0;
 		else if (field === "amount") it.amount = raw === "" ? null : parseFloat(raw) || 0;
-		if ((field === "quantity" || field === "unitPrice") && it.unitPrice != null) it.amount = Math.round(it.quantity * it.unitPrice * 100) / 100;
+		if ((field === "quantity" || field === "unitPrice") && it.unitPrice != null) it.amount = Number(fromSen(roundToSen(mul(fixed(it.quantity), fixed(it.unitPrice)))));
 		next[i] = it;
 		set(next);
 	};
-	const subtotal = lines.reduce((s, l) => s + (l.amount ?? 0), 0);
+	const subtotal = sumAmounts(lines.map((l) => l.amount));
 	const tax = taxAmount ?? 0;
 	const input = "min-w-24 text-sm @xl:border-transparent @xl:bg-transparent @xl:shadow-none @xl:hover:border-[var(--color-input)] @xl:focus:border-[var(--color-input)]";
 	const fieldLabel = "text-2xs text-tertiary-foreground @xl:sr-only";
@@ -917,7 +940,7 @@ export function PurchaseOrderLines({ lineItems, onChange, readOnly = false, curr
 					items={[
 						{ label: "Subtotal", value: formatCurrency(subtotal, currency) },
 						{ label: "Tax (SST)", value: formatCurrency(tax, currency) },
-						{ label: "Total", value: formatCurrency(subtotal + tax, currency), strong: true },
+						{ label: "Total", value: formatCurrency(sumAmounts([subtotal, tax]), currency), strong: true },
 					]}
 				/>
 			</div>
@@ -1155,6 +1178,8 @@ type EnvName = "sandbox" | "production";
 export interface EInvoiceEnvStatus {
 	status: "valid" | "invalid" | "submitted" | "pending" | "failed" | "cancelled" | null;
 	documentUuid?: string | null; longId?: string | null; validatedAt?: string | null;
+	/** The document's public MyInvois validation link; shown as "View on MyInvois" once valid. */
+	validationUrl?: string | null;
 	rejectionRequestedAt?: string | null; rejectionReason?: string | null;
 	validationErrors?: string[]; unconfirmed?: boolean; withinCancelWindow?: boolean;
 }
@@ -1182,7 +1207,19 @@ function einvoiceState(s: EInvoiceEnvStatus | undefined): { label: string; tone:
 const linkClass = "rounded-sm text-primary outline-none hover:underline focus-ring";
 
 /** LHDN MyInvois filing for one invoice or note: validation state per environment, the validated stamp, and the submit / cancel actions. */
-export function EInvoiceStatusCard({ credentialEnvironments, byEnvironment, documentLabel = "invoice", hasCorrection = true, onSubmit, onCancel, onCheck, className, ...props }: DivProps<{ credentialEnvironments: EnvName[]; byEnvironment: Partial<Record<EnvName, EInvoiceEnvStatus>>; documentLabel?: string; hasCorrection?: boolean; onSubmit?: (env: EnvName) => void; onCancel?: (env: EnvName, reason: string) => void; onCheck?: (env: EnvName) => void }>) {
+export function EInvoiceStatusCard({ credentialEnvironments, byEnvironment, documentLabel = "invoice", hasCorrection = true, credentialsHref, correctionHref, onSubmit, onCancel, onCheck, className, ...props }: DivProps<{
+	credentialEnvironments: EnvName[];
+	byEnvironment: Partial<Record<EnvName, EInvoiceEnvStatus>>;
+	documentLabel?: string;
+	hasCorrection?: boolean;
+	/** Where MyInvois credentials are set up; links the "not configured" message. */
+	credentialsHref?: string;
+	/** Where to raise the correcting credit note; links the "window has passed" message. */
+	correctionHref?: string;
+	onSubmit?: (env: EnvName) => void;
+	onCancel?: (env: EnvName, reason: string) => void;
+	onCheck?: (env: EnvName) => void;
+}>) {
 	const [env, setEnv] = React.useState<EnvName>(credentialEnvironments[0] ?? "sandbox");
 	const [cancelReason, setCancelReason] = React.useState<string | null>(null);
 	const [reasonError, setReasonError] = React.useState(false);
@@ -1224,8 +1261,12 @@ export function EInvoiceStatusCard({ credentialEnvironments, byEnvironment, docu
 			{state && (
 				<ActionBar>
 					<StatusChip tone={state.tone} glyph={state.glyph}>{state.label}</StatusChip>
-					{isValid && latest?.longId && latest.documentUuid && (
-						<a href="#" onClick={(e) => e.preventDefault()} className={cn("inline-flex items-center gap-1 text-2xs", linkClass)}>View on MyInvois<ArrowSquareOutIcon size={12} aria-hidden="true" /></a>
+					{isValid && latest?.validationUrl && (
+						<a href={latest.validationUrl} target="_blank" rel="noreferrer" className={cn("inline-flex items-center gap-1 text-2xs", linkClass)}>
+							View on MyInvois
+							<ArrowSquareOutIcon size={12} aria-hidden="true" />
+							<span className="sr-only">(opens in a new tab)</span>
+						</a>
 					)}
 				</ActionBar>
 			)}
@@ -1258,14 +1299,14 @@ export function EInvoiceStatusCard({ credentialEnvironments, byEnvironment, docu
 
 			{!hasCreds ? (
 				<p className="text-sm font-normal text-tertiary-foreground">
-					MyInvois credentials are not configured. Set them up in <a href="#" onClick={(e) => e.preventDefault()} className={linkClass}>E-Invoice Credentials</a>.
+					MyInvois credentials are not configured. Set them up in {credentialsHref ? <a href={credentialsHref} className={linkClass}>E-Invoice Credentials</a> : "E-Invoice Credentials"}.
 				</p>
 			) : isValid ? (
 				<div className="flex flex-col gap-2">
 					{envSelect}
 					{!canCancel ? (
 						<p className="text-2xs text-tertiary-foreground">
-							The 72-hour cancellation window has passed. {hasCorrection ? <a href="#" onClick={(e) => e.preventDefault()} className={linkClass}>Correct this {documentLabel} with a credit note</a> : "Correct it with a credit or debit note"}.
+							The 72-hour cancellation window has passed. {hasCorrection ? correctionHref ? <a href={correctionHref} className={linkClass}>Correct this {documentLabel} with a credit note</a> : `Correct this ${documentLabel} with a credit note` : "Correct it with a credit or debit note"}.
 						</p>
 					) : cancelReason === null ? (
 						<Button ref={cancelRef} variant="secondary" size="sm" onClick={() => openCancel(true)}>

@@ -695,8 +695,8 @@ report: GeneralLedgerData — period, accounts [{code, name, openingBalance, lin
 
 - `report`: `GeneralLedgerData`
 - `size?`: `"a4" | "a4-landscape" | "a5" | "letter" | "receipt"`. Default `"a4-landscape"`.
+- `stamp?`: `"copy" | "paid" | "void" | "draft" | "overdue"`. A diagonal stamp across the page: Paid, Void, Draft, Copy, Overdue.
 - `brand?`: `Partial<DocBrand>`. Overrides the provider's brand (merged over it).
-- `stamp?`: `"paid" | "void" | "draft" | "copy" | "overdue"`. A diagonal stamp across the page: Paid, Void, Draft, Copy, Overdue.
 - `fit?`: `"width" | "none"`. On screen: scale the sheet down to fit its container ("width") or keep 100% and scroll ("none"). Controlled; pair with `onFitChange`. Leave unset to let the zoom control switch it.
 - `isolate?`: `boolean`. When printing, hide the rest of the app and print only this page. Default true.
 - Also accepts `ComponentProps<"article">`.

@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * Cynco UI — banking & reconciliation.
  * Hand-written presentational ports of remix/app/components/banking/*:
@@ -15,6 +17,11 @@ import {
 	Checkbox,
 	GroupedTabButton,
 	Input,
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
 	StatusChip,
 	StatusChipIcon,
 	StatusRing,
@@ -61,6 +68,7 @@ import {
 } from "@phosphor-icons/react";
 import { Bar, CartesianGrid, ComposedChart, Line, XAxis, YAxis } from "recharts";
 import { formatCurrency, formatCurrencyCompact, formatDate, surfaces, negativeClass, DataList, ActionBar, SectionPanel, type DataColumn } from "../lib/shared";
+import { toSen, fromSen } from "../lib/money";
 
 /* ------------------------------------------------------------------ shared bits */
 
@@ -92,6 +100,8 @@ const LIFECYCLE_LABELS: Record<BankFeedStatus, string> = {
 	reconciled: "Reconciled",
 	excluded: "Excluded",
 };
+const FEED_FILTERS: Record<BankFeedStatus | "all", string> = { all: "All statuses", imported: "To categorize", categorized: "To post", posted: "To reconcile", reconciled: "Reconciled", excluded: "Excluded" };
+const isFeedFilter = (v: unknown): v is BankFeedStatus | "all" => typeof v === "string" && Object.hasOwn(FEED_FILTERS, v);
 const STAGE: Record<BankFeedStatus, number> = { imported: 1, categorized: 2, posted: 3, reconciled: 4, excluded: -1 };
 
 /**
@@ -416,6 +426,7 @@ export function BankFeedRow({
 	selected: selectedProp,
 	defaultSelected = false,
 	onSelectedChange,
+	onRestore,
 	showAccount = false,
 	className,
 	...props
@@ -427,6 +438,8 @@ export function BankFeedRow({
 	defaultSelected?: boolean;
 	/** Called when the checkbox is toggled by click or Space. */
 	onSelectedChange?: (selected: boolean) => void;
+	/** Called from an excluded line's Restore button; omit to hide it. */
+	onRestore?: (tx: BankFeedTransaction) => void;
 	showAccount?: boolean;
 	className?: string;
 }>) {
@@ -467,10 +480,12 @@ export function BankFeedRow({
 					</div>
 					<div className="min-w-0 shrink-0 @lg:max-w-56">
 						{excluded ? (
-							<Button variant="skeleton" size="sm" className="-ml-1.5 gap-1 text-tertiary-foreground @lg:ml-0">
-								<ArrowCounterClockwiseIcon size={12} className="size-3" aria-hidden="true" />
-								Restore
-							</Button>
+							onRestore && (
+								<Button variant="skeleton" size="sm" className="-ml-1.5 gap-1 text-tertiary-foreground @lg:ml-0" onClick={() => onRestore(tx)}>
+									<ArrowCounterClockwiseIcon size={12} className="size-3" aria-hidden="true" />
+									Restore
+								</Button>
+							)
 						) : (
 							<BankCategoryCell status={tx.status} category={tx.category} suggestion={tx.suggestion} />
 						)}
@@ -497,20 +512,36 @@ export type BankFeedDay = { date: string; rows: BankFeedTransaction[]; net?: { a
 export function BankFeedList({
 	days,
 	total,
-	statusLabel = "All statuses",
-	search,
+	query: queryProp,
+	defaultQuery,
+	onQueryChange,
+	status: statusProp,
+	defaultStatus,
+	onStatusChange,
 	showAccount = true,
 	selectedIds: selectedIdsProp,
 	defaultSelectedIds = [],
 	onSelectedChange,
 	postAll,
+	onPostAll,
+	onRestore,
 	className,
 	...props
 }: With<{
 	days: BankFeedDay[];
 	total: number;
-	statusLabel?: string;
-	search?: string;
+	/** Controlled search query: the list shows the rows you pass, so filter them (or refetch) in `onQueryChange`. Uncontrolled, the list filters by payee, description and reference itself. */
+	query?: string;
+	/** Initial search query for uncontrolled use. */
+	defaultQuery?: string;
+	/** Called when the user types in the search box. */
+	onQueryChange?: (query: string) => void;
+	/** Controlled status filter: the list shows the rows you pass, so filter them (or refetch) in `onStatusChange`. Uncontrolled, the list filters itself. */
+	status?: BankFeedStatus | "all";
+	/** Initial status filter for uncontrolled use. */
+	defaultStatus?: BankFeedStatus | "all";
+	/** Called when the user changes the status filter. */
+	onStatusChange?: (status: BankFeedStatus | "all") => void;
 	showAccount?: boolean;
 	/** Ids of the ticked rows (controlled). */
 	selectedIds?: string[];
@@ -518,36 +549,69 @@ export function BankFeedList({
 	defaultSelectedIds?: string[];
 	/** Called with the new ids when a row is ticked or unticked. */
 	onSelectedChange?: (ids: string[]) => void;
-	/** "RM 4,210.00 in · RM 1,180.40 out" shown on Post all, when filtered to To post. */
+	/** "RM 4,210.00 in · RM 1,180.40 out" shown on Post all; omit to hide the button. */
 	postAll?: string;
+	/** Called when the user clicks "Post all". */
+	onPostAll?: () => void;
+	/** Called from an excluded line's Restore button; omit to hide it. */
+	onRestore?: (tx: BankFeedTransaction) => void;
 	className?: string;
 }>) {
 	const [selectedIds = [], setSelectedIds] = useControllableState({ prop: selectedIdsProp, defaultProp: defaultSelectedIds, onChange: onSelectedChange });
+	const [query = "", setQuery] = useControllableState({ prop: queryProp, defaultProp: defaultQuery, onChange: onQueryChange });
+	const [status = "all", setStatus] = useControllableState({ prop: statusProp, defaultProp: defaultStatus, onChange: onStatusChange });
+	// Controlled filters belong to the caller, who passes the matching rows; uncontrolled ones filter here.
+	const q = queryProp === undefined ? query.trim().toLowerCase() : "";
+	const only = statusProp === undefined ? status : "all";
+	const filtering = q !== "" || only !== "all";
+	const shownDays = filtering
+		? days
+				.map((day) => ({
+					...day,
+					rows: day.rows.filter((tx) => (only === "all" || tx.status === only) && (!q || [tx.payeeName, tx.description, tx.reference].some((f) => f?.toLowerCase().includes(q)))),
+				}))
+				.filter((day) => day.rows.length > 0)
+		: days;
 	return (
 		<div className={cn("@container flex min-w-0 flex-col gap-2", className)} {...props}>
 			<ActionBar>
 				<div className="relative min-w-40 max-w-xs flex-1 basis-48">
 					<MagnifyingGlassIcon size={13} className="size-3 pointer-events-none absolute top-1/2 left-2 -translate-y-1/2 text-tertiary-foreground" aria-hidden="true" />
-					<Input aria-label="Search transactions" placeholder="Search payee, description, reference…" defaultValue={search} className="!pl-7" />
+					<Input
+						aria-label="Search transactions"
+						placeholder="Search payee, description, reference…"
+						value={query}
+						onChange={(e) => setQuery(e.currentTarget.value)}
+						className="!pl-7"
+					/>
 				</div>
-				<Button variant="secondary" className="gap-1.5">
-					<span className="sr-only">Status filter: </span>
-					{statusLabel}
-					<CaretDownIcon size={12} className="size-3" aria-hidden="true" />
-				</Button>
-				<span role="status" className={cn(TINY, "ml-auto tabular-nums")}>{countOf(total, "transaction")}</span>
+				<Select value={status} items={FEED_FILTERS} onValueChange={(v) => isFeedFilter(v) && setStatus(v)}>
+					<SelectTrigger className="h-input w-44 max-w-full" aria-label="Status filter">
+						<SelectValue />
+					</SelectTrigger>
+					<SelectContent>
+						{Object.entries(FEED_FILTERS).map(([value, label]) => (
+							<SelectItem key={value} value={value}>
+								{label}
+							</SelectItem>
+						))}
+					</SelectContent>
+				</Select>
+				<span role="status" className={cn(TINY, "ml-auto tabular-nums")}>{countOf(filtering ? shownDays.reduce((n, day) => n + day.rows.length, 0) : total, "transaction")}</span>
 				{postAll && (
-					<Button title={postAll} className="gap-1.5">
+					<Button title={postAll} className="gap-1.5" onClick={onPostAll}>
 						Post all
 					</Button>
 				)}
 			</ActionBar>
 			<div className={surfaces.tray}>
-				{days.map((day, i) => (
+				{filtering && shownDays.length === 0 && <p className="px-3 py-6 text-center text-2xs text-tertiary-foreground">No transactions match</p>}
+				{shownDays.map((day, i) => (
 					<section key={day.date} aria-label={formatDate(day.date)} className={cn(i > 0 && "mt-1")}>
 						<header className="flex h-7 items-center justify-between gap-3 px-2.5">
 							<h3 className="text-2xs font-medium text-tertiary-foreground">{formatDate(day.date)}</h3>
-							{day.net && (
+							{/* The day's net covers all its rows, so it's hidden while some are filtered out. */}
+							{day.net && !filtering && (
 								<span className="text-2xs tabular-nums text-tertiary-foreground">
 									{day.net.amount >= 0 ? "+" : "−"}
 									{formatCurrency(Math.abs(day.net.amount), day.net.currency)}
@@ -560,6 +624,7 @@ export function BankFeedList({
 									key={tx.id}
 									tx={tx}
 									showAccount={showAccount}
+									onRestore={onRestore}
 									selected={selectedIds.includes(tx.id)}
 									onSelectedChange={(on) => setSelectedIds(on ? [...selectedIds, tx.id] : selectedIds.filter((id) => id !== tx.id))}
 								/>
@@ -642,6 +707,11 @@ export function BankReviewCard({
 	active = false,
 	picking = false,
 	events,
+	onAcceptSuggestion,
+	onChooseCategory,
+	onChangeCategory,
+	onExclude,
+	onSkip,
 	className,
 	...props
 }: With<{
@@ -650,6 +720,16 @@ export function BankReviewCard({
 	active?: boolean;
 	picking?: boolean;
 	events?: BankTxEvent[];
+	/** Called when the user accepts the AI-suggested category. */
+	onAcceptSuggestion?: () => void;
+	/** Called when the user clicks "Choose category". */
+	onChooseCategory?: () => void;
+	/** Called when the user clicks "Change" to pick a different category; omit to hide the button. */
+	onChangeCategory?: () => void;
+	/** Called when the user clicks "Exclude"; omit to hide the button. */
+	onExclude?: () => void;
+	/** Called when the user clicks "Skip"; omit to hide the button. */
+	onSkip?: () => void;
 	className?: string;
 }>) {
 	const suggestion = tx.suggestion;
@@ -680,7 +760,7 @@ export function BankReviewCard({
 				{picking ? (
 					<BankCategoryCell status="imported" picking />
 				) : suggestion ? (
-					<Button variant="dotted" size="sm" className={cn(SUGGEST, "max-w-full gap-1.5 px-2")}>
+					<Button variant="dotted" size="sm" className={cn(SUGGEST, "max-w-full gap-1.5 px-2")} onClick={onAcceptSuggestion} disabled={!onAcceptSuggestion}>
 						<SparkleIcon size={12} className="size-3" weight="fill" aria-hidden="true" />
 						<span className="sr-only">Accept AI suggestion: </span>
 						{suggestion.accountCode && <span className="text-tiny-id opacity-80">{suggestion.accountCode}</span>}
@@ -688,25 +768,29 @@ export function BankReviewCard({
 						{suggestion.confidence != null && <ConfidenceRing value={suggestion.confidence} />}
 					</Button>
 				) : (
-					<Button variant="secondary" size="sm" className="gap-1.5 font-normal">
+					<Button variant="secondary" size="sm" className="gap-1.5 font-normal" onClick={onChooseCategory} disabled={!onChooseCategory}>
 						<TagIcon size={12} className="size-3" aria-hidden="true" />
 						Choose category
 					</Button>
 				)}
 				{active && !picking && (
 					<span className="ml-auto flex items-center gap-0.5">
-						{suggestion && (
-							<Button variant="skeleton" size="sm" className="text-tertiary-foreground">
+						{suggestion && onChangeCategory && (
+							<Button variant="skeleton" size="sm" className="text-tertiary-foreground" onClick={onChangeCategory}>
 								Change
 							</Button>
 						)}
-						<Button variant="skeleton" size="sm" className="gap-1 text-tertiary-foreground hover:!text-error-text">
-							<EyeSlashIcon size={12} className="size-3" aria-hidden="true" />
-							Exclude
-						</Button>
-						<Button variant="skeleton" size="sm" className="text-tertiary-foreground">
-							Skip
-						</Button>
+						{onExclude && (
+							<Button variant="skeleton" size="sm" className="gap-1 text-tertiary-foreground hover:!text-error-text" onClick={onExclude}>
+								<EyeSlashIcon size={12} className="size-3" aria-hidden="true" />
+								Exclude
+							</Button>
+						)}
+						{onSkip && (
+							<Button variant="skeleton" size="sm" className="text-tertiary-foreground" onClick={onSkip}>
+								Skip
+							</Button>
+						)}
 					</span>
 				)}
 			</div>
@@ -809,8 +893,9 @@ function solveEquation(terms: readonly BankEquationTerm[], check?: BankEquationC
 	if (!check) return { result, verdict: { kind: "result" } };
 	if (result === undefined || check.amount === undefined) return { result, verdict: { kind: "pending" } };
 	if (result === null || check.amount === null) return { result, verdict: { kind: "unknown" } };
-	const diff = Math.round((result - check.amount) * 100) / 100;
-	return { result, verdict: Math.abs(diff) < 0.005 ? { kind: "ties" } : { kind: "off", difference: diff } };
+	const diffSen = toSen(result) - toSen(check.amount);
+	const diff = Number(fromSen(diffSen));
+	return { result, verdict: diffSen === 0n ? { kind: "ties" } : { kind: "off", difference: diff } };
 }
 
 /** A loading placeholder; `label` is what a screen reader hears in its place. */
@@ -1013,6 +1098,8 @@ export function BankMonthProof({
 	link,
 	currency = "MYR",
 	state,
+	onUploadStatement,
+	onLinkLedgerAccount,
 	className,
 	...props
 }: With<
@@ -1029,6 +1116,10 @@ export function BankMonthProof({
 		link: BankLedgerLink;
 		currency?: string;
 		state?: "no_statement" | "in_progress" | "covered" | "needs_work" | "ready" | "closed";
+		/** Called when the user clicks "Upload statement"; omit to hide the button. */
+		onUploadStatement?: () => void;
+		/** Called when the user clicks "Link a ledger account"; omit to hide the button. */
+		onLinkLedgerAccount?: () => void;
 		className?: string;
 	},
 	"section"
@@ -1046,7 +1137,8 @@ export function BankMonthProof({
 						? "Ledger account missing"
 						: "Can't verify";
 	const expected = statementClosing === null ? null : statementClosing - unpostedNet - (transit?.net ?? 0);
-	const diff = expected !== null && ledger !== null && link.kind === "linked" ? Math.round((ledger - expected) * 100) / 100 : 0;
+	const diffSen = expected !== null && ledger !== null && link.kind === "linked" ? toSen(ledger) - toSen(expected) : 0n;
+	const diff = Number(fromSen(diffSen));
 	const amount = formatCurrency(Math.abs(diff), currency);
 	const explanation =
 		Math.abs(diff) < 0.005
@@ -1089,15 +1181,17 @@ export function BankMonthProof({
 			{state === "no_statement" && (
 				<div className="flex flex-wrap items-center gap-x-3 gap-y-2">
 					<p className={prose}>No statement ends in {monthName}, so there is no bank balance to prove the month end with.</p>
-					<Button variant="secondary" className="gap-1.5">
-						<FileArrowUpIcon size={14} className="size-3.5" aria-hidden="true" />
-						Upload {monthName} statement
-					</Button>
+					{onUploadStatement && (
+						<Button variant="secondary" className="gap-1.5" onClick={onUploadStatement}>
+							<FileArrowUpIcon size={14} className="size-3.5" aria-hidden="true" />
+							Upload {monthName} statement
+						</Button>
+					)}
 				</div>
 			)}
 			{reason && statementClosing !== null && <p className={prose}>{reason}</p>}
-			{(link.kind === "unlinked" || link.kind === "missing_account") && (
-				<Button variant="secondary" className="gap-1.5">
+			{(link.kind === "unlinked" || link.kind === "missing_account") && onLinkLedgerAccount && (
+				<Button variant="secondary" className="gap-1.5" onClick={onLinkLedgerAccount}>
 					<ScalesIcon size={14} className="size-3.5" aria-hidden="true" />
 					Link a ledger account
 				</Button>
@@ -1337,6 +1431,9 @@ export function BankReconciliationYearStrip({
 	accountName,
 	calendarMonths = false,
 	selectedSummary,
+	onPreviousYear,
+	onNextYear,
+	onMonthSelect,
 	className,
 	...props
 }: With<{
@@ -1348,6 +1445,12 @@ export function BankReconciliationYearStrip({
 	calendarMonths?: boolean;
 	/** The next-step sentence for the selected month, and its sign-off line. */
 	selectedSummary?: { nextStep: string; signedOffLabel?: string };
+	/** Called when the user clicks the Previous year button. */
+	onPreviousYear?: () => void;
+	/** Called when the user clicks the Next year button. */
+	onNextYear?: () => void;
+	/** Called when the user selects or deselects a month cell. */
+	onMonthSelect?: (period: string | null) => void;
 	className?: string;
 }>) {
 	const sel = months.find((m) => m.period === selected);
@@ -1358,10 +1461,10 @@ export function BankReconciliationYearStrip({
 					<h2 className="text-md font-semibold text-foreground">Month-end close · {yearLabel}</h2>
 					{calendarMonths && <p className={MUTED}>No fiscal year end is set, so these are calendar months. Set it in Periods.</p>}
 				</div>
-				<Button variant="skeleton" size="icon" aria-label="Previous year">
+				<Button variant="skeleton" size="icon" aria-label="Previous year" onClick={onPreviousYear} disabled={!onPreviousYear}>
 					<CaretLeftIcon size={14} className="size-3.5" aria-hidden="true" />
 				</Button>
-				<Button variant="skeleton" size="icon" aria-label="Next year">
+				<Button variant="skeleton" size="icon" aria-label="Next year" onClick={onNextYear} disabled={!onNextYear}>
 					<CaretRightIcon size={14} className="size-3.5" aria-hidden="true" />
 				</Button>
 			</div>
@@ -1379,6 +1482,7 @@ export function BankReconciliationYearStrip({
 								"relative flex min-h-14 min-w-0 cursor-pointer flex-col items-stretch gap-1.5 rounded-lg border px-1.5 pt-2 pb-2.5 text-left transition-colors focus-ring",
 								isSel ? "border-table-surface-border bg-table-surface shadow-xs" : "border-transparent hover:bg-table-surface/60",
 							)}
+							onClick={() => onMonthSelect?.(isSel ? null : m.period)}
 						>
 							<span className={cn("text-2xs leading-4", isSel ? "font-semibold text-foreground" : m.state === "future" ? "text-subtle" : "text-muted-foreground")}>{MONTHS[monthIdx(m.period)]}</span>
 							<span aria-hidden="true" className={cn("block h-1.5 w-full rounded-full", BAR[look])} />
@@ -1508,26 +1612,39 @@ const RAIL_HIT = "w-full cursor-pointer rounded-lg text-left transition-colors f
  */
 export function BankAccountRail({
 	accounts,
-	selectedId = null,
+	selectedId: selectedIdProp,
+	defaultSelectedId = null,
+	onSelectedIdChange,
+	onAddAccount,
+	onConnectProvider,
 	net,
 	cashFlow = [],
 	className,
 	...props
 }: With<{
 	accounts: BankRailAccount[];
+	/** Controlled selection: an account id, or null for "All accounts". */
 	selectedId?: string | null;
+	/** Initial selection for uncontrolled use. */
+	defaultSelectedId?: string | null;
+	onSelectedIdChange?: (id: string | null) => void;
+	/** Called from "Add account"; omit to hide it. */
+	onAddAccount?: () => void;
+	/** Called from "Connect a payment provider"; omit to hide it. */
+	onConnectProvider?: () => void;
 	/** One entry per currency; never summed across currencies. */
 	net: { amount: number; currency: string }[];
 	cashFlow?: { month: string; net: number }[];
 	className?: string;
 }>) {
+	const [selectedId = null, setSelectedId] = useControllableState({ prop: selectedIdProp, defaultProp: defaultSelectedId, onChange: onSelectedIdChange });
 	const groups = RAIL_ORDER.map((label) => ({ label, list: accounts.filter((a) => (RAIL_GROUP[a.accountType] ?? "Other") === label) })).filter((g) => g.list.length > 0);
 	const multi = net.length > 1;
 	const railId = React.useId();
 	return (
 		<div className={cn("flex w-full min-w-0 flex-col", surfaces.card, className)} {...props}>
 			<div className="border-b border-border p-2">
-				<button type="button" aria-pressed={selectedId === null} className={cn(RAIL_HIT, "px-2.5 py-2.5", selectedId === null ? "bg-active-primary" : "hover:bg-muted")}>
+				<button type="button" aria-pressed={selectedId === null} onClick={() => setSelectedId(null)} className={cn(RAIL_HIT, "px-2.5 py-2.5", selectedId === null ? "bg-active-primary" : "hover:bg-muted")}>
 					<p className="text-2xs font-medium text-tertiary-foreground">All accounts</p>
 					{multi ? (
 						<div className="mt-1 flex flex-col gap-0.5">
@@ -1555,7 +1672,7 @@ export function BankAccountRail({
 								const sel = selectedId === a.id;
 								const attention = a.counts?.imported ?? 0;
 								return (
-									<button key={a.id} type="button" aria-pressed={sel} className={cn(RAIL_HIT, "group px-2.5 py-1.5", sel ? "bg-active-primary" : "hover:bg-muted")}>
+									<button key={a.id} type="button" aria-pressed={sel} onClick={() => setSelectedId(a.id)} className={cn(RAIL_HIT, "group px-2.5 py-1.5", sel ? "bg-active-primary" : "hover:bg-muted")}>
 										<span className="flex items-center gap-2.5">
 											<BankAccountAvatar account={a} />
 											<span className="min-w-0 flex-1">
@@ -1596,14 +1713,18 @@ export function BankAccountRail({
 						<NetFlowSpark data={cashFlow} />
 					</div>
 				)}
-				<Button variant="skeleton" className="w-full justify-start gap-2 text-primary">
-					<PlusIcon size={14} className="size-3.5" aria-hidden="true" />
-					Add account
-				</Button>
-				<Button variant="skeleton" className="w-full justify-start gap-2 text-muted-foreground">
-					<PlugsIcon size={14} className="size-3.5" aria-hidden="true" />
-					Connect a payment provider
-				</Button>
+				{onAddAccount && (
+					<Button variant="skeleton" className="w-full justify-start gap-2 text-primary" onClick={onAddAccount}>
+						<PlusIcon size={14} className="size-3.5" aria-hidden="true" />
+						Add account
+					</Button>
+				)}
+				{onConnectProvider && (
+					<Button variant="skeleton" className="w-full justify-start gap-2 text-muted-foreground" onClick={onConnectProvider}>
+						<PlugsIcon size={14} className="size-3.5" aria-hidden="true" />
+						Connect a payment provider
+					</Button>
+				)}
 			</div>
 		</div>
 	);
@@ -1636,9 +1757,50 @@ const SOURCE: Record<BankRuleRow["source"], { label: string; tone: StatusTone; g
  * overridden. Search, an All/Active/Inactive filter, "Apply to unposted
  * lines" and "New rule" sit above a DataList (stacked rows when narrow).
  */
-export function BankRulesTable({ rules, search = "", status = "all", className, ...props }: With<{ rules: BankRuleRow[]; search?: string; status?: "all" | "active" | "inactive"; className?: string }>) {
-	const [filter, setFilter] = React.useState(status);
-	const shown = rules.filter((r) => (filter === "active" ? r.isActive : filter === "inactive" ? !r.isActive : true));
+export function BankRulesTable({
+	rules,
+	query: queryProp,
+	defaultQuery,
+	onQueryChange,
+	status: statusProp,
+	defaultStatus,
+	onStatusChange,
+	onApplyToUnposted,
+	onNewRule,
+	onRowAction,
+	className,
+	...props
+}: With<{
+	rules: BankRuleRow[];
+	/** Controlled search query. */
+	query?: string;
+	/** Initial search query for uncontrolled use. */
+	defaultQuery?: string;
+	/** Called when the user types in the search box. */
+	onQueryChange?: (query: string) => void;
+	/** Controlled status filter. */
+	status?: "all" | "active" | "inactive";
+	/** Initial status filter for uncontrolled use. */
+	defaultStatus?: "all" | "active" | "inactive";
+	/** Called when the user changes the status filter. */
+	onStatusChange?: (status: "all" | "active" | "inactive") => void;
+	/** Called when the user clicks "Apply to unposted lines". */
+	onApplyToUnposted?: () => void;
+	/** Called when the user clicks "New rule". */
+	onNewRule?: () => void;
+	/** Called when the user triggers the action menu on a rule row. */
+	onRowAction?: (rule: BankRuleRow) => void;
+	className?: string;
+}>) {
+	const [query = "", setQuery] = useControllableState({ prop: queryProp, defaultProp: defaultQuery, onChange: onQueryChange });
+	const [filter = "all", setFilter] = useControllableState({ prop: statusProp, defaultProp: defaultStatus, onChange: onStatusChange });
+	const q = query.toLowerCase();
+	const shown = rules.filter((r) => {
+		if (filter === "active" && !r.isActive) return false;
+		if (filter === "inactive" && r.isActive) return false;
+		if (q) return r.pattern.toLowerCase().includes(q) || (r.account?.name ?? "").toLowerCase().includes(q) || (r.category ?? "").toLowerCase().includes(q);
+		return true;
+	});
 	// Inactive rules read quieter through colour that still passes 4.5:1; the Status column says "Inactive".
 	const dim = (r: BankRuleRow) => (!r.isActive ? "text-tertiary-foreground" : undefined);
 	const columns: DataColumn<BankRuleRow>[] = [
@@ -1707,25 +1869,34 @@ export function BankRulesTable({ rules, search = "", status = "all", className, 
 				<ActionBar>
 					<div className="relative w-full @md:w-52">
 						<MagnifyingGlassIcon size={13} className="size-3 pointer-events-none absolute top-1/2 left-2 -translate-y-1/2 text-tertiary-foreground" aria-hidden="true" />
-						<Input aria-label="Search rules" placeholder="Search by match or pattern" defaultValue={search} className="!pl-7" />
-					</div>
-						<GroupedTabButton aria-label="Filter rules by status"
-							className="w-auto"
-							value={filter}
-							onValueChange={(v) => setFilter(v as typeof filter)}
-							options={[
-								{ value: "all", label: "All" },
-								{ value: "active", label: "Active" },
-								{ value: "inactive", label: "Inactive" },
-							]}
+						<Input
+							aria-label="Search rules"
+							placeholder="Search by match or pattern"
+							value={query}
+							onChange={(e) => setQuery(e.currentTarget.value)}
+							className="!pl-7"
 						/>
+					</div>
+					<GroupedTabButton
+						aria-label="Filter rules by status"
+						className="w-auto"
+						value={filter}
+						onValueChange={(v) => setFilter(v as "all" | "active" | "inactive")}
+						options={[
+							{ value: "all", label: "All" },
+							{ value: "active", label: "Active" },
+							{ value: "inactive", label: "Inactive" },
+						]}
+					/>
 				</ActionBar>
 				<ActionBar>
-					<Button variant="secondary">Apply to unposted lines</Button>
-					<Button className="gap-1.5">
-						<PlusIcon size={14} className="size-3.5" aria-hidden="true" />
-						New rule
-					</Button>
+					{onApplyToUnposted && <Button variant="secondary" onClick={onApplyToUnposted}>Apply to unposted lines</Button>}
+					{onNewRule && (
+						<Button className="gap-1.5" onClick={onNewRule}>
+							<PlusIcon size={14} className="size-3.5" aria-hidden="true" />
+							New rule
+						</Button>
+					)}
 				</ActionBar>
 			</ActionBar>
 			<DataList
@@ -1734,7 +1905,7 @@ export function BankRulesTable({ rules, search = "", status = "all", className, 
 				columns={columns}
 				rows={shown}
 				getKey={(r) => r.id}
-				trailing={(r) => <ToolbarButton aria-label={`Actions for rule ${MATCH_LABEL[r.matchType] ?? r.matchType} ${r.pattern}`} />}
+				trailing={onRowAction ? (r) => <ToolbarButton aria-label={`Actions for rule ${MATCH_LABEL[r.matchType] ?? r.matchType} ${r.pattern}`} onClick={() => onRowAction(r)} /> : undefined}
 				footer={
 					<span role="status" className="text-2xs tabular-nums text-tertiary-foreground">
 						{countOf(shown.length, "rule")}

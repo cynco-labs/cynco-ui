@@ -15,6 +15,7 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm build:ui
+      - run: pnpm --filter @cynco-labs/ui check:rsc
       - run: pnpm typecheck
       - run: pnpm test
       - run: pnpm --filter @cynco-labs/docs build

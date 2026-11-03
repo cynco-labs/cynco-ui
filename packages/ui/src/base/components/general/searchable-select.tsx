@@ -1,3 +1,6 @@
+"use client";
+
+import { CaretDownIcon, CheckIcon } from "@phosphor-icons/react";
 import { SmallSpinner } from "./small-spinner";
 import {
 	Command,
@@ -13,9 +16,9 @@ import {
 	PopoverTrigger,
 } from "../ui/popover";
 import { cn } from "../../lib/utils";
-import { CheckIcon, ChevronDownIcon } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import type { ComponentProps, ReactNode } from "react";
+import { useControllableState } from "../../hooks/use-controllable-state";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 export type SearchableSelectFooter =
@@ -29,8 +32,11 @@ type SearchableSelectA11yProps = Pick<
 >;
 
 export type SearchableSelectProps<T> = SearchableSelectA11yProps & {
-	value: string | null;
-	onValueChange: (value: string) => void;
+	/** Controlled selection; null for none. */
+	value?: string | null;
+	/** Initial selection for uncontrolled use. */
+	defaultValue?: string | null;
+	onValueChange?: (value: string) => void;
 	options: T[];
 	getOptionValue: (option: T) => string;
 	getOptionLabel: (option: T) => string;
@@ -64,7 +70,8 @@ export type SearchableSelectProps<T> = SearchableSelectA11yProps & {
 };
 
 export function SearchableSelect<T>({
-	value,
+	value: valueProp,
+	defaultValue = null,
 	onValueChange,
 	options,
 	getOptionValue,
@@ -91,6 +98,7 @@ export function SearchableSelect<T>({
 	isLoading = false,
 	...a11yProps
 }: SearchableSelectProps<T>) {
+	const [value = null, setValue] = useControllableState<string | null>({ prop: valueProp, defaultProp: defaultValue, onChange: (v) => v !== null && onValueChange?.(v) });
 	const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
 	const open = controlledOpen ?? uncontrolledOpen;
 	const onOpenChangeRef = useRef(onOpenChange);
@@ -110,7 +118,7 @@ export function SearchableSelect<T>({
 
 	const handleSelect = (option: T) => {
 		if (getOptionDisabled?.(option)) return;
-		onValueChange(getOptionValue(option));
+		setValue(getOptionValue(option));
 		setOpen(false);
 	};
 
@@ -155,7 +163,7 @@ export function SearchableSelect<T>({
 									: defaultRenderValue(selectedOption)}
 							</span>
 						</div>
-						<ChevronDownIcon className="size-4 shrink-0 opacity-50" />
+						<CaretDownIcon className="size-4 shrink-0 opacity-50" />
 					</button>
 				)}
 			</PopoverTrigger>

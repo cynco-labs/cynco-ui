@@ -42,6 +42,7 @@
   ],
   "scripts": {
     "build": "vite build && tsc -p tsconfig.build.json && node scripts/build-css.mjs",
+    "check:rsc": "node scripts/check-rsc.mjs",
     "dev": "vite build --watch",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run"
@@ -51,33 +52,55 @@
     "@squircle/tailwindcss": "^1.0.6",
     "@tanstack/react-table": "^8.21.3",
     "@tanstack/react-virtual": "^3.13.18",
-    "@xyflow/react": "^12.11.0",
-    "ai": "^6.0.5",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "date-fns": "^4.1.0",
     "embla-carousel-react": "^8.6.0",
     "input-otp": "^1.4.2",
-    "lucide-react": "^0.562.0",
     "motion": "^12.26.1",
-    "nanoid": "^5.1.6",
-    "react-day-picker": "^8.10.1",
+    "react-day-picker": "^10.0.2",
     "react-hotkeys-hook": "^4.6.1",
     "react-resizable-panels": "^4.11.0",
     "recharts": "3.9.2",
-    "shiki": "^3.20.0",
-    "streamdown": "^1.6.10",
     "tailwind-merge": "^3.0.2",
     "tailwind-scrollbar-hide": "^4.0.0",
-    "tailwindcss-animate": "^1.0.7",
-    "tokenlens": "^1.3.1",
-    "use-stick-to-bottom": "^1.1.1"
+    "tailwindcss-animate": "^1.0.7"
   },
   "peerDependencies": {
     "@phosphor-icons/react": "^2.1.0",
+    "@xyflow/react": "^12.11.0",
+    "ai": "^6.0.5",
+    "nanoid": "^5.1.6",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "shiki": "^3.20.0",
+    "streamdown": "^1.6.10",
+    "tokenlens": "^1.3.1",
+    "use-stick-to-bottom": "^1.1.1"
+  },
+  "peerDependenciesMeta": {
+    "@xyflow/react": {
+      "optional": true
+    },
+    "ai": {
+      "optional": true
+    },
+    "nanoid": {
+      "optional": true
+    },
+    "shiki": {
+      "optional": true
+    },
+    "streamdown": {
+      "optional": true
+    },
+    "tokenlens": {
+      "optional": true
+    },
+    "use-stick-to-bottom": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@phosphor-icons/react": "^2.1.10",
@@ -86,12 +109,19 @@
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^4.3.4",
+    "@xyflow/react": "^12.11.0",
+    "ai": "^6.0.5",
     "axe-core": "^4.14.0",
     "jsdom": "^30.1.3",
+    "nanoid": "^5.1.6",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "shiki": "^3.20.0",
+    "streamdown": "^1.6.10",
     "tailwindcss": "^4.0.13",
+    "tokenlens": "^1.3.1",
     "typescript": "~5.7.2",
+    "use-stick-to-bottom": "^1.1.1",
     "vite": "^6.0.0",
     "vitest": "^2.1.8"
   },

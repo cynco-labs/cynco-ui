@@ -45,6 +45,11 @@ export default function BankReviewCardDemo() {
 	return (
 		<div className="flex flex-col gap-2">
 			<BankReviewCard
+				onAcceptSuggestion={() => {}}
+				onChooseCategory={() => {}}
+				onChangeCategory={() => {}}
+				onExclude={() => {}}
+				onSkip={() => {}}
 				active
 				accountName="CIMB Business"
 				events={EVENTS}
@@ -58,6 +63,11 @@ export default function BankReviewCardDemo() {
 				}}
 			/>
 			<BankReviewCard
+				onAcceptSuggestion={() => {}}
+				onChooseCategory={() => {}}
+				onChangeCategory={() => {}}
+				onExclude={() => {}}
+				onSkip={() => {}}
 				accountName="Maybank Current"
 				tx={{
 					payeeName: "Mydin Mohamed Holdings",
@@ -86,6 +96,11 @@ tx {payeeName, description, date, type, amount, suggestion}, accountName, active
 - `active?`: `boolean`. Default `false`.
 - `picking?`: `boolean`. Default `false`.
 - `events?`: `BankTxEvent[]`
+- `onAcceptSuggestion?`: `() => void`. Called when the user accepts the AI-suggested category.
+- `onChooseCategory?`: `() => void`. Called when the user clicks "Choose category".
+- `onChangeCategory?`: `() => void`. Called when the user clicks "Change" to pick a different category; omit to hide the button.
+- `onExclude?`: `() => void`. Called when the user clicks "Exclude"; omit to hide the button.
+- `onSkip?`: `() => void`. Called when the user clicks "Skip"; omit to hide the button.
 - Also accepts `ComponentProps<"div">`.
 
 ## Notes

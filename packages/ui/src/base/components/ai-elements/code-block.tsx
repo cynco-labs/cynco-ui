@@ -1,9 +1,9 @@
 "use client";
 
+import { CheckIcon, CopyIcon } from "@phosphor-icons/react";
 import { LiveStatus } from "../general/live-status";
 import { Button } from "../ui/button";
 import { cn } from "../../lib/utils";
-import { CheckIcon, CopyIcon } from "lucide-react";
 import {
 	type ComponentProps,
 	createContext,
@@ -118,7 +118,7 @@ export const CodeBlock = ({
 				setDarkHtml(dark);
 			})
 			// An unknown language or a failed grammar load keeps the plain-text rendering.
-			.catch((error: unknown) => console.error("[CodeBlock]", error));
+			.catch(() => {});
 		return () => {
 			cancelled = true;
 		};

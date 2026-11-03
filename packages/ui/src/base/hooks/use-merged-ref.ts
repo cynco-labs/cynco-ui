@@ -1,3 +1,5 @@
+"use client";
+
 import * as React from "react";
 
 /** One callback ref that sets every ref passed (local RefObjects and the caller's forwarded ref). */

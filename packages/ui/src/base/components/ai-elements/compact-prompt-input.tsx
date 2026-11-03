@@ -1,6 +1,8 @@
+"use client";
+
+import { ArrowBendDownLeftIcon, SpinnerGapIcon } from "@phosphor-icons/react";
 import { InputGroupButton } from "../ui/input-group";
 import { cn } from "../../lib/utils";
-import { CornerDownLeftIcon, Loader2Icon } from "lucide-react";
 import type { FormEvent, KeyboardEvent } from "react";
 
 /**
@@ -58,9 +60,9 @@ export function CompactPromptInput({
 					disabled={!value.trim() || isLoading}
 				>
 					{isLoading ? (
-						<Loader2Icon className="size-4 animate-spin" />
+						<SpinnerGapIcon className="size-4 animate-spin" />
 					) : (
-						<CornerDownLeftIcon className="size-4" />
+						<ArrowBendDownLeftIcon className="size-4" />
 					)}
 				</InputGroupButton>
 			</div>

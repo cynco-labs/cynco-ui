@@ -1,3 +1,6 @@
+"use client";
+
+import { CaretDownIcon, CaretUpIcon } from "@phosphor-icons/react";
 import { useTableContext } from "./table-context";
 import { getColumnWidthStyle } from "./table-row-cells";
 import { Checkbox } from "../ui/checkbox";
@@ -8,12 +11,11 @@ import {
 } from "../ui/table";
 import { cn } from "../../lib/utils";
 import { flexRender, type HeaderGroup } from "@tanstack/react-table";
-import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 
 function SortIcon({ sortDirection }: { sortDirection: string | false }) {
 	if (sortDirection === "asc") {
 		return (
-			<ChevronUpIcon
+			<CaretUpIcon
 				aria-hidden="true"
 				className="shrink-0 text-foreground"
 				size={12}
@@ -22,7 +24,7 @@ function SortIcon({ sortDirection }: { sortDirection: string | false }) {
 	}
 
 	return (
-		<ChevronDownIcon
+		<CaretDownIcon
 			aria-hidden="true"
 			className={cn(
 				"shrink-0",

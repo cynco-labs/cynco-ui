@@ -1,3 +1,5 @@
+"use client";
+
 import {
 	Dialog,
 	DialogContent,
@@ -225,7 +227,7 @@ function CommandKbd({ className, ...props }: React.ComponentProps<"kbd">) {
 		<kbd
 			data-slot="command-kbd"
 			className={cn(
-				"flex h-5 min-w-5 items-center justify-center rounded-[5px] bg-foreground/5 px-1 font-sans text-[11px] text-tertiary-foreground",
+				"flex h-5 min-w-5 items-center justify-center rounded-[5px] bg-foreground/5 px-1 font-sans text-2xs text-tertiary-foreground",
 				className,
 			)}
 			{...props}

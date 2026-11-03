@@ -3,6 +3,9 @@ import { PartyRail } from "@cynco-labs/ui";
 export default function PartyRailDemo() {
 	return (
 		<PartyRail
+			onSetPrimaryContact={() => {}}
+			onEditContact={() => {}}
+			onAddContact={() => {}}
 			role="customer"
 			className="max-w-[640px]"
 			ledgerBalance={48250.4}

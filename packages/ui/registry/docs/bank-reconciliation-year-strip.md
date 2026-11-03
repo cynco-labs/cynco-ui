@@ -9,6 +9,7 @@ import { BankReconciliationYearStrip } from "@cynco-labs/ui";
 ## Usage
 
 ```tsx
+import { useState } from "react";
 import { BankReconciliationYearStrip } from "@cynco-labs/ui";
 
 const MONTHS = [
@@ -27,10 +28,14 @@ const MONTHS = [
 ];
 
 export default function BankReconciliationYearStripDemo() {
+	const [selected, setSelected] = useState<string | null>("2026-09");
 	return (
 		<BankReconciliationYearStrip
 			months={MONTHS}
-			selected="2026-09"
+			selected={selected}
+			onMonthSelect={setSelected}
+			onPreviousYear={() => {}}
+			onNextYear={() => {}}
 			yearLabel="FY 2026"
 			accountName="Maybank Current"
 			selectedSummary={{ nextStep: "7 lines are posted and waiting to reconcile." }}
@@ -53,6 +58,9 @@ months [{period 'YYYY-MM', state, openLines, missing, untied, signedOff}], selec
 - `accountName`: `string`
 - `calendarMonths?`: `boolean`. Default `false`.
 - `selectedSummary?`: `{ nextStep: string; signedOffLabel?: string }`. The next-step sentence for the selected month, and its sign-off line.
+- `onPreviousYear?`: `() => void`. Called when the user clicks the Previous year button.
+- `onNextYear?`: `() => void`. Called when the user clicks the Next year button.
+- `onMonthSelect?`: `(period: string | null) => void`. Called when the user selects or deselects a month cell.
 - Also accepts `ComponentProps<"div">`.
 
 ## Notes

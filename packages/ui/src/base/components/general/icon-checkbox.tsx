@@ -1,6 +1,7 @@
 "use client";
 
 import { iconButtonVariants } from "./icon-button";
+import { useControllableState } from "../../hooks/use-controllable-state";
 import { Button, type ButtonProps } from "../ui/button";
 import { cn, hasSubmitShortcutModifier } from "../../lib/utils";
 import type { VariantProps } from "class-variance-authority";
@@ -11,6 +12,8 @@ interface IconCheckboxProps
 	extends ButtonProps,
 		VariantProps<typeof iconButtonVariants> {
 	checked?: boolean;
+	/** Initial state for uncontrolled use. */
+	defaultChecked?: boolean;
 	onCheckedChange?: (checked: boolean) => void;
 	icon?: React.ReactNode;
 	iconOrientation?: "left" | "center" | "right";
@@ -25,7 +28,8 @@ const IconCheckbox = React.forwardRef<HTMLButtonElement, IconCheckboxProps>(
 			hide = false,
 			iconOrientation = "center",
 			asChild = false,
-			checked = false,
+			checked: checkedProp,
+			defaultChecked = false,
 			onCheckedChange,
 			icon,
 			onClick,
@@ -35,8 +39,9 @@ const IconCheckbox = React.forwardRef<HTMLButtonElement, IconCheckboxProps>(
 		},
 		ref,
 	) => {
+		const [checked = false, setChecked] = useControllableState({ prop: checkedProp, defaultProp: defaultChecked, onChange: onCheckedChange });
 		const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-			onCheckedChange?.(!checked);
+			setChecked(!checked);
 			onClick?.(event);
 			// Remove focus after a pointer click to prevent stuck active state. Keyboard
 			// activation (detail 0) keeps focus so keyboard users don't lose their place.

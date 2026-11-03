@@ -53,7 +53,7 @@ StatTile: label, value, optional unit, sub, badge, tone (green | blue | red | or
 - `unit?`: `ReactNode`. Small suffix after the value, e.g. "MYR" or "days".
 - `sub?`: `ReactNode`. Small line under the value.
 - `badge?`: `ReactNode`. Chip or delta at the top right.
-- `tone?`: `StatusToneName`. Leading status dot, by status tone.
+- `tone?`: `StatusTone`. Leading status dot, by status tone.
 - `dot?`: `string`. Leading status dot as any CSS colour or var() (prefer `tone`).
 - `negative?`: `boolean`. Paint the value as negative/error text.
 - Also accepts `ComponentProps<"div">`.

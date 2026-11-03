@@ -1,4 +1,7 @@
-import { XIcon } from "lucide-react";
+"use client";
+
+import { XIcon } from "@phosphor-icons/react";
+
 
 interface SheetCloseButtonProps {
 	onClose: () => void;

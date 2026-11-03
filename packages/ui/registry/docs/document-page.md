@@ -171,7 +171,7 @@ DocumentBrandProvider brand (company {name, registrationNo, tin, sstNo, address,
 
 - `brand?`: `Partial<DocBrand>`. Overrides the provider's brand (merged over it).
 - `size?`: `"a4" | "a4-landscape" | "a5" | "letter" | "receipt"`. Default `"a4"`.
-- `stamp?`: `"paid" | "void" | "draft" | "copy" | "overdue"`. A diagonal stamp across the page: Paid, Void, Draft, Copy, Overdue.
+- `stamp?`: `"copy" | "paid" | "void" | "draft" | "overdue"`. A diagonal stamp across the page: Paid, Void, Draft, Copy, Overdue.
 - `fit?`: `"width" | "none"`. On screen: scale the sheet down to fit its container ("width") or keep 100% and scroll ("none"). Controlled; pair with `onFitChange`. Leave unset to let the zoom control switch it.
 - `defaultFit?`: `"width" | "none"`. Uncontrolled starting fit. Default "width". Default `"width"`.
 - `onFitChange?`: `(fit: DocumentFit) => void`

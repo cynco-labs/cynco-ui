@@ -1,6 +1,9 @@
+"use client";
+
 import * as React from "react";
 import { Button, type ButtonProps } from "../ui/button";
-import { cn, useIsMac } from "../../lib/utils";
+import { useIsMac } from "../../hooks/use-platform";
+import { cn } from "../../lib/utils";
 import { useHotkeys } from "react-hotkeys-hook";
 import { toAriaKeyShortcuts, useShortcutAllowed } from "../../hooks/use-character-key-shortcuts";
 import { useMergedRef } from "../../hooks/use-merged-ref";

@@ -16,7 +16,7 @@ export default function TagInputDemo() {
 	const [s, setS] = useState(["finance@nusantara.my", "ap@nusantara.my"]);
 	return (
 		<div className="max-w-[360px]">
-			<TagInput value={s} onChange={setS} placeholder="Add an email" aria-label="Invoice recipients" />
+			<TagInput value={s} onValueChange={setS} placeholder="Add an email" aria-label="Invoice recipients" />
 		</div>
 	);
 }
@@ -30,8 +30,9 @@ Lists of IDs or emails typed by the user.
 
 `value` string[], `onChange`, optional controlled `inputValue`.
 
-- `value`: `string[]`. Default `[]`.
-- `onChange`: `(tags: string[]) => void`
+- `value?`: `string[]`. Controlled tags.
+- `defaultValue?`: `string[]`. Initial tags for uncontrolled use. Default `[]`.
+- `onValueChange?`: `(tags: string[]) => void`
 - `inputValue?`: `string`
 - `onInputChange?`: `(value: string) => void`
 - `placeholder?`: `string`. Default `"Add a tag..."`.

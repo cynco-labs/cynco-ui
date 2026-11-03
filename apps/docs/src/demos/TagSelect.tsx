@@ -9,7 +9,7 @@ export default function TagSelectDemo() {
 			<TagSelect
 				id="tag-select-branches"
 				value={s}
-				onChange={setS}
+				onValueChange={setS}
 				placeholder="Select branches"
 				options={[
 					{ value: "kl", label: "Kuala Lumpur" },

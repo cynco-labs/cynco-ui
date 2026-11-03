@@ -167,7 +167,7 @@
 				},
 				{
 					"name": "tone",
-					"type": "StatusToneName",
+					"type": "StatusTone",
 					"required": false,
 					"description": "Leading status dot, by status tone."
 				},
@@ -253,7 +253,9 @@
 					"required": true
 				}
 			],
-			"inherits": []
+			"inherits": [
+				"ComponentProps<\"dl\">"
+			]
 		}
 	},
 	{
@@ -293,7 +295,7 @@
 			"props": [
 				{
 					"name": "tone",
-					"type": "StatusToneName",
+					"type": "StatusTone",
 					"required": true
 				},
 				{
@@ -522,17 +524,68 @@
 					"required": true
 				},
 				{
-					"name": "onClick",
-					"type": "() => void",
+					"name": "variant",
+					"type": "\"primary\" | \"secondary\" | \"skeleton\" | \"muted\" | \"destructive\" | \"dotted\"",
+					"required": false,
+					"default": "\"primary\""
+				},
+				{
+					"name": "size",
+					"type": "\"sm\" | \"default\" | \"mini\" | \"icon\"",
+					"required": false,
+					"default": "\"default\""
+				},
+				{
+					"name": "asChild",
+					"type": "boolean",
 					"required": false
 				},
 				{
-					"name": "disabled",
+					"name": "isLoading",
 					"type": "boolean",
+					"required": false
+				},
+				{
+					"name": "transition",
+					"type": "boolean",
+					"required": false
+				},
+				{
+					"name": "disableActive",
+					"type": "boolean",
+					"required": false
+				},
+				{
+					"name": "hide",
+					"type": "boolean",
+					"required": false
+				},
+				{
+					"name": "render",
+					"type": "ReactElement",
+					"required": false
+				},
+				{
+					"name": "focusableWhenDisabled",
+					"type": "boolean",
+					"required": false,
+					"description": "Keep the button in the tab order while disabled (Base UI). Set automatically while `isLoading`."
+				},
+				{
+					"name": "iconOrientation",
+					"type": "\"center\" | \"left\" | \"right\"",
+					"required": false,
+					"default": "\"left\""
+				},
+				{
+					"name": "rightIcon",
+					"type": "ReactNode",
 					"required": false
 				}
 			],
-			"inherits": []
+			"inherits": [
+				"ComponentProps<\"button\">"
+			]
 		}
 	},
 	{
@@ -1111,13 +1164,20 @@
 				{
 					"name": "value",
 					"type": "string[]",
-					"required": true,
-					"default": "[]"
+					"required": false,
+					"description": "Controlled tags."
 				},
 				{
-					"name": "onChange",
+					"name": "defaultValue",
+					"type": "string[]",
+					"required": false,
+					"default": "[]",
+					"description": "Initial tags for uncontrolled use."
+				},
+				{
+					"name": "onValueChange",
 					"type": "(tags: string[]) => void",
-					"required": true
+					"required": false
 				},
 				{
 					"name": "inputValue",
@@ -1173,7 +1233,7 @@
 					"default": "[]"
 				},
 				{
-					"name": "onChange",
+					"name": "onValueChange",
 					"type": "(values: string[]) => void",
 					"required": true
 				},
@@ -1426,16 +1486,6 @@
 		"props": {
 			"props": [
 				{
-					"name": "value",
-					"type": "string | null",
-					"required": true
-				},
-				{
-					"name": "onValueChange",
-					"type": "(value: string) => void",
-					"required": true
-				},
-				{
 					"name": "options",
 					"type": "T[]",
 					"required": true
@@ -1449,6 +1499,24 @@
 					"name": "getOptionLabel",
 					"type": "(option: T) => string",
 					"required": true
+				},
+				{
+					"name": "value",
+					"type": "string | null",
+					"required": false,
+					"description": "Controlled selection; null for none."
+				},
+				{
+					"name": "defaultValue",
+					"type": "string | null",
+					"required": false,
+					"default": "null",
+					"description": "Initial selection for uncontrolled use."
+				},
+				{
+					"name": "onValueChange",
+					"type": "(value: string) => void",
+					"required": false
 				},
 				{
 					"name": "getOptionSearchTerms",
@@ -1663,8 +1731,14 @@
 				{
 					"name": "checked",
 					"type": "boolean",
+					"required": false
+				},
+				{
+					"name": "defaultChecked",
+					"type": "boolean",
 					"required": false,
-					"default": "false"
+					"default": "false",
+					"description": "Initial state for uncontrolled use."
 				},
 				{
 					"name": "onCheckedChange",
@@ -1694,7 +1768,9 @@
 					"required": false
 				}
 			],
-			"inherits": []
+			"inherits": [
+				"ComponentProps<\"div\">"
+			]
 		}
 	},
 	{
@@ -1712,6 +1788,13 @@
 		"height": 64,
 		"props": {
 			"props": [
+				{
+					"name": "defaultChecked",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Initial state for uncontrolled use."
+				},
 				{
 					"name": "variant",
 					"type": "\"primary\" | \"secondary\" | \"skeleton\" | \"muted\" | \"destructive\" | \"dotted\"",
@@ -1776,8 +1859,7 @@
 				{
 					"name": "checked",
 					"type": "boolean",
-					"required": false,
-					"default": "false"
+					"required": false
 				},
 				{
 					"name": "onCheckedChange",
@@ -2436,8 +2518,28 @@
 		"importFrom": "@cynco-labs/ui",
 		"height": 64,
 		"props": {
-			"props": [],
-			"inherits": []
+			"props": [
+				{
+					"name": "variant",
+					"type": "\"default\" | \"secondary\" | \"muted\"",
+					"required": false,
+					"default": "\"default\""
+				},
+				{
+					"name": "size",
+					"type": "\"sm\" | \"default\"",
+					"required": false,
+					"default": "\"default\""
+				},
+				{
+					"name": "asChild",
+					"type": "boolean",
+					"required": false
+				}
+			],
+			"inherits": [
+				"useRender.ComponentProps<\"span\">"
+			]
 		}
 	},
 	{
@@ -2540,14 +2642,10 @@
 		"importFrom": "@cynco-labs/ui",
 		"height": 64,
 		"props": {
-			"props": [
-				{
-					"name": "children",
-					"type": "ReactNode",
-					"required": true
-				}
-			],
-			"inherits": []
+			"props": [],
+			"inherits": [
+				"ComponentProps<\"div\">"
+			]
 		}
 	},
 	{
@@ -2564,14 +2662,10 @@
 		"importFrom": "@cynco-labs/ui",
 		"height": 64,
 		"props": {
-			"props": [
-				{
-					"name": "children",
-					"type": "ReactNode",
-					"required": true
-				}
-			],
-			"inherits": []
+			"props": [],
+			"inherits": [
+				"ComponentProps<\"div\">"
+			]
 		}
 	},
 	{
@@ -2605,7 +2699,9 @@
 					"required": true
 				}
 			],
-			"inherits": []
+			"inherits": [
+				"ComponentProps<\"span\">"
+			]
 		}
 	},
 	{
@@ -2639,12 +2735,20 @@
 					"required": false
 				},
 				{
+					"name": "valueClassName",
+					"type": "string",
+					"required": false,
+					"description": "Classes for the value (`className` goes on the row)."
+				},
+				{
 					"name": "mono",
 					"type": "boolean",
 					"required": false
 				}
 			],
-			"inherits": []
+			"inherits": [
+				"ComponentProps<\"div\">"
+			]
 		}
 	},
 	{
@@ -2822,7 +2926,7 @@
 		"props": {
 			"props": [],
 			"inherits": [
-				"LucideProps"
+				"IconProps"
 			]
 		}
 	},
@@ -2847,7 +2951,9 @@
 					"required": true
 				}
 			],
-			"inherits": []
+			"inherits": [
+				"ComponentProps<\"div\">"
+			]
 		}
 	},
 	{
@@ -2871,7 +2977,9 @@
 					"required": true
 				}
 			],
-			"inherits": []
+			"inherits": [
+				"ComponentProps<\"div\">"
+			]
 		}
 	},
 	{
@@ -2998,7 +3106,9 @@
 					"required": false
 				}
 			],
-			"inherits": []
+			"inherits": [
+				"ComponentProps<\"div\">"
+			]
 		}
 	},
 	{
@@ -3015,14 +3125,10 @@
 		"importFrom": "@cynco-labs/ui",
 		"height": 120,
 		"props": {
-			"props": [
-				{
-					"name": "children",
-					"type": "ReactNode",
-					"required": true
-				}
-			],
-			"inherits": []
+			"props": [],
+			"inherits": [
+				"ComponentProps<\"div\">"
+			]
 		}
 	},
 	{
@@ -3041,6 +3147,12 @@
 		"props": {
 			"props": [
 				{
+					"name": "color",
+					"type": "string",
+					"required": false,
+					"description": "Background colour, e.g. to tell environments apart."
+				},
+				{
 					"name": "label",
 					"type": "string",
 					"required": false,
@@ -3050,14 +3162,11 @@
 					"name": "icon",
 					"type": "ReactNode",
 					"required": false
-				},
-				{
-					"name": "color",
-					"type": "string",
-					"required": false
 				}
 			],
-			"inherits": []
+			"inherits": [
+				"ComponentProps<\"div\">"
+			]
 		}
 	},
 	{
@@ -3356,7 +3465,7 @@
 		"group": "Productivity",
 		"summary": "A ⌘K / Ctrl+K command palette on Cynco UI's CommandDialog: jump to any area, create documents, reopen recent records and run app actions, with fuzzy search across labels, keywords, document numbers and amounts.",
 		"use": "Mount once in the app shell and put a CommandPaletteTrigger in the header. Feed it recently opened records so accountants can type “inv 0142” or an amount like “3240” and land on the document. Use `inline` to embed the same search on a page (an empty state, a “Jump to” screen).",
-		"provide": "CommandPalette: open / defaultOpen / onOpenChange; items (CommandPaletteItem[]: id, group — “Go to” | “Create” | “Recent” | “Actions” or your own heading, label, keywords, icon, shortcut such as \"mod+k\" or \"g i\", hint, href, disabled, onSelect; defaults to CYNCO_PALETTE_ITEMS, Cynco's registry paths, keywords and keybinds); recent (CommandPaletteRecord[]: id, type — invoice | quotation | bill | credit_note | customer | vendor | journal | payment | item | account, number, label, status, amount as a decimal string, currency, keywords, href, onSelect); recentLimit (default 5); onSelect(item) to route with item.href / item.id; hotkey (default \"mod+k\", false to bind your own); placeholder; inline; className. CommandPaletteTrigger: label, shortcut, className and any button props (wire onClick).",
+		"provide": "CommandPalette: open / defaultOpen / onOpenChange; items (CommandPaletteItem[]: id, group — “Go to” | “Create” | “Recent” | “Actions” or your own heading, label, keywords, icon, shortcut such as \"mod+k\" or \"g i\", hint, href, disabled, onSelect); recent (CommandPaletteRecord[]: id, type — invoice | quotation | bill | credit_note | customer | vendor | journal | payment | item | account, number, label, status, amount as a decimal string, currency, keywords, href, onSelect); recentLimit (default 5); onSelect(item) to route with item.href / item.id; hotkey (default \"mod+k\", false to bind your own); placeholder; inline; className. CommandPaletteTrigger: label, shortcut, className and any button props (wire onClick).",
 		"notes": "Keys: ⌘K / Ctrl+K toggles, ↑ ↓ move, Enter runs, Esc closes (clears the query when inline), a leading “>” narrows to actions. Search: every word must match a label, keyword, number or amount (prefix > word start > fuzzy subsequence; acronyms like “gl”, “pl”); groups re-rank by best match. Focus returns to whatever opened it. Rows drop status, amount, type and keycaps as the dialog narrows (container queries), so it stays one line from 320px up. Shortcut keycaps made of printable keys alone (\"?\", \"g i\") are hidden while the user has single-key shortcuts turned off; a printable-only `hotkey` is unbound then too.",
 		"sourcePath": "packages/ui/src/productivity/navigation.tsx",
 		"demoPath": "apps/docs/src/demos/CommandPalette.tsx",
@@ -3364,6 +3473,12 @@
 		"height": 600,
 		"props": {
 			"props": [
+				{
+					"name": "items",
+					"type": "CommandPaletteItem[]",
+					"required": true,
+					"description": "Commands: places to go, things to create, actions. Route in `onSelect` with `item.href` / `item.id`."
+				},
 				{
 					"name": "open",
 					"type": "boolean",
@@ -3379,13 +3494,6 @@
 					"name": "onOpenChange",
 					"type": "(open: boolean) => void",
 					"required": false
-				},
-				{
-					"name": "items",
-					"type": "CommandPaletteItem[]",
-					"required": false,
-					"default": "CYNCO_PALETTE_ITEMS",
-					"description": "Commands. Defaults to CYNCO_PALETTE_ITEMS."
 				},
 				{
 					"name": "recent",
@@ -3437,7 +3545,7 @@
 		"category": "Productivity",
 		"group": "Productivity",
 		"summary": "A searchable dialog listing every keyboard shortcut in sections, opened with “?”, plus useGoToShortcuts for two-key “g then i” navigation.",
-		"use": "Mount once in the app shell. Pass your own sections or use CYNCO_SHORTCUT_SECTIONS (Global, Go to, Create, Lists, Journal entry). Call useGoToShortcuts(CYNCO_GOTO_ROUTES, navigate) in the shell so G then I opens Invoices and C then J starts a journal entry.",
+		"use": "Mount once in the app shell. Pass your app's sections (Global, Go to, Create, Lists…). Call useGoToShortcuts(routes, navigate) in the shell with your own route map, e.g. { i: \"/invoices\", \"c j\": \"/journal/new\" }, so G then I opens Invoices and C then J starts a journal entry.",
 		"provide": "ShortcutsDialog: open / defaultOpen / onOpenChange; sections ([{title, items: [{keys, label}]}], keys like \"mod+enter\", \"g i\" for a sequence, or an array of alternatives); hotkey (default \"?\", false to bind your own); title; className. useGoToShortcuts(map, navigate, {enabled, timeout = 1200 ms, leader = \"g\"}): map keys are a letter after the leader or a full sequence (\"c i\"); returns {pending} so you can show “G…” while it waits. Items take an optional focusScoped: true for keys that only fire inside their own field (never shown as off). KeyboardShortcutsProvider (characterKeys / defaultCharacterKeys = true / onCharacterKeysChange) and useCharacterKeyShortcuts() → [enabled, setEnabled] control the single-key switch; isCharacterKeyShortcut(keys) tells you whether your own shortcut should honour it.",
 		"notes": "Keys: “?” opens (never while typing), type to filter by label, key or section, Esc closes and returns focus. Sequences are ignored while typing, inside dialogs and menus, and with ⌘/Ctrl/Alt held; any other key or the timeout cancels. Sections flow into two columns once the dialog is 36rem wide. WCAG 2.1.4: the footer has a “Single-key shortcuts” switch. Off unbinds “?”, every useGoToShortcuts sequence and bare-letter ShortcutButtons, and marks those rows Off; ⌘/Ctrl chords and named keys are unaffected. With no provider the choice is saved in localStorage (cy-character-key-shortcuts) and syncs across tabs; pass characterKeys to store it yourself. When it is off, the dialog opens from the command palette or a button. Gate your own printable-only page shortcuts on useCharacterKeyShortcuts().",
 		"sourcePath": "packages/ui/src/productivity/navigation.tsx",
@@ -3446,6 +3554,12 @@
 		"height": 420,
 		"props": {
 			"props": [
+				{
+					"name": "sections",
+					"type": "ShortcutsDialogSection[]",
+					"required": true,
+					"description": "Your shortcuts, grouped. The single-key switch is always shown under them."
+				},
 				{
 					"name": "open",
 					"type": "boolean",
@@ -3461,13 +3575,6 @@
 					"name": "onOpenChange",
 					"type": "(open: boolean) => void",
 					"required": false
-				},
-				{
-					"name": "sections",
-					"type": "ShortcutsDialogSection[]",
-					"required": false,
-					"default": "CYNCO_SHORTCUT_SECTIONS",
-					"description": "Defaults to CYNCO_SHORTCUT_SECTIONS."
 				},
 				{
 					"name": "hotkey",
@@ -3879,7 +3986,7 @@
 		"group": "Documents",
 		"summary": "The brand editor for every printed document: logo, layout, typeface, language and footer note, with a live preview of any document at any paper size and stamp.",
 		"use": "Settings → Documents (invoice templates). One brand drives invoices, receipts, statements, payslips and reports, so customers set it once.",
-		"provide": "brand / defaultBrand / onBrandChange (DocBrand), documents ([{id, label, render({stamp, size}), sizes?, stamps?}]), defaultDocumentId, onPrint. brandFromCyncoTemplate(template, company) maps Cynco's stored invoice template onto a DocBrand.",
+		"provide": "brand / defaultBrand / onBrandChange (DocBrand), documents ([{id, label, render({stamp, size}), sizes?, stamps?}]), defaultDocumentId, onPrint.",
 		"notes": "Controls stack above the preview below 48rem of container width. Logo upload reads the file to a data URL (production should upload it and store the URL). Layout thumbnails and Inter / Geist / Newsreader; documents stay black ink, so there is no colour picker. Print prints only the previewed document.",
 		"sourcePath": "packages/ui/src/documents/studio.tsx",
 		"demoPath": "apps/docs/src/demos/DocumentStudio.tsx",
@@ -3955,7 +4062,7 @@
 				},
 				{
 					"name": "stamp",
-					"type": "\"paid\" | \"void\" | \"draft\" | \"copy\" | \"overdue\"",
+					"type": "\"copy\" | \"paid\" | \"void\" | \"draft\" | \"overdue\"",
 					"required": false,
 					"description": "A diagonal stamp across the page: Paid, Void, Draft, Copy, Overdue."
 				},
@@ -4024,20 +4131,39 @@
 					"description": "Overrides the provider's brand (merged over it)."
 				},
 				{
-					"name": "stamp",
-					"type": "\"paid\" | \"void\" | \"draft\" | \"copy\" | \"overdue\" | null",
-					"required": false,
-					"description": "Overrides the stamp derived from the document status. `null` hides it."
-				},
-				{
 					"name": "fit",
 					"type": "\"width\" | \"none\"",
+					"required": false,
+					"description": "On screen: scale the sheet down to fit its container (\"width\") or keep 100% and scroll (\"none\"). Controlled; pair with `onFitChange`. Leave unset to let the zoom control switch it."
+				},
+				{
+					"name": "defaultFit",
+					"type": "\"width\" | \"none\"",
+					"required": false,
+					"description": "Uncontrolled starting fit. Default \"width\"."
+				},
+				{
+					"name": "onFitChange",
+					"type": "(fit: DocumentFit) => void",
 					"required": false
+				},
+				{
+					"name": "zoomControl",
+					"type": "boolean",
+					"required": false,
+					"description": "Show \"Fit width / Actual size\" above the sheet while it is scaled down. Default true. Fit-to-width cancels browser zoom, so readers need a way back to 100% to enlarge the text (WCAG 1.4.4). Hidden in print, and when `fit` is controlled without `onFitChange`."
 				},
 				{
 					"name": "isolate",
 					"type": "boolean",
-					"required": false
+					"required": false,
+					"description": "When printing, hide the rest of the app and print only this page. Default true."
+				},
+				{
+					"name": "stamp",
+					"type": "\"copy\" | \"paid\" | \"void\" | \"draft\" | \"overdue\" | null",
+					"required": false,
+					"description": "Overrides the stamp derived from the document status. `null` hides it."
 				},
 				{
 					"name": "size",
@@ -4046,7 +4172,9 @@
 					"default": "\"a4\""
 				}
 			],
-			"inherits": []
+			"inherits": [
+				"ComponentProps<\"article\">"
+			]
 		}
 	},
 	{
@@ -4076,20 +4204,39 @@
 					"description": "Overrides the provider's brand (merged over it)."
 				},
 				{
-					"name": "stamp",
-					"type": "\"paid\" | \"void\" | \"draft\" | \"copy\" | \"overdue\" | null",
-					"required": false,
-					"description": "Overrides the stamp derived from the document status. `null` hides it."
-				},
-				{
 					"name": "fit",
 					"type": "\"width\" | \"none\"",
+					"required": false,
+					"description": "On screen: scale the sheet down to fit its container (\"width\") or keep 100% and scroll (\"none\"). Controlled; pair with `onFitChange`. Leave unset to let the zoom control switch it."
+				},
+				{
+					"name": "defaultFit",
+					"type": "\"width\" | \"none\"",
+					"required": false,
+					"description": "Uncontrolled starting fit. Default \"width\"."
+				},
+				{
+					"name": "onFitChange",
+					"type": "(fit: DocumentFit) => void",
 					"required": false
+				},
+				{
+					"name": "zoomControl",
+					"type": "boolean",
+					"required": false,
+					"description": "Show \"Fit width / Actual size\" above the sheet while it is scaled down. Default true. Fit-to-width cancels browser zoom, so readers need a way back to 100% to enlarge the text (WCAG 1.4.4). Hidden in print, and when `fit` is controlled without `onFitChange`."
 				},
 				{
 					"name": "isolate",
 					"type": "boolean",
-					"required": false
+					"required": false,
+					"description": "When printing, hide the rest of the app and print only this page. Default true."
+				},
+				{
+					"name": "stamp",
+					"type": "\"copy\" | \"paid\" | \"void\" | \"draft\" | \"overdue\" | null",
+					"required": false,
+					"description": "Overrides the stamp derived from the document status. `null` hides it."
 				},
 				{
 					"name": "size",
@@ -4098,7 +4245,9 @@
 					"default": "\"a4\""
 				}
 			],
-			"inherits": []
+			"inherits": [
+				"ComponentProps<\"article\">"
+			]
 		}
 	},
 	{
@@ -4128,20 +4277,39 @@
 					"description": "Overrides the provider's brand (merged over it)."
 				},
 				{
-					"name": "stamp",
-					"type": "\"paid\" | \"void\" | \"draft\" | \"copy\" | \"overdue\" | null",
-					"required": false,
-					"description": "Overrides the stamp derived from the document status. `null` hides it."
-				},
-				{
 					"name": "fit",
 					"type": "\"width\" | \"none\"",
+					"required": false,
+					"description": "On screen: scale the sheet down to fit its container (\"width\") or keep 100% and scroll (\"none\"). Controlled; pair with `onFitChange`. Leave unset to let the zoom control switch it."
+				},
+				{
+					"name": "defaultFit",
+					"type": "\"width\" | \"none\"",
+					"required": false,
+					"description": "Uncontrolled starting fit. Default \"width\"."
+				},
+				{
+					"name": "onFitChange",
+					"type": "(fit: DocumentFit) => void",
 					"required": false
+				},
+				{
+					"name": "zoomControl",
+					"type": "boolean",
+					"required": false,
+					"description": "Show \"Fit width / Actual size\" above the sheet while it is scaled down. Default true. Fit-to-width cancels browser zoom, so readers need a way back to 100% to enlarge the text (WCAG 1.4.4). Hidden in print, and when `fit` is controlled without `onFitChange`."
 				},
 				{
 					"name": "isolate",
 					"type": "boolean",
-					"required": false
+					"required": false,
+					"description": "When printing, hide the rest of the app and print only this page. Default true."
+				},
+				{
+					"name": "stamp",
+					"type": "\"copy\" | \"paid\" | \"void\" | \"draft\" | \"overdue\" | null",
+					"required": false,
+					"description": "Overrides the stamp derived from the document status. `null` hides it."
 				},
 				{
 					"name": "size",
@@ -4150,7 +4318,9 @@
 					"default": "\"a4\""
 				}
 			],
-			"inherits": []
+			"inherits": [
+				"ComponentProps<\"article\">"
+			]
 		}
 	},
 	{
@@ -4180,20 +4350,39 @@
 					"description": "Overrides the provider's brand (merged over it)."
 				},
 				{
-					"name": "stamp",
-					"type": "\"paid\" | \"void\" | \"draft\" | \"copy\" | \"overdue\" | null",
-					"required": false,
-					"description": "Overrides the stamp derived from the document status. `null` hides it."
-				},
-				{
 					"name": "fit",
 					"type": "\"width\" | \"none\"",
+					"required": false,
+					"description": "On screen: scale the sheet down to fit its container (\"width\") or keep 100% and scroll (\"none\"). Controlled; pair with `onFitChange`. Leave unset to let the zoom control switch it."
+				},
+				{
+					"name": "defaultFit",
+					"type": "\"width\" | \"none\"",
+					"required": false,
+					"description": "Uncontrolled starting fit. Default \"width\"."
+				},
+				{
+					"name": "onFitChange",
+					"type": "(fit: DocumentFit) => void",
 					"required": false
+				},
+				{
+					"name": "zoomControl",
+					"type": "boolean",
+					"required": false,
+					"description": "Show \"Fit width / Actual size\" above the sheet while it is scaled down. Default true. Fit-to-width cancels browser zoom, so readers need a way back to 100% to enlarge the text (WCAG 1.4.4). Hidden in print, and when `fit` is controlled without `onFitChange`."
 				},
 				{
 					"name": "isolate",
 					"type": "boolean",
-					"required": false
+					"required": false,
+					"description": "When printing, hide the rest of the app and print only this page. Default true."
+				},
+				{
+					"name": "stamp",
+					"type": "\"copy\" | \"paid\" | \"void\" | \"draft\" | \"overdue\" | null",
+					"required": false,
+					"description": "Overrides the stamp derived from the document status. `null` hides it."
 				},
 				{
 					"name": "size",
@@ -4209,7 +4398,9 @@
 					"description": "Print in ink only (thermal printers are monochrome). Default: true for `size=\"receipt\"`."
 				}
 			],
-			"inherits": []
+			"inherits": [
+				"ComponentProps<\"article\">"
+			]
 		}
 	},
 	{
@@ -4239,20 +4430,39 @@
 					"description": "Overrides the provider's brand (merged over it)."
 				},
 				{
-					"name": "stamp",
-					"type": "\"paid\" | \"void\" | \"draft\" | \"copy\" | \"overdue\" | null",
-					"required": false,
-					"description": "Overrides the stamp derived from the document status. `null` hides it."
-				},
-				{
 					"name": "fit",
 					"type": "\"width\" | \"none\"",
+					"required": false,
+					"description": "On screen: scale the sheet down to fit its container (\"width\") or keep 100% and scroll (\"none\"). Controlled; pair with `onFitChange`. Leave unset to let the zoom control switch it."
+				},
+				{
+					"name": "defaultFit",
+					"type": "\"width\" | \"none\"",
+					"required": false,
+					"description": "Uncontrolled starting fit. Default \"width\"."
+				},
+				{
+					"name": "onFitChange",
+					"type": "(fit: DocumentFit) => void",
 					"required": false
+				},
+				{
+					"name": "zoomControl",
+					"type": "boolean",
+					"required": false,
+					"description": "Show \"Fit width / Actual size\" above the sheet while it is scaled down. Default true. Fit-to-width cancels browser zoom, so readers need a way back to 100% to enlarge the text (WCAG 1.4.4). Hidden in print, and when `fit` is controlled without `onFitChange`."
 				},
 				{
 					"name": "isolate",
 					"type": "boolean",
-					"required": false
+					"required": false,
+					"description": "When printing, hide the rest of the app and print only this page. Default true."
+				},
+				{
+					"name": "stamp",
+					"type": "\"copy\" | \"paid\" | \"void\" | \"draft\" | \"overdue\" | null",
+					"required": false,
+					"description": "Overrides the stamp derived from the document status. `null` hides it."
 				},
 				{
 					"name": "size",
@@ -4261,7 +4471,9 @@
 					"default": "\"a4\""
 				}
 			],
-			"inherits": []
+			"inherits": [
+				"ComponentProps<\"article\">"
+			]
 		}
 	},
 	{
@@ -4285,25 +4497,45 @@
 					"required": true
 				},
 				{
+					"name": "stamp",
+					"type": "\"copy\" | \"paid\" | \"void\" | \"draft\" | \"overdue\"",
+					"required": false,
+					"description": "A diagonal stamp across the page: Paid, Void, Draft, Copy, Overdue."
+				},
+				{
 					"name": "brand",
 					"type": "Partial<DocBrand>",
 					"required": false,
 					"description": "Overrides the provider's brand (merged over it)."
 				},
 				{
-					"name": "stamp",
-					"type": "\"paid\" | \"void\" | \"draft\" | \"copy\" | \"overdue\"",
+					"name": "fit",
+					"type": "\"width\" | \"none\"",
+					"required": false,
+					"description": "On screen: scale the sheet down to fit its container (\"width\") or keep 100% and scroll (\"none\"). Controlled; pair with `onFitChange`. Leave unset to let the zoom control switch it."
+				},
+				{
+					"name": "defaultFit",
+					"type": "\"width\" | \"none\"",
+					"required": false,
+					"description": "Uncontrolled starting fit. Default \"width\"."
+				},
+				{
+					"name": "onFitChange",
+					"type": "(fit: DocumentFit) => void",
 					"required": false
 				},
 				{
-					"name": "fit",
-					"type": "\"width\" | \"none\"",
-					"required": false
+					"name": "zoomControl",
+					"type": "boolean",
+					"required": false,
+					"description": "Show \"Fit width / Actual size\" above the sheet while it is scaled down. Default true. Fit-to-width cancels browser zoom, so readers need a way back to 100% to enlarge the text (WCAG 1.4.4). Hidden in print, and when `fit` is controlled without `onFitChange`."
 				},
 				{
 					"name": "isolate",
 					"type": "boolean",
-					"required": false
+					"required": false,
+					"description": "When printing, hide the rest of the app and print only this page. Default true."
 				},
 				{
 					"name": "size",
@@ -4312,7 +4544,9 @@
 					"default": "\"a4\""
 				}
 			],
-			"inherits": []
+			"inherits": [
+				"ComponentProps<\"article\">"
+			]
 		}
 	},
 	{
@@ -4336,25 +4570,45 @@
 					"required": true
 				},
 				{
+					"name": "stamp",
+					"type": "\"copy\" | \"paid\" | \"void\" | \"draft\" | \"overdue\"",
+					"required": false,
+					"description": "A diagonal stamp across the page: Paid, Void, Draft, Copy, Overdue."
+				},
+				{
 					"name": "brand",
 					"type": "Partial<DocBrand>",
 					"required": false,
 					"description": "Overrides the provider's brand (merged over it)."
 				},
 				{
-					"name": "stamp",
-					"type": "\"paid\" | \"void\" | \"draft\" | \"copy\" | \"overdue\"",
+					"name": "fit",
+					"type": "\"width\" | \"none\"",
+					"required": false,
+					"description": "On screen: scale the sheet down to fit its container (\"width\") or keep 100% and scroll (\"none\"). Controlled; pair with `onFitChange`. Leave unset to let the zoom control switch it."
+				},
+				{
+					"name": "defaultFit",
+					"type": "\"width\" | \"none\"",
+					"required": false,
+					"description": "Uncontrolled starting fit. Default \"width\"."
+				},
+				{
+					"name": "onFitChange",
+					"type": "(fit: DocumentFit) => void",
 					"required": false
 				},
 				{
-					"name": "fit",
-					"type": "\"width\" | \"none\"",
-					"required": false
+					"name": "zoomControl",
+					"type": "boolean",
+					"required": false,
+					"description": "Show \"Fit width / Actual size\" above the sheet while it is scaled down. Default true. Fit-to-width cancels browser zoom, so readers need a way back to 100% to enlarge the text (WCAG 1.4.4). Hidden in print, and when `fit` is controlled without `onFitChange`."
 				},
 				{
 					"name": "isolate",
 					"type": "boolean",
-					"required": false
+					"required": false,
+					"description": "When printing, hide the rest of the app and print only this page. Default true."
 				},
 				{
 					"name": "size",
@@ -4363,7 +4617,9 @@
 					"default": "\"a4\""
 				}
 			],
-			"inherits": []
+			"inherits": [
+				"ComponentProps<\"article\">"
+			]
 		}
 	},
 	{
@@ -4387,25 +4643,45 @@
 					"required": true
 				},
 				{
+					"name": "stamp",
+					"type": "\"copy\" | \"paid\" | \"void\" | \"draft\" | \"overdue\"",
+					"required": false,
+					"description": "A diagonal stamp across the page: Paid, Void, Draft, Copy, Overdue."
+				},
+				{
 					"name": "brand",
 					"type": "Partial<DocBrand>",
 					"required": false,
 					"description": "Overrides the provider's brand (merged over it)."
 				},
 				{
-					"name": "stamp",
-					"type": "\"paid\" | \"void\" | \"draft\" | \"copy\" | \"overdue\"",
+					"name": "fit",
+					"type": "\"width\" | \"none\"",
+					"required": false,
+					"description": "On screen: scale the sheet down to fit its container (\"width\") or keep 100% and scroll (\"none\"). Controlled; pair with `onFitChange`. Leave unset to let the zoom control switch it."
+				},
+				{
+					"name": "defaultFit",
+					"type": "\"width\" | \"none\"",
+					"required": false,
+					"description": "Uncontrolled starting fit. Default \"width\"."
+				},
+				{
+					"name": "onFitChange",
+					"type": "(fit: DocumentFit) => void",
 					"required": false
 				},
 				{
-					"name": "fit",
-					"type": "\"width\" | \"none\"",
-					"required": false
+					"name": "zoomControl",
+					"type": "boolean",
+					"required": false,
+					"description": "Show \"Fit width / Actual size\" above the sheet while it is scaled down. Default true. Fit-to-width cancels browser zoom, so readers need a way back to 100% to enlarge the text (WCAG 1.4.4). Hidden in print, and when `fit` is controlled without `onFitChange`."
 				},
 				{
 					"name": "isolate",
 					"type": "boolean",
-					"required": false
+					"required": false,
+					"description": "When printing, hide the rest of the app and print only this page. Default true."
 				},
 				{
 					"name": "size",
@@ -4414,7 +4690,9 @@
 					"default": "\"a4\""
 				}
 			],
-			"inherits": []
+			"inherits": [
+				"ComponentProps<\"article\">"
+			]
 		}
 	},
 	{
@@ -4438,25 +4716,45 @@
 					"required": true
 				},
 				{
+					"name": "stamp",
+					"type": "\"copy\" | \"paid\" | \"void\" | \"draft\" | \"overdue\"",
+					"required": false,
+					"description": "A diagonal stamp across the page: Paid, Void, Draft, Copy, Overdue."
+				},
+				{
 					"name": "brand",
 					"type": "Partial<DocBrand>",
 					"required": false,
 					"description": "Overrides the provider's brand (merged over it)."
 				},
 				{
-					"name": "stamp",
-					"type": "\"paid\" | \"void\" | \"draft\" | \"copy\" | \"overdue\"",
+					"name": "fit",
+					"type": "\"width\" | \"none\"",
+					"required": false,
+					"description": "On screen: scale the sheet down to fit its container (\"width\") or keep 100% and scroll (\"none\"). Controlled; pair with `onFitChange`. Leave unset to let the zoom control switch it."
+				},
+				{
+					"name": "defaultFit",
+					"type": "\"width\" | \"none\"",
+					"required": false,
+					"description": "Uncontrolled starting fit. Default \"width\"."
+				},
+				{
+					"name": "onFitChange",
+					"type": "(fit: DocumentFit) => void",
 					"required": false
 				},
 				{
-					"name": "fit",
-					"type": "\"width\" | \"none\"",
-					"required": false
+					"name": "zoomControl",
+					"type": "boolean",
+					"required": false,
+					"description": "Show \"Fit width / Actual size\" above the sheet while it is scaled down. Default true. Fit-to-width cancels browser zoom, so readers need a way back to 100% to enlarge the text (WCAG 1.4.4). Hidden in print, and when `fit` is controlled without `onFitChange`."
 				},
 				{
 					"name": "isolate",
 					"type": "boolean",
-					"required": false
+					"required": false,
+					"description": "When printing, hide the rest of the app and print only this page. Default true."
 				},
 				{
 					"name": "size",
@@ -4465,7 +4763,9 @@
 					"default": "\"a4\""
 				}
 			],
-			"inherits": []
+			"inherits": [
+				"ComponentProps<\"article\">"
+			]
 		}
 	},
 	{
@@ -4494,16 +4794,16 @@
 					"required": false
 				},
 				{
+					"name": "stamp",
+					"type": "\"copy\" | \"paid\" | \"void\" | \"draft\" | \"overdue\"",
+					"required": false,
+					"description": "A diagonal stamp across the page: Paid, Void, Draft, Copy, Overdue."
+				},
+				{
 					"name": "brand",
 					"type": "Partial<DocBrand>",
 					"required": false,
 					"description": "Overrides the provider's brand (merged over it)."
-				},
-				{
-					"name": "stamp",
-					"type": "\"paid\" | \"void\" | \"draft\" | \"copy\" | \"overdue\"",
-					"required": false,
-					"description": "A diagonal stamp across the page: Paid, Void, Draft, Copy, Overdue."
 				},
 				{
 					"name": "fit",
@@ -4549,16 +4849,16 @@
 					"required": false
 				},
 				{
+					"name": "stamp",
+					"type": "\"copy\" | \"paid\" | \"void\" | \"draft\" | \"overdue\"",
+					"required": false,
+					"description": "A diagonal stamp across the page: Paid, Void, Draft, Copy, Overdue."
+				},
+				{
 					"name": "brand",
 					"type": "Partial<DocBrand>",
 					"required": false,
 					"description": "Overrides the provider's brand (merged over it)."
-				},
-				{
-					"name": "stamp",
-					"type": "\"paid\" | \"void\" | \"draft\" | \"copy\" | \"overdue\"",
-					"required": false,
-					"description": "A diagonal stamp across the page: Paid, Void, Draft, Copy, Overdue."
 				},
 				{
 					"name": "fit",
@@ -4604,16 +4904,16 @@
 					"required": false
 				},
 				{
+					"name": "stamp",
+					"type": "\"copy\" | \"paid\" | \"void\" | \"draft\" | \"overdue\"",
+					"required": false,
+					"description": "A diagonal stamp across the page: Paid, Void, Draft, Copy, Overdue."
+				},
+				{
 					"name": "brand",
 					"type": "Partial<DocBrand>",
 					"required": false,
 					"description": "Overrides the provider's brand (merged over it)."
-				},
-				{
-					"name": "stamp",
-					"type": "\"paid\" | \"void\" | \"draft\" | \"copy\" | \"overdue\"",
-					"required": false,
-					"description": "A diagonal stamp across the page: Paid, Void, Draft, Copy, Overdue."
 				},
 				{
 					"name": "fit",
@@ -4660,16 +4960,16 @@
 					"default": "\"a4-landscape\""
 				},
 				{
+					"name": "stamp",
+					"type": "\"copy\" | \"paid\" | \"void\" | \"draft\" | \"overdue\"",
+					"required": false,
+					"description": "A diagonal stamp across the page: Paid, Void, Draft, Copy, Overdue."
+				},
+				{
 					"name": "brand",
 					"type": "Partial<DocBrand>",
 					"required": false,
 					"description": "Overrides the provider's brand (merged over it)."
-				},
-				{
-					"name": "stamp",
-					"type": "\"paid\" | \"void\" | \"draft\" | \"copy\" | \"overdue\"",
-					"required": false,
-					"description": "A diagonal stamp across the page: Paid, Void, Draft, Copy, Overdue."
 				},
 				{
 					"name": "fit",
@@ -4694,10 +4994,10 @@
 		"slug": "aged-receivables-report",
 		"category": "Documents",
 		"group": "Documents",
-		"summary": "Printable aged receivables by customer: current, 1–30, 31–60, 61–90 and 90+ days with a total column, a totals row with double rule, a % of total row, and a bucket summary with proportional bars.",
+		"summary": "Printable aged receivables by customer: current, 1–30, 31–60, 61–90 and 90+ days with a total column, a totals row with double rule, a % of total row, and a bucket summary of totals and shares.",
 		"use": "Credit-control meetings, month-end receivables review, bank covenant and auditor packs.",
 		"provide": "report: AgedReceivablesData — period (kind 'asAt'), customers [{name, detail?, current, days1to30, days31to60, days61to90, over90, total}], totals {…same buckets}, percentages {…same buckets, e.g. '49.2'}, summary?, basis?, currency?, filters?, preparedBy?, preparedOn?, notes?; plus brand?, size?, stamp?, fit?, isolate?, className.",
-		"notes": "Bucket bars deepen from light to dark grey with age (black ink only). Percentages are supplied by the ledger, not calculated. Customer detail line suits code and terms ('C-0012 · Net 30'). A4 portrait by default (very long names wrap; pass size='a4-landscape' for wide ledgers).",
+		"notes": "The bucket summary prints each bucket's total and share of the whole. Percentages are supplied by the ledger, not calculated. Customer detail line suits code and terms ('C-0012 · Net 30'). A4 portrait by default (very long names wrap; pass size='a4-landscape' for wide ledgers).",
 		"sourcePath": "packages/ui/src/documents/reports.tsx",
 		"demoPath": "apps/docs/src/demos/AgedReceivablesReport.tsx",
 		"importFrom": "@cynco-labs/ui",
@@ -4715,16 +5015,16 @@
 					"required": false
 				},
 				{
+					"name": "stamp",
+					"type": "\"copy\" | \"paid\" | \"void\" | \"draft\" | \"overdue\"",
+					"required": false,
+					"description": "A diagonal stamp across the page: Paid, Void, Draft, Copy, Overdue."
+				},
+				{
 					"name": "brand",
 					"type": "Partial<DocBrand>",
 					"required": false,
 					"description": "Overrides the provider's brand (merged over it)."
-				},
-				{
-					"name": "stamp",
-					"type": "\"paid\" | \"void\" | \"draft\" | \"copy\" | \"overdue\"",
-					"required": false,
-					"description": "A diagonal stamp across the page: Paid, Void, Draft, Copy, Overdue."
 				},
 				{
 					"name": "fit",
@@ -4770,16 +5070,16 @@
 					"required": false
 				},
 				{
+					"name": "stamp",
+					"type": "\"copy\" | \"paid\" | \"void\" | \"draft\" | \"overdue\"",
+					"required": false,
+					"description": "A diagonal stamp across the page: Paid, Void, Draft, Copy, Overdue."
+				},
+				{
 					"name": "brand",
 					"type": "Partial<DocBrand>",
 					"required": false,
 					"description": "Overrides the provider's brand (merged over it)."
-				},
-				{
-					"name": "stamp",
-					"type": "\"paid\" | \"void\" | \"draft\" | \"copy\" | \"overdue\"",
-					"required": false,
-					"description": "A diagonal stamp across the page: Paid, Void, Draft, Copy, Overdue."
 				},
 				{
 					"name": "fit",
@@ -4853,12 +5153,20 @@
 					"required": false
 				},
 				{
+					"name": "onRowAction",
+					"type": "(invoice: SalesInvoiceRow) => void",
+					"required": false,
+					"description": "Called from a row's actions button; omit to hide the button."
+				},
+				{
 					"name": "footer",
 					"type": "ReactNode",
 					"required": false
 				}
 			],
-			"inherits": []
+			"inherits": [
+				"ComponentProps<\"div\">"
+			]
 		}
 	},
 	{
@@ -4894,9 +5202,9 @@
 				},
 				{
 					"name": "taxCodes",
-					"type": "SalesTaxCode[]",
+					"type": "readonly SalesTaxCode[]",
 					"required": false,
-					"default": "DEFAULT_TAX_CODES"
+					"default": "DEFAULT_SALES_TAX_CODES"
 				},
 				{
 					"name": "readOnly",
@@ -5354,9 +5662,17 @@
 					"name": "onOpen",
 					"type": "(id: string) => void",
 					"required": false
+				},
+				{
+					"name": "onRowAction",
+					"type": "(note: SalesNoteRow) => void",
+					"required": false,
+					"description": "Called from a row's actions button; omit to hide the button."
 				}
 			],
-			"inherits": []
+			"inherits": [
+				"ComponentProps<\"div\">"
+			]
 		}
 	},
 	{
@@ -5489,7 +5805,9 @@
 					"required": true
 				}
 			],
-			"inherits": []
+			"inherits": [
+				"ComponentProps<\"div\">"
+			]
 		}
 	},
 	{
@@ -5628,7 +5946,15 @@
 				{
 					"name": "lines",
 					"type": "JournalEditorLine[]",
-					"required": true
+					"required": false,
+					"description": "Controlled lines."
+				},
+				{
+					"name": "defaultLines",
+					"type": "JournalEditorLine[]",
+					"required": false,
+					"default": "[]",
+					"description": "Initial lines for uncontrolled use."
 				},
 				{
 					"name": "accounts",
@@ -5687,7 +6013,14 @@
 				{
 					"name": "selectedId",
 					"type": "string",
-					"required": false
+					"required": false,
+					"description": "Controlled selection."
+				},
+				{
+					"name": "defaultSelectedId",
+					"type": "string",
+					"required": false,
+					"description": "Initial selection for uncontrolled use."
 				},
 				{
 					"name": "defaultOpen",
@@ -5732,12 +6065,12 @@
 			"props": [
 				{
 					"name": "totalDebit",
-					"type": "number",
+					"type": "Amount",
 					"required": true
 				},
 				{
 					"name": "totalCredit",
-					"type": "number",
+					"type": "Amount",
 					"required": true
 				},
 				{
@@ -5912,7 +6245,14 @@
 				{
 					"name": "selectedId",
 					"type": "string",
-					"required": false
+					"required": false,
+					"description": "Controlled selection."
+				},
+				{
+					"name": "defaultSelectedId",
+					"type": "string",
+					"required": false,
+					"description": "Initial selection for uncontrolled use."
 				},
 				{
 					"name": "onSelect",
@@ -5989,6 +6329,12 @@
 					"name": "onClose",
 					"type": "() => void",
 					"required": false
+				},
+				{
+					"name": "onActiveChange",
+					"type": "(active: boolean) => void",
+					"required": false,
+					"description": "Called from Activate / Deactivate with the new state; omit to hide the button. The panel shows `account.isActive`."
 				}
 			],
 			"inherits": [
@@ -6044,7 +6390,9 @@
 					"required": false
 				}
 			],
-			"inherits": []
+			"inherits": [
+				"ComponentProps<\"div\">"
+			]
 		}
 	},
 	{
@@ -6264,7 +6612,14 @@
 					"name": "note",
 					"type": "string",
 					"required": false,
-					"default": "\"\""
+					"description": "Controlled note."
+				},
+				{
+					"name": "defaultNote",
+					"type": "string",
+					"required": false,
+					"default": "\"\"",
+					"description": "Initial note for uncontrolled use."
 				},
 				{
 					"name": "onNoteChange",
@@ -6405,15 +6760,40 @@
 					"required": true
 				},
 				{
-					"name": "statusLabel",
+					"name": "query",
 					"type": "string",
 					"required": false,
-					"default": "\"All statuses\""
+					"description": "Controlled search query: the list shows the rows you pass, so filter them (or refetch) in `onQueryChange`. Uncontrolled, the list filters by payee, description and reference itself."
 				},
 				{
-					"name": "search",
+					"name": "defaultQuery",
 					"type": "string",
-					"required": false
+					"required": false,
+					"description": "Initial search query for uncontrolled use."
+				},
+				{
+					"name": "onQueryChange",
+					"type": "(query: string) => void",
+					"required": false,
+					"description": "Called when the user types in the search box."
+				},
+				{
+					"name": "status",
+					"type": "\"all\" | \"posted\" | \"imported\" | \"categorized\" | \"reconciled\" | \"excluded\"",
+					"required": false,
+					"description": "Controlled status filter: the list shows the rows you pass, so filter them (or refetch) in `onStatusChange`. Uncontrolled, the list filters itself."
+				},
+				{
+					"name": "defaultStatus",
+					"type": "\"all\" | \"posted\" | \"imported\" | \"categorized\" | \"reconciled\" | \"excluded\"",
+					"required": false,
+					"description": "Initial status filter for uncontrolled use."
+				},
+				{
+					"name": "onStatusChange",
+					"type": "(status: BankFeedStatus | \"all\") => void",
+					"required": false,
+					"description": "Called when the user changes the status filter."
 				},
 				{
 					"name": "showAccount",
@@ -6444,7 +6824,19 @@
 					"name": "postAll",
 					"type": "string",
 					"required": false,
-					"description": "\"RM 4,210.00 in · RM 1,180.40 out\" shown on Post all, when filtered to To post."
+					"description": "\"RM 4,210.00 in · RM 1,180.40 out\" shown on Post all; omit to hide the button."
+				},
+				{
+					"name": "onPostAll",
+					"type": "() => void",
+					"required": false,
+					"description": "Called when the user clicks \"Post all\"."
+				},
+				{
+					"name": "onRestore",
+					"type": "(tx: BankFeedTransaction) => void",
+					"required": false,
+					"description": "Called from an excluded line's Restore button; omit to hide it."
 				}
 			],
 			"inherits": [
@@ -6490,6 +6882,12 @@
 					"type": "(selected: boolean) => void",
 					"required": false,
 					"description": "Called when the checkbox is toggled by click or Space."
+				},
+				{
+					"name": "onRestore",
+					"type": "(tx: BankFeedTransaction) => void",
+					"required": false,
+					"description": "Called from an excluded line's Restore button; omit to hide it."
 				},
 				{
 					"name": "showAccount",
@@ -6711,6 +7109,36 @@
 					"name": "events",
 					"type": "BankTxEvent[]",
 					"required": false
+				},
+				{
+					"name": "onAcceptSuggestion",
+					"type": "() => void",
+					"required": false,
+					"description": "Called when the user accepts the AI-suggested category."
+				},
+				{
+					"name": "onChooseCategory",
+					"type": "() => void",
+					"required": false,
+					"description": "Called when the user clicks \"Choose category\"."
+				},
+				{
+					"name": "onChangeCategory",
+					"type": "() => void",
+					"required": false,
+					"description": "Called when the user clicks \"Change\" to pick a different category; omit to hide the button."
+				},
+				{
+					"name": "onExclude",
+					"type": "() => void",
+					"required": false,
+					"description": "Called when the user clicks \"Exclude\"; omit to hide the button."
+				},
+				{
+					"name": "onSkip",
+					"type": "() => void",
+					"required": false,
+					"description": "Called when the user clicks \"Skip\"; omit to hide the button."
 				}
 			],
 			"inherits": [
@@ -6953,6 +7381,18 @@
 					"name": "state",
 					"type": "\"no_statement\" | \"in_progress\" | \"covered\" | \"needs_work\" | \"ready\" | \"closed\"",
 					"required": false
+				},
+				{
+					"name": "onUploadStatement",
+					"type": "() => void",
+					"required": false,
+					"description": "Called when the user clicks \"Upload statement\"; omit to hide the button."
+				},
+				{
+					"name": "onLinkLedgerAccount",
+					"type": "() => void",
+					"required": false,
+					"description": "Called when the user clicks \"Link a ledger account\"; omit to hide the button."
 				}
 			],
 			"inherits": [
@@ -7098,6 +7538,24 @@
 					"type": "{ nextStep: string; signedOffLabel?: string }",
 					"required": false,
 					"description": "The next-step sentence for the selected month, and its sign-off line."
+				},
+				{
+					"name": "onPreviousYear",
+					"type": "() => void",
+					"required": false,
+					"description": "Called when the user clicks the Previous year button."
+				},
+				{
+					"name": "onNextYear",
+					"type": "() => void",
+					"required": false,
+					"description": "Called when the user clicks the Next year button."
+				},
+				{
+					"name": "onMonthSelect",
+					"type": "(period: string | null) => void",
+					"required": false,
+					"description": "Called when the user selects or deselects a month cell."
 				}
 			],
 			"inherits": [
@@ -7167,7 +7625,31 @@
 					"name": "selectedId",
 					"type": "string | null",
 					"required": false,
-					"default": "null"
+					"description": "Controlled selection: an account id, or null for \"All accounts\"."
+				},
+				{
+					"name": "defaultSelectedId",
+					"type": "string | null",
+					"required": false,
+					"default": "null",
+					"description": "Initial selection for uncontrolled use."
+				},
+				{
+					"name": "onSelectedIdChange",
+					"type": "(id: string | null) => void",
+					"required": false
+				},
+				{
+					"name": "onAddAccount",
+					"type": "() => void",
+					"required": false,
+					"description": "Called from \"Add account\"; omit to hide it."
+				},
+				{
+					"name": "onConnectProvider",
+					"type": "() => void",
+					"required": false,
+					"description": "Called from \"Connect a payment provider\"; omit to hide it."
 				},
 				{
 					"name": "cashFlow",
@@ -7202,16 +7684,58 @@
 					"required": true
 				},
 				{
-					"name": "search",
+					"name": "query",
 					"type": "string",
 					"required": false,
-					"default": "\"\""
+					"description": "Controlled search query."
+				},
+				{
+					"name": "defaultQuery",
+					"type": "string",
+					"required": false,
+					"description": "Initial search query for uncontrolled use."
+				},
+				{
+					"name": "onQueryChange",
+					"type": "(query: string) => void",
+					"required": false,
+					"description": "Called when the user types in the search box."
 				},
 				{
 					"name": "status",
 					"type": "\"all\" | \"active\" | \"inactive\"",
 					"required": false,
-					"default": "\"all\""
+					"description": "Controlled status filter."
+				},
+				{
+					"name": "defaultStatus",
+					"type": "\"all\" | \"active\" | \"inactive\"",
+					"required": false,
+					"description": "Initial status filter for uncontrolled use."
+				},
+				{
+					"name": "onStatusChange",
+					"type": "(status: \"all\" | \"active\" | \"inactive\") => void",
+					"required": false,
+					"description": "Called when the user changes the status filter."
+				},
+				{
+					"name": "onApplyToUnposted",
+					"type": "() => void",
+					"required": false,
+					"description": "Called when the user clicks \"Apply to unposted lines\"."
+				},
+				{
+					"name": "onNewRule",
+					"type": "() => void",
+					"required": false,
+					"description": "Called when the user clicks \"New rule\"."
+				},
+				{
+					"name": "onRowAction",
+					"type": "(rule: BankRuleRow) => void",
+					"required": false,
+					"description": "Called when the user triggers the action menu on a rule row."
 				}
 			],
 			"inherits": [
@@ -7468,11 +7992,6 @@
 		"props": {
 			"props": [
 				{
-					"name": "period",
-					"type": "string",
-					"required": true
-				},
-				{
 					"name": "periods",
 					"type": "string[]",
 					"required": true
@@ -7489,6 +8008,24 @@
 					"description": "Quiet sub-line, e.g. \"October 2026 · MYR\"."
 				},
 				{
+					"name": "period",
+					"type": "string",
+					"required": false,
+					"description": "Controlled reporting period (e.g. \"2026-03\")."
+				},
+				{
+					"name": "defaultPeriod",
+					"type": "string",
+					"required": false,
+					"description": "Initial period for uncontrolled use."
+				},
+				{
+					"name": "onPeriodChange",
+					"type": "(period: string) => void",
+					"required": false,
+					"description": "Called when the user changes the reporting period."
+				},
+				{
 					"name": "fiscalYearEnd",
 					"type": "string | null",
 					"required": false,
@@ -7498,7 +8035,19 @@
 					"name": "view",
 					"type": "string",
 					"required": false,
-					"description": "Current view (P&L Monthly/YTD, TB Standard/Extended)."
+					"description": "Controlled view (P&L Monthly/YTD, TB Standard/Extended)."
+				},
+				{
+					"name": "defaultView",
+					"type": "string",
+					"required": false,
+					"description": "Initial view for uncontrolled use."
+				},
+				{
+					"name": "onViewChange",
+					"type": "(view: string) => void",
+					"required": false,
+					"description": "Called when the user switches the report view."
 				},
 				{
 					"name": "views",
@@ -7509,17 +8058,43 @@
 					"name": "compare",
 					"type": "boolean",
 					"required": false,
-					"description": "Compare toggle; omit to hide it (reports without a comparative)."
+					"description": "Controlled compare toggle; omit the prop entirely to hide the Compare button."
+				},
+				{
+					"name": "defaultCompare",
+					"type": "boolean",
+					"required": false,
+					"description": "Initial compare value for uncontrolled use."
+				},
+				{
+					"name": "onCompareChange",
+					"type": "(compare: boolean) => void",
+					"required": false,
+					"description": "Called when the user toggles the compare mode."
 				},
 				{
 					"name": "comparePeriod",
 					"type": "string",
-					"required": false
+					"required": false,
+					"description": "Controlled comparison period."
 				},
 				{
-					"name": "showSaveSnapshot",
-					"type": "boolean",
-					"required": false
+					"name": "defaultComparePeriod",
+					"type": "string",
+					"required": false,
+					"description": "Initial comparison period for uncontrolled use."
+				},
+				{
+					"name": "onComparePeriodChange",
+					"type": "(period: string) => void",
+					"required": false,
+					"description": "Called when the user changes the comparison period."
+				},
+				{
+					"name": "onSaveSnapshot",
+					"type": "() => void",
+					"required": false,
+					"description": "Called when the user clicks \"Save snapshot\"; omit to hide the button."
 				},
 				{
 					"name": "freshness",
@@ -7713,6 +8288,12 @@
 					"type": "\"3\" | \"6\"",
 					"required": false,
 					"default": "\"6\""
+				},
+				{
+					"name": "onConnectBank",
+					"type": "() => void",
+					"required": false,
+					"description": "Called from the empty state's \"Connect bank\"; omit to hide the button."
 				}
 			],
 			"inherits": [
@@ -7932,6 +8513,12 @@
 					"type": "string",
 					"required": false,
 					"default": "\"Past 30 Days\""
+				},
+				{
+					"name": "onPaidFilterClick",
+					"type": "() => void",
+					"required": false,
+					"description": "Called from the paid column's filter button (e.g. to change the period); without it the label is plain text."
 				}
 			],
 			"inherits": [
@@ -8156,7 +8743,7 @@
 			"props": [
 				{
 					"name": "billAmount",
-					"type": "number",
+					"type": "Amount",
 					"required": true
 				},
 				{
@@ -8166,7 +8753,7 @@
 				},
 				{
 					"name": "paidAmount",
-					"type": "number",
+					"type": "Amount",
 					"required": false,
 					"default": "0"
 				},
@@ -8355,13 +8942,33 @@
 				},
 				{
 					"name": "tab",
-					"type": "\"activity\" | \"ledger\" | \"details\"",
-					"required": false
+					"type": "\"details\" | \"ledger\" | \"activity\"",
+					"required": false,
+					"description": "Controlled tab."
+				},
+				{
+					"name": "defaultTab",
+					"type": "\"details\" | \"ledger\" | \"activity\"",
+					"required": false,
+					"default": "\"activity\"",
+					"description": "Initial tab for uncontrolled use."
 				},
 				{
 					"name": "onTabChange",
-					"type": "(tab: string) => void",
+					"type": "(tab: PartyTab) => void",
 					"required": false
+				},
+				{
+					"name": "onStatement",
+					"type": "() => void",
+					"required": false,
+					"description": "Called from the Statement button; omit to hide it."
+				},
+				{
+					"name": "onCreate",
+					"type": "() => void",
+					"required": false,
+					"description": "Called from New invoice (customer) or New bill (vendor); omit to hide it."
 				}
 			],
 			"inherits": [
@@ -8440,6 +9047,24 @@
 					"name": "contacts",
 					"type": "PartyContact[]",
 					"required": false
+				},
+				{
+					"name": "onSetPrimaryContact",
+					"type": "(contact: PartyContact) => void",
+					"required": false,
+					"description": "Called from a contact's star button; omit to hide it."
+				},
+				{
+					"name": "onEditContact",
+					"type": "(contact: PartyContact) => void",
+					"required": false,
+					"description": "Called from a contact's edit button; omit to hide it."
+				},
+				{
+					"name": "onAddContact",
+					"type": "() => void",
+					"required": false,
+					"description": "Called from \"Add contact\"; omit to hide it."
 				}
 			],
 			"inherits": [
@@ -8511,7 +9136,9 @@
 					"default": "\"MYR\""
 				}
 			],
-			"inherits": []
+			"inherits": [
+				"ComponentProps<\"div\">"
+			]
 		}
 	},
 	{
@@ -8561,7 +9188,9 @@
 					"required": false
 				}
 			],
-			"inherits": []
+			"inherits": [
+				"ComponentProps<\"div\">"
+			]
 		}
 	},
 	{
@@ -8611,7 +9240,9 @@
 					"required": false
 				}
 			],
-			"inherits": []
+			"inherits": [
+				"ComponentProps<\"div\">"
+			]
 		}
 	},
 	{
@@ -8706,7 +9337,9 @@
 					"required": false
 				}
 			],
-			"inherits": []
+			"inherits": [
+				"ComponentProps<\"div\">"
+			]
 		}
 	},
 	{
@@ -9196,7 +9829,15 @@
 				{
 					"name": "lineItems",
 					"type": "POLine[]",
-					"required": true
+					"required": false,
+					"description": "Controlled lines."
+				},
+				{
+					"name": "defaultLineItems",
+					"type": "POLine[]",
+					"required": false,
+					"default": "[]",
+					"description": "Initial lines for uncontrolled use."
 				},
 				{
 					"name": "onChange",
@@ -9404,6 +10045,18 @@
 					"type": "boolean",
 					"required": false,
 					"default": "true"
+				},
+				{
+					"name": "credentialsHref",
+					"type": "string",
+					"required": false,
+					"description": "Where MyInvois credentials are set up; links the \"not configured\" message."
+				},
+				{
+					"name": "correctionHref",
+					"type": "string",
+					"required": false,
+					"description": "Where to raise the correcting credit note; links the \"window has passed\" message."
 				},
 				{
 					"name": "onSubmit",

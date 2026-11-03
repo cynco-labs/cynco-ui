@@ -1,17 +1,22 @@
+"use client";
+
 import { XIcon } from "@phosphor-icons/react";
+import { cn } from "../../lib/utils";
 
 /** An active filter shown as `label value ×`, e.g. inside a search bar or toolbar. */
 export function FilterChip({
 	label,
 	value,
 	onRemove,
-}: {
+	className,
+	...props
+}: Omit<React.ComponentProps<"span">, "children"> & {
 	label: string;
 	value: string;
 	onRemove: () => void;
 }) {
 	return (
-		<span className="flex h-5 max-w-56 shrink-0 items-center gap-1 rounded-md bg-active-primary pr-0.5 pl-1.5 text-xs">
+		<span className={cn("flex h-5 max-w-56 shrink-0 items-center gap-1 rounded-md bg-active-primary pr-0.5 pl-1.5 text-xs", className)} {...props}>
 			<span className="shrink-0 text-subtle">{label}</span>
 			<span className="truncate text-foreground">{value}</span>
 			<button

@@ -1,19 +1,14 @@
 import { cn } from "../../lib/utils";
 
-interface PageContainerProps {
-	children: React.ReactNode;
-	className?: string;
-}
-
-export function PageContainer({ children, className }: PageContainerProps) {
+export function PageContainer({ className, ...props }: React.ComponentProps<"div">) {
 	return (
 		<div
 			className={cn(
-				"flex flex-col gap-4 relative w-full pb-8 max-w-[1600px] mx-auto pt-4 sm:pt-8 px-4 sm:px-10",
+				// Percentage padding resolves against the parent's width, so the gutter follows the space the page gets.
+				"flex flex-col gap-4 relative w-full pb-8 max-w-[1600px] mx-auto pt-[clamp(1rem,3%,2rem)] px-[clamp(1rem,4%,2.5rem)]",
 				className,
 			)}
-		>
-			{children}
-		</div>
+			{...props}
+		/>
 	);
 }

@@ -33,8 +33,18 @@ Compact toolbars and row actions where the icon alone is not self-explanatory.
 
 - `tooltip`: `string`
 - `icon`: `ReactNode`
-- `onClick?`: `() => void`
-- `disabled?`: `boolean`
+- `variant?`: `"primary" | "secondary" | "skeleton" | "muted" | "destructive" | "dotted"`. Default `"primary"`.
+- `size?`: `"sm" | "default" | "mini" | "icon"`. Default `"default"`.
+- `asChild?`: `boolean`
+- `isLoading?`: `boolean`
+- `transition?`: `boolean`
+- `disableActive?`: `boolean`
+- `hide?`: `boolean`
+- `render?`: `ReactElement`
+- `focusableWhenDisabled?`: `boolean`. Keep the button in the tab order while disabled (Base UI). Set automatically while `isLoading`.
+- `iconOrientation?`: `"center" | "left" | "right"`. Default `"left"`.
+- `rightIcon?`: `ReactNode`
+- Also accepts `ComponentProps<"button">`.
 
 ## Notes
 

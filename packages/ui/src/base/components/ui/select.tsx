@@ -1,5 +1,6 @@
 "use client";
 
+import { CaretDownIcon, CheckIcon } from "@phosphor-icons/react";
 import {
 	overlayItemClassName,
 	overlayItemHighlightClassName,
@@ -11,7 +12,6 @@ import {
 } from "../../lib/overlay-classes";
 import { cn } from "../../lib/utils";
 import { Select as SelectPrimitive } from "@base-ui/react/select";
-import { CheckIcon, ChevronDownIcon } from "lucide-react";
 import type * as React from "react";
 
 function Select({
@@ -84,7 +84,7 @@ function SelectTrigger({
 		>
 			{children}
 			<SelectPrimitive.Icon>
-				<ChevronDownIcon className="size-3.5 text-tertiary-foreground" />
+				<CaretDownIcon className="size-3.5 text-tertiary-foreground" />
 			</SelectPrimitive.Icon>
 		</SelectPrimitive.Trigger>
 	);
