@@ -1,7 +1,8 @@
+import type { ReactNode } from "react";
 import { BankCategoryCell } from "@cynco-labs/ui";
 
 export default function BankCategoryCellDemo() {
-	function line(label, el) {
+	function line(label: string, el: ReactNode) {
 		return (
 			<div className="flex items-center gap-4">
 				<span className="w-28 text-tiny text-tertiary-foreground">{label}</span>

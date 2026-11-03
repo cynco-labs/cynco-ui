@@ -9,7 +9,13 @@ import { AdjustmentNoteDocument } from "@cynco-labs/ui";
 ## Usage
 
 ```tsx
-import { AdjustmentNoteDocument, DocumentBrandProvider } from "@cynco-labs/ui";
+import {
+	type AdjustmentNoteData,
+	type DocLayout,
+	type DocLocale,
+	AdjustmentNoteDocument,
+	DocumentBrandProvider,
+} from "@cynco-labs/ui";
 
 const BRAND = {
 	company: {
@@ -47,7 +53,7 @@ const NUSA_SITE = {
 	phone: "+60 12-334 8821",
 };
 
-const QRSLOT = (t) => (
+const QRSLOT = (t: string) => (
 	<div className="flex size-full items-center justify-center rounded-[1.5mm] border border-dashed border-[var(--doc-subtle)] text-center text-[6pt] leading-tight text-[var(--doc-subtle)]">
 		{t}
 	</div>
@@ -55,7 +61,7 @@ const QRSLOT = (t) => (
 
 const ORIG = { number: "INV-2026-0142", date: "2026-10-28", amount: "52013.80" };
 
-const CN = {
+const CN: AdjustmentNoteData = {
 	kind: "credit",
 	number: "CN-2026-0018",
 	status: "issued",
@@ -107,7 +113,7 @@ const CN = {
 	signature: true,
 };
 
-const DN = {
+const DN: AdjustmentNoteData = {
 	kind: "debit",
 	number: "DN-2026-0007",
 	status: "issued",
@@ -182,6 +188,10 @@ export default function AdjustmentNoteDocumentDemo({
 	layout = "minimal",
 	locale = "en",
 	kind = "credit",
+}: {
+	layout?: DocLayout;
+	locale?: DocLocale;
+	kind?: "credit" | "debit";
 }) {
 	return (
 		<DocumentBrandProvider brand={{ ...BRAND, layout, locale }}>

@@ -15,6 +15,7 @@ import {
 	BulkActionBar,
 	Checkbox,
 	DataList,
+	type DataColumn,
 	DocStatus,
 	INVOICE_STATUS,
 	Money,
@@ -90,7 +91,8 @@ const INV = [
 	},
 ];
 
-const cols = [
+type Invoice = (typeof INV)[0];
+const cols: DataColumn<Invoice>[] = [
 	{
 		key: "no",
 		header: "Invoice #",
@@ -122,7 +124,7 @@ export default function BulkActionBarDemo() {
 	);
 	const picked = INV.filter((r) => sel.indexOf(r.id) >= 0);
 	const total = sumAmounts(picked.map((r) => r.amount));
-	function run(verb) {
+	function run(verb: string) {
 		return () => {
 			setLog(
 				verb +

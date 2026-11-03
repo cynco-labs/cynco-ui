@@ -1,7 +1,16 @@
+import * as React from "react";
 import { useState } from "react";
-import { DocumentBrandProvider, GroupedTabButton, ProfitAndLossReport } from "@cynco-labs/ui";
+import {
+	DocumentBrandProvider,
+	GroupedTabButton,
+	ProfitAndLossReport,
+	type DocBrand,
+	type DocLayout,
+	type DocLocale,
+	type ProfitAndLossData,
+} from "@cynco-labs/ui";
 
-const BRAND = {
+const BRAND: DocBrand = {
 	company: {
 		name: "Harmoni Perabot Sdn Bhd",
 		registrationNo: "201801034567 (1290456-T)",
@@ -16,10 +25,12 @@ const BRAND = {
 	footerNote: "Thank you for your business.",
 };
 
-function Shell(p) {
-	const [l, setL] = useState("minimal"),
-		[g, setG] = useState("en"),
-		[x, setX] = useState(p.extra ? p.extra.options[0].value : "");
+type ShellOption = { value: string; label: string };
+type ShellProps = { extra?: { options: ShellOption[] }; render: (x: string) => React.ReactNode };
+function Shell({ extra, render }: ShellProps) {
+	const [l, setL] = useState<DocLayout>("minimal"),
+		[g, setG] = useState<DocLocale>("en"),
+		[x, setX] = useState(extra ? extra.options[0].value : "");
 	return (
 		<div className="flex flex-col gap-3">
 			<div className="flex flex-wrap gap-2">
@@ -43,23 +54,23 @@ function Shell(p) {
 						{ value: "en-ms", label: "EN+BM" },
 					]}
 				/>
-				{p.extra ? (
+				{extra ? (
 					<GroupedTabButton
 						className="w-[230px]"
 						value={x}
 						onValueChange={setX}
-						options={p.extra.options}
+						options={extra.options}
 					/>
 				) : null}
 			</div>
 			<DocumentBrandProvider brand={Object.assign({}, BRAND, { layout: l, locale: g })}>
-				{p.render(x)}
+				{render(x)}
 			</DocumentBrandProvider>
 		</div>
 	);
 }
 
-const DATA = {
+const DATA: ProfitAndLossData = {
 	period: { kind: "month", end: "2026-10-31" },
 	basis: "accrual",
 	currency: "MYR",

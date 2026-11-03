@@ -9,9 +9,9 @@ import { BankReviewCard } from "@cynco-labs/ui";
 ## Usage
 
 ```tsx
-import { BankReviewCard } from "@cynco-labs/ui";
+import { BankReviewCard, type BankTxEvent } from "@cynco-labs/ui";
 
-const EVENTS = [
+const EVENTS: BankTxEvent[] = [
 	{
 		actor: "system",
 		action: "import",

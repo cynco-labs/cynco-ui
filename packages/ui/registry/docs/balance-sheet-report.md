@@ -10,9 +10,18 @@ import { BalanceSheetReport } from "@cynco-labs/ui";
 
 ```tsx
 import { useState } from "react";
-import { BalanceSheetReport, DocumentBrandProvider, GroupedTabButton } from "@cynco-labs/ui";
+import {
+	BalanceSheetReport,
+	DocumentBrandProvider,
+	GroupedTabButton,
+	type BalanceSheetData,
+	type DocBrand,
+	type DocLayout,
+	type DocLocale,
+} from "@cynco-labs/ui";
+import type { ReactNode } from "react";
 
-const BRAND = {
+const BRAND: DocBrand = {
 	company: {
 		name: "Harmoni Perabot Sdn Bhd",
 		registrationNo: "201801034567 (1290456-T)",
@@ -27,9 +36,12 @@ const BRAND = {
 	footerNote: "Thank you for your business.",
 };
 
-function Shell(p) {
-	const [l, setL] = useState("minimal"),
-		[g, setG] = useState("en"),
+function Shell(p: {
+	render: (x: string) => ReactNode;
+	extra?: { options: { value: string; label: string }[] };
+}) {
+	const [l, setL] = useState<DocLayout>("minimal"),
+		[g, setG] = useState<DocLocale>("en"),
 		[x, setX] = useState(p.extra ? p.extra.options[0].value : "");
 	return (
 		<div className="flex flex-col gap-3">
@@ -70,7 +82,7 @@ function Shell(p) {
 	);
 }
 
-const DATA = {
+const DATA: BalanceSheetData = {
 	period: { kind: "asAt", end: "2026-10-31" },
 	currency: "MYR",
 	columns: [{ label: "31 Oct 2026" }, { label: "31 Dec 2025", sublabel: "RM · audited" }],

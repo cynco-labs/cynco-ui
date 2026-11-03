@@ -1,7 +1,16 @@
-import { PayslipsRunTable } from "@cynco-labs/ui";
+import { type PayslipData, PayslipsRunTable } from "@cynco-labs/ui";
 
 export default function PayslipsRunTableDemo() {
-	function p(id, n, r, g, st, o, ec, paid) {
+	function p(
+		id: string,
+		n: string,
+		r: string,
+		g: number,
+		st: number,
+		o: number,
+		ec: number,
+		paid: boolean,
+	): PayslipData {
 		return {
 			id,
 			employeeName: n,

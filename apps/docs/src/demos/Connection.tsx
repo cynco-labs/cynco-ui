@@ -11,7 +11,7 @@ import {
 } from "@cynco-labs/ui/ai";
 
 const NT = {
-	card: (p) => (
+	card: (p: { data: { title: string; sub: string; body: string } }) => (
 		<Node handles={{ target: true, source: true }}>
 			<NodeHeader>
 				<NodeTitle>{p.data.title}</NodeTitle>

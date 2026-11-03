@@ -10,6 +10,12 @@ import {
 	QueueSectionTrigger,
 } from "@cynco-labs/ui/ai";
 
+const TASKS: [string, boolean][] = [
+	["Import October statement", true],
+	["Match 14 receipts", false],
+	["Send overdue reminders", false],
+];
+
 export default function QueueDemo() {
 	return (
 		<Queue className="max-w-[460px]">
@@ -19,11 +25,7 @@ export default function QueueDemo() {
 				</QueueSectionTrigger>
 				<QueueSectionContent>
 					<QueueList>
-						{[
-							["Import October statement", true],
-							["Match 14 receipts", false],
-							["Send overdue reminders", false],
-						].map((t) => (
+						{TASKS.map((t) => (
 							<QueueItem key={t[0]}>
 								<div className="flex items-center gap-2">
 									<QueueItemIndicator completed={t[1]} />

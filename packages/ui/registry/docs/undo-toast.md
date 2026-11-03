@@ -19,6 +19,7 @@ import {
 	Money,
 	UndoToastProvider,
 	useUndoToast,
+	type DataColumn,
 } from "@cynco-labs/ui";
 
 const START = [
@@ -55,11 +56,11 @@ const START = [
 function Demo() {
 	const toast = useUndoToast();
 	const [rows, setRows] = useState(START);
-	const [pending, setPending] = useState([]);
+	const [pending, setPending] = useState<string[]>([]);
 	const [log, setLog] = useState([
 		"Try: Void → Undo (or Ctrl/⌘+Z) · hover pauses the countdown · F8 focuses the toast, Esc dismisses",
 	]);
-	function voidIds(ids) {
+	function voidIds(ids: string[]) {
 		if (!ids.length) return;
 		const nos = rows.filter((x) => ids.indexOf(x.id) >= 0).map((x) => x.no);
 		setPending((ps) => ps.concat(ids));
@@ -96,7 +97,8 @@ function Demo() {
 		.filter((x) => x.status === "overdue")
 		.slice(0, 2)
 		.map((x) => x.id);
-	const cols = [
+	type InvoiceRow = (typeof START)[0];
+	const cols: DataColumn<InvoiceRow>[] = [
 		{
 			key: "no",
 			header: "Invoice #",
@@ -152,7 +154,9 @@ function Demo() {
 				getKey={(x) => x.id}
 				caption="Invoices"
 				dense
-				rowClassName={(x) => (pending.indexOf(x.id) >= 0 ? "line-through decoration-tertiary-foreground" : undefined)}
+				rowClassName={(x) =>
+					pending.indexOf(x.id) >= 0 ? "line-through decoration-tertiary-foreground" : undefined
+				}
 				trailing={(x) =>
 					x.status === "voided" || pending.indexOf(x.id) >= 0 ? null : (
 						<Button

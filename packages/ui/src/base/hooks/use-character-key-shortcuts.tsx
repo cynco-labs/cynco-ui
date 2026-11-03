@@ -67,7 +67,7 @@ const getSnapshot = () => {
 	if (current === undefined) current = readStored();
 	return current;
 };
-const getServerSnapshot = () => null;
+const getServerSnapshot = (): boolean | null => null;
 
 const KeyboardShortcutsContext = React.createContext<ContextValue | null>(null);
 

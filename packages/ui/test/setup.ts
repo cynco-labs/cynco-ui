@@ -8,7 +8,7 @@ class Observer {
 	observe() {}
 	unobserve() {}
 	disconnect() {}
-	takeRecords() {
+	takeRecords(): never[] {
 		return [];
 	}
 }

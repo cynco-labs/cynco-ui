@@ -14,9 +14,11 @@ import {
 	PaymentBlock,
 	TotalsBlock,
 	formatDocAmount,
+	type DocBrand,
+	type DocLayout,
 } from "@cynco-labs/ui";
 
-const BRAND = {
+const BRAND: DocBrand = {
 	company: {
 		name: "Kedai Runcit Maju Jaya Sdn Bhd",
 		registrationNo: "201901023456 (1334567-K)",
@@ -39,9 +41,9 @@ const BUYER = {
 	attention: "Puan Aisyah Rahman, Finance",
 };
 
-function Sheet(p) {
+function Sheet({ layout }: { layout: DocLayout }) {
 	return (
-		<DocumentBrandProvider brand={Object.assign({}, BRAND, { layout: p.layout })}>
+		<DocumentBrandProvider brand={{ ...BRAND, layout }}>
 			<DocumentPage>
 				<DocStack>
 					<Letterhead title="taxInvoice" number="INV-2026-0142" />
@@ -130,7 +132,7 @@ function Sheet(p) {
 }
 
 export default function DocumentPageDemo() {
-	const [layout, setLayout] = useState("minimal");
+	const [layout, setLayout] = useState<DocLayout>("minimal");
 	return (
 		<div className="flex flex-col gap-3">
 			<div className="w-[270px]">

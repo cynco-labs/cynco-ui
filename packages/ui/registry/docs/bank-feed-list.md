@@ -9,9 +9,9 @@ import { BankFeedList } from "@cynco-labs/ui";
 ## Usage
 
 ```tsx
-import { BankFeedList } from "@cynco-labs/ui";
+import { type BankFeedDay, type BankMatch, BankFeedList } from "@cynco-labs/ui";
 
-const MATCH_INV = {
+const MATCH_INV: BankMatch = {
 	id: "m1",
 	targetLabel: "Invoice · TechNova Solutions Sdn Bhd",
 	targetReference: "INV-2026-0142",
@@ -26,7 +26,7 @@ const MATCH_INV = {
 		"Accepting records the receipt against INV-2026-0142 and marks it Paid. The line posts to 1200-001 Trade Receivables instead of a revenue account.",
 };
 
-const MATCH_BILL = {
+const MATCH_BILL: BankMatch = {
 	id: "m2",
 	targetLabel: "Bill · Tenaga Nasional Berhad",
 	targetReference: "BILL-2026-0088",
@@ -39,7 +39,7 @@ const MATCH_BILL = {
 const MBB = { name: "Maybank Current", color: "#E5A21F" },
 	CIMB = { name: "CIMB Business", color: "#E5484D" };
 
-const DAYS = [
+const DAYS: BankFeedDay[] = [
 	{
 		date: "2026-10-29",
 		net: { amount: 11535.7 },

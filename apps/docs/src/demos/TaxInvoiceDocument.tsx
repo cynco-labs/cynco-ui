@@ -1,6 +1,13 @@
-import { DocumentBrandProvider, TaxInvoiceDocument } from "@cynco-labs/ui";
+import {
+	DocumentBrandProvider,
+	TaxInvoiceDocument,
+	type DocBrand,
+	type DocLayout,
+	type DocLocale,
+	type TaxInvoiceData,
+} from "@cynco-labs/ui";
 
-const BRAND = {
+const BRAND: DocBrand = {
 	company: {
 		name: "Arus Teknik Sdn Bhd",
 		registrationNo: "201801034567 (1295521-D)",
@@ -36,7 +43,7 @@ const NUSA_SITE = {
 	phone: "+60 12-334 8821",
 };
 
-const SST_INV = {
+const SST_INV: TaxInvoiceData = {
 	title: "taxInvoice",
 	number: "INV-2026-0142",
 	status: "partially_paid",
@@ -110,7 +117,7 @@ const SST_INV = {
 	signature: true,
 };
 
-const USD_INV = {
+const USD_INV: TaxInvoiceData = {
 	title: "taxInvoice",
 	number: "INV-2026-0147",
 	status: "issued",
@@ -180,7 +187,7 @@ const USD_INV = {
 	notes: "Bank charges are borne by the payer.",
 };
 
-const PLAIN_INV = {
+const PLAIN_INV: TaxInvoiceData = {
 	title: "invoice",
 	number: "INV-2026-0019",
 	status: "overdue",
@@ -230,7 +237,7 @@ const PLAIN_INV = {
 	notes: "This invoice is now overdue. Kindly arrange payment at your earliest convenience.",
 };
 
-const PLAIN_BRAND = {
+const PLAIN_BRAND: DocBrand = {
 	company: {
 		name: "Arus Servis Enterprise",
 		registrationNo: "202103118842 (003305127-P)",
@@ -276,6 +283,10 @@ export default function TaxInvoiceDocumentDemo({
 	layout = "minimal",
 	locale = "en",
 	variant = "sst",
+}: {
+	layout?: DocLayout;
+	locale?: DocLocale;
+	variant?: string;
 }) {
 	const invoice = variant === "usd" ? USD_INV : variant === "plain" ? PLAIN_INV : SST_INV;
 	return (

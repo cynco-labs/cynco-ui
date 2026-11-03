@@ -908,7 +908,7 @@ export interface KpiTileData {
 	accent?: KpiAccent;
 }
 
-const SUB_ICON = {
+const SUB_ICON: Record<NonNullable<KpiTileData["subTone"]>, React.ReactNode> = {
 	up: <TrendUpIcon size={12} weight="bold" aria-hidden="true" className={cn("shrink-0", STATUS_TEXT.green)} />,
 	down: <TrendDownIcon size={12} weight="bold" aria-hidden="true" className={cn("shrink-0", STATUS_TEXT.red)} />,
 	warn: <ToneDot tone="amber" />,

@@ -1,8 +1,12 @@
 import { ReceiptIcon } from "@phosphor-icons/react";
-import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
+import { getCoreRowModel, useReactTable, type CellContext } from "@tanstack/react-table";
 import { Button, DataTable, StatusChip } from "@cynco-labs/ui";
 
-const data = [
+const tone = { Paid: "green", Sent: "blue", Overdue: "amber" } as const;
+
+type Row = { id: string; name: string; amount: string; status: keyof typeof tone };
+
+const data: Row[] = [
 	{ id: "INV-2026-0142", name: "Nusantara Logistik Bhd", amount: "RM 12,720.00", status: "Paid" },
 	{
 		id: "INV-2026-0141",
@@ -13,20 +17,20 @@ const data = [
 	{ id: "INV-2026-0140", name: "Kedai Runcit Maju Jaya", amount: "RM 486.50", status: "Overdue" },
 ];
 
-const tone = { Paid: "green", Sent: "blue", Overdue: "amber" };
-
 const columns = [
 	{ accessorKey: "name", header: "Customer" },
 	{
 		accessorKey: "id",
 		header: "Invoice",
-		cell: (c) => <span className="text-tiny-id text-tertiary-foreground">{c.getValue()}</span>,
+		cell: (c: CellContext<Row, string>) => (
+			<span className="text-tiny-id text-tertiary-foreground">{c.getValue()}</span>
+		),
 	},
 	{ accessorKey: "amount", header: "Amount" },
 	{
 		accessorKey: "status",
 		header: "Status",
-		cell: (c) => (
+		cell: (c: CellContext<Row, Row["status"]>) => (
 			<StatusChip tone={tone[c.getValue()]} glyph="check">
 				{c.getValue()}
 			</StatusChip>

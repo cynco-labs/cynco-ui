@@ -1,6 +1,13 @@
-import { DocumentBrandProvider, ReceiptDocument } from "@cynco-labs/ui";
+import {
+	DocumentBrandProvider,
+	ReceiptDocument,
+	type DocBrand,
+	type DocLayout,
+	type DocLocale,
+	type ReceiptData,
+} from "@cynco-labs/ui";
 
-const BRAND = {
+const BRAND: DocBrand = {
 	company: {
 		name: "Arus Teknik Sdn Bhd",
 		registrationNo: "201801034567 (1295521-D)",
@@ -17,26 +24,7 @@ const BRAND = {
 	footerNote: "Thank you for choosing Arus Teknik — powering Malaysian rooftops since 2018.",
 };
 
-const NUSA = {
-	name: "Nusantara Logistik Bhd",
-	registrationNo: "200501012345 (689012-W)",
-	tin: "C10987654320",
-	sstNo: "W10-1808-31004422",
-	address: ["Lot 8, Persiaran Klang, Kawasan Perindustrian Bukit Raja", "41050 Klang, Selangor"],
-	attention: "Puan Aisyah Rahman, Finance",
-};
-
-const NUSA_SITE = {
-	name: "Nusantara Logistik Bhd — Warehouse B",
-	address: [
-		"Lot 12A, Jalan Sungai Puloh, Kawasan Perindustrian Sungai Puloh",
-		"42100 Klang, Selangor",
-	],
-	attention: "En. Hafiz Zainal, Facilities",
-	phone: "+60 12-334 8821",
-};
-
-const CHEQUE = {
+const CHEQUE: ReceiptData = {
 	number: "OR-2026-0311",
 	status: "issued",
 	date: "2026-10-30",
@@ -55,7 +43,7 @@ const CHEQUE = {
 	notes: "Payment by cheque is subject to clearance. INV-2026-0135 has a balance of RM 2,040.00.",
 };
 
-const CASH = {
+const CASH: ReceiptData = {
 	number: "OR-2026-0318",
 	status: "issued",
 	date: "2026-11-01",
@@ -121,6 +109,11 @@ export default function ReceiptDocumentDemo({
 	locale = "en",
 	size = "a4",
 	payment = "cheque",
+}: {
+	layout?: DocLayout;
+	locale?: DocLocale;
+	size?: "a4" | "a5" | "receipt";
+	payment?: string;
 }) {
 	return (
 		<DocumentBrandProvider brand={{ ...BRAND, layout, locale }}>

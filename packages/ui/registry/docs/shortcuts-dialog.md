@@ -10,7 +10,13 @@ import { ShortcutsDialog } from "@cynco-labs/ui";
 
 ```tsx
 import { Fragment, useState } from "react";
-import { Button, Kbd, ShortcutsDialog, useCharacterKeyShortcuts, useGoToShortcuts } from "@cynco-labs/ui";
+import {
+	Button,
+	Kbd,
+	ShortcutsDialog,
+	useCharacterKeyShortcuts,
+	useGoToShortcuts,
+} from "@cynco-labs/ui";
 
 // G then a letter goes to a page; C then a letter creates something. Keys are the letter after "g", or a full sequence.
 const ROUTES = {
@@ -26,7 +32,7 @@ const ROUTES = {
 	"c c": "/customers/new",
 };
 
-const LABELS = {
+const LABELS: Record<string, string> = {
 	"/dashboard": "Dashboard",
 	"/invoices": "Invoices",
 	"/quotations": "Quotations",
@@ -38,6 +44,29 @@ const LABELS = {
 	"/journal/new": "New journal entry",
 	"/customers/new": "New customer",
 };
+
+/** The two-key sequences the page handles, as [keys, label]. */
+const SEQUENCES: { title: string; items: [string, string][] }[] = [
+	{
+		title: "Go to",
+		items: [
+			["g d", "Dashboard"],
+			["g i", "Invoices"],
+			["g q", "Quotations"],
+			["g c", "Customers"],
+			["g b", "Banking"],
+		],
+	},
+	{
+		title: "Create",
+		items: [
+			["c i", "New invoice"],
+			["c q", "New quotation"],
+			["c j", "New journal entry"],
+			["c c", "New customer"],
+		],
+	},
+];
 
 const SECTIONS = [
 	{
@@ -90,7 +119,7 @@ const SECTIONS = [
 
 export default function ShortcutsDialogDemo() {
 	const [open, setOpen] = useState(false);
-	const [went, setWent] = useState(null);
+	const [went, setWent] = useState<{ path: string; seq: string } | null>(null);
 	// The user's single-key switch lives in the dialog's footer; it also gates "?" and G/C sequences.
 	const [characterKeys] = useCharacterKeyShortcuts();
 	const g = useGoToShortcuts(ROUTES, (path, seq) => {
@@ -152,33 +181,17 @@ export default function ShortcutsDialogDemo() {
 				)}
 			</div>
 			<div className="grid gap-3 @md:grid-cols-2">
-				{[
-					[
-						"Go to",
-						["g d", "Dashboard"],
-						["g i", "Invoices"],
-						["g q", "Quotations"],
-						["g c", "Customers"],
-						["g b", "Banking"],
-					],
-					[
-						"Create",
-						["c i", "New invoice"],
-						["c q", "New quotation"],
-						["c j", "New journal entry"],
-						["c c", "New customer"],
-					],
-				].map((sec) => (
-					<div key={sec[0]} className="rounded-xl border border-border bg-card px-3 py-2">
-						<div className="mb-1 text-xs font-medium text-tertiary-foreground">{sec[0]}</div>
-						{sec.slice(1).map((it) => (
+				{SEQUENCES.map((group) => (
+					<div key={group.title} className="rounded-xl border border-border bg-card px-3 py-2">
+						<div className="mb-1 text-xs font-medium text-tertiary-foreground">{group.title}</div>
+						{group.items.map(([keys, label]) => (
 							<div
-								key={it[0]}
+								key={keys}
 								className="flex items-center justify-between gap-3 border-b border-table-row-divider py-1.5 text-sm text-foreground last:border-0"
 							>
-								<span>{it[1]}</span>
+								<span>{label}</span>
 								<span className="flex gap-1">
-									{it[0].split(" ").map((k, i) => (
+									{keys.split(" ").map((k, i) => (
 										<Kbd key={i} keys={k} />
 									))}
 								</span>

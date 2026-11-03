@@ -1,6 +1,8 @@
-import { GeneralLedgerTable } from "@cynco-labs/ui";
+import { type GlRegisterRow, GeneralLedgerTable, fromSen, toSen } from "@cynco-labs/ui";
 
-const RAW = [
+type RawRow = [string, string, string, string | null, number, number, string?, number?];
+
+const RAW: RawRow[] = [
 	[
 		"2026-10-02",
 		"JE-2026-0131",
@@ -33,27 +35,27 @@ const RAW = [
 	["2026-10-28", "RCT-2026-0097", "Receipt INV-2026-0142", "Syarikat Bina Jaya Sdn Bhd", 12720, 0],
 ];
 
-let bal = 182400,
-	ROWS = RAW.map((r, i) => {
-		const base = r[7];
-		const d = r[6] ? (r[4] ? base : 0) : r[4],
-			c = r[6] ? (r[5] ? base : 0) : r[5];
-		bal = bal + d - c;
-		return {
-			id: "g" + i,
-			date: r[0],
-			entryNumber: r[1],
-			description: r[2],
-			counterparty: r[3],
-			debit: r[4],
-			credit: r[5],
-			currency: r[6] || "MYR",
-			baseDebit: d,
-			baseCredit: c,
-			runningBalance: Math.round(bal * 100) / 100,
-			isReconciled: i < 5,
-		};
-	});
+let bal = toSen(182400);
+const ROWS: GlRegisterRow[] = RAW.map((r, i) => {
+	const base = r[7];
+	const d: number = r[6] ? (r[4] ? (base ?? 0) : 0) : r[4],
+		c: number = r[6] ? (r[5] ? (base ?? 0) : 0) : r[5];
+	bal += toSen(d) - toSen(c);
+	return {
+		id: "g" + i,
+		date: r[0],
+		entryNumber: r[1],
+		description: r[2],
+		counterparty: r[3],
+		debit: r[4],
+		credit: r[5],
+		currency: r[6] ?? "MYR",
+		baseDebit: d,
+		baseCredit: c,
+		runningBalance: Number(fromSen(bal)),
+		isReconciled: i < 5,
+	};
+});
 
 export default function GeneralLedgerTableDemo() {
 	return (

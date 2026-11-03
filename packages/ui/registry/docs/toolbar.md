@@ -11,12 +11,12 @@ import { Toolbar } from "@cynco-labs/ui/ai";
 ```tsx
 import { PencilSimpleIcon, TrashIcon } from "@phosphor-icons/react";
 import { Button } from "@cynco-labs/ui";
-import { Canvas, Node, NodeHeader, NodeTitle, Toolbar } from "@cynco-labs/ui/ai";
+import { Canvas, Node, NodeHeader, NodeTitle, Position, Toolbar } from "@cynco-labs/ui/ai";
 
 const NT2 = {
-	card: (p) => (
+	card: (_p: { data: Record<string, unknown> }) => (
 		<div>
-			<Toolbar isVisible position="top">
+			<Toolbar isVisible position={Position.Top}>
 				<Button variant="skeleton" size="icon" aria-label="Edit step">
 					<PencilSimpleIcon size={14} />
 				</Button>

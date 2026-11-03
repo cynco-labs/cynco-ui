@@ -1,7 +1,24 @@
 import { useState } from "react";
-import { Checkbox, DataList, DocStatus, INVOICE_STATUS, Money, formatDate } from "@cynco-labs/ui";
+import {
+	Checkbox,
+	DataList,
+	DocStatus,
+	INVOICE_STATUS,
+	Money,
+	formatDate,
+	type DataColumn,
+} from "@cynco-labs/ui";
 
-const rows = [
+type Row = {
+	id: string;
+	no: string;
+	customer: string;
+	date: string;
+	amount: number;
+	status: string;
+};
+
+const rows: Row[] = [
 	{
 		id: "1",
 		no: "INV-2026-0142",
@@ -28,7 +45,7 @@ const rows = [
 	},
 ];
 
-const cols = [
+const cols: DataColumn<Row>[] = [
 	{
 		key: "no",
 		header: "Invoice #",

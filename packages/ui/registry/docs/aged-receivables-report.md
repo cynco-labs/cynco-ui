@@ -10,9 +10,18 @@ import { AgedReceivablesReport } from "@cynco-labs/ui";
 
 ```tsx
 import { useState } from "react";
-import { AgedReceivablesReport, DocumentBrandProvider, GroupedTabButton } from "@cynco-labs/ui";
+import type React from "react";
+import {
+	type AgedReceivablesData,
+	type DocBrand,
+	type DocLayout,
+	type DocLocale,
+	AgedReceivablesReport,
+	DocumentBrandProvider,
+	GroupedTabButton,
+} from "@cynco-labs/ui";
 
-const BRAND = {
+const BRAND: DocBrand = {
 	company: {
 		name: "Harmoni Perabot Sdn Bhd",
 		registrationNo: "201801034567 (1290456-T)",
@@ -27,9 +36,12 @@ const BRAND = {
 	footerNote: "Thank you for your business.",
 };
 
-function Shell(p) {
-	const [l, setL] = useState("minimal"),
-		[g, setG] = useState("en"),
+function Shell(p: {
+	render: (x: string) => React.ReactNode;
+	extra?: { options: { value: string; label: string }[] };
+}) {
+	const [l, setL] = useState<DocLayout>("minimal"),
+		[g, setG] = useState<DocLocale>("en"),
 		[x, setX] = useState(p.extra ? p.extra.options[0].value : "");
 	return (
 		<div className="flex flex-col gap-3">
@@ -63,14 +75,14 @@ function Shell(p) {
 					/>
 				) : null}
 			</div>
-			<DocumentBrandProvider brand={Object.assign({}, BRAND, { layout: l, locale: g })}>
+			<DocumentBrandProvider brand={{ ...BRAND, layout: l, locale: g }}>
 				{p.render(x)}
 			</DocumentBrandProvider>
 		</div>
 	);
 }
 
-const DATA = {
+const DATA: AgedReceivablesData = {
 	period: { kind: "asAt", end: "2026-10-31" },
 	currency: "MYR",
 	filters: [
@@ -84,7 +96,6 @@ const DATA = {
 	customers: [
 		{
 			name: "Nusantara Logistik Bhd",
-			code: "C-0012",
 			detail: "C-0012 · Net 30",
 			current: "64847.99",
 			days1to30: "29476.35",
@@ -95,7 +106,6 @@ const DATA = {
 		},
 		{
 			name: "Hotel Seri Pinang Sdn Bhd",
-			code: "C-0027",
 			detail: "C-0027 · Net 45",
 			current: "38369.30",
 			days1to30: "33573.11",
@@ -106,7 +116,6 @@ const DATA = {
 		},
 		{
 			name: "IKEO Home Solutions Sdn Bhd",
-			code: "C-0031",
 			detail: "C-0031 · Net 30",
 			current: "57354.15",
 			days1to30: "24580.35",
@@ -117,7 +126,6 @@ const DATA = {
 		},
 		{
 			name: "Rumah Idaman Interior",
-			code: "C-0044",
 			detail: "C-0044 · Net 30",
 			current: "8792.96",
 			days1to30: "13189.47",
@@ -128,7 +136,6 @@ const DATA = {
 		},
 		{
 			name: "Syarikat Kayu Jati Utara",
-			code: "C-0051",
 			detail: "C-0051 · Net 60",
 			current: "15287.73",
 			days1to30: "10191.81",
@@ -139,7 +146,6 @@ const DATA = {
 		},
 		{
 			name: "Penang Cohort Co-Working Sdn Bhd",
-			code: "C-0058",
 			detail: "C-0058 · Net 30",
 			current: "17985.09",
 			days1to30: "0.00",
@@ -150,7 +156,6 @@ const DATA = {
 		},
 		{
 			name: "Klinik Pergigian Senyum",
-			code: "C-0063",
 			detail: "C-0063 · COD",
 			current: "0.00",
 			days1to30: "0.00",
@@ -161,7 +166,6 @@ const DATA = {
 		},
 		{
 			name: "Universiti Teknologi Lestari",
-			code: "C-0070",
 			detail: "C-0070 · Net 60",
 			current: "22981.56",
 			days1to30: "22981.56",
@@ -172,7 +176,6 @@ const DATA = {
 		},
 		{
 			name: "Grand Borneo Resort Sdn Bhd",
-			code: "C-0074",
 			detail: "C-0074 · Net 45",
 			current: "17086.27",
 			days1to30: "11390.83",
@@ -183,7 +186,6 @@ const DATA = {
 		},
 		{
 			name: "Butterworth Office Supplies",
-			code: "C-0081",
 			detail: "C-0081 · Net 30",
 			current: "9592.60",
 			days1to30: "2398.14",
@@ -194,7 +196,6 @@ const DATA = {
 		},
 		{
 			name: "Taman Desa Property Management",
-			code: "C-0088",
 			detail: "C-0088 · Net 30",
 			current: "5395.25",
 			days1to30: "0.00",
@@ -205,7 +206,6 @@ const DATA = {
 		},
 		{
 			name: "Wong & Partners Architects",
-			code: "C-0092",
 			detail: "C-0092 · Net 30",
 			current: "0.00",
 			days1to30: "0.00",

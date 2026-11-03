@@ -9,7 +9,13 @@ import { PaymentVoucherDocument } from "@cynco-labs/ui";
 ## Usage
 
 ```tsx
-import { DocumentBrandProvider, PaymentVoucherDocument } from "@cynco-labs/ui";
+import {
+	DocumentBrandProvider,
+	PaymentVoucherDocument,
+	type DocLayout,
+	type DocLocale,
+	type PaymentVoucherData,
+} from "@cynco-labs/ui";
 
 const BRAND = {
 	company: {
@@ -22,7 +28,7 @@ const BRAND = {
 	},
 };
 
-const PV = {
+const PV: PaymentVoucherData = {
 	number: "PV-2026-0214",
 	date: "2026-10-30",
 	method: { kind: "bank_transfer", bank: "IBG", reference: "M2U-IBG-261030-58213" },
@@ -107,7 +113,10 @@ export const controls = {
 	},
 };
 
-export default function PaymentVoucherDocumentDemo({ layout = "minimal", locale = "en" }) {
+export default function PaymentVoucherDocumentDemo({
+	layout = "minimal",
+	locale = "en",
+}: { layout?: DocLayout; locale?: DocLocale } = {}) {
 	return (
 		<DocumentBrandProvider brand={{ ...BRAND, layout, locale }}>
 			<PaymentVoucherDocument voucher={PV} />

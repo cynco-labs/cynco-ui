@@ -1,7 +1,8 @@
 import { BankBalanceEquation } from "@cynco-labs/ui";
+import type { ReactNode } from "react";
 
 export default function BankBalanceEquationDemo() {
-	const sec = (t) => (
+	const sec = (t: ReactNode) => (
 		<div className="text-tiny uppercase tracking-[0.04em] text-tertiary-foreground">{t}</div>
 	);
 	return (

@@ -107,7 +107,8 @@ function checkDemo(file) {
 	for (const m of src.matchAll(/^import[^"']*["']([^"']+)["']/gm)) if (!DEMO_IMPORTS.test(m[1])) problems.push(`imports "${m[1]}"`);
 	const controls = src.match(/^export const controls = \{([\s\S]*?)^\};/m);
 	if (controls) {
-		const params = src.match(/^export default function \w*\(\{([^}]*)\}\)/m)?.[1] ?? "";
+		// The destructured names, with or without a type annotation after the pattern.
+		const params = src.match(/^export default function \w*\(\{([^}]*)\}/m)?.[1] ?? "";
 		for (const k of controls[1].matchAll(/^\s+["']?(\w+)["']?\s*:\s*\{/gm)) if (!new RegExp(`\\b${k[1]}\\b`).test(params)) problems.push(`control "${k[1]}" is not a parameter of the default export`);
 	}
 	return problems;

@@ -10,7 +10,16 @@ import { DensityToggle } from "@cynco-labs/ui";
 
 ```tsx
 import { useState } from "react";
-import { DataList, DensityProvider, DensityToggle, formatDate, sumAmounts } from "@cynco-labs/ui";
+import {
+	type DataColumn,
+	type Density,
+	DataList,
+	DensityProvider,
+	DensityToggle,
+	formatDate,
+	sumAmounts,
+} from "@cynco-labs/ui";
+import type React from "react";
 
 const L = [
 	[
@@ -138,13 +147,24 @@ const L = [
 const dr = sumAmounts(L.map((r) => r.dr)),
 	cr = sumAmounts(L.map((r) => r.cr));
 
+type LedgerRow = {
+	id: string;
+	date: string;
+	ref: string;
+	code: string;
+	account: string;
+	memo: string;
+	dr: string;
+	cr: string;
+};
+
 const N2 = new Intl.NumberFormat("en-MY", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-function amt(v) {
-	return v ? <span className="tabular-nums">{N2.format(v)}</span> : null;
+function amt(v: string): React.ReactNode {
+	return v ? <span className="tabular-nums">{N2.format(Number(v))}</span> : null;
 }
 
-const cols = [
+const cols: DataColumn<LedgerRow>[] = [
 	{ key: "date", header: "Date", nowrap: true, mobile: "meta", cell: (r) => formatDate(r.date) },
 	{
 		key: "account",
@@ -180,7 +200,7 @@ const cols = [
 ];
 
 export default function DensityToggleDemo() {
-	const [density, setDensity] = useState("compact");
+	const [density, setDensity] = useState<Density>("compact");
 	return (
 		<div className="flex flex-col gap-3">
 			<div className="flex flex-wrap items-center justify-between gap-2">

@@ -1,6 +1,6 @@
-import { BusinessHealthPanel } from "@cynco-labs/ui";
+import { type HealthCheck, BusinessHealthPanel } from "@cynco-labs/ui";
 
-const checks = [
+const checks: HealthCheck[] = [
 	{
 		id: "close",
 		label: "Sep 2026 can close",

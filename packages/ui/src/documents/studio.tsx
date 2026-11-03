@@ -312,10 +312,10 @@ export function DocumentStudio({ brand: brandProp, defaultBrand, onBrandChange, 
 					</ScrollRow>
 					<div className="flex flex-wrap items-center gap-2">
 						{sizes.length > 1 && (
-								<GroupedTabButton aria-label="Paper size" value={size} onValueChange={(v) => doc && setSizeByDoc((m) => ({ ...m, [doc.id]: v as PaperSize }))} options={sizes.map((s) => ({ value: s, label: SIZE_LABEL[s] }))} />
+								<GroupedTabButton aria-label="Paper size" value={size} onValueChange={(v) => doc && setSizeByDoc((m) => ({ ...m, [doc.id]: v }))} options={sizes.map((s) => ({ value: s, label: SIZE_LABEL[s] }))} />
 						)}
 						{doc?.stamps && doc.stamps.length > 0 && (
-								<GroupedTabButton aria-label="Stamp" value={stamp} onValueChange={(v) => setStamp(v as DocumentStamp | "none")} options={[{ value: "none", label: "No stamp" }, ...doc.stamps.map((s) => ({ value: s, label: STAMP_LABEL[s] }))]} />
+								<GroupedTabButton aria-label="Stamp" value={stamp} onValueChange={setStamp} options={[{ value: "none", label: "No stamp" }, ...doc.stamps.map((s) => ({ value: s, label: STAMP_LABEL[s] }))]} />
 						)}
 						<Button variant="secondary" size="sm" className="ml-auto gap-1.5" onClick={() => (onPrint ? onPrint() : window.print())}>
 							<PrinterIcon size={14} aria-hidden />

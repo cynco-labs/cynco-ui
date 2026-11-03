@@ -10,10 +10,10 @@ import { InvoiceLineItems } from "@cynco-labs/ui";
 
 ```tsx
 import { useState } from "react";
-import { InvoiceLineItems } from "@cynco-labs/ui";
+import { InvoiceLineItems, type SalesLineItem } from "@cynco-labs/ui";
 
 export default function InvoiceLineItemsDemo() {
-	const [s, setS] = useState([
+	const [s, setS] = useState<SalesLineItem[]>([
 		{
 			name: "Website maintenance retainer",
 			description: "October 2026 · 20 hours",

@@ -9,9 +9,15 @@ import { BalanceSheetStatement } from "@cynco-labs/ui";
 ## Usage
 
 ```tsx
-import { BalanceSheetStatement } from "@cynco-labs/ui";
+import { BalanceSheetStatement, type StatementRow, type StatementRowKind } from "@cynco-labs/ui";
 
-function r(kind, key, label, vals, o) {
+function r(
+	kind: StatementRowKind,
+	key: string,
+	label: string,
+	vals?: number[],
+	o?: Partial<Omit<StatementRow, "kind" | "key" | "label" | "values">>,
+): StatementRow {
 	return Object.assign({ kind, key, label, values: vals }, o || {});
 }
 

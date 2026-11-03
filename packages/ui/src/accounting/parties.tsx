@@ -830,7 +830,7 @@ export function PayRunTable({ bills, selectedIds, onSelectedChange, defaultSelec
 						className="w-auto min-w-36 tabular-nums"
 					/>
 					{bankAccounts && bankAccounts.length > 0 && (
-						<Select value={bank} onValueChange={setBank} items={bankAccounts.map((a) => ({ value: a.id, label: `${a.accountCode ? `${a.accountCode} · ` : ""}${a.accountName}` }))}>
+						<Select value={bank} onValueChange={(v) => setBank(v ?? "")} items={bankAccounts.map((a) => ({ value: a.id, label: `${a.accountCode ? `${a.accountCode} · ` : ""}${a.accountName}` }))}>
 							<SelectTrigger aria-label="Pay from" className="min-w-0 max-w-full flex-1 @md:max-w-64">
 								<SelectValue />
 							</SelectTrigger>
@@ -1027,7 +1027,7 @@ export function RecordBillPaymentDialog({ billAmount, paidAmount = 0, currency =
 							<Input id={fid("date")} type="date" value={date} onChange={(e) => setDate(e.target.value)} {...invalidProps("date")} required className="tabular-nums" />
 						</FormField>
 						<FormField label="Payment method" htmlFor={fid("method")}>
-							<Select value={method} onValueChange={setMethod} items={PAYMENT_METHODS}>
+							<Select value={method} onValueChange={(v) => setMethod(v ?? "__none__")} items={PAYMENT_METHODS}>
 								<SelectTrigger id={fid("method")} className="w-full">
 									<SelectValue placeholder="Select method..." />
 								</SelectTrigger>
@@ -1046,7 +1046,7 @@ export function RecordBillPaymentDialog({ billAmount, paidAmount = 0, currency =
 							error={shown("bank")}
 							hint={bankAccounts.length === 0 ? <p className={cn("text-xs", surfaces.negative)}>No bank/cash accounts found in your Chart of Accounts.</p> : null}
 						>
-							<Select value={bank} onValueChange={setBank} items={bankItems}>
+							<Select value={bank} onValueChange={(v) => setBank(v ?? "__none__")} items={bankItems}>
 								<SelectTrigger id={fid("bank")} aria-required="true" {...invalidProps("bank")} className="w-full">
 									<SelectValue placeholder="Select account..." />
 								</SelectTrigger>

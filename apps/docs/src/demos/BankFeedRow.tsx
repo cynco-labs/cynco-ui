@@ -1,4 +1,4 @@
-import { BankFeedRow } from "@cynco-labs/ui";
+import { BankFeedRow, type BankFeedTransaction } from "@cynco-labs/ui";
 
 const MATCH_INV = {
 	id: "m1",
@@ -26,7 +26,7 @@ const MATCH_BILL = {
 };
 
 export default function BankFeedRowDemo() {
-	const rows = [
+	const rows: BankFeedTransaction[] = [
 		{
 			id: "a",
 			date: "2026-10-29",

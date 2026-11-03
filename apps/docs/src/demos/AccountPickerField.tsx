@@ -1,6 +1,6 @@
-import { AccountPickerField } from "@cynco-labs/ui";
+import { AccountPickerField, type LedgerPickerAccount } from "@cynco-labs/ui";
 
-const ACCTS = [
+const ACCTS: LedgerPickerAccount[] = [
 	{
 		id: "a1",
 		accountCode: "1000-001",

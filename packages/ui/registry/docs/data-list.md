@@ -10,9 +10,26 @@ import { DataList } from "@cynco-labs/ui";
 
 ```tsx
 import { useState } from "react";
-import { Checkbox, DataList, DocStatus, INVOICE_STATUS, Money, formatDate } from "@cynco-labs/ui";
+import {
+	Checkbox,
+	DataList,
+	DocStatus,
+	INVOICE_STATUS,
+	Money,
+	formatDate,
+	type DataColumn,
+} from "@cynco-labs/ui";
 
-const rows = [
+type Row = {
+	id: string;
+	no: string;
+	customer: string;
+	date: string;
+	amount: number;
+	status: string;
+};
+
+const rows: Row[] = [
 	{
 		id: "1",
 		no: "INV-2026-0142",
@@ -39,7 +56,7 @@ const rows = [
 	},
 ];
 
-const cols = [
+const cols: DataColumn<Row>[] = [
 	{
 		key: "no",
 		header: "Invoice #",
@@ -129,7 +146,7 @@ columns (key, header, cell, align, className, mobile: title | value | badge | me
 - `leading?`: `(row: T) => ReactNode`. Leading cell per row (e.g. a checkbox) — shown in both layouts.
 - `leadingHeader?`: `ReactNode`
 - `trailing?`: `(row: T) => ReactNode`. Trailing cell per row (e.g. a row menu) — shown in both layouts.
-- `totals?`: `{ label?: ReactNode } & Record<string, ReactNode>`. A totals row, keyed by column key. Renders column-aligned in the table (`tfoot`) and as a bold summary card in the stacked layout. Use `label` for the first cell's text.
+- `totals?`: `({ label?: ReactNode } & Record<string, ReactNode>)`. A totals row, keyed by column key. Renders column-aligned in the table (`tfoot`) and as a bold summary card in the stacked layout. Use `label` for the first cell's text.
 - `footer?`: `ReactNode`. Free footer under the table / list, inside the tray.
 - `empty?`: `ReactNode`
 - `caption?`: `string`

@@ -59,7 +59,7 @@
 			},
 			{
 				"name": "totals",
-				"type": "{ label?: ReactNode } & Record<string, ReactNode>",
+				"type": "({ label?: ReactNode } & Record<string, ReactNode>)",
 				"required": false,
 				"description": "A totals row, keyed by column key. Renders column-aligned in the table (`tfoot`) and as a bold summary card in the stacked layout. Use `label` for the first cell's text."
 			},
@@ -731,17 +731,17 @@
 		"props": [
 			{
 				"name": "value",
-				"type": "string",
+				"type": "V",
 				"required": true
 			},
 			{
 				"name": "onValueChange",
-				"type": "(value: string) => void",
+				"type": "(value: V) => void",
 				"required": true
 			},
 			{
 				"name": "options",
-				"type": "Array<{ value: string; label?: ReactNode; icon?: ReactNode; ariaLabel?: string; disabled?: boolean }>",
+				"type": "Array<{ value: V; label?: ReactNode; icon?: ReactNode; ariaLabel?: string; disabled?: boolean }>",
 				"required": true
 			},
 			{
@@ -7628,9 +7628,15 @@
 		"inherits": []
 	},
 	"Sources": {
-		"props": [],
+		"props": [
+			{
+				"name": "asChild",
+				"type": "boolean",
+				"required": false
+			}
+		],
 		"inherits": [
-			"ComponentProps<\"div\">"
+			"CollapsiblePrimitive.Root.Props"
 		]
 	},
 	"Suggestion": {

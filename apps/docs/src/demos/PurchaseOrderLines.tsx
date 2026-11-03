@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { PurchaseOrderLines } from "@cynco-labs/ui";
+import { PurchaseOrderLines, type POLine } from "@cynco-labs/ui";
 
 export default function PurchaseOrderLinesDemo() {
-	const [s, setS] = useState([
+	const [s, setS] = useState<POLine[]>([
 		{
 			id: "l1",
 			description: "Arabica green beans, Sabah Highland (60kg sack)",
@@ -25,5 +25,5 @@ export default function PurchaseOrderLinesDemo() {
 			amount: 180,
 		},
 	]);
-	return <PurchaseOrderLines lineItems={s} onChange={setS} taxAmount={462} />;
+	return <PurchaseOrderLines lineItems={s} onChange={(items) => setS(items)} taxAmount={462} />;
 }

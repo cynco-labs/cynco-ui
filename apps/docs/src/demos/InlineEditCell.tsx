@@ -1,5 +1,7 @@
 import { useState } from "react";
+import type React from "react";
 import {
+	type DataColumn,
 	DataList,
 	InlineEditCell,
 	Kbd,
@@ -9,15 +11,17 @@ import {
 	toSen,
 } from "@cynco-labs/ui";
 
-function Hint(p) {
-	return <p className="text-xs text-tertiary-foreground">{p.children}</p>;
+function Hint({ children }: { children: React.ReactNode }) {
+	return <p className="text-xs text-tertiary-foreground">{children}</p>;
 }
 
-function K(k) {
+function K(k: Parameters<typeof Kbd>[0]["keys"]) {
 	return <Kbd keys={k} className="mx-0.5 align-middle" />;
 }
 
-const START = [
+type ClaimRow = { id: string; date: string; ref: string; desc: string; amount: string };
+
+const START: ClaimRow[] = [
 	{
 		id: "c1",
 		date: "2026-10-03",
@@ -41,16 +45,16 @@ const START = [
 	},
 ];
 
-function wait(ms) {
-	return new Promise((r) => {
+function wait(ms: number) {
+	return new Promise<void>((r) => {
 		setTimeout(r, ms);
 	});
 }
 
 export default function InlineEditCellDemo() {
-	const [rows, setRows] = useState(START);
-	function save(id, field) {
-		return (v) =>
+	const [rows, setRows] = useState<ClaimRow[]>(START);
+	function save(id: string, field: keyof ClaimRow) {
+		return (v: string) =>
 			wait(700).then(() => {
 				if (field === "desc" && !v) throw new Error("Description can’t be empty");
 				if (field === "amount" && toSen(v) > toSen("5000"))
@@ -58,14 +62,12 @@ export default function InlineEditCellDemo() {
 				setRows((prev) =>
 					prev.map((r) => {
 						if (r.id !== id) return r;
-						const o = Object.assign({}, r);
-						o[field] = v;
-						return o;
+						return { ...r, [field]: v };
 					}),
 				);
 			});
 	}
-	const cols = [
+	const cols: DataColumn<ClaimRow>[] = [
 		{
 			key: "ref",
 			header: "Claim",

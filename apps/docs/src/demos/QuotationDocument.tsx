@@ -1,6 +1,13 @@
-import { DocumentBrandProvider, QuotationDocument } from "@cynco-labs/ui";
+import {
+	DocumentBrandProvider,
+	QuotationDocument,
+	type DocBrand,
+	type DocLayout,
+	type DocLocale,
+	type QuotationData,
+} from "@cynco-labs/ui";
 
-const BRAND = {
+const BRAND: DocBrand = {
 	company: {
 		name: "Arus Teknik Sdn Bhd",
 		registrationNo: "201801034567 (1295521-D)",
@@ -36,7 +43,7 @@ const NUSA_SITE = {
 	phone: "+60 12-334 8821",
 };
 
-const QUO = {
+const QUO: QuotationData = {
 	number: "QUO-2026-0093",
 	status: "sent",
 	date: "2026-10-20",
@@ -173,7 +180,10 @@ export const controls = {
 	},
 };
 
-export default function QuotationDocumentDemo({ layout = "minimal", locale = "en" }) {
+export default function QuotationDocumentDemo({
+	layout = "minimal",
+	locale = "en",
+}: { layout?: DocLayout; locale?: DocLocale } = {}) {
 	return (
 		<DocumentBrandProvider brand={{ ...BRAND, layout, locale }}>
 			<QuotationDocument quotation={QUO} />

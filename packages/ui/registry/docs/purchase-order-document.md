@@ -9,7 +9,12 @@ import { PurchaseOrderDocument } from "@cynco-labs/ui";
 ## Usage
 
 ```tsx
-import { DocumentBrandProvider, PurchaseOrderDocument } from "@cynco-labs/ui";
+import {
+	type DocLayout,
+	type DocLocale,
+	DocumentBrandProvider,
+	PurchaseOrderDocument,
+} from "@cynco-labs/ui";
 
 const BRAND = {
 	company: {
@@ -139,7 +144,13 @@ export const controls = {
 	},
 };
 
-export default function PurchaseOrderDocumentDemo({ layout = "minimal", locale = "en" }) {
+export default function PurchaseOrderDocumentDemo({
+	layout = "minimal",
+	locale = "en",
+}: {
+	layout?: DocLayout;
+	locale?: DocLocale;
+}) {
 	return (
 		<DocumentBrandProvider brand={{ ...BRAND, layout, locale }}>
 			<PurchaseOrderDocument order={PO} />

@@ -9,6 +9,19 @@ import {
 	ReceiptDocument,
 	StatementOfAccountDocument,
 	TaxInvoiceDocument,
+	type DocBrand,
+	type DocumentStamp,
+	type PaperSize,
+	type StudioDocument,
+	type TaxInvoiceData,
+	type QuotationData,
+	type ReceiptData,
+	type DeliveryOrderData,
+	type PurchaseOrderData,
+	type StatementOfAccountData,
+	type PayslipDocumentData,
+	type ProfitAndLossData,
+	type BalanceSheetData,
 } from "@cynco-labs/ui";
 
 const NUSA = {
@@ -30,7 +43,7 @@ const NUSA_SITE = {
 	phone: "+60 12-334 8821",
 };
 
-const D_INV = {
+const D_INV: TaxInvoiceData = {
 	title: "taxInvoice",
 	number: "INV-2026-0142",
 	status: "partially_paid",
@@ -104,7 +117,7 @@ const D_INV = {
 	signature: true,
 };
 
-const D_QUO = {
+const D_QUO: QuotationData = {
 	number: "QUO-2026-0093",
 	status: "sent",
 	date: "2026-10-20",
@@ -220,7 +233,7 @@ const D_QUO = {
 	],
 };
 
-const D_RCPT = {
+const D_RCPT: ReceiptData = {
 	number: "OR-2026-0318",
 	status: "issued",
 	date: "2026-11-01",
@@ -243,7 +256,7 @@ const D_RCPT = {
 	notes: "Rounded to the nearest 5 sen (BNM rounding mechanism).",
 };
 
-const D_DO = {
+const D_DO: DeliveryOrderData = {
 	number: "DO-2026-0087",
 	status: "issued",
 	date: "2026-10-21",
@@ -311,7 +324,7 @@ const D_DO = {
 		"Please inspect all items on delivery. Report any shortage or damage within 3 working days. Panels must be stored flat and covered.",
 };
 
-const D_PO = {
+const D_PO: PurchaseOrderData = {
 	number: "PO-2026-0088",
 	date: "2026-10-30",
 	requiredBy: "2026-11-06",
@@ -406,7 +419,7 @@ const D_PO = {
 	approvedBy: { name: "Tan Mei Ling", title: "Operations Manager" },
 };
 
-const D_SOA = {
+const D_SOA: StatementOfAccountData = {
 	number: "SOA-2026-10-0147",
 	date: "2026-10-31",
 	periodFrom: "2026-10-01",
@@ -556,7 +569,7 @@ const D_SOA = {
 		"RM 420.00 from INV-2026-1188 (August) is now over 60 days. Please settle to avoid a hold on deliveries.",
 };
 
-const D_PS = {
+const D_PS: PayslipDocumentData = {
 	number: "PS-2026-10-0042",
 	periodFrom: "2026-10-01",
 	periodTo: "2026-10-31",
@@ -630,7 +643,7 @@ const D_PS = {
 	],
 };
 
-const D_PNL = {
+const D_PNL: ProfitAndLossData = {
 	period: { kind: "month", end: "2026-10-31" },
 	basis: "accrual",
 	currency: "MYR",
@@ -888,7 +901,7 @@ const D_PNL = {
 	netProfit: { values: ["27128.10", "28826.20"], variance: "-1698.10", variancePct: "-5.9" },
 };
 
-const D_BS = {
+const D_BS: BalanceSheetData = {
 	period: { kind: "asAt", end: "2026-10-31" },
 	currency: "MYR",
 	columns: [{ label: "31 Oct 2026" }, { label: "31 Dec 2025", sublabel: "RM · audited" }],
@@ -936,7 +949,7 @@ const D_BS = {
 	balanced: true,
 };
 
-const BRAND = {
+const BRAND: DocBrand = {
 	company: {
 		name: "Arus Teknik Sdn Bhd",
 		registrationNo: "201801034567 (1295521-D)",
@@ -953,38 +966,51 @@ const BRAND = {
 	footerNote: "Thank you for your business.",
 };
 
-function d(id, label, C, prop, data, sizes, stamps) {
+/** The studio only asks for sizes a document lists, so `render` receives one of them. */
+function d<S extends PaperSize>(
+	id: string,
+	label: string,
+	sizes: S[],
+	stamps: DocumentStamp[],
+	render: (size: S, stamp?: DocumentStamp) => React.ReactNode,
+): StudioDocument {
 	return {
 		id,
 		label,
 		sizes,
 		stamps,
-		render: (o) => {
-			const p = { isolate: true, stamp: o.stamp, size: o.size };
-			p[prop] = data;
-			return <C {...p} />;
-		},
+		render: (o) => render(sizes.find((s) => s === o.size) ?? sizes[0], o.stamp),
 	};
 }
 
 const DOCS = [
-	d(
-		"inv",
-		"Tax invoice",
-		TaxInvoiceDocument,
-		"invoice",
-		D_INV,
-		["a4", "letter"],
-		["paid", "overdue", "draft", "void"],
-	),
-	d("quo", "Quotation", QuotationDocument, "quotation", D_QUO, ["a4"], ["draft"]),
-	d("rcpt", "Receipt", ReceiptDocument, "receipt", D_RCPT, ["a4", "a5", "receipt"], ["copy"]),
-	d("do", "Delivery order", DeliveryOrderDocument, "order", D_DO, ["a4", "a5"], ["copy"]),
-	d("po", "Purchase order", PurchaseOrderDocument, "order", D_PO, ["a4"], ["draft", "void"]),
-	d("soa", "Statement", StatementOfAccountDocument, "statement", D_SOA, ["a4"], []),
-	d("ps", "Payslip", PayslipDocument, "payslip", D_PS, ["a4", "a5"], ["copy"]),
-	d("pnl", "Profit & loss", ProfitAndLossReport, "report", D_PNL, ["a4"], ["draft"]),
-	d("bs", "Balance sheet", BalanceSheetReport, "report", D_BS, ["a4"], ["draft"]),
+	d("inv", "Tax invoice", ["a4", "letter"], ["paid", "overdue", "draft", "void"], (size, stamp) => (
+		<TaxInvoiceDocument invoice={D_INV} isolate size={size} stamp={stamp} />
+	)),
+	d("quo", "Quotation", ["a4"], ["draft"], (size, stamp) => (
+		<QuotationDocument quotation={D_QUO} isolate size={size} stamp={stamp} />
+	)),
+	d("rcpt", "Receipt", ["a4", "a5", "receipt"], ["copy"], (size, stamp) => (
+		<ReceiptDocument receipt={D_RCPT} isolate size={size} stamp={stamp} />
+	)),
+	d("do", "Delivery order", ["a4", "a5"], ["copy"], (size, stamp) => (
+		<DeliveryOrderDocument order={D_DO} isolate size={size} stamp={stamp} />
+	)),
+	d("po", "Purchase order", ["a4"], ["draft", "void"], (size, stamp) => (
+		<PurchaseOrderDocument order={D_PO} isolate size={size} stamp={stamp} />
+	)),
+	d("soa", "Statement", ["a4"], [], (size, stamp) => (
+		<StatementOfAccountDocument statement={D_SOA} isolate size={size} stamp={stamp} />
+	)),
+	d("ps", "Payslip", ["a4", "a5"], ["copy"], (size, stamp) => (
+		<PayslipDocument payslip={D_PS} isolate size={size} stamp={stamp} />
+	)),
+	d("pnl", "Profit & loss", ["a4"], ["draft"], (size, stamp) => (
+		<ProfitAndLossReport report={D_PNL} isolate size={size} stamp={stamp} />
+	)),
+	d("bs", "Balance sheet", ["a4"], ["draft"], (size, stamp) => (
+		<BalanceSheetReport report={D_BS} isolate size={size} stamp={stamp} />
+	)),
 ];
 
 export default function DocumentStudioDemo() {

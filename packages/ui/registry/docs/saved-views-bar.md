@@ -28,11 +28,24 @@ import {
 	SavedViewsBar,
 	formatDate,
 	sumAmounts,
+	type DataColumn,
+	type SavedView,
+	type SavedViewFilter,
 } from "@cynco-labs/ui";
 
 const TODAY = "2026-11-01";
 
-const rows = [
+type Row = {
+	id: string;
+	no: string;
+	customer: string;
+	due: string;
+	amount: string;
+	status: string;
+	owner: string;
+};
+
+const rows: Row[] = [
 	{
 		id: "1",
 		no: "INV-2026-0142",
@@ -107,7 +120,7 @@ const rows = [
 	},
 ];
 
-const STATUS_LABEL = {
+const STATUS_LABEL: Record<string, string> = {
 	draft: "Draft",
 	finalized: "Pending",
 	overdue: "Overdue",
@@ -115,7 +128,7 @@ const STATUS_LABEL = {
 	partially_paid: "Partially Paid",
 };
 
-function match(r, f) {
+function match(r: Row, f: SavedViewFilter) {
 	if (f.field === "status") return STATUS_LABEL[r.status] === f.value;
 	if (f.field === "customer") return r.customer === f.value;
 	if (f.field === "owner") return f.value === "Me" ? r.owner === "me" : true;
@@ -127,15 +140,15 @@ function match(r, f) {
 	return true;
 }
 
-function apply(fs) {
-	const byField = {};
+function apply(fs: SavedViewFilter[]) {
+	const byField: Record<string, SavedViewFilter[]> = {};
 	fs.forEach((f) => {
 		(byField[f.field] = byField[f.field] || []).push(f);
 	});
 	return rows.filter((r) => Object.keys(byField).every((k) => byField[k].some((f) => match(r, f))));
 }
 
-const VIEWS = [
+const VIEWS: SavedView[] = [
 	{ id: "all", name: "All", filters: [], locked: true },
 	{
 		id: "overdue",
@@ -182,7 +195,7 @@ const ADD = [
 	{ field: "amount", label: "Amount", values: ["≥ RM 10,000"] },
 ];
 
-const cols = [
+const cols: DataColumn<Row>[] = [
 	{
 		key: "no",
 		header: "Invoice #",
@@ -210,15 +223,15 @@ const cols = [
 let seq = 10;
 
 export default function SavedViewsBarDemo() {
-	const [views, setViews] = useState(VIEWS);
+	const [views, setViews] = useState<SavedView[]>(VIEWS);
 	const [active, setActive] = useState("overdue");
-	const [filters, setFilters] = useState(VIEWS[1].filters);
-	const counts = {};
+	const [filters, setFilters] = useState<SavedViewFilter[]>(VIEWS[1].filters);
+	const counts: Record<string, number> = {};
 	views.forEach((x) => {
 		counts[x.id] = apply(x.filters).length;
 	});
 	const shown = apply(filters);
-	function add(field, label, value) {
+	function add(field: string, label: string, value: string) {
 		if (filters.some((x) => x.field === field && x.value === value)) return;
 		setFilters(filters.concat({ id: "f" + seq++, field, label, value }));
 	}

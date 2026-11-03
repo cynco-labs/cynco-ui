@@ -1,4 +1,10 @@
-import { DeliveryOrderDocument, DocumentBrandProvider } from "@cynco-labs/ui";
+import {
+	type DeliveryOrderData,
+	type DocLayout,
+	type DocLocale,
+	DeliveryOrderDocument,
+	DocumentBrandProvider,
+} from "@cynco-labs/ui";
 
 const BRAND = {
 	company: {
@@ -36,7 +42,7 @@ const NUSA_SITE = {
 	phone: "+60 12-334 8821",
 };
 
-const DO = {
+const DO: DeliveryOrderData = {
 	number: "DO-2026-0087",
 	status: "issued",
 	date: "2026-10-21",
@@ -125,7 +131,13 @@ export const controls = {
 	},
 };
 
-export default function DeliveryOrderDocumentDemo({ layout = "minimal", locale = "en" }) {
+export default function DeliveryOrderDocumentDemo({
+	layout = "minimal",
+	locale = "en",
+}: {
+	layout?: DocLayout;
+	locale?: DocLocale;
+}) {
 	return (
 		<DocumentBrandProvider brand={{ ...BRAND, layout, locale }}>
 			<DeliveryOrderDocument order={DO} />

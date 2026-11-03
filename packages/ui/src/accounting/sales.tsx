@@ -412,7 +412,7 @@ export function InvoiceLineItems({
 									{readOnly ? (
 										<div className="flex h-input items-center text-sm text-tertiary-foreground">{taxCodes.find((t) => t.value === it.taxCode)?.label ?? "No tax"}</div>
 									) : (
-										<Select value={it.taxCode ?? "none"} onValueChange={(v) => update(i, { taxCode: v })} items={taxCodes.map((t) => ({ value: t.value, label: t.label }))}>
+										<Select value={it.taxCode ?? "none"} onValueChange={(v) => update(i, { taxCode: v ?? undefined })} items={taxCodes.map((t) => ({ value: t.value, label: t.label }))}>
 											<SelectTrigger className="h-input w-full px-2 text-sm" aria-label={`Tax code for ${label}`}><SelectValue /></SelectTrigger>
 											<SelectContent>{taxCodes.map((t) => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}</SelectContent>
 										</Select>

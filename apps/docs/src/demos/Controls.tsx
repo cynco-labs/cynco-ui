@@ -10,13 +10,13 @@ import {
 } from "@cynco-labs/ui/ai";
 
 const NT = {
-	card: (p) => (
+	card: ({ data }: { data: { title: string; sub: string; body: string } }) => (
 		<Node handles={{ target: true, source: true }}>
 			<NodeHeader>
-				<NodeTitle>{p.data.title}</NodeTitle>
-				<NodeDescription>{p.data.sub}</NodeDescription>
+				<NodeTitle>{data.title}</NodeTitle>
+				<NodeDescription>{data.sub}</NodeDescription>
 			</NodeHeader>
-			<NodeContent className="text-body">{p.data.body}</NodeContent>
+			<NodeContent className="text-body">{data.body}</NodeContent>
 		</Node>
 	),
 };

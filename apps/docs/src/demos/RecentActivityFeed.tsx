@@ -1,6 +1,6 @@
-import { RecentActivityFeed } from "@cynco-labs/ui";
+import { type ActivityItem, RecentActivityFeed } from "@cynco-labs/ui";
 
-const items = [
+const items: ActivityItem[] = [
 	{
 		id: "1",
 		kind: "payment",

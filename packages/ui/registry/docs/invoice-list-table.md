@@ -10,10 +10,10 @@ import { InvoiceListTable } from "@cynco-labs/ui";
 
 ```tsx
 import { useState } from "react";
-import { InvoiceListTable } from "@cynco-labs/ui";
+import { InvoiceListTable, type SalesInvoiceRow } from "@cynco-labs/ui";
 
 export default function InvoiceListTableDemo() {
-	const rows = [
+	const rows: SalesInvoiceRow[] = [
 		{
 			id: "1",
 			invoiceNumber: "INV-2026-0142",
@@ -48,7 +48,7 @@ export default function InvoiceListTableDemo() {
 		},
 	];
 	const [sel, setSel] = useState(["3", "4"]);
-	function toggle(id) {
+	function toggle(id: string) {
 		const s = sel.slice();
 		const i = s.indexOf(id);
 		if (i < 0) s.push(id);

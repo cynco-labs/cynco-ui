@@ -1,6 +1,14 @@
-import { ChartOfAccountsTree } from "@cynco-labs/ui";
+import { ChartOfAccountsTree, type CoaTreeNode } from "@cynco-labs/ui";
 
-function n(id, code, name, type, bal, kids, extra) {
+function n(
+	id: string,
+	code: string,
+	name: string,
+	type: string,
+	bal: number,
+	kids?: CoaTreeNode[] | null,
+	extra?: Partial<CoaTreeNode>,
+): CoaTreeNode {
 	return Object.assign(
 		{
 			id,

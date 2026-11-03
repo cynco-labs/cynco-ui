@@ -15,7 +15,15 @@ export const controls = {
 	disabled: { label: "Disabled", default: false },
 };
 
-export default function ButtonDemo({ size = "default", isLoading = false, disabled = false }) {
+export default function ButtonDemo({
+	size = "default",
+	isLoading = false,
+	disabled = false,
+}: {
+	size?: "default" | "sm" | "mini" | "icon";
+	isLoading?: boolean;
+	disabled?: boolean;
+}) {
 	const state = { size, isLoading, disabled };
 	return (
 		<div className="flex flex-col gap-3">

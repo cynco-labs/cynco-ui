@@ -18,7 +18,7 @@ describe("useColumnVisibility", () => {
 	test("the server renders the defaults, whatever the browser has saved", () => {
 		localStorage.setItem(KEY, JSON.stringify({ b: false }));
 		let seen: unknown;
-		function Probe() {
+		function Probe(): null {
 			seen = useColumnVisibility(options).columnVisibility;
 			return null;
 		}

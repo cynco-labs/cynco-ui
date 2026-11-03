@@ -9,22 +9,22 @@ import { AmountInput } from "@cynco-labs/ui";
 ## Usage
 
 ```tsx
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { AmountInput, Kbd } from "@cynco-labs/ui";
 
-function Hint(p) {
-	return <p className="text-xs text-tertiary-foreground">{p.children}</p>;
+function Hint({ children }: { children: ReactNode }) {
+	return <p className="text-xs text-tertiary-foreground">{children}</p>;
 }
 
-function K(k) {
+function K(k: string) {
 	return <Kbd keys={k} className="mx-0.5 align-middle" />;
 }
 
-function Field(p) {
+function Field({ label, children }: { label: string; children: ReactNode }) {
 	return (
 		<label className="flex min-w-0 flex-col gap-1">
-			<span className="text-xs font-medium text-muted-foreground">{p.label}</span>
-			{p.children}
+			<span className="text-xs font-medium text-muted-foreground">{label}</span>
+			{children}
 		</label>
 	);
 }

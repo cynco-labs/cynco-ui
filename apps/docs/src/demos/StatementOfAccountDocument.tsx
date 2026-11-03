@@ -1,4 +1,9 @@
-import { DocumentBrandProvider, StatementOfAccountDocument } from "@cynco-labs/ui";
+import {
+	DocumentBrandProvider,
+	StatementOfAccountDocument,
+	type DocLayout,
+	type DocLocale,
+} from "@cynco-labs/ui";
 
 const BRAND = {
 	company: {
@@ -184,7 +189,13 @@ export const controls = {
 	},
 };
 
-export default function StatementOfAccountDocumentDemo({ layout = "minimal", locale = "en" }) {
+export default function StatementOfAccountDocumentDemo({
+	layout = "minimal",
+	locale = "en",
+}: {
+	layout?: DocLayout;
+	locale?: DocLocale;
+}) {
 	return (
 		<DocumentBrandProvider brand={{ ...BRAND, layout, locale }}>
 			<StatementOfAccountDocument statement={SOA} />

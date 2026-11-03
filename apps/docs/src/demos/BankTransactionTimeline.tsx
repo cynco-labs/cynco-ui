@@ -1,6 +1,6 @@
-import { BankTransactionTimeline } from "@cynco-labs/ui";
+import { type BankTxEvent, BankTransactionTimeline } from "@cynco-labs/ui";
 
-const EVENTS = [
+const EVENTS: BankTxEvent[] = [
 	{
 		actor: "system",
 		action: "import",

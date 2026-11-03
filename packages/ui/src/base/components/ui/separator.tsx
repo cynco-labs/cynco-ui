@@ -5,7 +5,7 @@ import { Separator as SeparatorPrimitive } from "@base-ui/react/separator";
 
 // A decorative rule is not announced. Base UI always sets aria-orientation, which role="none" does
 // not allow, so it is cleared too (Base UI lets an explicit undefined override its own prop).
-const DECORATIVE = { role: "none", "aria-orientation": undefined } as const;
+const DECORATIVE: { role: "none"; "aria-orientation": undefined } = { role: "none", "aria-orientation": undefined };
 
 function Separator({
 	className,

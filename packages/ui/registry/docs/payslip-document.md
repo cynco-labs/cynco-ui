@@ -9,7 +9,12 @@ import { PayslipDocument } from "@cynco-labs/ui";
 ## Usage
 
 ```tsx
-import { DocumentBrandProvider, PayslipDocument } from "@cynco-labs/ui";
+import {
+	type DocLayout,
+	type DocLocale,
+	DocumentBrandProvider,
+	PayslipDocument,
+} from "@cynco-labs/ui";
 
 const BRAND = {
 	company: {
@@ -125,7 +130,15 @@ export const controls = {
 	},
 };
 
-export default function PayslipDocumentDemo({ layout = "minimal", locale = "en", size = "a4" }) {
+export default function PayslipDocumentDemo({
+	layout = "minimal",
+	locale = "en",
+	size = "a4",
+}: {
+	layout?: DocLayout;
+	locale?: DocLocale;
+	size?: "a4" | "a5";
+}) {
 	return (
 		<DocumentBrandProvider brand={{ ...BRAND, layout, locale }}>
 			<PayslipDocument payslip={PS} size={size} />

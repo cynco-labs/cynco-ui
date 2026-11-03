@@ -4,9 +4,13 @@ import {
 	GroupedTabButton,
 	TrialBalanceDocument,
 	sumAmounts,
+	type DocLayout,
+	type DocLocale,
+	type TrialBalanceData,
+	type DocBrand,
 } from "@cynco-labs/ui";
 
-const BRAND = {
+const BRAND: DocBrand = {
 	company: {
 		name: "Harmoni Perabot Sdn Bhd",
 		registrationNo: "201801034567 (1290456-T)",
@@ -21,10 +25,15 @@ const BRAND = {
 	footerNote: "Thank you for your business.",
 };
 
-function Shell(p) {
-	const [l, setL] = useState("minimal"),
-		[g, setG] = useState("en"),
-		[x, setX] = useState(p.extra ? p.extra.options[0].value : "");
+type ShellProps = {
+	extra?: { options: { value: string; label: string }[] };
+	render: (x: string) => React.ReactNode;
+};
+
+function Shell({ extra, render }: ShellProps) {
+	const [l, setL] = useState<DocLayout>("minimal"),
+		[g, setG] = useState<DocLocale>("en"),
+		[x, setX] = useState(extra ? extra.options[0].value : "");
 	return (
 		<div className="flex flex-col gap-3">
 			<div className="flex flex-wrap gap-2">
@@ -48,23 +57,23 @@ function Shell(p) {
 						{ value: "en-ms", label: "EN+BM" },
 					]}
 				/>
-				{p.extra ? (
+				{extra ? (
 					<GroupedTabButton
 						className="w-[230px]"
 						value={x}
 						onValueChange={setX}
-						options={p.extra.options}
+						options={extra.options}
 					/>
 				) : null}
 			</div>
-			<DocumentBrandProvider brand={Object.assign({}, BRAND, { layout: l, locale: g })}>
-				{p.render(x)}
+			<DocumentBrandProvider brand={{ ...BRAND, layout: l, locale: g }}>
+				{render(x)}
 			</DocumentBrandProvider>
 		</div>
 	);
 }
 
-const DATA = {
+const DATA: TrialBalanceData = {
 	period: { kind: "asAt", end: "2026-10-31" },
 	currency: "MYR",
 	preparedBy: "Aisyah Rahman",
@@ -96,44 +105,47 @@ const DATA = {
 		{ code: "1600-001", name: "Right-of-use assets", group: "assets", debit: "186000.00" },
 		{ code: "1700-001", name: "Intangible assets — software", group: "assets", debit: "24500.00" },
 		{ code: "2000-001", name: "Trade payables", group: "liabilities", credit: "386240.60" },
+		{ code: "2100-001", name: "Short-term borrowings", group: "liabilities", credit: "250000.00" },
+		{ code: "2200-001", name: "SST payable", group: "liabilities", credit: "18720.40" },
 		{
-			code: "2100-001",
-			name: "Other payables and accruals",
+			code: "2300-001",
+			name: "EPF, SOCSO & EIS payable",
 			group: "liabilities",
-			credit: "92415.00",
+			credit: "47130.00",
 		},
-		{ code: "2200-001", name: "SST payable", group: "liabilities", credit: "18642.35" },
-		{ code: "2300-001", name: "Hire purchase payables", group: "liabilities", credit: "62000.00" },
 		{
 			code: "2400-001",
-			name: "Term loan — Maybank Islamic",
+			name: "Lease liabilities — current",
+			group: "liabilities",
+			credit: "38400.00",
+		},
+		{
+			code: "2500-001",
+			name: "Term loan — current portion",
+			group: "liabilities",
+			credit: "120000.00",
+		},
+		{
+			code: "2600-001",
+			name: "Term loan — non-current",
 			group: "liabilities",
 			credit: "480000.00",
 		},
-		{ code: "2500-001", name: "Lease liabilities", group: "liabilities", credit: "156000.00" },
-		{ code: "2600-001", name: "Current tax liabilities", group: "liabilities", credit: "32180.00" },
 		{
-			code: "2700-001",
-			name: "Deferred tax liabilities",
+			code: "2601-001",
+			name: "Lease liabilities — non-current",
 			group: "liabilities",
-			credit: "46800.00",
+			credit: "147600.00",
 		},
 		{ code: "3000-001", name: "Share capital", group: "equity", credit: "500000.00" },
+		{ code: "3100-001", name: "Retained earnings", group: "equity", credit: "1247008.35" },
 		{
-			code: "3100-001",
-			name: "Retained earnings — opening",
-			group: "equity",
-			credit: "1295395.75",
-		},
-		{ code: "3200-001", name: "Dividends paid", group: "equity", debit: "120000.00" },
-		{ code: "4000-001", name: "Sales — furniture (local)", group: "revenue", credit: "3482615.00" },
-		{ code: "4000-002", name: "Sales — export", group: "revenue", credit: "541280.00" },
-		{
-			code: "4100-001",
-			name: "Installation and delivery income",
+			code: "4000-001",
+			name: "Sales — furniture and fittings",
 			group: "revenue",
-			credit: "131450.00",
+			credit: "3846180.00",
 		},
+		{ code: "4100-001", name: "Sales — custom joinery", group: "revenue", credit: "131450.00" },
 		{ code: "4900-001", name: "Sales returns and discounts", group: "revenue", debit: "58940.00" },
 		{ code: "5000-001", name: "Cost of goods sold", group: "costOfSales", debit: "2198760.40" },
 		{ code: "5100-001", name: "Direct labour", group: "costOfSales", debit: "276150.00" },
@@ -209,14 +221,15 @@ const DATA = {
 	balanced: true,
 };
 
-const OUT = Object.assign({}, DATA, {
+const OUT: TrialBalanceData = {
+	...DATA,
 	balanced: false,
 	difference: "120.00",
 	totalCredit: sumAmounts([DATA.totalCredit, "-120.00"]),
 	accounts: DATA.accounts.map((a) =>
-		a.code === "2100-001" ? Object.assign({}, a, { credit: sumAmounts([a.credit, "-120.00"]) }) : a,
+		a.code === "2100-001" ? { ...a, credit: sumAmounts([a.credit, "-120.00"]) } : a,
 	),
-});
+};
 
 export default function TrialBalanceDocumentDemo() {
 	return (

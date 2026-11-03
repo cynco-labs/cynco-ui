@@ -32,6 +32,9 @@ Under answers that searched the web or docs.
 
 `SourcesTrigger count`, `SourcesContent` › `Source href title`.
 
+- `asChild?`: `boolean`
+- Also accepts `CollapsiblePrimitive.Root.Props`.
+
 ## Notes
 
 Collapsible: pass `defaultOpen` to show the list.

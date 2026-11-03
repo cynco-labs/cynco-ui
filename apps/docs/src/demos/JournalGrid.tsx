@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { Button, JournalGrid, Kbd } from "@cynco-labs/ui";
+import { Button, JournalGrid, Kbd, type JournalGridLine } from "@cynco-labs/ui";
+import type { ReactNode } from "react";
 
-function Hint(p) {
+function Hint(p: { children: ReactNode }) {
 	return <p className="text-xs text-tertiary-foreground">{p.children}</p>;
 }
 
-function K(k) {
+function K(k: string) {
 	return <Kbd keys={k} className="mx-0.5 align-middle" />;
 }
 
@@ -30,7 +31,7 @@ const ACCTS = [
 	{ id: "a18", code: "6300-000", name: "Utilities – TNB & Air Selangor", type: "expense" },
 ];
 
-const PAYROLL = [
+const PAYROLL: JournalGridLine[] = [
 	{
 		id: "l1",
 		accountId: "a13",

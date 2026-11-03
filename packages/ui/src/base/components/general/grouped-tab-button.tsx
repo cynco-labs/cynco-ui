@@ -3,11 +3,11 @@
 import { cn } from "../../lib/utils";
 import type * as React from "react";
 
-interface GroupedTabButtonProps extends Omit<React.ComponentProps<"div">, "children" | "defaultValue" | "onChange"> {
-	value: string;
-	onValueChange: (value: string) => void;
+export interface GroupedTabButtonProps<V extends string = string> extends Omit<React.ComponentProps<"div">, "children" | "defaultValue" | "onChange"> {
+	value: V;
+	onValueChange: (value: V) => void;
 	options: Array<{
-		value: string;
+		value: V;
 		label?: React.ReactNode;
 		icon?: React.ReactNode;
 		ariaLabel?: string;
@@ -18,7 +18,7 @@ interface GroupedTabButtonProps extends Omit<React.ComponentProps<"div">, "child
 	disabled?: boolean;
 }
 
-export const GroupedTabButton = ({
+export const GroupedTabButton = <V extends string = string>({
 	value,
 	onValueChange,
 	options,
@@ -26,7 +26,7 @@ export const GroupedTabButton = ({
 	buttonClassName,
 	disabled,
 	...props
-}: GroupedTabButtonProps) => {
+}: GroupedTabButtonProps<V>) => {
 	return (
 		// A group of toggle buttons: pass aria-label (or aria-labelledby) to name it.
 		<div

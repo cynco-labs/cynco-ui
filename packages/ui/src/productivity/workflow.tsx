@@ -243,44 +243,50 @@ function BulkActionBarInner({ count, total, currency = "MYR", totalCount, onSele
 				</div>
 				<span aria-hidden="true" className="mx-0.5 hidden h-5 w-px bg-overlay-separator @3xl:block" />
 				<div className="flex min-w-0 flex-1 flex-wrap items-center gap-1 @3xl:flex-none">
-					{inline.map((a) => (
-						<Button
-							key={a.id}
-							variant="secondary"
-							disabled={a.disabled}
-							onClick={a.onSelect}
-							aria-keyshortcuts={liveShortcut(a.shortcut) ? toAriaKeyShortcuts(a.shortcut, mac) : undefined}
-							title={liveShortcut(a.shortcut) ? `${a.label} (${a.shortcut.toUpperCase()})` : undefined}
-							className={cn("gap-1.5", a.destructive && "text-error-text hover:!text-error-text")}
-						>
-							{a.icon && <span aria-hidden="true" className="flex size-3.5 items-center justify-center">{a.icon}</span>}
-							{a.label}
-							{liveShortcut(a.shortcut) && <Kbd keys={a.shortcut} aria-hidden="true" className="hidden @3xl:inline-flex" />}
-						</Button>
-					))}
+					{inline.map((a) => {
+						const shortcut = liveShortcut(a.shortcut);
+						return (
+							<Button
+								key={a.id}
+								variant="secondary"
+								disabled={a.disabled}
+								onClick={a.onSelect}
+								aria-keyshortcuts={shortcut ? toAriaKeyShortcuts(shortcut, mac) : undefined}
+								title={shortcut ? `${a.label} (${shortcut.toUpperCase()})` : undefined}
+								className={cn("gap-1.5", a.destructive && "text-error-text hover:!text-error-text")}
+							>
+								{a.icon && <span aria-hidden="true" className="flex size-3.5 items-center justify-center">{a.icon}</span>}
+								{a.label}
+								{shortcut && <Kbd keys={shortcut} aria-hidden="true" className="hidden @3xl:inline-flex" />}
+							</Button>
+						);
+					})}
 					{more.length > 0 && (
 						<DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
 							<DropdownMenuTrigger render={<Button variant="secondary" aria-label="More actions" className="w-7 !px-0" />}>
 								<DotsThreeIcon size={16} weight="bold" aria-hidden="true" />
 							</DropdownMenuTrigger>
 							<DropdownMenuContent side="top" align="end" className="w-52">
-								{more.map((a) => (
-									<DropdownMenuItem
-										key={a.id}
-										disabled={a.disabled}
-										onClick={a.onSelect}
-										aria-keyshortcuts={liveShortcut(a.shortcut) ? toAriaKeyShortcuts(a.shortcut, mac) : undefined}
-										className={cn(a.destructive && "text-error-text focus:text-error-text data-highlighted:text-error-text [&_svg]:text-current")}
-									>
-										{a.icon && <span aria-hidden="true" className="flex size-3.5 items-center justify-center">{a.icon}</span>}
-										{a.label}
-										{liveShortcut(a.shortcut) && (
-											<DropdownMenuShortcut>
-												<Kbd keys={a.shortcut} aria-hidden="true" />
-											</DropdownMenuShortcut>
-										)}
-									</DropdownMenuItem>
-								))}
+								{more.map((a) => {
+									const shortcut = liveShortcut(a.shortcut);
+									return (
+										<DropdownMenuItem
+											key={a.id}
+											disabled={a.disabled}
+											onClick={a.onSelect}
+											aria-keyshortcuts={shortcut ? toAriaKeyShortcuts(shortcut, mac) : undefined}
+											className={cn(a.destructive && "text-error-text focus:text-error-text data-highlighted:text-error-text [&_svg]:text-current")}
+										>
+											{a.icon && <span aria-hidden="true" className="flex size-3.5 items-center justify-center">{a.icon}</span>}
+											{a.label}
+											{shortcut && (
+												<DropdownMenuShortcut>
+													<Kbd keys={shortcut} aria-hidden="true" />
+												</DropdownMenuShortcut>
+											)}
+										</DropdownMenuItem>
+									);
+								})}
 							</DropdownMenuContent>
 						</DropdownMenu>
 					)}

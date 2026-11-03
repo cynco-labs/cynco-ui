@@ -9,9 +9,9 @@ import { ToneDot } from "@cynco-labs/ui";
 ## Usage
 
 ```tsx
-import { ToneDot } from "@cynco-labs/ui";
+import { ToneDot, type StatusTone } from "@cynco-labs/ui";
 
-const tones = ["green", "blue", "amber", "orange", "red", "purple", "neutral"];
+const tones: StatusTone[] = ["green", "blue", "amber", "orange", "red", "purple", "neutral"];
 
 export default function ToneDotDemo() {
 	return (

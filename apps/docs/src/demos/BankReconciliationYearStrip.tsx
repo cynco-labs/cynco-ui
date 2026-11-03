@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { BankReconciliationYearStrip } from "@cynco-labs/ui";
+import { BankReconciliationYearStrip, type BankCloseMonth } from "@cynco-labs/ui";
 
-const MONTHS = [
+const MONTHS: BankCloseMonth[] = [
 	{ period: "2026-01", state: "closed" },
 	{ period: "2026-02", state: "closed" },
 	{ period: "2026-03", state: "ready", signedOff: "holds" },
