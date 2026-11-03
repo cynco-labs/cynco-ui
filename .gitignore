@@ -9,3 +9,4 @@ dist
 coverage
 .pnpm-store
 .claude/
+apps/docs/src/islands/

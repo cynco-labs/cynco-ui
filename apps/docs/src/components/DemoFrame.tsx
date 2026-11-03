@@ -1,14 +1,13 @@
 import { DensityProvider, TooltipProvider } from "@cynco-labs/ui";
-import { Component, Suspense, lazy, useEffect, useMemo, useState, useSyncExternalStore, type ComponentType, type ReactNode } from "react";
+import { Component, useEffect, useState, useSyncExternalStore, type ComponentType, type ReactNode } from "react";
 import { resolveControls, type ControlValues, type Controls, type DemoPropsMessage } from "../lib/controls";
 import { DEFAULT_SETTINGS, onSettings, readSettings, type SiteSettings } from "../lib/settings";
 
-interface DemoModule {
+/** A demo module: the component and its optional playground controls. */
+export interface DemoModule {
 	default: ComponentType<ControlValues>;
 	controls?: Controls;
 }
-
-const modules = import.meta.glob<DemoModule>("../demos/*.tsx");
 
 class Boundary extends Component<{ name: string; children: ReactNode }, { error: Error | null }> {
 	state = { error: null as Error | null };
@@ -69,36 +68,22 @@ function useOverrides(): ControlValues {
 }
 
 /**
- * Renders one demo from src/demos by component name, inside the site settings (density, document language)
- * and the demo's own controls. Used by /demo/<slug> (the iframe in every preview) and inline on the home page.
+ * Renders one demo inside the site settings (density, document language) and the demo's own controls.
+ * Each generated island in src/islands imports its demo statically and renders it through this frame, so
+ * /demo/<slug> and the home page ship only that demo's code.
  */
-export default function DemoHost({ name }: { name: string }) {
-	const Demo = useMemo(() => {
-		const load = modules[`../demos/${name}.tsx`];
-		if (!load) throw new Error(`No demo for ${name}`);
-		return lazy(async () => {
-			const mod = await load();
-			function Configured() {
-				const settings = useSiteSettings();
-				const overrides = useOverrides();
-				const Body = mod.default;
-				return (
-					<DensityProvider density={settings.density}>
-						<Body {...resolveControls(mod.controls, settings, overrides)} />
-					</DensityProvider>
-				);
-			}
-			return { default: Configured };
-		});
-	}, [name]);
+export function DemoFrame({ name, mod }: { name: string; mod: DemoModule }) {
+	const settings = useSiteSettings();
+	const overrides = useOverrides();
+	const Body = mod.default;
 	return (
 		<TooltipProvider>
 			<Boundary name={name}>
-				<Suspense fallback={null}>
-					<Ready>
-						<Demo />
-					</Ready>
-				</Suspense>
+				<Ready>
+					<DensityProvider density={settings.density}>
+						<Body {...resolveControls(mod.controls, settings, overrides)} />
+					</DensityProvider>
+				</Ready>
 			</Boundary>
 		</TooltipProvider>
 	);

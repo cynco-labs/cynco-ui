@@ -65,7 +65,7 @@ const controlEntries = Object.entries(controls ?? {});
 		<div class="mx-auto transition-[max-width] duration-200" data-frame-wrap style="max-width:100%">
 			<iframe
 				title={`${name} demo`}
-				data-src={`/demo/${slug}`}
+				src={`/demo/${slug}`}
 				class="block w-full border-0 bg-background"
 				style={`height:${h}px`}
 				loading="lazy"></iframe>
@@ -134,8 +134,9 @@ const controlEntries = Object.entries(controls ?? {});
 			setThemeButtons();
 			iframe.contentWindow?.postMessage({ type: "cynco-demo-theme", theme }, "*");
 		};
-		iframe.src = `${iframe.dataset.src}?theme=${theme}`;
-		setThemeButtons();
+		// The frame starts loading with the HTML and boots from the same stored theme; this covers a pinned choice.
+		iframe.addEventListener("load", applyTheme);
+		applyTheme();
 
 		for (const b of el.querySelectorAll<HTMLButtonElement>("[data-theme-choice]")) {
 			b.addEventListener("click", () => {

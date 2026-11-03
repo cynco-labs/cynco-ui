@@ -1,6 +1,6 @@
 ---
 import "../../styles/global.css";
-import DemoHost from "../../components/DemoHost";
+import type { AstroComponentFactory } from "astro/runtime/server/index.js";
 import interUrl from "@cynco-labs/ui/fonts/Inter-Variable.woff2?url";
 import { registry } from "../../lib/registry";
 import SettingsBoot from "../../components/SettingsBoot.astro";
@@ -9,6 +9,8 @@ export function getStaticPaths() {
 	return registry.map((c) => ({ params: { slug: c.slug }, props: { entry: c } }));
 }
 const { entry } = Astro.props;
+const islands = import.meta.glob<{ default: AstroComponentFactory }>("../../islands/*.astro", { eager: true });
+const Island = islands[`../../islands/${entry.name}.astro`].default;
 ---
 
 <!doctype html>
@@ -40,7 +42,7 @@ const { entry } = Astro.props;
 	<body data-slug={entry.slug}>
 		<SettingsBoot />
 		<div id="demo-root" class="p-4 sm:p-6">
-			<DemoHost name={entry.name} client:load />
+			<Island />
 		</div>
 		<script>
 			import { startInspect, type DemoInspectMessage } from "../../lib/inspect";

@@ -1,16 +1,17 @@
 ---
 import Docs from "../layouts/Docs.astro";
-import DemoHost from "../components/DemoHost";
+import type { AstroComponentFactory } from "astro/runtime/server/index.js";
 import Settings from "../components/Settings.astro";
 import { byCategory, registry } from "../lib/registry";
 import { PRINCIPLES, SHOWCASE } from "../lib/home";
 import { installPrompt } from "../lib/prompt";
 
+const islands = import.meta.glob<{ default: AstroComponentFactory }>("../islands/*.astro", { eager: true });
 const byName = new Map(registry.map((c) => [c.name, c]));
 const tiles = SHOWCASE.map((t) => {
 	const entry = byName.get(t.name);
 	if (!entry) throw new Error(`Home showcase: ${t.name} is not in the registry`);
-	return { ...t, entry };
+	return { ...t, entry, Island: islands[`../islands/${t.name}.astro`].default };
 });
 const lastSmall = tiles.filter((t) => t.size === "small").length % 2 === 1 ? tiles.findLast((t) => t.size === "small") : undefined;
 const SPAN = {
@@ -54,7 +55,7 @@ const SPAN = {
 					<figure class:list={["flex min-w-0 flex-col overflow-hidden rounded-xl border border-border bg-card", SPAN[t.size], t.right && "xl:col-start-2", t === lastSmall && "md:col-span-2 xl:col-span-1"]}>
 						<div class="relative min-h-0 flex-1 overflow-hidden bg-background">
 							<div class="p-4 sm:p-5">
-								<DemoHost name={t.name} client:visible />
+								<t.Island visible />
 							</div>
 							<div class="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-background" aria-hidden="true" />
 						</div>

@@ -19,5 +19,6 @@ export default defineConfig({
 		// Shiki grammars and Mermaid (used by the AI kit's Markdown) are lazy chunks, loaded only when needed.
 		build: { chunkSizeWarningLimit: 2000 },
 	},
+	prefetch: { prefetchAll: true, defaultStrategy: "hover" },
 	devToolbar: { enabled: false },
 });
