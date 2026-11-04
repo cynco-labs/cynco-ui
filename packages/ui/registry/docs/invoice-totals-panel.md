@@ -33,7 +33,7 @@ Under the line items in the invoice and quotation builders.
 
 ## Props
 
-rows ({label, value, bold, accent, negative}), which you can build with the exported buildSalesTotals({subtotal, discount, discountPercent, taxes, deposit}), and currency; className and native dl props.
+rows ({label, value, bold, accent, negative}), which you can build with the exported buildSalesTotals({subtotal, discount, discountPercent, taxes, deposit}); salesLineTotals(items, taxCodes) gives the subtotal and one tax per taxed code from the line items, so buildSalesTotals(salesLineTotals(items)) is the whole calculation. Also currency; className and native dl props.
 
 - `rows`: `SalesTotalRow[]`
 - `currency?`: `string`. Default `"MYR"`.

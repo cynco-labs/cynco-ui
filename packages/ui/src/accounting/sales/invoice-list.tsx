@@ -38,6 +38,10 @@ export type SalesInvoiceRow = {
 	dueDate?: string | null;
 	total: Amount;
 	currency?: string;
+	/**
+	 * A key of `INVOICE_STATUS`: `draft`, `sent` (issued and emailed), `finalized` (issued, shown as "Pending"),
+	 * `overdue`, `partially_paid`, `deposit_due`, `deposit_paid`, `paid`, `voided`, `cancelled` or `refunded`.
+	 */
 	status: string;
 	/** `null` on a posted invoice → "Not posted to GL" signal. Leave it out when the list doesn't track posting. */
 	journalEntryId?: string | null;

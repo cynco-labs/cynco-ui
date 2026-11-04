@@ -32,12 +32,45 @@ export function salesLineAmount(
 	item: SalesLineItem,
 	taxCodes: readonly SalesTaxCode[] = DEFAULT_SALES_TAX_CODES,
 ): string {
+	const { net, code } = lineParts(item, taxCodes);
+	return fromSen(lineSen(net, code));
+}
+
+/**
+ * The subtotal and one tax per taxed code the lines use, ready for `buildSalesTotals`. Each line rounds once, as in
+ * `salesLineAmount`, so subtotal plus taxes always equals the sum of the line amounts. A taxed code whose lines
+ * come to zero still gets its row, so a fresh form shows "SST 8% RM 0.00" rather than no tax line.
+ */
+export function salesLineTotals(
+	items: readonly SalesLineItem[],
+	taxCodes: readonly SalesTaxCode[] = DEFAULT_SALES_TAX_CODES,
+): { subtotal: Amount; taxes: { label: string; amount: Amount }[] } {
+	let subtotal = 0n;
+	const taxSen = new Map<SalesTaxCode, bigint>();
+	for (const item of items) {
+		const { net, code } = lineParts(item, taxCodes);
+		const netSen = roundToSen(net);
+		subtotal += netSen;
+		if (code && code.rate > 0) taxSen.set(code, (taxSen.get(code) ?? 0n) + lineSen(net, code) - netSen);
+	}
+	return {
+		subtotal: fromSen(subtotal),
+		taxes: taxCodes.flatMap((code) => {
+			const sen = taxSen.get(code);
+			return sen === undefined ? [] : [{ label: code.label, amount: fromSen(sen) }];
+		}),
+	};
+}
+
+/** A line's net after its discount, unrounded, and its tax code. */
+function lineParts(item: SalesLineItem, taxCodes: readonly SalesTaxCode[]) {
 	const gross = mul(fixed(item.quantity), fixed(item.price));
 	const discount = item.discountType === "fixed" ? fixed(item.discount) : mul(gross, fixed(item.discount)) / 100n;
-	const net = gross > discount ? gross - discount : 0n;
-	const rate = fixed(taxCodes.find((t) => t.value === item.taxCode)?.rate ?? 0);
-	return fromSen(roundToSen(net + mul(net, rate) / 100n));
+	return { net: gross > discount ? gross - discount : 0n, code: taxCodes.find((t) => t.value === item.taxCode) };
 }
+
+const lineSen = (net: bigint, code: SalesTaxCode | undefined) =>
+	roundToSen(net + mul(net, fixed(code?.rate ?? 0)) / 100n);
 
 export type SalesTotalKind = "subtotal" | "discount" | "tax" | "total" | "deposit" | "balance";
 
@@ -62,8 +95,9 @@ const TOTAL_LABELS: SalesTotalLabels = {
 };
 
 /**
- * Totals rows for an invoice: Subtotal, Discount, one row per tax, Total, then Deposit and Balance Due when there
- * is a deposit. Exact to the sen. Pass `labels` to translate the fixed rows.
+ * Totals rows for an invoice: Subtotal, Discount, one row per tax passed (zero included), Total, then Deposit and
+ * Balance Due when there is a deposit. Exact to the sen. `salesLineTotals` gives the subtotal and taxes from the
+ * lines. Pass `labels` to translate the fixed rows.
  */
 export function buildSalesTotals(
 	input: {
@@ -85,7 +119,7 @@ export function buildSalesTotals(
 			value: fromSen(discount),
 			negative: true,
 		});
-	const taxes = (input.taxes ?? []).filter((t) => toSen(t.amount) > 0n);
+	const taxes = input.taxes ?? [];
 	for (const t of taxes) rows.push({ kind: "tax", label: t.label, value: fromSen(toSen(t.amount)) });
 	const total = toSen(input.subtotal) - discount + toSen(sumAmounts(taxes.map((t) => t.amount)));
 	rows.push({ kind: "total", label: l.total, value: fromSen(abs(total)), bold: true, negative: total < 0n });

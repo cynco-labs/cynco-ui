@@ -56,7 +56,9 @@ hover, selection and focus tints are mixed from it. Corners follow `--radius-sm`
    `text-xl` 20, and `text-display` 28 for a hero figure only. No arbitrary sizes like `text-[13px]`.
 3. **Money is exact.** Amounts are decimal strings (`"1234.50"`), never floats. Add with
    `sumAmounts`, convert with `toSen`/`fromSen`, parse input with `parseAmount`, display with
-   `formatCurrency`. Use `AmountInput` for entry. Figures are tabular and right-aligned.
+   `formatCurrency`. Use `AmountInput` for entry. Figures are tabular and right-aligned. Invoice
+   lines total with `salesLineAmount`, and the totals block is `buildSalesTotals(salesLineTotals(items))`;
+   never work out tax by hand.
 4. **Use the primitives.** Lists of records use `DataList` (it turns into stacked cards on narrow
    containers). KPI rows use `StatGrid` + `StatTile`. Toolbars use `ActionBar`. Tab rows use
    `ScrollRow`. Grouped content uses `SectionPanel`; label/value pairs use `KeyValueList`. Don't

@@ -10,7 +10,7 @@ export default function InvoiceListTableDemo() {
 			invoiceDate: "2026-10-28",
 			dueDate: "2026-11-27",
 			total: "12850.00",
-			status: "finalized",
+			status: "sent",
 			journalEntryId: "je1",
 			emailStatus: "opened",
 		},

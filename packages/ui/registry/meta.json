@@ -1339,7 +1339,7 @@
 		"height": 470,
 		"summary": "The invoices list: Invoice #, Customer, Date, Due Date, Amount and Status, with row selection, sort headers and per-row actions.",
 		"use": "The Invoicing page's main list, above which InvoiceBulkBar appears once rows are ticked.",
-		"provide": "invoices (invoiceNumber, customerName, invoiceDate, dueDate, total, currency, status, journalEntryId, emailStatus), selectedIds, defaultSelectedIds, onSelectionChange, sortField, sortDirection, onSort, optional footer; className.",
+		"provide": "invoices (invoiceNumber, customerName, invoiceDate, dueDate, total, currency, status, journalEntryId, emailStatus). `status` is a key of `INVOICE_STATUS`: draft, sent (issued and emailed), finalized (issued, shown as Pending), overdue, partially_paid, deposit_due, deposit_paid, paid, voided, cancelled, refunded. `journalEntryId: null` flags an invoice not posted to the GL. Also selectedIds, defaultSelectedIds, onSelectionChange, sortField, sortDirection, onSort, optional footer; className.",
 		"notes": "Invoice numbers use `font-mono text-2xs` in primary and amounts are right-aligned tabular-nums. Responsive: Built on DataList: a tray table from 48rem of container width, a stacked card per invoice below that (customer and amount, then status and signals, then one line with the invoice number, issue date and due date)."
 	},
 	{
@@ -1359,7 +1359,7 @@
 		"height": 206,
 		"summary": "The document totals block: Subtotal, Discount (n%), the tax line(s), Total, and Deposit and Balance Due when a deposit is set.",
 		"use": "Under the line items in the invoice and quotation builders.",
-		"provide": "rows ({label, value, bold, accent, negative}), which you can build with the exported buildSalesTotals({subtotal, discount, discountPercent, taxes, deposit}), and currency; className and native dl props.",
+		"provide": "rows ({label, value, bold, accent, negative}), which you can build with the exported buildSalesTotals({subtotal, discount, discountPercent, taxes, deposit}); salesLineTotals(items, taxCodes) gives the subtotal and one tax per taxed code from the line items, so buildSalesTotals(salesLineTotals(items)) is the whole calculation. Also currency; className and native dl props.",
 		"notes": "A bg-card bordered panel with text-tertiary-foreground labels. Total is semibold above a table-row-divider, and Balance Due is the one text-primary accent. Responsive: Label and value wrap onto two lines rather than overlapping in a narrow column."
 	},
 	{

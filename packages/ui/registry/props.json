@@ -942,7 +942,8 @@
 			{
 				"name": "renderValue",
 				"type": "(option: T | undefined) => ReactNode",
-				"required": false
+				"required": false,
+				"description": "Renders the trigger's value. Return nothing for no selection and the trigger shows `placeholder`."
 			},
 			{
 				"name": "placeholder",
@@ -3419,6 +3420,13 @@
 				"type": "boolean",
 				"required": false,
 				"default": "false"
+			},
+			{
+				"name": "showErrors",
+				"type": "boolean",
+				"required": false,
+				"default": "false",
+				"description": "Flag every line without a name, e.g. after a save attempt. Otherwise a line is flagged once its name field loses focus."
 			},
 			{
 				"name": "estimatedProfit",

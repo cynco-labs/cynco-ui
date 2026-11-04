@@ -14,7 +14,7 @@ import type { SalesTotalRow } from "../sales-math";
 /** Signed money in a totals list: "−RM 120.00" for a deduction. */
 function signedTotal(value: Amount, currency: string, negative?: boolean) {
 	const sen = toSen(value);
-	return `${negative !== (sen < 0n) ? "−" : ""}${formatCurrency(fromSen(sen < 0n ? -sen : sen), currency)}`;
+	return `${Boolean(negative) !== (sen < 0n) ? "−" : ""}${formatCurrency(fromSen(sen < 0n ? -sen : sen), currency)}`;
 }
 
 /* ------------------------------------------------------- InvoiceTotalsPanel */

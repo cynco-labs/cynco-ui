@@ -21,7 +21,7 @@ export default function InvoiceListTableDemo() {
 			invoiceDate: "2026-10-28",
 			dueDate: "2026-11-27",
 			total: "12850.00",
-			status: "finalized",
+			status: "sent",
 			journalEntryId: "je1",
 			emailStatus: "opened",
 		},
@@ -67,7 +67,7 @@ The Invoicing page's main list, above which InvoiceBulkBar appears once rows are
 
 ## Props
 
-invoices (invoiceNumber, customerName, invoiceDate, dueDate, total, currency, status, journalEntryId, emailStatus), selectedIds, defaultSelectedIds, onSelectionChange, sortField, sortDirection, onSort, optional footer; className.
+invoices (invoiceNumber, customerName, invoiceDate, dueDate, total, currency, status, journalEntryId, emailStatus). `status` is a key of `INVOICE_STATUS`: draft, sent (issued and emailed), finalized (issued, shown as Pending), overdue, partially_paid, deposit_due, deposit_paid, paid, voided, cancelled, refunded. `journalEntryId: null` flags an invoice not posted to the GL. Also selectedIds, defaultSelectedIds, onSelectionChange, sortField, sortDirection, onSort, optional footer; className.
 
 - `invoices`: `SalesInvoiceRow[]`
 - `selectedIds?`: `string[]`. The ticked rows. Pass it to control the selection.
@@ -84,4 +84,4 @@ invoices (invoiceNumber, customerName, invoiceDate, dueDate, total, currency, st
 
 Invoice numbers use `font-mono text-2xs` in primary and amounts are right-aligned tabular-nums. Responsive: Built on DataList: a tray table from 48rem of container width, a stacked card per invoice below that (customer and amount, then status and signals, then one line with the invoice number, issue date and due date).
 
-Category: Accounting · Sales. Source: `packages/ui/src/accounting/sales/invoice-list.tsx:109-248`.
+Category: Accounting · Sales. Source: `packages/ui/src/accounting/sales/invoice-list.tsx:113-252`.

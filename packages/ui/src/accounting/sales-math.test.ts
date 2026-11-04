@@ -1,5 +1,6 @@
 import { describe, expect, test } from "vitest";
-import { buildSalesTotals, type SalesLineItem, salesLineAmount } from "./sales-math";
+import { fromSen, toSen } from "../lib/money";
+import { buildSalesTotals, type SalesLineItem, salesLineAmount, salesLineTotals } from "./sales-math";
 
 const line = (patch: Partial<SalesLineItem>): SalesLineItem => ({ name: "Item", quantity: 1, price: "0", ...patch });
 
@@ -44,6 +45,7 @@ describe("buildSalesTotals", () => {
 			["subtotal", "0.10", false],
 			["discount", "0.03", true],
 			["tax", "0.20", false],
+			["tax", "0.00", false],
 			["total", "0.27", false],
 			["deposit", "1.00", true],
 			["balance", "0.73", true],
@@ -52,5 +54,29 @@ describe("buildSalesTotals", () => {
 
 	test("labels can be translated", () => {
 		expect(value(buildSalesTotals({ subtotal: "1" }, { total: "Jumlah" }), "total")?.label).toBe("Jumlah");
+	});
+});
+
+describe("salesLineTotals", () => {
+	const taxed = (price: string, taxCode: string, quantity = 1): SalesLineItem => ({
+		name: "x",
+		quantity,
+		price,
+		taxCode,
+	});
+
+	test("subtotal plus taxes equals the sum of the line amounts, to the sen", () => {
+		const items = [taxed("1.15", "st10"), taxed("1.15", "st10"), taxed("0.33", "sst8", 3), taxed("5", "none")];
+		const { subtotal, taxes } = salesLineTotals(items);
+		const total = buildSalesTotals({ subtotal, taxes }).find((r) => r.kind === "total")?.value;
+		expect(total).toBe(fromSen(items.reduce((sum, item) => sum + toSen(salesLineAmount(item)), 0n)));
+		expect(taxes.map((t) => t.label)).toEqual(["SST 8%", "Sales 10%"]);
+	});
+
+	test("a taxed code on a blank line still gets a zero row; untaxed codes get none", () => {
+		expect(salesLineTotals([taxed("0", "sst8"), taxed("0", "exempt")])).toEqual({
+			subtotal: "0.00",
+			taxes: [{ label: "SST 8%", amount: "0.00" }],
+		});
 	});
 });

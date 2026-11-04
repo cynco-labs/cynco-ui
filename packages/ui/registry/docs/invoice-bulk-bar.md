@@ -53,4 +53,4 @@ selected ({id, status, hasPayments}), onClear, onDownload, onDelete, downloading
 
 A bg-card rounded-xl bar with a shadow and skeleton Buttons. Delete uses the destructive text tone. Responsive: The bar wraps: the count goes on its own line in a narrow container, and it never overflows.
 
-Category: Accounting · Sales. Source: `packages/ui/src/accounting/sales/invoice-list.tsx:325-405`.
+Category: Accounting · Sales. Source: `packages/ui/src/accounting/sales/invoice-list.tsx:329-409`.

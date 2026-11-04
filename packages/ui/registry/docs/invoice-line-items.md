@@ -57,6 +57,7 @@ items (name, description, quantity, price, discount, discountType, taxCode, marg
 - `currency?`: `string`. Default `"MYR"`.
 - `taxCodes?`: `readonly SalesTaxCode[]`. Default `DEFAULT_SALES_TAX_CODES`.
 - `readOnly?`: `boolean`. Default `false`.
+- `showErrors?`: `boolean`. Flag every line without a name, e.g. after a save attempt. Otherwise a line is flagged once its name field loses focus. Default `false`.
 - `estimatedProfit?`: `{ amount: Amount; percent: number; health: NonNullable<SalesLineItem["margin"]> }`. Document-level estimated profit line under the total.
 - `onAddItem?`: `() => void`
 - `onBrowseLibrary?`: `() => void`
@@ -66,4 +67,4 @@ items (name, description, quantity, price, discount, discountType, taxCode, marg
 
 The footer sits on the tray, below the rows.
 
-Category: Accounting · Sales. Source: `packages/ui/src/accounting/sales/invoice-line-items.tsx:42-411`.
+Category: Accounting · Sales. Source: `packages/ui/src/accounting/sales/invoice-line-items.tsx:42-418`.

@@ -57,7 +57,7 @@ Choosing an account, item or customer from a long or remote list.
 - `getOptionSearchTerms?`: `(option: T) => (string | null | undefined)[]`. Extra strings to match on, alongside the option's label and value.
 - `getOptionDisabled?`: `(option: T) => boolean`
 - `renderOption?`: `(option: T, isSelected: boolean) => ReactNode`
-- `renderValue?`: `(option: T | undefined) => ReactNode`
+- `renderValue?`: `(option: T | undefined) => ReactNode`. Renders the trigger's value. Return nothing for no selection and the trigger shows `placeholder`.
 - `placeholder?`: `string`. Default `"Select..."`.
 - `searchable?`: `boolean`. Default `false`.
 - `searchPlaceholder?`: `string`. Default `"Search..."`.
@@ -83,4 +83,4 @@ The default trigger is a plain button that forwards id, aria-label, aria-labelle
 
 `emptyText={null}` hides the empty state.
 
-Category: Components · Inputs. Source: `packages/ui/src/base/components/general/searchable-select.tsx:62-240`.
+Category: Components · Inputs. Source: `packages/ui/src/base/components/general/searchable-select.tsx:63-244`.

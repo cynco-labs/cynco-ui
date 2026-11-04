@@ -45,4 +45,4 @@ stats ({totalValue, paidValue, pendingValue, overdueValue, overdueCount}, or nul
 
 Responsive: StatGrid/StatTile tiles that auto-fit: 4-up on a page, 2-up on a phone, and the value never truncates.
 
-Category: Accounting · Sales. Source: `packages/ui/src/accounting/sales/invoice-list.tsx:252-321`.
+Category: Accounting · Sales. Source: `packages/ui/src/accounting/sales/invoice-list.tsx:256-325`.

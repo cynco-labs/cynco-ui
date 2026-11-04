@@ -34,6 +34,7 @@ export type SearchableSelectProps<T> = SearchableSelectTriggerProps & {
 	getOptionSearchTerms?: (option: T) => (string | null | undefined)[];
 	getOptionDisabled?: (option: T) => boolean;
 	renderOption?: (option: T, isSelected: boolean) => ReactNode;
+	/** Renders the trigger's value. Return nothing for no selection and the trigger shows `placeholder`. */
 	renderValue?: (option: T | undefined) => ReactNode;
 	placeholder?: string;
 	searchable?: boolean;
@@ -120,6 +121,11 @@ export function SearchableSelect<T>({
 		if (!option) return <span className="text-tertiary-foreground">{placeholder}</span>;
 		return <span>{getOptionLabel(option)}</span>;
 	};
+	const customValue = renderValue?.(selectedOption);
+	const shownValue =
+		customValue === undefined || customValue === null || customValue === false || customValue === ""
+			? defaultRenderValue(selectedOption)
+			: customValue;
 
 	const defaultRenderOption = (option: T, isSelected: boolean) => {
 		const isDisabled = getOptionDisabled?.(option) ?? false;
@@ -152,9 +158,7 @@ export function SearchableSelect<T>({
 						)}
 					>
 						<div className="flex items-center gap-2 min-w-0 flex-1">
-							<span className="truncate min-w-0">
-								{renderValue ? renderValue(selectedOption) : defaultRenderValue(selectedOption)}
-							</span>
+							<span className="truncate min-w-0">{shownValue}</span>
 						</div>
 						<CaretDownIcon className="size-4 shrink-0 opacity-50" />
 					</button>

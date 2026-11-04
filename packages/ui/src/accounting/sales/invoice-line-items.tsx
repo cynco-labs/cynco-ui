@@ -46,6 +46,7 @@ export function InvoiceLineItems({
 	currency = "MYR",
 	taxCodes = DEFAULT_SALES_TAX_CODES,
 	readOnly = false,
+	showErrors = false,
 	estimatedProfit,
 	onAddItem,
 	onBrowseLibrary,
@@ -57,6 +58,8 @@ export function InvoiceLineItems({
 	currency?: string;
 	taxCodes?: readonly SalesTaxCode[];
 	readOnly?: boolean;
+	/** Flag every line without a name, e.g. after a save attempt. Otherwise a line is flagged once its name field loses focus. */
+	showErrors?: boolean;
 	/** Document-level estimated profit line under the total. */
 	estimatedProfit?: { amount: Amount; percent: number; health: NonNullable<SalesLineItem["margin"]> };
 	onAddItem?: () => void;
@@ -73,9 +76,12 @@ export function InvoiceLineItems({
 	// The Qty field being edited holds its raw text, so it can be cleared and retyped freely. Whole numbers of 1 or
 	// more are applied as typed; anything else is flagged inline and reverts to the last valid quantity on blur.
 	const [qtyDraft, setQtyDraft] = React.useState<{ i: number; text: string } | null>(null);
+	// Rows whose name field has lost focus. A fresh, untouched line is not an error yet.
+	const [touched, setTouched] = React.useState<ReadonlySet<number>>(() => new Set());
 	const remove = (i: number) => {
-		// The draft is keyed by row index, so it follows its row when an earlier one goes and dies with its own.
+		// The draft and touched rows are keyed by row index, so they follow their row when an earlier one goes and die with their own.
 		setQtyDraft((d) => (d === null || d.i < i ? d : d.i === i ? null : { ...d, i: d.i - 1 }));
+		setTouched((t) => new Set([...t].flatMap((j) => (j < i ? [j] : j === i ? [] : [j - 1]))));
 		onChange?.(items.filter((_, j) => j !== i));
 	};
 	const parseQty = (text: string) => {
@@ -155,7 +161,7 @@ export function InvoiceLineItems({
 					{items.map((it, i) => {
 						const id = `${uid}-${i}`;
 						const label = it.name || `line ${i + 1}`;
-						const nameMissing = !it.name;
+						const nameMissing = !it.name && (showErrors || touched.has(i));
 						const qtyText = qtyDraft?.i === i ? qtyDraft.text : String(it.quantity);
 						const qtyInvalid = qtyDraft?.i === i && parseQty(qtyDraft.text) === null;
 						return (
@@ -187,6 +193,7 @@ export function InvoiceLineItems({
 												value={it.name}
 												placeholder="Item name"
 												onChange={(e) => update(i, { name: e.target.value })}
+												onBlur={() => setTouched((t) => (t.has(i) ? t : new Set(t).add(i)))}
 												variant={nameMissing ? "destructive" : "default"}
 											/>
 											{nameMissing && (
