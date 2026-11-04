@@ -235,6 +235,7 @@ export function DocStatus({
 export const INVOICE_STATUS: Record<string, StatusEntry> = {
 	paid: { label: "Paid", variant: "success" },
 	finalized: { label: "Pending", variant: "info" },
+	sent: { label: "Sent", variant: "info" },
 	draft: { label: "Draft", variant: "neutral" },
 	overdue: { label: "Overdue", variant: "error" },
 	partially_paid: { label: "Partially Paid", variant: "info" },

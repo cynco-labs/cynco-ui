@@ -38,4 +38,4 @@ status, emailSent, onAction(action) where action is an InvoiceAction id such as 
 
 Responsive: Built on the SectionPanel primitive.
 
-Category: Accounting · Sales. Source: `packages/ui/src/accounting/sales/invoice-actions.tsx:77-107`.
+Category: Accounting · Sales. Source: `packages/ui/src/accounting/sales/invoice-actions.tsx:80-110`.

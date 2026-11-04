@@ -22,7 +22,7 @@ export function PageHeader({
 			<div className="flex w-full justify-between items-center">
 				<div className="text-muted-foreground text-md py-0 px-2 rounded-lg flex gap-2 items-center">
 					{icon}
-					<h1>{title}</h1>
+					<h1 className="font-medium text-foreground">{title}</h1>
 					{titleAccessory && <div className="ml-2">{titleAccessory}</div>}
 				</div>
 				<div className="flex items-center gap-2">{children}</div>

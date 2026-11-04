@@ -1,6 +1,13 @@
 "use client";
 
-import { ArrowDownIcon, ArrowUpIcon, DownloadSimpleIcon, TrashIcon, XIcon } from "@phosphor-icons/react";
+import {
+	ArrowDownIcon,
+	ArrowUpIcon,
+	DownloadSimpleIcon,
+	EnvelopeSimpleIcon,
+	TrashIcon,
+	XIcon,
+} from "@phosphor-icons/react";
 /**
  * Cynco UI — the Invoicing page: the metric strip above the list, the list itself, the bulk bar
  * for ticked rows and the chips for the active filters.
@@ -32,7 +39,7 @@ export type SalesInvoiceRow = {
 	total: Amount;
 	currency?: string;
 	status: string;
-	/** Missing on a posted invoice → "Not posted to GL" signal. */
+	/** `null` on a posted invoice → "Not posted to GL" signal. Leave it out when the list doesn't track posting. */
 	journalEntryId?: string | null;
 	emailStatus?: "sent" | "delivered" | "opened" | "failed" | "bounced" | "complained" | null;
 };
@@ -41,7 +48,7 @@ const GL_EXEMPT = new Set(["draft", "voided", "cancelled", "refunded"]);
 
 /** Status chip plus by-exception signals (GL entry missing, email problem); quiet on the happy path. */
 function InvoiceStatusSignals({ invoice }: { invoice: SalesInvoiceRow }) {
-	const glMissing = !GL_EXEMPT.has(invoice.status) && !invoice.journalEntryId;
+	const glMissing = !GL_EXEMPT.has(invoice.status) && invoice.journalEntryId === null;
 	const e = invoice.emailStatus;
 	const emailProblem = e === "failed" || e === "bounced" || e === "complained";
 	const emailLabel = e === "complained" ? "Email marked as spam" : `Email ${e}`;
@@ -55,7 +62,7 @@ function InvoiceStatusSignals({ invoice }: { invoice: SalesInvoiceRow }) {
 			)}
 			{emailProblem && (
 				<span title={emailLabel} role="img" aria-label={emailLabel} className="inline-flex">
-					<StatusChipIcon tone="red" glyph="x" />
+					<EnvelopeSimpleIcon size={14} weight="bold" className="text-error-text" aria-hidden="true" />
 				</span>
 			)}
 		</div>
@@ -139,7 +146,7 @@ export function InvoiceListTable({
 			key: "invoice_number",
 			sortDirection: sort("invoice_number"),
 			header: sh("invoice_number", "Invoice #"),
-			mobile: "meta",
+			mobile: "table",
 			cell: (r) => <span className="font-mono text-2xs font-medium text-primary">{r.invoiceNumber || "—"}</span>,
 		},
 		{
@@ -149,12 +156,13 @@ export function InvoiceListTable({
 			mobile: "title",
 			className: "min-w-0",
 			cell: (r) => <span className="line-clamp-1 break-all">{r.customerName || "—"}</span>,
+			stackedCell: (r) => <span className="line-clamp-2 break-words">{r.customerName || "—"}</span>,
 		},
 		{
 			key: "invoice_date",
 			sortDirection: sort("invoice_date"),
 			header: sh("invoice_date", "Date"),
-			mobile: "meta",
+			mobile: "table",
 			className: "whitespace-nowrap",
 			cell: (r) => <span className="text-xs tabular-nums text-tertiary-foreground">{formatDate(r.invoiceDate)}</span>,
 		},
@@ -162,7 +170,7 @@ export function InvoiceListTable({
 			key: "due_date",
 			sortDirection: sort("due_date"),
 			header: sh("due_date", "Due Date"),
-			mobile: "meta",
+			mobile: "table",
 			className: "whitespace-nowrap",
 			cell: (r) => (
 				<span className="text-xs tabular-nums text-tertiary-foreground">{r.dueDate ? formatDate(r.dueDate) : "—"}</span>
@@ -182,6 +190,26 @@ export function InvoiceListTable({
 			mobile: "badge",
 			className: "whitespace-nowrap",
 			cell: (r) => <InvoiceStatusSignals invoice={r} />,
+		},
+		{
+			// One quiet line on a phone instead of a labelled row per field, each label a sort button.
+			key: "details",
+			header: "Details",
+			mobile: "stacked",
+			stackedAs: "badge",
+			cell: (r) => (
+				<span className="flex flex-wrap items-baseline gap-x-1.5 text-xs tabular-nums whitespace-nowrap text-tertiary-foreground">
+					<span className="font-mono text-2xs font-medium text-primary">
+						<span className="sr-only">Invoice </span>
+						{r.invoiceNumber || "—"}
+					</span>
+					<span>
+						<span className="sr-only">Issued </span>
+						{formatDate(r.invoiceDate)}
+					</span>
+					{r.dueDate && <span>Due {formatDate(r.dueDate)}</span>}
+				</span>
+			),
 		},
 	];
 	return (

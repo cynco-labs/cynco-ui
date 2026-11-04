@@ -82,6 +82,6 @@ invoices (invoiceNumber, customerName, invoiceDate, dueDate, total, currency, st
 
 ## Notes
 
-Invoice numbers use `font-mono text-2xs` in primary and amounts are right-aligned tabular-nums. Responsive: Built on DataList: a tray table from 48rem of container width, a stacked card per invoice below that (customer and amount, then status and signals, then Invoice #, Date and Due Date).
+Invoice numbers use `font-mono text-2xs` in primary and amounts are right-aligned tabular-nums. Responsive: Built on DataList: a tray table from 48rem of container width, a stacked card per invoice below that (customer and amount, then status and signals, then one line with the invoice number, issue date and due date).
 
-Category: Accounting · Sales. Source: `packages/ui/src/accounting/sales/invoice-list.tsx:102-220`.
+Category: Accounting · Sales. Source: `packages/ui/src/accounting/sales/invoice-list.tsx:109-248`.

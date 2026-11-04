@@ -51,4 +51,4 @@ chips ({key, label, value}), onRemove(key), onClearAll; className and native div
 
 Responsive: Built on ActionBar, so the chips wrap.
 
-Category: Accounting · Sales. Source: `packages/ui/src/accounting/sales/invoice-list.tsx:383-408`.
+Category: Accounting · Sales. Source: `packages/ui/src/accounting/sales/invoice-list.tsx:411-436`.

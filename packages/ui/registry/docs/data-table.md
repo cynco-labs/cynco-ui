@@ -11,7 +11,7 @@ import { DataTable } from "@cynco-labs/ui";
 ```tsx
 import { Button, DataTable, StatusChip } from "@cynco-labs/ui";
 import { ReceiptIcon } from "@phosphor-icons/react";
-import { type CellContext, getCoreRowModel, useReactTable } from "@tanstack/react-table";
+import { type CellContext, getCoreRowModel, getSortedRowModel, useReactTable } from "@tanstack/react-table";
 
 const tone = { Paid: "green", Sent: "blue", Overdue: "amber" } as const;
 
@@ -37,7 +37,8 @@ const columns = [
 			<span className="font-mono text-2xs font-medium text-tertiary-foreground">{c.getValue()}</span>
 		),
 	},
-	{ accessorKey: "amount", header: "Amount" },
+	// Formatted strings sort as text, so this column opts out.
+	{ accessorKey: "amount", header: "Amount", enableSorting: false },
 	{
 		accessorKey: "status",
 		header: "Status",
@@ -50,7 +51,13 @@ const columns = [
 ];
 
 export default function DataTableDemo() {
-	const table = useReactTable({ data, columns, getCoreRowModel: getCoreRowModel() });
+	const table = useReactTable({
+		data,
+		columns,
+		getCoreRowModel: getCoreRowModel(),
+		// A sorted row model is what turns the headers into sort buttons.
+		getSortedRowModel: getSortedRowModel(),
+	});
 	return (
 		<div>
 			<DataTable.Toolbar>

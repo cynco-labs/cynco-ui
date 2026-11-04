@@ -29,6 +29,7 @@ export interface TableProps<T> {
 	/** Skeleton rows shown while loading (default: last known row count). */
 	skeletonRowCount?: number;
 	enableSelection?: boolean;
+	/** Sort buttons on sortable headers. Default: on when the table sorts (`getSortedRowModel` or `manualSorting`). */
 	enableSorting?: boolean;
 	enableColumnVisibility?: boolean;
 	columnVisibilityStorageKey?: string;

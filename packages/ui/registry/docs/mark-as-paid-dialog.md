@@ -67,4 +67,4 @@ open, defaultOpen, modal, onOpenChange, invoice ({invoiceNumber, customerName, t
 
 Dialog and DialogContent, with the fact block on bg-table-tray and sections divided by table-row-divider. The warning is Alert variant="warning", and bank accounts show their mono account code. Confirm is the primary Button, and it is disabled with no date or when a bank account is required but not chosen. Responsive: The fact block stacks its labels above the values in a narrow dialog, the method chips wrap, and the panel scrolls within the viewport.
 
-Category: Accounting · Sales. Source: `packages/ui/src/accounting/sales/invoice-actions.tsx:113-363`.
+Category: Accounting · Sales. Source: `packages/ui/src/accounting/sales/invoice-actions.tsx:116-366`.

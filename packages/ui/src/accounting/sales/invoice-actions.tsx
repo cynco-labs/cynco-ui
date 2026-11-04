@@ -50,7 +50,10 @@ export type { InvoiceAction };
 type ActionDef = { id: InvoiceAction; icon: React.ElementType; label: string };
 
 /** Which actions an invoice offers, by status (cynco InvoiceActionsCard rules). */
-function invoiceActions(status: string, emailSent: boolean): ActionDef[] {
+function invoiceActions(rawStatus: string, emailed: boolean): ActionDef[] {
+	// "sent" is a finalized invoice whose email has gone out.
+	const status = rawStatus === "sent" ? "finalized" : rawStatus;
+	const emailSent = emailed || rawStatus === "sent";
 	const a: ActionDef[] = [];
 	if (status === "finalized" && !emailSent) a.push({ id: "send_email", icon: EnvelopeIcon, label: "Send email" });
 	if (emailSent && status !== "paid" && status !== "draft")

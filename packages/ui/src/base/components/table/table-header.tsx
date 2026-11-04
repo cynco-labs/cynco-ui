@@ -22,8 +22,14 @@ function SortIcon({ sortDirection }: { sortDirection: string | false }) {
 	);
 }
 
+/** A header offers sorting only when the table can sort, so a button never does nothing. */
+function useSortable(): boolean {
+	const { table, enableSorting } = useTableContext();
+	return enableSorting ?? Boolean(table.options.getSortedRowModel || table.options.manualSorting);
+}
+
 function HeaderContent<T>({ header }: { header: HeaderGroup<T>["headers"][number] }) {
-	const { enableSorting } = useTableContext();
+	const enableSorting = useSortable();
 	if (header.isPlaceholder) {
 		return null;
 	}
@@ -52,7 +58,8 @@ const INDETERMINATE_CLASS =
 	"data-indeterminate:border-primary data-indeterminate:bg-primary data-indeterminate:[&_svg]:hidden data-indeterminate:before:h-0.5 data-indeterminate:before:w-2 data-indeterminate:before:rounded-full data-indeterminate:before:bg-primary-foreground";
 
 export function TableHeader({ className, ...props }: React.ComponentProps<"thead">) {
-	const { table, enableSelection, enableColumnVisibility, enableSorting, flexibleTableColumns } = useTableContext();
+	const { table, enableSelection, enableColumnVisibility, flexibleTableColumns } = useTableContext();
+	const enableSorting = useSortable();
 	const headerGroups = table.getHeaderGroups();
 	const rows = table.getRowModel().rows;
 
