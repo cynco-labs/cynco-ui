@@ -10,3 +10,4 @@ coverage
 .pnpm-store
 .claude/
 apps/docs/src/islands/
+evals/agent-tasks/runs/

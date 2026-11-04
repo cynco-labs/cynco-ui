@@ -15,6 +15,7 @@
     "lint:fix": "biome check --write .",
     "check:classes": "node scripts/check-classes.mjs",
     "registry": "node scripts/extract-props.mjs && node scripts/build-registry.mjs",
+    "eval": "node evals/agent-tasks/src/cli.ts",
     "changeset": "changeset",
     "release": "pnpm build:ui && changeset publish"
   },
