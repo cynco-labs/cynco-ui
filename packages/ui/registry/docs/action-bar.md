@@ -9,20 +9,10 @@ import { ActionBar } from "@cynco-labs/ui";
 ## Usage
 
 ```tsx
-import { useState } from "react";
 import { ActionBar, Button, ScrollRow } from "@cynco-labs/ui";
+import { useState } from "react";
 
-const tabs = [
-	"All",
-	"Draft",
-	"Pending",
-	"Partially paid",
-	"Overdue",
-	"Paid",
-	"Voided",
-	"Cancelled",
-	"Refunded",
-];
+const tabs = ["All", "Draft", "Pending", "Partially paid", "Overdue", "Paid", "Voided", "Cancelled", "Refunded"];
 
 export default function ActionBarDemo() {
 	const [s, setS] = useState("Overdue");
@@ -74,4 +64,4 @@ className, children and any div props (both).
 
 ScrollRow hides its scrollbar; give it a role (tablist, list) and labels when it carries navigation.
 
-Category: Layout · Primitives. Source: `packages/ui/src/layout/index.tsx`.
+Category: Layout · Primitives. Source: `packages/ui/src/layout/action-bar.tsx:6-11`.

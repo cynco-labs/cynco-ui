@@ -1,14 +1,14 @@
-import { useState } from "react";
-import type React from "react";
 import {
 	type AgedReceivablesData,
+	AgedReceivablesReport,
 	type DocBrand,
 	type DocLayout,
 	type DocLocale,
-	AgedReceivablesReport,
 	DocumentBrandProvider,
 	GroupedTabButton,
 } from "@cynco-labs/ui";
+import type React from "react";
+import { useState } from "react";
 
 const BRAND: DocBrand = {
 	company: {
@@ -25,10 +25,7 @@ const BRAND: DocBrand = {
 	footerNote: "Thank you for your business.",
 };
 
-function Shell(p: {
-	render: (x: string) => React.ReactNode;
-	extra?: { options: { value: string; label: string }[] };
-}) {
+function Shell(p: { render: (x: string) => React.ReactNode; extra?: { options: { value: string; label: string }[] } }) {
 	const [l, setL] = useState<DocLayout>("minimal"),
 		[g, setG] = useState<DocLocale>("en"),
 		[x, setX] = useState(p.extra ? p.extra.options[0].value : "");
@@ -56,17 +53,10 @@ function Shell(p: {
 					]}
 				/>
 				{p.extra ? (
-					<GroupedTabButton
-						className="w-[230px]"
-						value={x}
-						onValueChange={setX}
-						options={p.extra.options}
-					/>
+					<GroupedTabButton className="w-[230px]" value={x} onValueChange={setX} options={p.extra.options} />
 				) : null}
 			</div>
-			<DocumentBrandProvider brand={{ ...BRAND, layout: l, locale: g }}>
-				{p.render(x)}
-			</DocumentBrandProvider>
+			<DocumentBrandProvider brand={{ ...BRAND, layout: l, locale: g }}>{p.render(x)}</DocumentBrandProvider>
 		</div>
 	);
 }

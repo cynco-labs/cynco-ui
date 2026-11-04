@@ -1,7 +1,6 @@
 import {
 	Canvas,
 	Connection,
-	Edge,
 	Node,
 	NodeContent,
 	NodeDescription,
@@ -17,12 +16,10 @@ const NT = {
 				<NodeTitle>{p.data.title}</NodeTitle>
 				<NodeDescription>{p.data.sub}</NodeDescription>
 			</NodeHeader>
-			<NodeContent className="text-body">{p.data.body}</NodeContent>
+			<NodeContent className="text-sm font-medium text-muted-foreground">{p.data.body}</NodeContent>
 		</Node>
 	),
 };
-
-const ET = { animated: Edge.Animated, temporary: Edge.Temporary };
 
 const nodes = [
 	{
@@ -43,14 +40,12 @@ const nodes = [
 	},
 ];
 
-const edges = [{ id: "e", source: "a", target: "b", type: "animated" }];
-
 export default function ConnectionDemo() {
 	return (
 		<div style={{ height: 180 }} className="rounded-lg border">
 			<Canvas nodes={nodes} edges={[]} nodeTypes={NT} connectionLineComponent={Connection} fitView>
 				<Panel position="top-left">
-					<span className="text-body-secondary px-1">Drag from a handle to draw a connection</span>
+					<span className="text-sm text-subtle px-1">Drag from a handle to draw a connection</span>
 				</Panel>
 			</Canvas>
 		</div>

@@ -1,33 +1,49 @@
 "use client";
 
-import { cn } from "../../lib/utils";
 import { Tooltip as TooltipPrimitive } from "@base-ui/react/tooltip";
 import * as React from "react";
+import { renderProp } from "../../lib/render";
+import { cn } from "../../lib/utils";
 
 const InsideProvider = React.createContext(false);
 
-function TooltipProvider({
-	delay = 0,
-	...props
-}: TooltipPrimitive.Provider.Props) {
+/**
+ * Base UI 1.9's Tooltip.Root wires dismissal and positioning but no ARIA, so the hint is visual only.
+ * This carries the popup's id and whether it is open, so the popup can claim `role="tooltip"` and the
+ * trigger can point `aria-describedby` at it while it is showing.
+ */
+const TooltipAria = React.createContext<{ id: string; open: boolean } | null>(null);
+
+function TooltipProvider({ delay = 0, ...props }: TooltipPrimitive.Provider.Props) {
 	return (
 		<InsideProvider.Provider value={true}>
-			<TooltipPrimitive.Provider
-				data-slot="tooltip-provider"
-				delay={delay}
-				{...props}
-			/>
+			<TooltipPrimitive.Provider data-slot="tooltip-provider" delay={delay} {...props} />
 		</InsideProvider.Provider>
 	);
 }
 
 /** Uses the nearest TooltipProvider's delay; `delayDuration` overrides it for this tooltip alone. */
-function Tooltip({
-	delayDuration,
-	...props
-}: TooltipPrimitive.Root.Props & { delayDuration?: number }) {
+function Tooltip({ delayDuration, onOpenChange, ...props }: TooltipPrimitive.Root.Props & { delayDuration?: number }) {
 	const insideProvider = React.useContext(InsideProvider);
-	const root = <TooltipPrimitive.Root data-slot="tooltip" {...props} />;
+	const id = React.useId();
+	const [uncontrolledOpen, setUncontrolledOpen] = React.useState(props.defaultOpen ?? false);
+	const open = props.open ?? uncontrolledOpen;
+
+	const root = (
+		<TooltipAria.Provider value={{ id, open }}>
+			<TooltipPrimitive.Root
+				data-slot="tooltip"
+				{...props}
+				// After the spread: the caller's handler still runs, but it cannot replace the one that
+				// keeps aria-describedby in step with the popup.
+				onOpenChange={(nextOpen, ...rest) => {
+					setUncontrolledOpen(nextOpen);
+					onOpenChange?.(nextOpen, ...rest);
+				}}
+			/>
+		</TooltipAria.Provider>
+	);
+
 	if (insideProvider && delayDuration === undefined) return root;
 	return <TooltipProvider delay={delayDuration}>{root}</TooltipProvider>;
 }
@@ -35,21 +51,22 @@ function Tooltip({
 function TooltipTrigger({
 	asChild,
 	children,
+	render,
+	"aria-describedby": describedBy,
 	...props
 }: TooltipPrimitive.Trigger.Props & { asChild?: boolean }) {
-	if (asChild && React.isValidElement(children)) {
-		return (
-			<TooltipPrimitive.Trigger
-				data-slot="tooltip-trigger"
-				render={children}
-				{...props}
-			/>
-		);
-	}
+	const aria = React.useContext(TooltipAria);
+	const element = renderProp(asChild, children, render);
+	// The caller's own description stays; the tooltip's id joins it while the popup is showing.
+	const described = [describedBy, aria?.open ? aria.id : undefined].filter(Boolean).join(" ") || undefined;
 	return (
-		<TooltipPrimitive.Trigger data-slot="tooltip-trigger" {...props}>
-			{children}
-		</TooltipPrimitive.Trigger>
+		<TooltipPrimitive.Trigger
+			data-slot="tooltip-trigger"
+			render={element}
+			aria-describedby={described}
+			{...props}
+			{...(element === children ? {} : { children })}
+		/>
 	);
 }
 
@@ -60,8 +77,8 @@ function TooltipContent({
 	align = "center",
 	children,
 	...props
-}: TooltipPrimitive.Popup.Props &
-	Pick<TooltipPrimitive.Positioner.Props, "align" | "side" | "sideOffset">) {
+}: TooltipPrimitive.Popup.Props & Pick<TooltipPrimitive.Positioner.Props, "align" | "side" | "sideOffset">) {
+	const aria = React.useContext(TooltipAria);
 	return (
 		<TooltipPrimitive.Portal>
 			<TooltipPrimitive.Positioner
@@ -69,36 +86,17 @@ function TooltipContent({
 				sideOffset={sideOffset}
 				align={align}
 				positionMethod="fixed"
-				// Above popovers/selects/dropdowns (z-300): a tooltip is the topmost hint.
-				className="isolate z-[400]"
+				// Above popovers, selects and dropdowns: a tooltip is the topmost hint.
+				className="isolate z-tooltip"
 			>
 				<TooltipPrimitive.Popup
 					data-slot="tooltip-content"
+					role="tooltip"
+					id={aria?.id}
 					className={cn(
-						`overflow-hidden rounded-[6px] px-2 py-[3px] text-muted-foreground border
-         bg-interactive-secondary dark:bg-card
-          text-sm font-medium leading-[1.6] tracking-[-0.039px]
-          shadow-glow
-          animate-in fade-in-0 zoom-in-95
-          data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95
-          data-[side=bottom]:slide-in-from-top-2
-          data-[side=left]:slide-in-from-right-2
-          data-[side=right]:slide-in-from-left-2
-          data-[side=top]:slide-in-from-bottom-2
-          before:absolute before:z-10
-          before:data-[side=top]:-bottom-1 before:data-[side=top]:left-1/2 before:data-[side=top]:-translate-x-1/2
-          before:data-[side=top]:border-l-[7px] before:data-[side=top]:border-r-[7px] before:data-[side=top]:border-t-[6px]
-          before:data-[side=top]:border-l-transparent before:data-[side=top]:border-r-transparent before:data-[side=top]:border-t-t12
-          before:data-[side=bottom]:-top-1 before:data-[side=bottom]:left-1/2 before:data-[side=bottom]:-translate-x-1/2
-          before:data-[side=bottom]:border-l-[7px] before:data-[side=bottom]:border-r-[7px] before:data-[side=bottom]:border-b-[6px]
-          before:data-[side=bottom]:border-l-transparent before:data-[side=bottom]:border-r-transparent before:data-[side=bottom]:border-b-t12
-          before:data-[side=left]:-right-1 before:data-[side=left]:top-1/2 before:data-[side=left]:-translate-y-1/2
-          before:data-[side=left]:border-t-[7px] before:data-[side=left]:border-b-[7px] before:data-[side=left]:border-l-[6px]
-          before:data-[side=left]:border-t-transparent before:data-[side=left]:border-b-transparent before:data-[side=left]:border-l-t12
-          before:data-[side=right]:-left-1 before:data-[side=right]:top-1/2 before:data-[side=right]:-translate-y-1/2
-          before:data-[side=right]:border-t-[7px] before:data-[side=right]:border-b-[7px] before:data-[side=right]:border-r-[6px]
-          before:data-[side=right]:border-t-transparent before:data-[side=right]:border-b-transparent before:data-[side=right]:border-r-t12
-          `,
+						"overflow-hidden rounded-[6px] border bg-interactive-secondary px-2 py-[3px] text-sm font-medium leading-[1.6] tracking-[-0.039px] text-muted-foreground shadow-glow dark:bg-card",
+						"animate-in fade-in-0 zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
+						"data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
 						className,
 					)}
 					{...props}
@@ -110,4 +108,4 @@ function TooltipContent({
 	);
 }
 
-export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider };
+export { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger };

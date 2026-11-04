@@ -10,12 +10,12 @@ import { ReceiptDocument } from "@cynco-labs/ui";
 
 ```tsx
 import {
-	DocumentBrandProvider,
-	ReceiptDocument,
 	type DocBrand,
 	type DocLayout,
 	type DocLocale,
+	DocumentBrandProvider,
 	type ReceiptData,
+	ReceiptDocument,
 } from "@cynco-labs/ui";
 
 const BRAND: DocBrand = {
@@ -64,9 +64,7 @@ const CASH: ReceiptData = {
 	},
 	payment: { method: "cash" },
 	amountReceived: "1284.40",
-	allocations: [
-		{ number: "INV-2026-0151", date: "2026-10-29", invoiceAmount: "1284.42", applied: "1284.42" },
-	],
+	allocations: [{ number: "INV-2026-0151", date: "2026-10-29", invoiceAmount: "1284.42", applied: "1284.42" }],
 	totals: [
 		{ label: "totalDue", value: "1284.42" },
 		{ label: "rounding", value: "-0.02", kind: "rounding" },
@@ -153,11 +151,10 @@ receipt: ReceiptData { number, status, date, currency?, receivedFrom, payment {m
 - `isolate?`: `boolean`. When printing, hide the rest of the app and print only this page. Default true.
 - `stamp?`: `"copy" | "paid" | "void" | "draft" | "overdue" | null`. Overrides the stamp derived from the document status. `null` hides it.
 - `size?`: `"a4" | "a5" | "receipt"`. A4, A5, or an 80mm thermal roll ("receipt"). Default `"a4"`.
-- `monochrome?`: `boolean`. Print in ink only (thermal printers are monochrome). Default: true for `size="receipt"`.
 - Also accepts `ComponentProps<"article">`.
 
 ## Notes
 
 Layouts minimal / classic / modern in black ink only, any font, locales en / ms / en-ms (bilingual labels stacked or slashed). Money is printed exactly as given (decimal strings); nothing is recomputed. Print: named @page with page numbers, table headers repeat, rows and the totals/sign-off blocks avoid splitting; isolate (default true) prints only the sheet. A4/A5: amount-received headline, payment strip, 'the sum of' in words, allocation table, optional totals, received-by signature. 80mm: centred letterhead, single column of label/value rows, dashed separators, compact totals and words, no signature; monochrome by default because thermal printers print one ink. Cash rounding is a totals row passed by the caller (BNM 5-sen rounding).
 
-Category: Documents. Source: `packages/ui/src/documents/sales.tsx`.
+Category: Documents. Source: `packages/ui/src/documents/sales.tsx:889-904`.

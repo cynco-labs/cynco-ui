@@ -1,14 +1,8 @@
 "use client";
 
-import type { ColumnGroup } from "../../hooks/use-column-visibility";
-import { useIsMobile } from "../../hooks/use-is-mobile";
 import type { Table as TanstackTable } from "@tanstack/react-table";
-import {
-	type ComponentType,
-	createContext,
-	type ReactNode,
-	useContext,
-} from "react";
+import { type ComponentType, createContext, type ReactNode, useContext } from "react";
+import type { ColumnGroup } from "../../hooks/use-column-visibility";
 
 export type TableLinkComponent = ComponentType<{
 	to: string;
@@ -94,8 +88,11 @@ export function useTableContext<T>(): TableProps<T> {
 	return context as TableProps<T>;
 }
 
-export function useShowMobileCards(): boolean {
+/** Below this the table's own column is too narrow for columns, whatever the viewport is doing. */
+const MOBILE_CARD_MAX_WIDTH = 640;
+
+/** Whether to draw rows as cards: the table opted in and its own container is narrow enough. */
+export function useShowMobileCards(containerWidth: number | undefined): boolean {
 	const { mobileCards } = useTableContext();
-	const isMobile = useIsMobile();
-	return Boolean(mobileCards) && isMobile;
+	return Boolean(mobileCards) && containerWidth !== undefined && containerWidth < MOBILE_CARD_MAX_WIDTH;
 }

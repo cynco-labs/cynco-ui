@@ -29,13 +29,15 @@
  * - Text labels come from a dictionary (English, Bahasa Melayu, or bilingual) and can be overridden.
  */
 import * as React from "react";
-import { GroupedTabButton, cn, useControllableState } from "../base";
-import { type DocLocale, amountInWords, currencySymbol, docLabelText, formatDocAmount, isDocLabelKey } from "./format";
+import { cn, GroupedTabButton, useControllableState } from "../base";
+import { amountInWords, currencySymbol, type DocLocale, docLabelText, formatDocAmount, isDocLabelKey } from "./format";
 import { DOC_LABELS, type DocLabelKey, type DocText } from "./labels";
 
 export {
 	amountInWords,
 	currencySymbol,
+	type DocLocale,
+	type DraftLine,
 	docLabelText,
 	draftLineTotals,
 	formatDocAmount,
@@ -43,8 +45,6 @@ export {
 	formatReportDate,
 	formatStatementValue,
 	isDocLabelKey,
-	type DocLocale,
-	type DraftLine,
 	type StatementTableFormat,
 	type StatementTableValue,
 } from "./format";
@@ -91,7 +91,11 @@ export type DocBrand = {
 	baseCurrency?: string;
 };
 
-const DEFAULT_BRAND: Required<Pick<DocBrand, "layout" | "locale" | "baseCurrency">> = { layout: "minimal", locale: "en", baseCurrency: "MYR" };
+const DEFAULT_BRAND: Required<Pick<DocBrand, "layout" | "locale" | "baseCurrency">> = {
+	layout: "minimal",
+	locale: "en",
+	baseCurrency: "MYR",
+};
 
 const BrandContext = React.createContext<DocBrand | null>(null);
 
@@ -112,8 +116,6 @@ export function useDocumentBrand() {
 }
 
 /* ═════════════ Labels (EN / BM / bilingual) ═════════════ */
-
-
 
 function renderPair(pair: readonly [string, string], locale: DocLocale, stacked?: boolean): React.ReactNode {
 	if (locale === "en") return pair[0];
@@ -162,7 +164,10 @@ export function useDocLabelNode() {
 	const t = useDocLabel();
 	return React.useCallback(
 		(v: React.ReactNode | DocText, opts?: { stacked?: boolean }): React.ReactNode =>
-			typeof v === "string" || (v != null && typeof v === "object" && "en" in (v as object) && "ms" in (v as object) && !React.isValidElement(v)) ? t(v as DocText, opts) : (v as React.ReactNode),
+			typeof v === "string" ||
+			(v != null && typeof v === "object" && "en" in (v as object) && "ms" in (v as object) && !React.isValidElement(v))
+				? t(v as DocText, opts)
+				: (v as React.ReactNode),
 		[t],
 	);
 }
@@ -199,21 +204,30 @@ const PAPER: Record<PaperSize, { w: string; h: string; px: number; pad: string; 
 };
 
 const FONTS: Record<DocFont, { body: string; display: string }> = {
-	inter: { body: "'Inter', ui-sans-serif, system-ui, sans-serif", display: "'Inter', ui-sans-serif, system-ui, sans-serif" },
-	geist: { body: "'Geist', 'Inter', ui-sans-serif, system-ui, sans-serif", display: "'Geist', 'Inter', ui-sans-serif, system-ui, sans-serif" },
-	serif: { body: "'Inter', ui-sans-serif, system-ui, sans-serif", display: "'Newsreader', 'Iowan Old Style', Georgia, serif" },
+	inter: {
+		body: "'Inter', ui-sans-serif, system-ui, sans-serif",
+		display: "'Inter', ui-sans-serif, system-ui, sans-serif",
+	},
+	geist: {
+		body: "'Geist', 'Inter', ui-sans-serif, system-ui, sans-serif",
+		display: "'Geist', 'Inter', ui-sans-serif, system-ui, sans-serif",
+	},
+	serif: {
+		body: "'Inter', ui-sans-serif, system-ui, sans-serif",
+		display: "'Newsreader', 'Iowan Old Style', Georgia, serif",
+	},
 };
 
 const DOC_CSS = `
 [data-cy-doc]{-webkit-print-color-adjust:exact;print-color-adjust:exact;font-feature-settings:"cv11" 1,"ss03" 1;}
 [data-cy-doc] .cy-doc-num{font-variant-numeric:tabular-nums lining-nums;}
-@page cy-a4{size:A4;margin:14mm 16mm 16mm;@bottom-right{content:counter(page) " / " counter(pages);font:500 8pt Inter,sans-serif;color:#8a8f98}}
-@page cy-a4l{size:A4 landscape;margin:12mm 14mm 14mm;@bottom-right{content:counter(page) " / " counter(pages);font:500 8pt Inter,sans-serif;color:#8a8f98}}
-@page cy-letter{size:letter;margin:0.55in 0.6in 0.6in;@bottom-right{content:counter(page) " / " counter(pages);font:500 8pt Inter,sans-serif;color:#8a8f98}}
-@page cy-a5{size:A5;margin:10mm 11mm 12mm;@bottom-right{content:counter(page) " / " counter(pages);font:500 7pt Inter,sans-serif;color:#8a8f98}}
+@page cy-a4{size:A4;margin:14mm 16mm 16mm;@bottom-right{content:counter(page) " / " counter(pages);font:500 8pt Inter,sans-serif;color:var(--doc-ink-subtle)}}
+@page cy-a4l{size:A4 landscape;margin:12mm 14mm 14mm;@bottom-right{content:counter(page) " / " counter(pages);font:500 8pt Inter,sans-serif;color:var(--doc-ink-subtle)}}
+@page cy-letter{size:letter;margin:0.55in 0.6in 0.6in;@bottom-right{content:counter(page) " / " counter(pages);font:500 8pt Inter,sans-serif;color:var(--doc-ink-subtle)}}
+@page cy-a5{size:A5;margin:10mm 11mm 12mm;@bottom-right{content:counter(page) " / " counter(pages);font:500 7pt Inter,sans-serif;color:var(--doc-ink-subtle)}}
 @page cy-receipt{size:80mm auto;margin:4mm}
 @media print{
-  html,body{background:#fff!important;color-scheme:light}
+  html,body{background:var(--doc-paper)!important;color-scheme:light}
   body:has([data-cy-doc-isolate]) *{visibility:hidden}
   body:has([data-cy-doc-isolate]) [data-cy-doc-isolate],body:has([data-cy-doc-isolate]) [data-cy-doc-isolate] *{visibility:visible}
   body:has([data-cy-doc-isolate]) [data-cy-doc-isolate]{position:absolute;left:0;top:0}
@@ -240,8 +254,13 @@ const PRINT_PAGE: Record<PaperSize, string> = {
  * document at a time; the isolated sheet is also pinned to the page width.
  */
 function PrintPage({ size, isolate }: { size: PaperSize; isolate: boolean }) {
-	const numbers = size === "receipt" ? "" : `@bottom-right{content:counter(page) " / " counter(pages);font:500 ${size === "a5" ? 7 : 8}pt Inter,sans-serif;color:#8a8f98}`;
-	return <style data-cy-doc-page="">{`@page{${PRINT_PAGE[size]};${numbers}}${isolate ? "@media print{body:has([data-cy-doc-isolate]) [data-cy-doc-isolate]{right:0}}" : ""}`}</style>;
+	const numbers =
+		size === "receipt"
+			? ""
+			: `@bottom-right{content:counter(page) " / " counter(pages);font:500 ${size === "a5" ? 7 : 8}pt Inter,sans-serif;color:var(--doc-ink-subtle)}`;
+	return (
+		<style data-cy-doc-page="">{`@page{${PRINT_PAGE[size]};${numbers}}${isolate ? "@media print{body:has([data-cy-doc-isolate]) [data-cy-doc-isolate]{right:0}}" : ""}`}</style>
+	);
 }
 
 export type DocumentStamp = "paid" | "void" | "draft" | "copy" | "overdue";
@@ -293,12 +312,17 @@ export function DocumentPage({
 	children,
 	...props
 }: DocumentPageProps) {
-	const [fitValue, setFit] = useControllableState<DocumentFit>({ prop: fitProp, defaultProp: defaultFit, onChange: onFitChange });
+	const [fitValue, setFit] = useControllableState<DocumentFit>({
+		prop: fitProp,
+		defaultProp: defaultFit,
+		onChange: onFitChange,
+	});
 	const fit = fitValue ?? "width";
 	const ctx = useDocumentBrand();
 	const brand = React.useMemo(() => {
 		const merged = { ...ctx, ...brandOverride, company: brandOverride?.company ?? ctx.company };
-		if (brandOverride?.layout && !brandOverride.font) merged.font = brandOverride.layout === "classic" ? "serif" : ctx.font === "serif" ? "inter" : ctx.font;
+		if (brandOverride?.layout && !brandOverride.font)
+			merged.font = brandOverride.layout === "classic" ? "serif" : ctx.font === "serif" ? "inter" : ctx.font;
 		return merged;
 	}, [ctx, brandOverride]);
 	const paper = PAPER[size];
@@ -322,19 +346,9 @@ export function DocumentPage({
 	// Offered only while the sheet is (or would be) scaled down, and only when a choice can take effect.
 	const showZoom = zoomControl && zoom < 1 && (fitProp === undefined || onFitChange !== undefined);
 
+	// The ink, paper and rule colours are theme tokens (styles/tokens.css) and the same on every page;
+	// only what this sheet chooses — its typeface, its zoom and its paper — is set here.
 	const vars = {
-		// Monochrome by design. The accent variables remain as aliases of ink so any part keeps working.
-		"--doc-accent": "#16181d",
-		"--doc-accent-text": "#16181d",
-		"--doc-on-accent": "#ffffff",
-		"--doc-tint": "#f6f6f7",
-		"--doc-tint-strong": "#ededef",
-		"--doc-ink": "#16181d",
-		"--doc-muted": "#596070",
-		// Secondary labels are text: at least 4.5:1 on white and on the tint panels.
-		"--doc-subtle": "#656b78",
-		"--doc-rule": "#e7e8ec",
-		"--doc-rule-strong": "#16181d",
 		"--doc-font": font.body,
 		"--doc-display": font.display,
 		"--doc-zoom": fit === "width" ? zoom : 1,
@@ -362,8 +376,13 @@ export function DocumentPage({
 					ref={wrap}
 					data-slot="cy-document"
 					// At 100% the sheet scrolls sideways in narrow containers: make that scroller reachable by keyboard (WCAG 2.1.1).
-					{...(fit === "none" ? { role: "region", tabIndex: 0, "aria-label": docLabelText("document", brand.locale === "ms" ? "ms" : "en") } : {})}
-					className={cn("relative w-full min-w-0 print:overflow-visible", fit === "width" ? "overflow-hidden" : "overflow-x-auto")}
+					{...(fit === "none"
+						? { role: "region", tabIndex: 0, "aria-label": docLabelText("document", brand.locale === "ms" ? "ms" : "en") }
+						: {})}
+					className={cn(
+						"relative w-full min-w-0 print:overflow-visible",
+						fit === "width" ? "overflow-hidden" : "overflow-x-auto",
+					)}
 				>
 					<DocStyles />
 					<PrintPage size={size} isolate={isolate} />
@@ -374,9 +393,13 @@ export function DocumentPage({
 						lang={brand.locale === "ms" ? "ms" : "en"}
 						style={{ ...vars, width: paper.w, minHeight: paper.h === "auto" ? undefined : paper.h, padding: paper.pad }}
 						className={cn(
-							"relative isolate flex flex-col overflow-hidden bg-white text-[var(--doc-ink)] antialiased [font-family:var(--doc-font)] [zoom:var(--doc-zoom)]",
+							"relative isolate flex flex-col overflow-hidden bg-white text-doc-ink antialiased [font-family:var(--doc-font)] [zoom:var(--doc-zoom)]",
 							"rounded-[2px] shadow-[0_1px_2px_rgba(16,24,40,.06),0_8px_24px_-6px_rgba(16,24,40,.12)] outline outline-1 outline-black/[.06]",
-							size === "receipt" ? "text-[8.5pt] leading-snug" : size === "a5" ? "text-[8pt] leading-normal" : "text-[8.75pt] leading-normal",
+							size === "receipt"
+								? "text-[8.5pt] leading-snug"
+								: size === "a5"
+									? "text-[8pt] leading-normal"
+									: "text-[8.75pt] leading-normal",
 							className,
 						)}
 						{...props}
@@ -393,8 +416,8 @@ export function DocumentPage({
 function Stamp({ kind }: { kind: DocumentStamp }) {
 	const t = useDocLabel();
 	// Exposed to assistive tech: Paid / Void / Draft / Overdue is the document's status, not decoration (WCAG 1.3.1).
-	// So it is text and must be legible: --doc-subtle ink at full strength is 3.2:1 on white (large text, WCAG 1.4.3).
-	const tone = "var(--doc-subtle)";
+	// So it is text and must be legible: --doc-ink-subtle ink at full strength is 3.2:1 on white (large text, WCAG 1.4.3).
+	const tone = "var(--doc-ink-subtle)";
 	return (
 		<div data-slot="cy-doc-stamp" className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center">
 			<div
@@ -409,49 +432,98 @@ function Stamp({ kind }: { kind: DocumentStamp }) {
 
 /* ═════════════ Letterhead ═════════════ */
 
-function Monogram({ name }: { name: string }) {
+function Monogram({
+	name,
+	className,
+	...props
+}: Omit<React.HTMLAttributes<HTMLElement>, "children"> & { name: string }) {
 	const { layout } = useDocumentBrand();
-	const initials = name.replace(/\b(sdn|bhd|berhad|enterprise|plt|trading|the)\b/gi, "").trim().split(/\s+/).slice(0, 2).map((w) => w[0]).join("").toUpperCase() || "·";
+	const initials =
+		name
+			.replace(/\b(sdn|bhd|berhad|enterprise|plt|trading|the)\b/gi, "")
+			.trim()
+			.split(/\s+/)
+			.slice(0, 2)
+			.map((w) => w[0])
+			.join("")
+			.toUpperCase() || "·";
 	if (layout === "classic")
 		return (
-			<div aria-hidden="true" className="flex size-[12mm] shrink-0 items-center justify-center rounded-full border border-[var(--doc-ink)] text-[13pt] font-normal tracking-[0.04em] text-[var(--doc-ink)] [font-family:var(--doc-display)]">
+			<div
+				aria-hidden="true"
+				className={cn(
+					"flex size-[12mm] shrink-0 items-center justify-center rounded-full border border-doc-ink text-[13pt] font-normal tracking-[0.04em] text-doc-ink [font-family:var(--doc-display)]",
+					className,
+				)}
+				{...props}
+			>
 				{initials}
 			</div>
 		);
 	if (layout === "minimal")
 		return (
-			<div aria-hidden="true" className="flex size-[11mm] shrink-0 items-end justify-start text-[17pt] leading-none font-semibold tracking-[-0.04em] text-[var(--doc-ink)] [font-family:var(--doc-display)]">
+			<div
+				aria-hidden="true"
+				className={cn(
+					"flex size-[11mm] shrink-0 items-end justify-start text-[17pt] leading-none font-semibold tracking-[-0.04em] text-doc-ink [font-family:var(--doc-display)]",
+					className,
+				)}
+				{...props}
+			>
 				{initials}
-				<span className="text-[var(--doc-subtle)]">.</span>
+				<span className="text-doc-ink-subtle">.</span>
 			</div>
 		);
 	return (
-		<div aria-hidden="true" className="flex size-[12mm] shrink-0 items-center justify-center border-[1.5px] border-[var(--doc-ink)] text-[12pt] font-semibold tracking-[-0.02em] text-[var(--doc-ink)] [font-family:var(--doc-display)]">
+		<div
+			aria-hidden="true"
+			className={cn(
+				"flex size-[12mm] shrink-0 items-center justify-center border-[1.5px] border-doc-ink text-[12pt] font-semibold tracking-[-0.02em] text-doc-ink [font-family:var(--doc-display)]",
+				className,
+			)}
+			{...props}
+		>
 			{initials}
 		</div>
 	);
 }
 
 /** The brand's logo: image URL, custom element, or a monogram. */
-export function DocumentLogo({ className, size = "md" }: { className?: string; size?: "sm" | "md" | "lg" }) {
+/** The logo renders as an `img`, a `div` around a custom element, or a monogram, so it takes the attributes every element shares rather than one element's own. */
+export function DocumentLogo({
+	className,
+	size = "md",
+	...props
+}: Omit<React.HTMLAttributes<HTMLElement>, "children"> & { size?: "sm" | "md" | "lg" }) {
 	const { logo, company } = useDocumentBrand();
 	const h = size === "sm" ? "max-h-[9mm]" : size === "lg" ? "max-h-[18mm]" : "max-h-[13mm]";
-	if (!logo) return <Monogram name={company.name} />;
-	if (typeof logo === "string") return <img src={logo} alt={company.name} className={cn("w-auto max-w-[45mm] object-contain", h, className)} />;
-	return <div className={cn("shrink-0", className)}>{logo}</div>;
+	if (!logo) return <Monogram name={company.name} className={className} {...props} />;
+	if (typeof logo === "string")
+		return (
+			<img src={logo} alt={company.name} className={cn("w-auto max-w-[45mm] object-contain", h, className)} {...props} />
+		);
+	return (
+		<div className={cn("shrink-0", className)} {...props}>
+			{logo}
+		</div>
+	);
 }
 
 const addressLines = (a?: string | string[]) => (a == null ? [] : Array.isArray(a) ? a : a.split("\n"));
 
 function CompanyIds({ party, className }: { party: DocParty; className?: string }) {
 	const t = useDocLabel();
-	const ids = [party.registrationNo && [t("registrationNo"), party.registrationNo], party.sstNo && [t("sstNo"), party.sstNo], party.tin && [t("tin"), party.tin]].filter(Boolean) as [React.ReactNode, string][];
+	const ids = [
+		party.registrationNo && [t("registrationNo"), party.registrationNo],
+		party.sstNo && [t("sstNo"), party.sstNo],
+		party.tin && [t("tin"), party.tin],
+	].filter(Boolean) as [React.ReactNode, string][];
 	if (!ids.length) return null;
 	return (
 		<div className={cn("flex flex-wrap gap-x-3 gap-y-0.5", className)}>
-			{ids.map(([k, v], i) => (
-				<span key={i}>
-					<span className="text-[var(--doc-subtle)]">{k}</span> <span className="whitespace-nowrap">{v}</span>
+			{ids.map(([k, v]) => (
+				<span key={v}>
+					<span className="text-doc-ink-subtle">{k}</span> <span className="whitespace-nowrap">{v}</span>
 				</span>
 			))}
 		</div>
@@ -479,11 +551,18 @@ export function Letterhead({ title, number, subtitle, hideCompany, className, ..
 
 	if (size === "receipt") {
 		return (
-			<header data-slot="cy-letterhead" className={cn("flex flex-col items-center gap-1 border-b border-dashed border-[var(--doc-rule-strong)]/40 pb-3 text-center", className)} {...props}>
+			<header
+				data-slot="cy-letterhead"
+				className={cn(
+					"flex flex-col items-center gap-1 border-b border-dashed border-doc-rule/40 pb-3 text-center",
+					className,
+				)}
+				{...props}
+			>
 				<DocumentLogo size="sm" />
 				<div className="mt-1 text-[10pt] font-semibold">{company.name}</div>
-				<CompanyIds party={company} className="justify-center text-[7pt] text-[var(--doc-muted)]" />
-				{lines.length > 0 && <div className="text-[7pt] leading-snug text-[var(--doc-muted)]">{lines.join(", ")}</div>}
+				<CompanyIds party={company} className="justify-center text-[7pt] text-doc-ink-muted" />
+				{lines.length > 0 && <div className="text-[7pt] leading-snug text-doc-ink-muted">{lines.join(", ")}</div>}
 				<h1 className="mt-2 text-[9pt] font-semibold tracking-[0.12em] uppercase">{titleNode}</h1>
 				{number && <div className="font-medium tracking-[0.02em]">{number}</div>}
 			</header>
@@ -491,13 +570,28 @@ export function Letterhead({ title, number, subtitle, hideCompany, className, ..
 	}
 
 	const companyBlock = !hideCompany && (
-		<div className={cn("flex min-w-0", layout === "classic" ? "flex-col items-center gap-2.5 text-center" : "items-start gap-4")}>
+		<div
+			className={cn(
+				"flex min-w-0",
+				layout === "classic" ? "flex-col items-center gap-2.5 text-center" : "items-start gap-4",
+			)}
+		>
 			<DocumentLogo />
 			<div className="min-w-0">
-				<div className={cn("leading-tight font-semibold tracking-[-0.01em]", layout === "classic" ? "text-[15pt] [font-family:var(--doc-display)]" : "text-[11.5pt]")}>{company.name}</div>
-				<CompanyIds party={company} className={cn("mt-1 text-[7.5pt] text-[var(--doc-muted)]", layout === "classic" && "justify-center")} />
+				<div
+					className={cn(
+						"leading-tight font-semibold tracking-[-0.01em]",
+						layout === "classic" ? "text-[15pt] [font-family:var(--doc-display)]" : "text-[11.5pt]",
+					)}
+				>
+					{company.name}
+				</div>
+				<CompanyIds
+					party={company}
+					className={cn("mt-1 text-[7.5pt] text-doc-ink-muted", layout === "classic" && "justify-center")}
+				/>
 				{(lines.length > 0 || contact) && (
-					<address className="mt-1.5 text-[7.5pt] leading-[1.5] text-[var(--doc-muted)] not-italic">
+					<address className="mt-1.5 text-[7.5pt] leading-[1.5] text-doc-ink-muted not-italic">
 						{lines.length > 0 && <div>{lines.join(", ")}</div>}
 						{contact && <div>{contact}</div>}
 					</address>
@@ -511,16 +605,18 @@ export function Letterhead({ title, number, subtitle, hideCompany, className, ..
 			<header data-slot="cy-letterhead" className={cn("flex flex-col items-center gap-3.5", className)} {...props}>
 				{companyBlock}
 				<div className="flex w-full items-center gap-4">
-					<div className="h-px flex-1 bg-[var(--doc-rule-strong)]" />
+					<div className="h-px flex-1 bg-doc-rule" />
 					<div className="text-center">
-						<h1 className="text-[16pt] leading-none font-medium tracking-[0.02em] [font-family:var(--doc-display)]">{titleNode}</h1>
+						<h1 className="text-[16pt] leading-none font-medium tracking-[0.02em] [font-family:var(--doc-display)]">
+							{titleNode}
+						</h1>
 					</div>
-					<div className="h-px flex-1 bg-[var(--doc-rule-strong)]" />
+					<div className="h-px flex-1 bg-doc-rule" />
 				</div>
 				{(number || subtitle) && (
 					<div className="-mt-1.5 text-center">
-						{number && <div className="text-[9.5pt] font-medium tracking-[0.06em] text-[var(--doc-muted)]">{number}</div>}
-						{subtitle && <div className="text-[7.5pt] text-[var(--doc-subtle)]">{subtitle}</div>}
+						{number && <div className="text-[9.5pt] font-medium tracking-[0.06em] text-doc-ink-muted">{number}</div>}
+						{subtitle && <div className="text-[7.5pt] text-doc-ink-subtle">{subtitle}</div>}
 					</div>
 				)}
 			</header>
@@ -532,9 +628,13 @@ export function Letterhead({ title, number, subtitle, hideCompany, className, ..
 			<header data-slot="cy-letterhead" className={cn("flex items-start justify-between gap-10", className)} {...props}>
 				{companyBlock}
 				<div className="shrink-0 text-right">
-					<h1 className="text-[8pt] font-semibold tracking-[0.18em] text-[var(--doc-muted)] uppercase">{titleNode}</h1>
-					{number && <div className="mt-1.5 text-[16pt] leading-none font-medium tracking-[-0.02em] text-[var(--doc-ink)] [font-family:var(--doc-display)]">{number}</div>}
-					{subtitle && <div className="mt-1 text-[7.5pt] text-[var(--doc-subtle)]">{subtitle}</div>}
+					<h1 className="text-[8pt] font-semibold tracking-[0.18em] text-doc-ink-muted uppercase">{titleNode}</h1>
+					{number && (
+						<div className="mt-1.5 text-[16pt] leading-none font-medium tracking-[-0.02em] text-doc-ink [font-family:var(--doc-display)]">
+							{number}
+						</div>
+					)}
+					{subtitle && <div className="mt-1 text-[7.5pt] text-doc-ink-subtle">{subtitle}</div>}
 				</div>
 			</header>
 		);
@@ -542,12 +642,18 @@ export function Letterhead({ title, number, subtitle, hideCompany, className, ..
 
 	// modern
 	return (
-		<header data-slot="cy-letterhead" className={cn("flex items-start justify-between gap-10 pt-[2mm]", className)} {...props}>
+		<header
+			data-slot="cy-letterhead"
+			className={cn("flex items-start justify-between gap-10 pt-[2mm]", className)}
+			{...props}
+		>
 			{companyBlock}
 			<div className="shrink-0 text-right">
-				<h1 className="text-[22pt] leading-[0.95] font-semibold tracking-[-0.025em] [font-family:var(--doc-display)]">{titleNode}</h1>
-				{number && <div className="mt-2 text-[10pt] font-medium tracking-[0.02em] text-[var(--doc-muted)]">{number}</div>}
-				{subtitle && <div className="mt-0.5 text-[7.5pt] text-[var(--doc-subtle)]">{subtitle}</div>}
+				<h1 className="text-[22pt] leading-[0.95] font-semibold tracking-[-0.025em] [font-family:var(--doc-display)]">
+					{titleNode}
+				</h1>
+				{number && <div className="mt-2 text-[10pt] font-medium tracking-[0.02em] text-doc-ink-muted">{number}</div>}
+				{subtitle && <div className="mt-0.5 text-[7.5pt] text-doc-ink-subtle">{subtitle}</div>}
 			</div>
 		</header>
 	);
@@ -557,11 +663,25 @@ export function Letterhead({ title, number, subtitle, hideCompany, className, ..
 
 /** Uppercase micro-label used above every block. A block-level span, so it is valid inside a heading or a `<dt>`. */
 export function DocLabel({ className, ...props }: React.ComponentProps<"span">) {
-	return <span className={cn("block text-[6.75pt] leading-tight font-semibold tracking-[0.12em] uppercase", "text-[var(--doc-subtle)]", className)} {...props} />;
+	return (
+		<span
+			className={cn(
+				"block text-[6.75pt] leading-tight font-semibold tracking-[0.12em] uppercase",
+				"text-doc-ink-subtle",
+				className,
+			)}
+			{...props}
+		/>
+	);
 }
 
 /** A titled block with consistent spacing. */
-export function DocSection({ title, children, className, ...props }: Omit<React.ComponentProps<"section">, "title"> & { title?: DocLabelKey | (string & {}) | React.ReactNode }) {
+export function DocSection({
+	title,
+	children,
+	className,
+	...props
+}: Omit<React.ComponentProps<"section">, "title"> & { title?: DocLabelKey | (string & {}) | React.ReactNode }) {
 	const t = useDocLabel();
 	return (
 		<section className={cn("cy-doc-break-avoid", className)} {...props}>
@@ -575,10 +695,18 @@ export function DocSection({ title, children, className, ...props }: Omit<React.
 	);
 }
 
-export type DocumentMetaItem = { label: DocLabelKey | (string & {}) | React.ReactNode; value: React.ReactNode; emphasis?: boolean };
+export type DocumentMetaItem = {
+	label: DocLabelKey | (string & {}) | React.ReactNode;
+	value: React.ReactNode;
+	emphasis?: boolean;
+};
 
 /** Dates, terms, references — a tidy row of label/value pairs. */
-export function DocumentMeta({ items, className, ...props }: Omit<React.ComponentProps<"dl">, "children"> & { items: DocumentMetaItem[] }) {
+export function DocumentMeta({
+	items,
+	className,
+	...props
+}: Omit<React.ComponentProps<"dl">, "children"> & { items: DocumentMetaItem[] }) {
 	const { layout } = useDocumentBrand();
 	const t = useDocLabel();
 	const shown = items.filter((i) => i.value != null && i.value !== "");
@@ -587,14 +715,15 @@ export function DocumentMeta({ items, className, ...props }: Omit<React.Componen
 			data-slot="cy-doc-meta"
 			className={cn(
 				"grid grid-cols-[repeat(auto-fit,minmax(24mm,1fr))] gap-x-5 gap-y-3",
-				layout === "modern" && "border-y border-[var(--doc-rule)] py-[3.5mm]",
-				layout === "classic" && "border-y border-[var(--doc-rule)] py-[3mm] text-center",
-				layout === "minimal" && "border-t border-[var(--doc-rule)] pt-[4mm]",
+				layout === "modern" && "border-y border-doc-rule-soft py-[3.5mm]",
+				layout === "classic" && "border-y border-doc-rule-soft py-[3mm] text-center",
+				layout === "minimal" && "border-t border-doc-rule-soft pt-[4mm]",
 				className,
 			)}
 			{...props}
 		>
 			{shown.map((m, i) => (
+				// biome-ignore lint/suspicious/noArrayIndexKey: printed rows are stateless and render in the order given, so position is their identity
 				<div key={i} className="min-w-0">
 					<dt>
 						<DocLabel>{typeof m.label === "string" ? t(m.label) : m.label}</DocLabel>
@@ -607,7 +736,15 @@ export function DocumentMeta({ items, className, ...props }: Omit<React.Componen
 }
 
 /** One party (customer, supplier, employee…) with IDs and address. */
-export function PartyBlock({ heading, party, className, ...props }: Omit<React.ComponentProps<"div">, "children"> & { heading: DocLabelKey | (string & {}) | React.ReactNode; party: DocParty }) {
+export function PartyBlock({
+	heading,
+	party,
+	className,
+	...props
+}: Omit<React.ComponentProps<"div">, "children"> & {
+	heading: DocLabelKey | (string & {}) | React.ReactNode;
+	party: DocParty;
+}) {
 	const t = useDocLabel();
 	const lines = addressLines(party.address);
 	const contact = [party.phone, party.email].filter(Boolean).join("  ·  ");
@@ -617,11 +754,12 @@ export function PartyBlock({ heading, party, className, ...props }: Omit<React.C
 				<DocLabel>{typeof heading === "string" ? t(heading) : heading}</DocLabel>
 			</h2>
 			<div className="mt-1.5 text-[9.5pt] leading-tight font-semibold">{party.name}</div>
-			<CompanyIds party={party} className="mt-1 text-[7.5pt] text-[var(--doc-muted)]" />
+			<CompanyIds party={party} className="mt-1 text-[7.5pt] text-doc-ink-muted" />
 			{(party.attention || lines.length > 0 || contact) && (
-				<address className="mt-1.5 text-[7.75pt] leading-[1.55] text-[var(--doc-muted)] not-italic">
-					{party.attention && <div className="text-[var(--doc-ink)]">Attn: {party.attention}</div>}
+				<address className="mt-1.5 text-[7.75pt] leading-[1.55] text-doc-ink-muted not-italic">
+					{party.attention && <div className="text-doc-ink">Attn: {party.attention}</div>}
 					{lines.map((l, i) => (
+						// biome-ignore lint/suspicious/noArrayIndexKey: printed rows are stateless and render in the order given, so position is their identity
 						<div key={i}>{l}</div>
 					))}
 					{contact && <div>{contact}</div>}
@@ -632,11 +770,26 @@ export function PartyBlock({ heading, party, className, ...props }: Omit<React.C
 }
 
 /** Two or three parties side by side (Bill to · Ship to · Supplier). */
-export function PartyGrid({ parties, className, ...props }: Omit<React.ComponentProps<"div">, "children"> & { parties: Array<{ heading: DocLabelKey | (string & {}) | React.ReactNode; party: DocParty }> }) {
+export function PartyGrid({
+	parties,
+	className,
+	...props
+}: Omit<React.ComponentProps<"div">, "children"> & {
+	parties: Array<{ heading: DocLabelKey | (string & {}) | React.ReactNode; party: DocParty }>;
+}) {
 	const { size } = usePage();
 	return (
-		<div data-slot="cy-doc-parties" className={cn("grid gap-x-8 gap-y-5", size === "receipt" ? "grid-cols-1" : parties.length >= 3 ? "grid-cols-3" : "grid-cols-2", className)} {...props}>
+		<div
+			data-slot="cy-doc-parties"
+			className={cn(
+				"grid gap-x-8 gap-y-5",
+				size === "receipt" ? "grid-cols-1" : parties.length >= 3 ? "grid-cols-3" : "grid-cols-2",
+				className,
+			)}
+			{...props}
+		>
 			{parties.map((p, i) => (
+				// biome-ignore lint/suspicious/noArrayIndexKey: printed rows are stateless and render in the order given, so position is their identity
 				<PartyBlock key={i} heading={p.heading} party={p.party} />
 			))}
 		</div>
@@ -673,13 +826,23 @@ export type DocumentTableProps<T> = Omit<React.ComponentProps<"table">, "childre
 };
 
 /** Line items, payslip lines, statement rows — the one table every document uses. Headers repeat on each printed page. */
-export function DocumentTable<T>({ columns, rows, sections, getKey, numbered, empty, dense, className, ...props }: DocumentTableProps<T>) {
+export function DocumentTable<T>({
+	columns,
+	rows,
+	sections,
+	getKey,
+	numbered,
+	empty,
+	dense,
+	className,
+	...props
+}: DocumentTableProps<T>) {
 	const { layout } = useDocumentBrand();
 	const t = useDocLabel();
 	const groups: DocTableSection<T>[] = sections ?? [{ rows: rows ?? [] }];
 	const span = columns.length + (numbered ? 1 : 0);
 	const pad = dense ? "py-[1.6mm]" : "py-[2.4mm]";
-	const align = (c: DocColumn<T>) => (c.align ?? (c.numeric ? "right" : "left"));
+	const align = (c: DocColumn<T>) => c.align ?? (c.numeric ? "right" : "left");
 	let n = 0;
 
 	return (
@@ -693,12 +856,16 @@ export function DocumentTable<T>({ columns, rows, sections, getKey, numbered, em
 			<thead>
 				<tr
 					className={cn(
-						layout === "modern" && "border-b-[1.5px] border-[var(--doc-rule-strong)]",
-						layout === "classic" && "border-y-[1.5px] border-[var(--doc-rule-strong)]",
-						layout === "minimal" && "border-b border-[var(--doc-rule-strong)]",
+						layout === "modern" && "border-b-[1.5px] border-doc-rule",
+						layout === "classic" && "border-y-[1.5px] border-doc-rule",
+						layout === "minimal" && "border-b border-doc-rule",
 					)}
 				>
-					{numbered && <th scope="col" className="py-[2mm] pl-0 text-left text-[6.75pt] font-semibold tracking-[0.1em] uppercase">#</th>}
+					{numbered && (
+						<th scope="col" className="py-[2mm] pl-0 text-left text-[6.75pt] font-semibold tracking-[0.1em] uppercase">
+							#
+						</th>
+					)}
 					{columns.map((c, i) => (
 						<th
 							key={c.key}
@@ -708,7 +875,7 @@ export function DocumentTable<T>({ columns, rows, sections, getKey, numbered, em
 								align(c) === "right" ? "text-right" : align(c) === "center" ? "text-center" : "text-left",
 								i === 0 && !numbered ? "pl-0" : "pl-[3mm]",
 								i === columns.length - 1 ? "pr-0" : "",
-								layout === "modern" ? "text-[var(--doc-ink)]" : "text-[var(--doc-muted)]",
+								layout === "modern" ? "text-doc-ink" : "text-doc-ink-muted",
 							)}
 						>
 							{typeof c.header === "string" ? t(c.header) : c.header}
@@ -717,6 +884,7 @@ export function DocumentTable<T>({ columns, rows, sections, getKey, numbered, em
 				</tr>
 			</thead>
 			{groups.map((g, gi) => (
+				// biome-ignore lint/suspicious/noArrayIndexKey: printed rows are stateless and render in the order given, so position is their identity
 				<tbody key={gi}>
 					{g.title && (
 						<tr>
@@ -729,8 +897,11 @@ export function DocumentTable<T>({ columns, rows, sections, getKey, numbered, em
 					{g.rows.map((r, i) => {
 						n++;
 						return (
-							<tr key={getKey ? getKey(r, i) : `${gi}-${i}`} className="cy-doc-break-avoid border-b border-[var(--doc-rule)] align-top">
-								{numbered && <td className={cn(pad, "cy-doc-num pl-0 text-[var(--doc-subtle)]")}>{n}</td>}
+							<tr
+								key={getKey ? getKey(r, i) : `${gi}-${i}`}
+								className="cy-doc-break-avoid border-b border-doc-rule-soft align-top"
+							>
+								{numbered && <td className={cn(pad, "cy-doc-num pl-0 text-doc-ink-subtle")}>{n}</td>}
 								{columns.map((c, ci) => (
 									<td
 										key={c.key}
@@ -761,7 +932,7 @@ export function DocumentTable<T>({ columns, rows, sections, getKey, numbered, em
 			{groups.every((g) => g.rows.length === 0) && empty && (
 				<tbody>
 					<tr>
-						<td colSpan={span} className="py-[6mm] text-center text-[var(--doc-subtle)]">
+						<td colSpan={span} className="py-[6mm] text-center text-doc-ink-subtle">
 							{empty}
 						</td>
 					</tr>
@@ -772,11 +943,16 @@ export function DocumentTable<T>({ columns, rows, sections, getKey, numbered, em
 }
 
 /** Description cell with an optional quieter second line. */
-export function DocItem({ title, detail, className, ...props }: Omit<React.ComponentProps<"div">, "title" | "children"> & { title: React.ReactNode; detail?: React.ReactNode }) {
+export function DocItem({
+	title,
+	detail,
+	className,
+	...props
+}: Omit<React.ComponentProps<"div">, "title" | "children"> & { title: React.ReactNode; detail?: React.ReactNode }) {
 	return (
 		<div className={cn("min-w-0", className)} {...props}>
 			<div className="font-medium">{title}</div>
-			{detail && <div className="mt-0.5 text-[7.5pt] leading-snug text-[var(--doc-muted)]">{detail}</div>}
+			{detail && <div className="mt-0.5 text-[7.5pt] leading-snug text-doc-ink-muted">{detail}</div>}
 		</div>
 	);
 }
@@ -818,19 +994,22 @@ export function TotalsBlock({ rows, currency = "MYR", words, aside, className, .
 				const strong = r.kind === "total" || r.kind === "balance";
 				return (
 					<div
+						// biome-ignore lint/suspicious/noArrayIndexKey: printed rows are stateless and render in the order given, so position is their identity
 						key={i}
 						className={cn(
 							"flex items-baseline justify-between gap-4 py-[1.3mm]",
 							strong && "font-semibold",
-							isGrand && layout === "classic" && "mt-[1.5mm] border-t border-[var(--doc-rule-strong)] pt-[2.2mm] pb-[2mm] [border-bottom:3px_double_var(--doc-rule-strong)]",
-							isGrand && layout === "minimal" && "mt-[2mm] border-t border-[var(--doc-rule-strong)] pt-[2.5mm]",
-							isGrand && layout === "modern" && "mt-[2mm] border-t-[1.5px] border-[var(--doc-rule-strong)] pt-[2.8mm]",
-							!isGrand && r.kind === "total" && "border-t border-[var(--doc-rule)] pt-[2mm]",
+							isGrand &&
+								layout === "classic" &&
+								"mt-[1.5mm] border-t border-doc-rule pt-[2.2mm] pb-[2mm] [border-bottom:3px_double_var(--doc-rule)]",
+							isGrand && layout === "minimal" && "mt-[2mm] border-t border-doc-rule pt-[2.5mm]",
+							isGrand && layout === "modern" && "mt-[2mm] border-t-[1.5px] border-doc-rule pt-[2.8mm]",
+							!isGrand && r.kind === "total" && "border-t border-doc-rule-soft pt-[2mm]",
 						)}
 					>
-						<dt className={cn(strong ? "text-[var(--doc-ink)]" : "text-[var(--doc-muted)]")}>
+						<dt className={cn(strong ? "text-doc-ink" : "text-doc-ink-muted")}>
 							{label}
-							{r.hint && <span className="ml-1 text-[var(--doc-subtle)]">{r.hint}</span>}
+							{r.hint && <span className="ml-1 text-doc-ink-subtle">{r.hint}</span>}
 						</dt>
 						<dd
 							className={cn(
@@ -840,7 +1019,7 @@ export function TotalsBlock({ rows, currency = "MYR", words, aside, className, .
 								isGrand && layout === "classic" && "[font-family:var(--doc-display)] text-[13pt]",
 							)}
 						>
-							{isGrand && <span className="mr-1 text-[8pt] font-medium text-[var(--doc-muted)]">{sym}</span>}
+							{isGrand && <span className="mr-1 text-[8pt] font-medium text-doc-ink-muted">{sym}</span>}
 							<DocSignedFigure text={formatDocAmount(r.value, { brackets: r.kind === "discount" || r.kind === "paid" })} />
 						</dd>
 					</div>
@@ -856,11 +1035,15 @@ export function TotalsBlock({ rows, currency = "MYR", words, aside, className, .
 				{aside == null || aside === false ? <div className={cn(size === "receipt" ? "" : "ml-auto")}>{body}</div> : body}
 			</div>
 			{words && grand && (
-				<div className={cn("mt-[3mm] text-[7.5pt] leading-snug", size === "receipt" ? "" : "ml-auto max-w-[110mm] text-right")}>
+				<div
+					className={cn("mt-[3mm] text-[7.5pt] leading-snug", size === "receipt" ? "" : "ml-auto max-w-[110mm] text-right")}
+				>
 					<DocLabel className="mb-0.5">{t("amountInWords")}</DocLabel>
-					<div className="text-[var(--doc-ink)] italic">{amountInWords(grand.value, { currency, lang: locale === "ms" ? "ms" : "en" })}</div>
+					<div className="text-doc-ink italic">
+						{amountInWords(grand.value, { currency, lang: locale === "ms" ? "ms" : "en" })}
+					</div>
 					{locale === "en-ms" && (
-						<div lang="ms" className="text-[var(--doc-muted)] italic">
+						<div lang="ms" className="text-doc-ink-muted italic">
 							{amountInWords(grand.value, { currency, lang: "ms" })}
 						</div>
 					)}
@@ -884,7 +1067,17 @@ export type PaymentBlockProps = Omit<React.ComponentProps<"div">, "children"> & 
 };
 
 /** Where and how to pay. */
-export function PaymentBlock({ bankName, accountName, accountNumber, swiftCode, reference, qr, note, className, ...props }: PaymentBlockProps) {
+export function PaymentBlock({
+	bankName,
+	accountName,
+	accountNumber,
+	swiftCode,
+	reference,
+	qr,
+	note,
+	className,
+	...props
+}: PaymentBlockProps) {
 	const t = useDocLabel();
 	const { locale } = useDocumentBrand();
 	const rows = [
@@ -898,20 +1091,25 @@ export function PaymentBlock({ bankName, accountName, accountNumber, swiftCode, 
 		<DocSection title="paymentDetails" className={className} {...props}>
 			<div className="flex items-start gap-4">
 				{qr && (
-					<div role="img" aria-label={docLabelText("paymentQr", locale === "ms" ? "ms" : "en")} className="size-[20mm] shrink-0 [&>svg]:size-full">
+					<div
+						role="img"
+						aria-label={docLabelText("paymentQr", locale === "ms" ? "ms" : "en")}
+						className="size-[20mm] shrink-0 [&>svg]:size-full"
+					>
 						{qr}
 					</div>
 				)}
 				<div className="min-w-0">
 					<dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-0.5">
 						{rows.map(([k, v], i) => (
+							// biome-ignore lint/suspicious/noArrayIndexKey: printed rows are stateless and render in the order given, so position is their identity
 							<React.Fragment key={i}>
-								<dt className="text-[var(--doc-muted)]">{k}</dt>
+								<dt className="text-doc-ink-muted">{k}</dt>
 								<dd className="font-medium">{v}</dd>
 							</React.Fragment>
 						))}
 					</dl>
-					{note && <div className="mt-1.5 text-[7.5pt] text-[var(--doc-muted)]">{note}</div>}
+					{note && <div className="mt-1.5 text-[7.5pt] text-doc-ink-muted">{note}</div>}
 				</div>
 			</div>
 		</DocSection>
@@ -935,30 +1133,41 @@ export function EInvoiceBlock({ status, uuid, validatedAt, url, qr, className, .
 	return (
 		<div data-slot="cy-doc-einvoice" className={cn("cy-doc-break-avoid flex items-start gap-3", className)} {...props}>
 			{validated && (
-				<div className={cn("flex size-[20mm] shrink-0 items-center justify-center", !qr && "border border-dashed border-[var(--doc-rule)] text-center text-[6pt] leading-tight text-[var(--doc-subtle)]")}>
+				<div
+					className={cn(
+						"flex size-[20mm] shrink-0 items-center justify-center",
+						!qr && "border border-dashed border-doc-rule-soft text-center text-[6pt] leading-tight text-doc-ink-subtle",
+					)}
+				>
 					{qr ? (
-							<div role="img" aria-label={docLabelText("eInvoiceQr", locale === "ms" ? "ms" : "en")} className="size-full [&>svg]:size-full">
-								{qr}
-							</div>
-						) : (
-							<span className="px-1">MyInvois QR</span>
-						)}
+						<div
+							role="img"
+							aria-label={docLabelText("eInvoiceQr", locale === "ms" ? "ms" : "en")}
+							className="size-full [&>svg]:size-full"
+						>
+							{qr}
+						</div>
+					) : (
+						<span className="px-1">MyInvois QR</span>
+					)}
 				</div>
 			)}
 			<div className="min-w-0 text-[7.5pt] leading-[1.55]">
-				<div className={cn("font-semibold", status === "rejected" && "uppercase tracking-[0.06em]")}>{t(validated ? "eInvoiceValidated" : status === "pending" ? "eInvoicePending" : "eInvoiceRejected")}</div>
+				<div className={cn("font-semibold", status === "rejected" && "uppercase tracking-[0.06em]")}>
+					{t(validated ? "eInvoiceValidated" : status === "pending" ? "eInvoicePending" : "eInvoiceRejected")}
+				</div>
 				{uuid && (
-					<div className="break-all text-[var(--doc-muted)]">
-						{t("uuid")} <span className="text-[var(--doc-ink)]">{uuid}</span>
+					<div className="break-all text-doc-ink-muted">
+						{t("uuid")} <span className="text-doc-ink">{uuid}</span>
 					</div>
 				)}
 				{validatedAt && (
-					<div className="text-[var(--doc-muted)]">
+					<div className="text-doc-ink-muted">
 						{t("validatedOn")} {validatedAt}
 					</div>
 				)}
 				{url && validated && (
-					<a href={url} className="text-[var(--doc-ink)] underline decoration-[0.5px] underline-offset-2">
+					<a href={url} className="text-doc-ink underline decoration-[0.5px] underline-offset-2">
 						{t("verify")}
 					</a>
 				)}
@@ -968,27 +1177,53 @@ export function EInvoiceBlock({ status, uuid, validatedAt, url, qr, className, .
 }
 
 /** Free text under a label (notes, terms & conditions). Keeps line breaks. */
-export function NotesBlock({ title = "notes", children, className, ...props }: Omit<React.ComponentProps<"section">, "title"> & { title?: DocLabelKey | (string & {}) | React.ReactNode }) {
+export function NotesBlock({
+	title = "notes",
+	children,
+	className,
+	...props
+}: Omit<React.ComponentProps<"section">, "title"> & { title?: DocLabelKey | (string & {}) | React.ReactNode }) {
 	return (
 		<DocSection title={title} className={className} {...props}>
-			<div className="text-[7.75pt] leading-[1.6] whitespace-pre-line text-[var(--doc-muted)]">{children}</div>
+			<div className="text-[7.75pt] leading-[1.6] whitespace-pre-line text-doc-ink-muted">{children}</div>
 		</DocSection>
 	);
 }
 
 /** Signature lines: authorised signatory, received by, prepared/approved by. */
-export function SignatureBlock({ signatories, className, ...props }: Omit<React.ComponentProps<"div">, "children"> & { signatories: DocSignatory[] }) {
+export function SignatureBlock({
+	signatories,
+	className,
+	...props
+}: Omit<React.ComponentProps<"div">, "children"> & { signatories: DocSignatory[] }) {
 	const t = useDocLabel();
 	const { locale } = useDocumentBrand();
 	return (
-		<div data-slot="cy-doc-signatures" className={cn("cy-doc-break-avoid grid gap-10", signatories.length >= 3 ? "grid-cols-3" : "grid-cols-2", className)} {...props}>
+		<div
+			data-slot="cy-doc-signatures"
+			className={cn("cy-doc-break-avoid grid gap-10", signatories.length >= 3 ? "grid-cols-3" : "grid-cols-2", className)}
+			{...props}
+		>
 			{signatories.map((s, i) => (
+				// biome-ignore lint/suspicious/noArrayIndexKey: printed rows are stateless and render in the order given, so position is their identity
 				<div key={i} className="min-w-0">
-					<div className="flex h-[16mm] items-end">{s.image && <img src={s.image} alt={docLabelText("signed", locale === "ms" ? "ms" : "en")} className="max-h-[15mm] w-auto object-contain" />}</div>
-					<div className="border-t border-[var(--doc-rule-strong)] pt-[1.5mm]">
-						<div className="text-[7pt] font-semibold tracking-[0.08em] text-[var(--doc-muted)] uppercase">{typeof s.label === "string" ? t(s.label) : s.label ?? t("authorisedSignature")}</div>
+					<div className="flex h-[16mm] items-end">
+						{s.image && (
+							<img
+								src={s.image}
+								alt={docLabelText("signed", locale === "ms" ? "ms" : "en")}
+								className="max-h-[15mm] w-auto object-contain"
+							/>
+						)}
+					</div>
+					<div className="border-t border-doc-rule pt-[1.5mm]">
+						<div className="text-[7pt] font-semibold tracking-[0.08em] text-doc-ink-muted uppercase">
+							{typeof s.label === "string" ? t(s.label) : (s.label ?? t("authorisedSignature"))}
+						</div>
 						{s.name && <div className="mt-0.5 font-medium">{s.name}</div>}
-						{(s.title || s.date) && <div className="text-[7.5pt] text-[var(--doc-muted)]">{[s.title, s.date].filter(Boolean).join(" · ")}</div>}
+						{(s.title || s.date) && (
+							<div className="text-[7.5pt] text-doc-ink-muted">{[s.title, s.date].filter(Boolean).join(" · ")}</div>
+						)}
 					</div>
 				</div>
 			))}
@@ -997,15 +1232,43 @@ export function SignatureBlock({ signatories, className, ...props }: Omit<React.
 }
 
 /** Page footer: brand note, company line, and the computer-generated notice. Sits at the bottom of the sheet. */
-export function DocumentFooter({ children, note, hideNotice, className, ...props }: React.ComponentProps<"footer"> & { note?: React.ReactNode; hideNotice?: boolean }) {
+export function DocumentFooter({
+	children,
+	note,
+	hideNotice,
+	className,
+	...props
+}: React.ComponentProps<"footer"> & { note?: React.ReactNode; hideNotice?: boolean }) {
 	const { company, footerNote, layout } = useDocumentBrand();
 	const { size } = usePage();
 	const t = useDocLabel();
 	return (
-		<footer data-slot="cy-doc-footer" className={cn("mt-auto pt-[8mm] [break-before:avoid] [break-inside:avoid] text-[7pt] leading-snug text-[var(--doc-subtle)]", size === "receipt" && "pt-[4mm] text-center", className)} {...props}>
-			{(note ?? footerNote) && <div className={cn("mb-[2.5mm] text-[8pt] text-[var(--doc-ink)]", layout === "classic" && "text-center italic [font-family:var(--doc-display)]")}>{note ?? footerNote}</div>}
+		<footer
+			data-slot="cy-doc-footer"
+			className={cn(
+				"mt-auto pt-[8mm] [break-before:avoid] [break-inside:avoid] text-[7pt] leading-snug text-doc-ink-subtle",
+				size === "receipt" && "pt-[4mm] text-center",
+				className,
+			)}
+			{...props}
+		>
+			{(note ?? footerNote) && (
+				<div
+					className={cn(
+						"mb-[2.5mm] text-[8pt] text-doc-ink",
+						layout === "classic" && "text-center italic [font-family:var(--doc-display)]",
+					)}
+				>
+					{note ?? footerNote}
+				</div>
+			)}
 			{children}
-			<div className={cn("flex flex-wrap items-end justify-between gap-x-6 gap-y-1 border-t border-[var(--doc-rule)] pt-[2.5mm]", size === "receipt" && "justify-center")}>
+			<div
+				className={cn(
+					"flex flex-wrap items-end justify-between gap-x-6 gap-y-1 border-t border-doc-rule-soft pt-[2.5mm]",
+					size === "receipt" && "justify-center",
+				)}
+			>
 				<span>
 					{company.name}
 					{company.registrationNo && <span className="whitespace-nowrap"> · {company.registrationNo}</span>}
@@ -1017,8 +1280,25 @@ export function DocumentFooter({ children, note, hideNotice, className, ...props
 }
 
 /** Vertical rhythm between blocks: `<DocStack>` spaces its children evenly. */
-export function DocStack({ gap = "md", className, ...props }: React.ComponentProps<"div"> & { gap?: "sm" | "md" | "lg" }) {
-	return <div className={cn("flex flex-col", gap === "sm" ? "gap-[4mm] print:gap-[3.5mm]" : gap === "lg" ? "gap-[9mm] print:gap-[7mm]" : "gap-[6.5mm] print:gap-[5mm]", className)} {...props} />;
+export function DocStack({
+	gap = "md",
+	className,
+	...props
+}: React.ComponentProps<"div"> & { gap?: "sm" | "md" | "lg" }) {
+	return (
+		<div
+			className={cn(
+				"flex flex-col",
+				gap === "sm"
+					? "gap-[4mm] print:gap-[3.5mm]"
+					: gap === "lg"
+						? "gap-[9mm] print:gap-[7mm]"
+						: "gap-[6.5mm] print:gap-[5mm]",
+				className,
+			)}
+			{...props}
+		/>
+	);
 }
 
 /** Two blocks side by side (payment + e-invoice, notes + totals). Stacks on receipts. */
@@ -1030,14 +1310,19 @@ export function DocColumns({ className, ...props }: React.ComponentProps<"div">)
 /* ═════════════ More shared parts ═════════════ */
 
 /** A horizontal separator: hairline, strong, or dashed (receipts, tear lines). */
-export function DocRule({ dashed, strong, className, ...props }: React.ComponentProps<"hr"> & { dashed?: boolean; strong?: boolean }) {
+export function DocRule({
+	dashed,
+	strong,
+	className,
+	...props
+}: React.ComponentProps<"hr"> & { dashed?: boolean; strong?: boolean }) {
 	return (
 		<hr
 			aria-hidden
 			className={cn(
 				"m-0 h-0 border-0 border-t",
 				dashed ? "border-dashed" : "border-solid",
-				strong ? "border-[var(--doc-rule-strong)]" : dashed ? "border-[var(--doc-subtle)]" : "border-[var(--doc-rule)]",
+				strong ? "border-doc-rule" : dashed ? "border-doc-ink-subtle" : "border-doc-rule-soft",
 				className,
 			)}
 			{...props}
@@ -1059,7 +1344,13 @@ export type DocFieldItem = {
 	span?: 1 | 2 | 3 | 4;
 };
 
-const FIELD_COLS = { 1: "grid-cols-1", 2: "grid-cols-2", 3: "grid-cols-3", 4: "grid-cols-4", 5: "grid-cols-5" } as const;
+const FIELD_COLS = {
+	1: "grid-cols-1",
+	2: "grid-cols-2",
+	3: "grid-cols-3",
+	4: "grid-cols-4",
+	5: "grid-cols-5",
+} as const;
 const FIELD_SPAN = { 1: "", 2: "col-span-2", 3: "col-span-3", 4: "col-span-4" } as const;
 
 /**
@@ -1068,32 +1359,56 @@ const FIELD_SPAN = { 1: "", 2: "col-span-2", 3: "col-span-3", 4: "col-span-4" } 
  * - `columns`: micro-label above value in an even, auto-fitting row (references, delivery details).
  * - `grid`: quiet label above value in a fixed number of columns (employee particulars, bank details).
  */
-export function DocFields({ items, variant = "rows", columns = 3, dashed, className, ...props }: Omit<React.ComponentProps<"dl">, "children"> & { items: DocFieldItem[]; variant?: "rows" | "columns" | "grid"; columns?: 1 | 2 | 3 | 4 | 5; dashed?: boolean }) {
+export function DocFields({
+	items,
+	variant = "rows",
+	columns = 3,
+	dashed,
+	className,
+	...props
+}: Omit<React.ComponentProps<"dl">, "children"> & {
+	items: DocFieldItem[];
+	variant?: "rows" | "columns" | "grid";
+	columns?: 1 | 2 | 3 | 4 | 5;
+	dashed?: boolean;
+}) {
 	const node = useDocLabelNode();
 	const shown = items.filter((i) => i.value != null && i.value !== "" && i.value !== false);
 	const value = (f: DocFieldItem) => <span className={cn(f.figures && "cy-doc-num whitespace-nowrap")}>{f.value}</span>;
 	if (variant === "grid")
 		return (
-			<dl data-slot="cy-doc-fields" className={cn("grid gap-x-[6mm] gap-y-[2.6mm]", FIELD_COLS[columns], className)} {...props}>
+			<dl
+				data-slot="cy-doc-fields"
+				className={cn("grid gap-x-[6mm] gap-y-[2.6mm]", FIELD_COLS[columns], className)}
+				{...props}
+			>
 				{shown.map((f, i) => (
+					// biome-ignore lint/suspicious/noArrayIndexKey: printed rows are stateless and render in the order given, so position is their identity
 					<div key={i} className={cn("min-w-0", f.span && FIELD_SPAN[f.span])}>
-						<dt className="text-[7pt] leading-tight text-[var(--doc-subtle)]">{node(f.label)}</dt>
-						<dd className={cn("mt-[0.7mm] leading-snug font-medium break-words", f.emphasis && "font-semibold")}>{value(f)}</dd>
-						{f.hint && <dd className="text-[7.5pt] text-[var(--doc-muted)]">{f.hint}</dd>}
+						<dt className="text-[7pt] leading-tight text-doc-ink-subtle">{node(f.label)}</dt>
+						<dd className={cn("mt-[0.7mm] leading-snug font-medium break-words", f.emphasis && "font-semibold")}>
+							{value(f)}
+						</dd>
+						{f.hint && <dd className="text-[7.5pt] text-doc-ink-muted">{f.hint}</dd>}
 					</div>
 				))}
 			</dl>
 		);
 	if (variant === "columns")
 		return (
-			<dl data-slot="cy-doc-fields" className={cn("grid grid-cols-[repeat(auto-fit,minmax(26mm,1fr))] gap-x-5 gap-y-3", className)} {...props}>
+			<dl
+				data-slot="cy-doc-fields"
+				className={cn("grid grid-cols-[repeat(auto-fit,minmax(26mm,1fr))] gap-x-5 gap-y-3", className)}
+				{...props}
+			>
 				{shown.map((f, i) => (
+					// biome-ignore lint/suspicious/noArrayIndexKey: printed rows are stateless and render in the order given, so position is their identity
 					<div key={i} className="min-w-0">
 						<dt>
 							<DocLabel>{node(f.label)}</DocLabel>
 						</dt>
 						<dd className={cn("mt-1 font-medium", f.emphasis && "font-semibold")}>{value(f)}</dd>
-						{f.hint && <dd className="text-[7.5pt] text-[var(--doc-muted)]">{f.hint}</dd>}
+						{f.hint && <dd className="text-[7.5pt] text-doc-ink-muted">{f.hint}</dd>}
 					</div>
 				))}
 			</dl>
@@ -1101,11 +1416,18 @@ export function DocFields({ items, variant = "rows", columns = 3, dashed, classN
 	return (
 		<dl data-slot="cy-doc-fields" className={cn("flex flex-col", className)} {...props}>
 			{shown.map((f, i) => (
-				<div key={i} className={cn("flex items-baseline justify-between gap-3 py-[0.9mm]", dashed && i > 0 && "border-t border-dashed border-[var(--doc-rule)]")}>
-					<dt className="shrink-0 text-[var(--doc-muted)]">{node(f.label)}</dt>
+				<div
+					// biome-ignore lint/suspicious/noArrayIndexKey: printed rows are stateless and render in the order given, so position is their identity
+					key={i}
+					className={cn(
+						"flex items-baseline justify-between gap-3 py-[0.9mm]",
+						dashed && i > 0 && "border-t border-dashed border-doc-rule-soft",
+					)}
+				>
+					<dt className="shrink-0 text-doc-ink-muted">{node(f.label)}</dt>
 					<dd className={cn("min-w-0 text-right font-medium", f.emphasis && "font-semibold")}>
 						{value(f)}
-						{f.hint && <div className="text-[0.9em] font-normal text-[var(--doc-muted)]">{f.hint}</div>}
+						{f.hint && <div className="text-[0.9em] font-normal text-doc-ink-muted">{f.hint}</div>}
 					</dd>
 				</div>
 			))}
@@ -1123,9 +1445,9 @@ export function DocCallout({ className, children, ...props }: React.ComponentPro
 		<div
 			className={cn(
 				"cy-doc-break-avoid",
-				layout === "modern" && "rounded-[2.5mm] border border-[var(--doc-rule)] px-[5mm] py-[3.5mm]",
-				layout === "classic" && "border-y border-[var(--doc-rule-strong)] py-[3mm] [border-bottom-style:double] [border-bottom-width:3px]",
-				layout === "minimal" && "border-l-[1.5px] border-[var(--doc-rule-strong)] py-[0.5mm] pl-[4.5mm]",
+				layout === "modern" && "rounded-[2.5mm] border border-doc-rule-soft px-[5mm] py-[3.5mm]",
+				layout === "classic" && "border-y border-doc-rule py-[3mm] [border-bottom-style:double] [border-bottom-width:3px]",
+				layout === "minimal" && "border-l-[1.5px] border-doc-rule py-[0.5mm] pl-[4.5mm]",
 				className,
 			)}
 			{...props}
@@ -1147,22 +1469,55 @@ export type DocFigure = {
  * A row of key figures read left to right, ending in the one that matters (aging buckets → total due,
  * gross → deductions → net pay). `quiet` for secondary figures (employer contributions, year to date).
  */
-export function DocFigureStrip({ items, currency = "MYR", quiet, zero, className, ...props }: Omit<React.ComponentProps<"dl">, "children"> & { items: DocFigure[]; currency?: string; quiet?: boolean; zero?: string }) {
+export function DocFigureStrip({
+	items,
+	currency = "MYR",
+	quiet,
+	zero,
+	className,
+	...props
+}: Omit<React.ComponentProps<"dl">, "children"> & {
+	items: DocFigure[];
+	currency?: string;
+	quiet?: boolean;
+	zero?: string;
+}) {
 	const { layout } = useDocumentBrand();
-	const L = useDocLabel();
 	const sym = currencySymbol(currency);
 	const node = useDocLabelNode();
 	const label = (f: DocFigure) => node(f.label, { stacked: true });
 	// The emphasised figure never truncates: its column is at least as wide as its content.
-	const cols = { gridTemplateColumns: items.map((f) => (f.emphasis ? "minmax(max-content, 1.25fr)" : "minmax(0, 1fr)")).join(" ") } as React.CSSProperties;
+	const cols = {
+		gridTemplateColumns: items.map((f) => (f.emphasis ? "minmax(max-content, 1.25fr)" : "minmax(0, 1fr)")).join(" "),
+	} as React.CSSProperties;
 
 	if (quiet)
 		return (
-			<dl data-slot="cy-doc-figures" style={cols} className={cn("cy-doc-break-avoid grid border-t border-[var(--doc-rule)]", className)} {...props}>
+			<dl
+				data-slot="cy-doc-figures"
+				style={cols}
+				className={cn("cy-doc-break-avoid grid border-t border-doc-rule-soft", className)}
+				{...props}
+			>
 				{items.map((f, i) => (
-					<div key={i} className={cn("flex min-w-0 flex-col justify-between pt-[2.2mm]", i > 0 && "border-l border-[var(--doc-rule)] pl-[3mm]", layout === "classic" && "text-center")}>
-						<dt className="text-[7pt] leading-tight text-[var(--doc-subtle)]">{label(f)}</dt>
-						<dd className={cn("cy-doc-num mt-[0.8mm] text-[8.5pt] whitespace-nowrap", f.emphasis ? "font-semibold" : "font-medium text-[var(--doc-muted)]")}><DocSignedFigure text={formatDocAmount(f.value, { brackets: true, zero })} /></dd>
+					<div
+						// biome-ignore lint/suspicious/noArrayIndexKey: printed rows are stateless and render in the order given, so position is their identity
+						key={i}
+						className={cn(
+							"flex min-w-0 flex-col justify-between pt-[2.2mm]",
+							i > 0 && "border-l border-doc-rule-soft pl-[3mm]",
+							layout === "classic" && "text-center",
+						)}
+					>
+						<dt className="text-[7pt] leading-tight text-doc-ink-subtle">{label(f)}</dt>
+						<dd
+							className={cn(
+								"cy-doc-num mt-[0.8mm] text-[8.5pt] whitespace-nowrap",
+								f.emphasis ? "font-semibold" : "font-medium text-doc-ink-muted",
+							)}
+						>
+							<DocSignedFigure text={formatDocAmount(f.value, { brackets: true, zero })} />
+						</dd>
 					</div>
 				))}
 			</dl>
@@ -1174,9 +1529,9 @@ export function DocFigureStrip({ items, currency = "MYR", quiet, zero, className
 			style={cols}
 			className={cn(
 				"cy-doc-break-avoid grid",
-				layout === "modern" && "border-y-[1.5px] border-[var(--doc-rule-strong)]",
-				layout === "classic" && "border-y-[1.5px] border-[var(--doc-rule-strong)]",
-				layout === "minimal" && "gap-[4mm] border-t border-[var(--doc-rule-strong)]",
+				layout === "modern" && "border-y-[1.5px] border-doc-rule",
+				layout === "classic" && "border-y-[1.5px] border-doc-rule",
+				layout === "minimal" && "gap-[4mm] border-t border-doc-rule",
 				className,
 			)}
 			{...props}
@@ -1185,20 +1540,21 @@ export function DocFigureStrip({ items, currency = "MYR", quiet, zero, className
 				const strong = f.emphasis;
 				return (
 					<div
+						// biome-ignore lint/suspicious/noArrayIndexKey: printed rows are stateless and render in the order given, so position is their identity
 						key={i}
 						className={cn(
 							"flex min-w-0 flex-col justify-between gap-[2mm]",
 							layout === "modern" && "px-[3mm] py-[3mm] first:pl-0",
-							layout === "modern" && i > 0 && "border-l border-[var(--doc-rule)]",
+							layout === "modern" && i > 0 && "border-l border-doc-rule-soft",
 							layout === "classic" && "px-[3mm] py-[3mm] text-center",
-							layout === "classic" && i > 0 && "border-l border-[var(--doc-rule)]",
+							layout === "classic" && i > 0 && "border-l border-doc-rule-soft",
 							layout === "minimal" && "pt-[3mm]",
 						)}
 					>
 						<dt
 							className={cn(
 								"text-[6.5pt] leading-tight font-semibold tracking-[0.1em] uppercase",
-								strong ? "text-[var(--doc-ink)]" : "text-[var(--doc-subtle)]",
+								strong ? "text-doc-ink" : "text-doc-ink-subtle",
 							)}
 						>
 							{label(f)}
@@ -1211,7 +1567,7 @@ export function DocFigureStrip({ items, currency = "MYR", quiet, zero, className
 								layout === "classic" && strong && "text-[14pt]",
 							)}
 						>
-							{strong && <span className="mr-1 text-[7.5pt] font-medium text-[var(--doc-muted)]">{sym}</span>}
+							{strong && <span className="mr-1 text-[7.5pt] font-medium text-doc-ink-muted">{sym}</span>}
 							<DocSignedFigure text={formatDocAmount(f.value, { brackets: true, zero: strong ? undefined : zero })} />
 						</dd>
 					</div>
@@ -1222,19 +1578,38 @@ export function DocFigureStrip({ items, currency = "MYR", quiet, zero, className
 }
 
 /** An amount spelled out — "Ringgit Malaysia … Only" — in the brand's language (both lines when bilingual). */
-export function DocAmountWords({ amount, currency = "MYR", label = "amountInWords", align = "left", className, ...props }: Omit<React.ComponentProps<"div">, "children"> & { amount: string; currency?: string; label?: DocLabelKey | DocText; align?: "left" | "right" }) {
+export function DocAmountWords({
+	amount,
+	currency = "MYR",
+	label = "amountInWords",
+	align = "left",
+	className,
+	...props
+}: Omit<React.ComponentProps<"div">, "children"> & {
+	amount: string;
+	currency?: string;
+	label?: DocLabelKey | DocText;
+	align?: "left" | "right";
+}) {
 	const { locale } = useDocumentBrand();
 	const L = useDocLabel();
 	return (
-		<div data-slot="cy-doc-words" className={cn("cy-doc-break-avoid text-[7.5pt] leading-snug", align === "right" && "ml-auto max-w-[115mm] text-right", className)} {...props}>
+		<div
+			data-slot="cy-doc-words"
+			className={cn(
+				"cy-doc-break-avoid text-[7.5pt] leading-snug",
+				align === "right" && "ml-auto max-w-[115mm] text-right",
+				className,
+			)}
+			{...props}
+		>
 			<DocLabel className="mb-0.5">{L(label)}</DocLabel>
-			<div className="text-[var(--doc-ink)] italic">{amountInWords(amount, { currency, lang: locale === "ms" ? "ms" : "en" })}</div>
+			<div className="text-doc-ink italic">{amountInWords(amount, { currency, lang: locale === "ms" ? "ms" : "en" })}</div>
 			{locale === "en-ms" && (
-				<div lang="ms" className="text-[var(--doc-muted)] italic">
+				<div lang="ms" className="text-doc-ink-muted italic">
 					{amountInWords(amount, { currency, lang: "ms" })}
 				</div>
 			)}
 		</div>
 	);
 }
-

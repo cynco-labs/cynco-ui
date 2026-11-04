@@ -9,7 +9,7 @@ import { BankTransactionTimeline } from "@cynco-labs/ui";
 ## Usage
 
 ```tsx
-import { type BankTxEvent, BankTransactionTimeline } from "@cynco-labs/ui";
+import { BankTransactionTimeline, type BankTxEvent } from "@cynco-labs/ui";
 
 const EVENTS: BankTxEvent[] = [
 	{
@@ -44,9 +44,7 @@ const EVENTS: BankTxEvent[] = [
 export default function BankTransactionTimelineDemo() {
 	return (
 		<div className="max-w-[520px] rounded-xl border border-border bg-card p-4">
-			<BankTransactionTimeline
-				events={EVENTS.concat([{ actor: "user", action: "post", at: "2026-10-29" }])}
-			/>
+			<BankTransactionTimeline events={EVENTS.concat([{ actor: "user", action: "post", at: "2026-10-29" }])} />
 		</div>
 	);
 }
@@ -67,4 +65,4 @@ events [{actor: rule|ai|policy|system|user, action, at, reasoning, confidence, r
 
 Actor icons are Phosphor at 14px; AI uses text-primary, others the text steps; dates via formatDate. Responsive by container: below 24rem the date moves under each event.
 
-Category: Accounting · Banking. Source: `packages/ui/src/accounting/banking.tsx`.
+Category: Accounting · Banking. Source: `packages/ui/src/accounting/banking/timeline.tsx:45-89`.

@@ -1,6 +1,12 @@
-/* Cynco UI design tokens. Light is the default; dark, modern and modern-dark switch with a class or data-theme. */
-
-/* `.light` / `.dark` exclude React Flow's root, which uses the same class names for its own colour mode. */
+/*
+ * Cynco UI design tokens.
+ *
+ * Light holds every token. The other three themes hold only what they change, so a token has one
+ * home and a new one needs editing in one place. Dark is a delta on light, modern a delta on light,
+ * modern-dark a delta on dark.
+ *
+ * `.light` / `.dark` exclude React Flow's root, which uses the same class names for its own colour mode.
+ */
 :root, .light:not(.react-flow), [data-theme="light"] {
 	--foreground: #121212;
 	--background: #fafaf9;
@@ -53,14 +59,9 @@
 	--error-text: #cc0000;
 	--input-background: #ffffff;
 	--card: #f8f8f7;
-	--card-foreground: oklch(0.141 0.005 285.823);
-	--popover: oklch(1 0 0);
-	--popover-foreground: oklch(0.141 0.005 285.823);
-	--secondary: oklch(0.967 0.001 286.375);
-	--secondary-foreground: oklch(0.21 0.006 285.885);
-	--accent: oklch(0.967 0.001 286.375);
-	--accent-foreground: oklch(0.21 0.006 285.885);
-	--ring: oklch(0.63 0.015 286.067);
+	--card-foreground: var(--foreground);
+	/* The AI canvas ground (React Flow reads it as a colour, not a utility). */
+	--sidebar: var(--background);
 	--chart-1: var(--primary);
 	--chart-2: #0f70e9;
 	--chart-3: #1e69ec;
@@ -80,71 +81,13 @@
 	--chart-series-6: #008300;
 	--chart-series-7: #8838ff;
 	--chart-series-8: #e34948;
-	--sidebar: oklch(0.985 0 0);
-	--sidebar-foreground: oklch(0.141 0.005 285.823);
-	--sidebar-primary: oklch(0.21 0.006 285.885);
-	--sidebar-primary-foreground: oklch(0.985 0 0);
-	--sidebar-accent: oklch(0.967 0.001 286.375);
-	--sidebar-accent-foreground: oklch(0.21 0.006 285.885);
-	--sidebar-border: oklch(0.92 0.004 286.32);
-	--sidebar-ring: oklch(0.63 0.015 286.067);
 	--color-panel-icon-background: color-mix(in srgb, var(--primary) 12%, #fff);
 	--color-primary-btn-hover: color-mix(in srgb, var(--primary) 88%, #fff);
 	--color-primary-btn-active: color-mix(in srgb, var(--primary) 92%, #000);
-	--color-muted-hover: #f2ebff;
-	--color-muted-active: #f2e9ff;
-	--color-yellow-50: #fefce8;
-	--color-yellow-100: #fdedd3;
-	--color-yellow-200: #fbdba7;
-	--color-yellow-300: #f9c97c;
-	--color-yellow-400: #f7b750;
-	--color-yellow-500: #f5a524;
-	--color-yellow-600: #c4841d;
-	--color-yellow-700: #936316;
-	--color-yellow-800: #62420e;
-	--color-yellow-900: #312107;
-	--color-code-background: #1e1e1e;
-	--color-code-tabs: #2d2d2d;
-	--color-code-bg: #1e1e1e;
-	--color-code-tabs-active: #3c3c3c;
 	--color-focus: color-mix(in srgb, var(--primary) 95%, transparent);
-	--color-table-hover: #f3f3f3;
-	--color-light-purple: #f9f5ff;
-	--color-error-light: #fee1e1;
-	--color-gray-light: #fafafa;
-	--color-gray-medium: #eeeeee;
-	--color-purple-dark: #8231ff;
-	--color-purple-medium: #b07aff;
-	--color-purple-stripe: #665cff;
-	--color-purple-gradient: #6f47ff;
 	--input-border-hover: rgba(18, 18, 18, 0.6);
 	--input-border-focus: rgba(18, 18, 18, 0.78);
 	--scrollbar-thumb: rgba(18, 18, 18, 0.2);
-	--color-zinc-50: oklch(0.985 0 0);
-	--color-zinc-100: oklch(0.967 0.001 286.375);
-	--color-zinc-200: oklch(0.92 0.004 286.32);
-	--color-zinc-300: oklch(0.871 0.006 286.286);
-	--color-zinc-400: oklch(0.705 0.015 286.067);
-	--color-zinc-500: oklch(0.552 0.016 285.938);
-	--color-zinc-600: oklch(0.442 0.017 285.786);
-	--color-zinc-800: oklch(0.274 0.006 286.033);
-	--color-zinc-900: oklch(0.21 0.006 285.885);
-	--color-zinc-950: oklch(0.141 0.005 285.823);
-	--color-neutral-200: oklch(0.922 0 0);
-	--color-neutral-800: oklch(0.269 0 0);
-	--color-stone-200: oklch(0.923 0.003 48.717);
-	--color-violet-200: oklch(0.894 0.057 293.283);
-	--color-violet-600: oklch(0.541 0.281 293.009);
-	--color-violet-800: oklch(0.432 0.232 292.759);
-	--color-red-400: oklch(0.704 0.191 22.216);
-	--color-red-500: oklch(0.637 0.237 25.331);
-	--color-red-600: oklch(0.577 0.245 27.325);
-	--color-blue-400: oklch(0.707 0.165 254.624);
-	--color-blue-500: oklch(0.623 0.214 259.815);
-	--color-blue-600: oklch(0.546 0.245 262.881);
-	--color-sky-500: oklch(0.685 0.169 237.323);
-	--color-emerald-500: oklch(0.696 0.17 162.48);
-	--color-amber-500: oklch(0.769 0.188 70.08);
 	--status-green: #30a46c;
 	--status-green-glyph: #ffffff;
 	--status-blue: #3e8bd9;
@@ -201,15 +144,47 @@
 	--input-shadow-default: 0 1px 2px 0 rgb(0 0 0 / 0.03);
 	--input-shadow-hover: 0 1px 2px 0 rgb(0 0 0 / 0.05);
 	--btn-primary-shadow: 0 -3px 4px 0 rgba(0, 0, 0, 0.12) inset, 0 4px 4px 0 rgba(0, 0, 0, 0.02);
+	--btn-primary-shadow-hover: 0 -3px 4px 0 rgba(0, 0, 0, 0.12) inset, 0 4px 4px 0 rgba(0, 0, 0, 0.06);
+	--btn-primary-shadow-pressed: 0 0 0 0.2px var(--primary), 0 -3px 4px 0 rgba(0, 0, 0, 0.04) inset, 0 4px 4px 0 rgba(0, 0, 0, 0.04);
 	--btn-secondary-shadow: 0 -3px 4px 0 rgba(100, 100, 100, 0.03) inset, 0 4px 4px 0 rgba(0, 0, 0, 0.02);
+	--btn-secondary-shadow-hover: 0 -3px 4px 0 rgba(100, 100, 100, 0.03) inset, 0 4px 4px 0 rgba(0, 0, 0, 0.06);
 	--btn-destructive-shadow: 0 -3px 4px 0 rgba(0, 0, 0, 0.12) inset, 0 4px 4px 0 rgba(0, 0, 0, 0.04);
+	--btn-destructive-shadow-hover: 0 -3px 4px 0 rgba(0, 0, 0, 0.08) inset, 0 4px 4px 0 rgba(0, 0, 0, 0.06);
+	--btn-destructive-shadow-pressed: 0 -3px 4px 0 rgba(0, 0, 0, 0.08) inset, 0 4px 4px 0 rgba(0, 0, 0, 0.02);
 	--panel-shadow: 0 2px 4px color-mix(in srgb, var(--primary) 25%, transparent), 0 8px 18px color-mix(in srgb, var(--primary) 5%, transparent), inset 0 -8px 11px rgba(0, 0, 0, 0.04);
 	--input-shadow-focus: 0 0 0 3px rgba(18, 18, 18, 0.07), 0 1px 2px 0 rgb(0 0 0 / 0.05);
-	--input-shadow-focus-tiny: 0 0 0 2px rgba(18, 18, 18, 0.06);
 	--input-shadow-destructive: 0 0 0 3px rgba(228, 0, 0, 0.18);
 }
 
-.dark:not(.react-flow), [data-theme="dark"] {
+/*
+ * Printed documents: black ink on white paper, the same in every theme. These sit on their own
+ * `:root` and are never redefined under `.dark`, because an invoice is a piece of paper — it does
+ * not follow the app's colour scheme on screen, on a dark page or at the printer.
+ */
+:root {
+	--doc-paper: #ffffff;
+	/* Panel fills behind totals, meta blocks and table headers. */
+	--doc-paper-tint: #f6f6f7;
+	--doc-paper-tint-strong: #ededef;
+	--doc-ink: #16181d;
+	--doc-ink-muted: #596070;
+	/* Secondary labels are text: at least 4.5:1 on the paper and on both tints. */
+	--doc-ink-subtle: #656b78;
+	/* The rule that closes a table or underlines a total. */
+	--doc-rule: var(--doc-ink);
+	/* The hairline between rows and sections. */
+	--doc-rule-soft: #e7e8ec;
+	/* Documents are monochrome by design, so the accent slots are ink; kept so any part keeps working. */
+	--doc-accent: var(--doc-ink);
+	--doc-accent-text: var(--doc-ink);
+	--doc-on-accent: var(--doc-paper);
+}
+
+/*
+ * Dark, as a delta on light. `[data-theme$="dark"]` also carries these to modern-dark, which then
+ * applies its own delta below; the exact `[data-theme="dark"]` spells out the documented value.
+ */
+.dark:not(.react-flow), [data-theme="dark"], [data-theme$="dark"] {
 	--foreground: #ddd;
 	--background: #161616;
 	--outer-background: #121212;
@@ -217,28 +192,22 @@
 	--interactive-secondary-hover: #292929;
 	--muted-foreground: #ccc;
 	--tertiary-foreground: #999;
-	/* Secondary text: at least 4.5:1 on every surface, including muted and hover fills. */
 	--subtle: #919191;
 	--placeholder: #909090;
 	--primary: #0074e3;
-	--primary-foreground: #ffffff;
-	/* Primary as text (text-primary): at least 4.5:1 on every surface. Light shares the fill value; dark needs a lighter blue than the fill. */
 	--primary-text: #2f92ff;
-	/* Keyboard focus ring: at least 3:1 against every surface in this theme (WCAG 1.4.11). */
-	--focus-ring: var(--primary);
 	--hover-primary: var(--interactive-secondary-hover);
 	--active-primary: #292929;
 	--radio-group-hover-primary: var(--interactive-secondary-hover);
 	--border: #222222;
-	--border-sheet: #eaeae9;
-	--border-table: #e5e5e5;
-	--card-border: #d1d1d1;
+	--border-sheet: var(--overlay-border);
+	--border-table: var(--border);
+	--card-border: var(--overlay-border);
 	--overlay: #1a1a1a;
 	--overlay-dialog: #171717;
 	--overlay-border: #2a2a2a;
 	--overlay-separator: #262626;
 	--overlay-hover: rgb(255 255 255 / 0.06);
-	/* Highlighted menu/list option outline: the tint alone is ~1.1:1, this ring carries the state at 3:1 (WCAG 1.4.11). */
 	--overlay-hover-ring: #777777;
 	--table-tray: #111111;
 	--table-tray-border: #1f1f1f;
@@ -246,33 +215,18 @@
 	--table-surface-border: #262626;
 	--table-row-divider: #232323;
 	--table-row-hover: #1e1e1e;
-	/* Control boundary (text fields, checkbox, radio, switch track): at least 3:1 against every surface (WCAG 1.4.11). Dividers use --border. */
 	--input: #686868;
 	--switch-thumb-on: #161616;
 	--muted: #1c1c1d;
 	--destructive: oklch(0.396 0.141 25.723);
+	/* Light darkens the fill on hover; against a dark page the same move has to lighten it. */
+	--destructive-hover: color-mix(in srgb, var(--destructive) 85%, #fff);
 	--destructive-foreground: oklch(0.637 0.237 25.331);
+	/* The focus/active outline has to read against both the dark fill and the dark page. */
+	--destructive-border: var(--error-text);
 	--error-text: #f87171;
 	--input-background: #1d1d1d;
 	--card: #121212;
-	--card-foreground: oklch(0.985 0 0);
-	--popover: oklch(0.141 0.005 285.823);
-	--popover-foreground: #ffffff;
-	--secondary: oklch(0.274 0.006 286.033);
-	--secondary-foreground: oklch(0.985 0 0);
-	--accent: oklch(0.274 0.006 286.033);
-	--accent-foreground: oklch(0.985 0 0);
-	--ring: oklch(0.52 0.017 285.786);
-	--chart-1: var(--primary);
-	--chart-2: #0f70e9;
-	--chart-3: #1e69ec;
-	--chart-4: #2d62ee;
-	--chart-5: #3c5bf1;
-	--chart-6: #4c54f4;
-	--chart-7: #5b4df7;
-	--chart-8: #6a46f9;
-	--chart-9: #793ffc;
-	--chart-10: #8838ff;
 	--chart-grid-stroke: #262626;
 	--chart-series-1: #2b95f5;
 	--chart-series-2: #d95926;
@@ -281,14 +235,6 @@
 	--chart-series-5: #d55181;
 	--chart-series-7: #9c5aff;
 	--chart-series-8: #e66767;
-	--sidebar: oklch(0.21 0.006 285.885);
-	--sidebar-foreground: oklch(0.985 0 0);
-	--sidebar-primary: oklch(0.488 0.243 264.376);
-	--sidebar-primary-foreground: oklch(0.985 0 0);
-	--sidebar-accent: oklch(0.274 0.006 286.033);
-	--sidebar-accent-foreground: oklch(0.985 0 0);
-	--sidebar-border: oklch(0.274 0.006 286.033);
-	--sidebar-ring: oklch(0.52 0.017 285.786);
 	--input-border-hover: rgba(221, 221, 221, 0.5);
 	--input-border-focus: rgba(221, 221, 221, 0.72);
 	--scrollbar-thumb: rgba(221, 221, 221, 0.2);
@@ -296,20 +242,14 @@
 	--status-blue-glyph: #0c1726;
 	--status-red-glyph: #2a0c0d;
 	--status-orange-glyph: #2a1405;
-	--status-amber-glyph: #2a1c05;
-	/* Status colours as text or icons (the fills above are for chips): at least 4.5:1 on every surface. */
 	--status-green-text: #3dd68c;
 	--status-amber-text: #ffc53d;
 	--status-orange-text: #ff8b3e;
 	--sandbox-text: #b98aff;
-	--sandbox-foreground: #ffffff;
-	/* Overlays: behind dialogs, behind sheets, and dimming a dialog/sheet under a nested one. */
 	--overlay-backdrop: rgb(0 0 0 / 0.8);
 	--overlay-veil: rgb(0 0 0 / 0.7);
 	--overlay-dim: rgb(0 0 0 / 0.6);
-	/* The raised pill in segmented controls. */
 	--segment-shadow: 0 1px 2px rgb(0 0 0 / 0.3);
-	--status-yellow-glyph: #261f06;
 	--status-purple-glyph: #1a0f33;
 	--status-pink-glyph: #2a0c1e;
 	--status-fuchsia-glyph: #240c2a;
@@ -319,258 +259,54 @@
 	--input-shadow-default: none;
 	--input-shadow-hover: none;
 	--input-shadow-focus: 0 0 0 3px rgba(221, 221, 221, 0.06);
-	--input-shadow-focus-tiny: 0 0 0 2px rgba(221, 221, 221, 0.06);
 	--input-shadow-destructive: 0 0 0 3px rgba(130, 24, 26, 0.18);
 }
 
+/* Modern, as a delta on light: a white ground, and table chrome derived from the semantic tokens. */
 .preset-modern, [data-theme="modern"] {
-	--foreground: #121212;
 	--background: #ffffff;
 	--outer-background: #fafaf9;
-	--interactive-secondary: #fff;
-	--interactive-secondary-hover: #fcfaff;
-	--muted-foreground: #444;
-	--tertiary-foreground: #666;
-	/* Secondary text: at least 4.5:1 on every surface, including muted and hover fills. */
-	--subtle: #6e6e6e;
-	--placeholder: #737373;
-	--primary: #0067d1;
-	--primary-foreground: #ffffff;
-	/* Primary as text (text-primary): at least 4.5:1 on every surface. Light shares the fill value; dark needs a lighter blue than the fill. */
-	--primary-text: var(--primary);
-	/* Keyboard focus ring: at least 3:1 against every surface in this theme (WCAG 1.4.11). */
-	--focus-ring: var(--primary);
-	--hover-primary: color-mix(in srgb, var(--primary) 4%, #fff);
-	--active-primary: color-mix(in srgb, var(--primary) 9%, #fff);
-	--radio-group-hover-primary: var(--hover-primary);
-	--border: #e5e5e5;
-	--border-sheet: #eaeae9;
-	--border-table: #e5e5e5;
-	--card-border: #d1d1d1;
-	--overlay: #ffffff;
-	--overlay-dialog: #ffffff;
-	--overlay-border: #e5e5e5;
-	--overlay-separator: #efefef;
-	--overlay-hover: rgb(0 0 0 / 0.045);
-	/* Highlighted menu/list option outline: the tint alone is ~1.1:1, this ring carries the state at 3:1 (WCAG 1.4.11). */
-	--overlay-hover-ring: var(--input);
+	--card: #fafaf9;
 	--table-tray: var(--card);
 	--table-tray-border: var(--border);
 	--table-surface: var(--interactive-secondary);
 	--table-surface-border: var(--border);
 	--table-row-divider: var(--border);
 	--table-row-hover: var(--interactive-secondary-hover);
-	/* Control boundary (text fields, checkbox, radio, switch track): at least 3:1 against every surface (WCAG 1.4.11). Dividers use --border. */
-	--input: #8b8b8b;
-	--switch-thumb-on: #ffffff;
-	--muted: #f2f2f2;
-	--destructive: #e40000;
-	--destructive-foreground: #fafaf9;
-	--error-text: #cc0000;
-	--input-background: #ffffff;
-	--card: #fafaf9;
-	--card-foreground: oklch(0.141 0.005 285.823);
-	--popover: oklch(1 0 0);
-	--popover-foreground: oklch(0.141 0.005 285.823);
-	--secondary: oklch(0.967 0.001 286.375);
-	--secondary-foreground: oklch(0.21 0.006 285.885);
-	--accent: oklch(0.967 0.001 286.375);
-	--accent-foreground: oklch(0.21 0.006 285.885);
-	--ring: oklch(0.63 0.015 286.067);
-	--chart-1: var(--primary);
-	--chart-2: #0f70e9;
-	--chart-3: #1e69ec;
-	--chart-4: #2d62ee;
-	--chart-5: #3c5bf1;
-	--chart-6: #4c54f4;
-	--chart-7: #5b4df7;
-	--chart-8: #6a46f9;
-	--chart-9: #793ffc;
-	--chart-10: #8838ff;
-	--chart-grid-stroke: #d1d1d190;
-	--chart-series-1: #0077e6;
-	--chart-series-2: #eb6834;
-	--chart-series-3: #1baf7a;
-	--chart-series-4: #eda100;
-	--chart-series-5: #e87ba4;
-	--chart-series-7: #8838ff;
-	--chart-series-8: #e34948;
-	--sidebar: oklch(0.985 0 0);
-	--sidebar-foreground: oklch(0.141 0.005 285.823);
-	--sidebar-primary: oklch(0.21 0.006 285.885);
-	--sidebar-primary-foreground: oklch(0.985 0 0);
-	--sidebar-accent: oklch(0.967 0.001 286.375);
-	--sidebar-accent-foreground: oklch(0.21 0.006 285.885);
-	--sidebar-border: oklch(0.92 0.004 286.32);
-	--sidebar-ring: oklch(0.63 0.015 286.067);
-	--input-border-hover: rgba(18, 18, 18, 0.6);
-	--input-border-focus: rgba(18, 18, 18, 0.78);
-	--scrollbar-thumb: rgba(18, 18, 18, 0.2);
-	--status-green-glyph: #ffffff;
-	--status-blue-glyph: #ffffff;
-	--status-red-glyph: #ffffff;
-	--status-orange-glyph: #ffffff;
-	--status-amber-glyph: #2a1c05;
-	/* Status colours as text or icons (the fills above are for chips): at least 4.5:1 on every surface. */
-	--status-green-text: #18794e;
-	--status-amber-text: #a35a00;
-	--status-orange-text: #b54500;
-	--sandbox-text: #7429dd;
-	--sandbox-foreground: #ffffff;
-	/* Overlays: behind dialogs, behind sheets, and dimming a dialog/sheet under a nested one. */
-	--overlay-backdrop: rgb(0 0 0 / 0.5);
-	--overlay-veil: rgb(255 255 255 / 0.7);
-	--overlay-dim: rgb(0 0 0 / 0.5);
-	/* The raised pill in segmented controls. */
-	--segment-shadow: 0 1px 2px rgb(0 0 0 / 0.06);
-	--status-yellow-glyph: #261f06;
-	--status-purple-glyph: #ffffff;
-	--status-pink-glyph: #ffffff;
-	--status-fuchsia-glyph: #ffffff;
-	--status-neutral-glyph: #ffffff;
-	--overlay-shadow: 0 4px 12px rgb(0 0 0 / 0.05), 0 1px 2px rgb(0 0 0 / 0.04);
-	--overlay-dialog-shadow: 0 8px 24px rgb(0 0 0 / 0.07), 0 1px 3px rgb(0 0 0 / 0.04);
-	--input-shadow-default: 0 1px 2px 0 rgb(0 0 0 / 0.03);
-	--input-shadow-hover: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-	--input-shadow-focus: 0 0 0 3px rgba(18, 18, 18, 0.07), 0 1px 2px 0 rgb(0 0 0 / 0.05);
-	--input-shadow-focus-tiny: 0 0 0 2px rgba(18, 18, 18, 0.06);
-	--input-shadow-destructive: 0 0 0 3px rgba(228, 0, 0, 0.18);
 }
 
+/* Modern dark, as a delta on dark: grounds pushed to black, same derived table chrome. */
 .preset-modern.dark, [data-theme="modern-dark"] {
-	--foreground: #ddd;
 	--background: #0a0a0a;
 	--outer-background: #000000;
 	--interactive-secondary: #141414;
 	--interactive-secondary-hover: #1e1e1e;
-	--muted-foreground: #ccc;
-	--tertiary-foreground: #999;
-	/* Secondary text: at least 4.5:1 on every surface, including muted and hover fills. */
-	--subtle: #919191;
-	--placeholder: #909090;
-	--primary: #0074e3;
-	--primary-foreground: #ffffff;
-	/* Primary as text (text-primary): at least 4.5:1 on every surface. Light shares the fill value; dark needs a lighter blue than the fill. */
-	--primary-text: #2f92ff;
-	/* Keyboard focus ring: at least 3:1 against every surface in this theme (WCAG 1.4.11). */
-	--focus-ring: var(--primary);
-	--hover-primary: var(--interactive-secondary-hover);
 	--active-primary: #1e1e1e;
-	--radio-group-hover-primary: var(--interactive-secondary-hover);
 	--border: #181818;
-	--border-sheet: #eaeae9;
-	--border-table: #e5e5e5;
-	--card-border: #d1d1d1;
-	--overlay: #1a1a1a;
-	--overlay-dialog: #171717;
-	--overlay-border: #2a2a2a;
-	--overlay-separator: #262626;
-	--overlay-hover: rgb(255 255 255 / 0.06);
-	/* Highlighted menu/list option outline: the tint alone is ~1.1:1, this ring carries the state at 3:1 (WCAG 1.4.11). */
-	--overlay-hover-ring: #777777;
+	--muted: #111111;
+	--input-background: #111111;
+	--card: #050505;
 	--table-tray: var(--card);
 	--table-tray-border: var(--border);
 	--table-surface: var(--interactive-secondary);
 	--table-surface-border: var(--border);
 	--table-row-divider: var(--border);
 	--table-row-hover: var(--interactive-secondary-hover);
-	/* Control boundary (text fields, checkbox, radio, switch track): at least 3:1 against every surface (WCAG 1.4.11). Dividers use --border. */
-	--input: #686868;
-	--switch-thumb-on: #161616;
-	--muted: #111111;
-	--destructive: oklch(0.396 0.141 25.723);
-	--destructive-foreground: oklch(0.637 0.237 25.331);
-	--error-text: #f87171;
-	--input-background: #111111;
-	--card: #050505;
-	--card-foreground: oklch(0.985 0 0);
-	--popover: oklch(0.141 0.005 285.823);
-	--popover-foreground: #ffffff;
-	--secondary: oklch(0.274 0.006 286.033);
-	--secondary-foreground: oklch(0.985 0 0);
-	--accent: oklch(0.274 0.006 286.033);
-	--accent-foreground: oklch(0.985 0 0);
-	--ring: oklch(0.52 0.017 285.786);
-	--chart-1: var(--primary);
-	--chart-2: #0f70e9;
-	--chart-3: #1e69ec;
-	--chart-4: #2d62ee;
-	--chart-5: #3c5bf1;
-	--chart-6: #4c54f4;
-	--chart-7: #5b4df7;
-	--chart-8: #6a46f9;
-	--chart-9: #793ffc;
-	--chart-10: #8838ff;
 	--chart-grid-stroke: #1a1a1a;
-	--chart-series-1: #2b95f5;
-	--chart-series-2: #d95926;
-	--chart-series-3: #199e70;
-	--chart-series-4: #c98500;
-	--chart-series-5: #d55181;
-	--chart-series-7: #9c5aff;
-	--chart-series-8: #e66767;
-	--sidebar: oklch(0.21 0.006 285.885);
-	--sidebar-foreground: oklch(0.985 0 0);
-	--sidebar-primary: oklch(0.488 0.243 264.376);
-	--sidebar-primary-foreground: oklch(0.985 0 0);
-	--sidebar-accent: oklch(0.274 0.006 286.033);
-	--sidebar-accent-foreground: oklch(0.985 0 0);
-	--sidebar-border: oklch(0.274 0.006 286.033);
-	--sidebar-ring: oklch(0.52 0.017 285.786);
-	--input-border-hover: rgba(221, 221, 221, 0.5);
-	--input-border-focus: rgba(221, 221, 221, 0.72);
-	--scrollbar-thumb: rgba(221, 221, 221, 0.2);
-	--status-green-glyph: #0e1c15;
-	--status-blue-glyph: #0c1726;
-	--status-red-glyph: #2a0c0d;
-	--status-orange-glyph: #2a1405;
-	--status-amber-glyph: #2a1c05;
-	/* Status colours as text or icons (the fills above are for chips): at least 4.5:1 on every surface. */
-	--status-green-text: #3dd68c;
-	--status-amber-text: #ffc53d;
-	--status-orange-text: #ff8b3e;
-	--sandbox-text: #b98aff;
-	--sandbox-foreground: #ffffff;
-	/* Overlays: behind dialogs, behind sheets, and dimming a dialog/sheet under a nested one. */
 	--overlay-backdrop: rgb(0 0 0 / 0.6);
 	--overlay-veil: rgb(0 0 0 / 0.6);
-	--overlay-dim: rgb(0 0 0 / 0.6);
-	/* The raised pill in segmented controls. */
-	--segment-shadow: 0 1px 2px rgb(0 0 0 / 0.3);
-	--status-yellow-glyph: #261f06;
-	--status-purple-glyph: #1a0f33;
-	--status-pink-glyph: #2a0c1e;
-	--status-fuchsia-glyph: #240c2a;
-	--status-neutral-glyph: #161616;
-	--overlay-shadow: 0 4px 12px rgb(0 0 0 / 0.25), 0 1px 2px rgb(0 0 0 / 0.2);
-	--overlay-dialog-shadow: 0 8px 24px rgb(0 0 0 / 0.3), 0 1px 3px rgb(0 0 0 / 0.2);
-	--input-shadow-default: none;
-	--input-shadow-hover: none;
-	--input-shadow-focus: 0 0 0 3px rgba(221, 221, 221, 0.06);
-	--input-shadow-focus-tiny: 0 0 0 2px rgba(221, 221, 221, 0.06);
-	--input-shadow-destructive: 0 0 0 3px rgba(130, 24, 26, 0.18);
 }
 
+/* Scales and metrics: one set for every theme. */
 :root {
 	color-scheme: light;
 	--spacing: 0.25rem;
-	--space-0\.5: 2px;
-	--space-1: 4px;
-	--space-1\.5: 6px;
-	--space-2: 8px;
-	--space-2\.5: 10px;
-	--space-3: 12px;
-	--space-4: 16px;
-	--space-6: 24px;
-	--space-8: 32px;
-	--input-height: 28px;
 	--radius: 0.375rem;
 	--radius-sm: 2px;
 	--radius-md: 4px;
 	--radius-lg: 6px;
 	--radius-xl: 10px;
 	--radius-2xl: 12px;
-	--checkout-radius: 0.625rem;
 	--radius-full: 9999px;
 	--font-weight-normal: 450;
 	--font-weight-medium: 500;
@@ -578,7 +314,5 @@
 	--font-weight-bold: 700;
 	--font-sans: "Inter", "Inter Fallback", sans-serif;
 	--font-mono: "JetBrains Mono", "JetBrains Mono Fallback", monospace;
-	--font-geist: "Geist", sans-serif;
-	--font-geist-mono: "Geist Mono", monospace;
 }
-.dark, [data-theme="dark"], [data-theme="modern-dark"] { color-scheme: dark; }
+.dark, [data-theme$="dark"] { color-scheme: dark; }

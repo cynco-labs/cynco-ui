@@ -1,13 +1,5 @@
+import { Checkbox, type DataColumn, DataList, DocStatus, formatDate, INVOICE_STATUS, Money } from "@cynco-labs/ui";
 import { useState } from "react";
-import {
-	Checkbox,
-	DataList,
-	DocStatus,
-	INVOICE_STATUS,
-	Money,
-	formatDate,
-	type DataColumn,
-} from "@cynco-labs/ui";
 
 type Row = {
 	id: string;
@@ -95,12 +87,12 @@ function List() {
 					onCheckedChange={(v) => {
 						set(v ? sel.concat(r.id) : sel.filter((x) => x !== r.id));
 					}}
-					aria-label={"Select " + r.no}
+					aria-label={`Select ${r.no}`}
 				/>
 			)}
 			isRowSelected={(r) => sel.indexOf(r.id) >= 0}
 			onRowClick={() => {}}
-			totals={{ label: "Total", amount: <Money amount={44490} /> }}
+			totals={{ label: "Total", amount: <Money amount="44490.00" /> }}
 		/>
 	);
 }

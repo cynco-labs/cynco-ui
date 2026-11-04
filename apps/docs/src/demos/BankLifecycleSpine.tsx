@@ -1,4 +1,4 @@
-import { BankLifecycleSpine, type BankFeedStatus } from "@cynco-labs/ui";
+import { type BankFeedStatus, BankLifecycleSpine } from "@cynco-labs/ui";
 
 const STEPS: [BankFeedStatus, string][] = [
 	["imported", "Imported: needs a category"],

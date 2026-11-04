@@ -9,7 +9,6 @@ import { DropdownMenu } from "@cynco-labs/ui";
 ## Usage
 
 ```tsx
-import { CopyIcon, PencilSimpleIcon, TrashIcon } from "@phosphor-icons/react";
 import {
 	Button,
 	DropdownMenu,
@@ -20,6 +19,7 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@cynco-labs/ui";
+import { CopyIcon, PencilSimpleIcon, TrashIcon } from "@phosphor-icons/react";
 
 export default function DropdownMenuDemo() {
 	return (
@@ -56,8 +56,17 @@ Row actions and overflow menus.
 
 `DropdownMenuTrigger` (with `render`), `DropdownMenuContent`, `DropdownMenuItem` (`variant`, `shortcut`, `isLoading`), `DropdownMenuGroup` › `DropdownMenuLabel`, `DropdownMenuSeparator`, `DropdownMenuSub`.
 
+## Accessibility
+
+| Key | Does |
+| --- | --- |
+| An item's shortcut key | Runs that item and closes the menu, unless focus is in an input, a textarea or a contenteditable element. |
+| A to Z | Falls through to the Base UI menu's own typeahead when no item shortcut matches the key. |
+
+Focus returns to the trigger when the menu closes, which is why the Radix onCloseAutoFocus prop is accepted and ignored. Checkbox and radio items draw their state with a check icon from the Base UI indicator, and a DropdownMenuLabel only names its group when it sits inside a DropdownMenuGroup. An item that is loading or shimmering is disabled.
+
 ## Notes
 
 A `DropdownMenuLabel` must sit inside a `DropdownMenuGroup`. Destructive items go last, after a separator.
 
-Category: Components · Overlays. Source: `packages/ui/src/base/components/ui/dropdown-menu.tsx`.
+Category: Components · Overlays. Source: `packages/ui/src/base/components/ui/dropdown-menu.tsx:53-77`.

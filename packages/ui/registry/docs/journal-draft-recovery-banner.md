@@ -33,4 +33,4 @@ savedAgo (e.g. "12 minutes ago"), onRecover, onDismiss, className? (merged on th
 
 Responsive: Buttons wrap under the message when narrow.
 
-Category: Accounting · Ledger. Source: `packages/ui/src/accounting/ledger.tsx`.
+Category: Accounting · Ledger. Source: `packages/ui/src/accounting/ledger/journal-entry.tsx:317-346`.

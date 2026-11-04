@@ -4,7 +4,7 @@ export default function QuotationStatsDemo() {
 	return (
 		<QuotationStats
 			stats={{
-				totalQuotedAmount: 248650,
+				totalQuotedAmount: "248650.00",
 				currency: "MYR",
 				sentCount: 14,
 				acceptedCount: 9,

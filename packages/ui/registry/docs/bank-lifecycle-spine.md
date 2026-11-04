@@ -9,7 +9,7 @@ import { BankLifecycleSpine } from "@cynco-labs/ui";
 ## Usage
 
 ```tsx
-import { BankLifecycleSpine, type BankFeedStatus } from "@cynco-labs/ui";
+import { type BankFeedStatus, BankLifecycleSpine } from "@cynco-labs/ui";
 
 const STEPS: [BankFeedStatus, string][] = [
 	["imported", "Imported: needs a category"],
@@ -48,4 +48,4 @@ status ('imported' | 'categorized' | 'posted' | 'reconciled' | 'excluded'), clas
 
 Fixed 4×4px glyph, width-independent.
 
-Category: Accounting · Banking. Source: `packages/ui/src/accounting/banking.tsx`.
+Category: Accounting · Banking. Source: `packages/ui/src/accounting/banking/lifecycle.tsx:21-52`.

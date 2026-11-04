@@ -14,7 +14,10 @@ import { LongInput } from "@cynco-labs/ui";
 export default function LongInputDemo() {
 	return (
 		<div className="max-w-[420px]">
-			<LongInput aria-label="Custom fields (JSON)" defaultValue={'{\n  "branch": "Shah Alam",\n  "costCentre": "OPS-02"\n}'} />
+			<LongInput
+				aria-label="Custom fields (JSON)"
+				defaultValue={'{\n  "branch": "Shah Alam",\n  "costCentre": "OPS-02"\n}'}
+			/>
 		</div>
 	);
 }
@@ -28,4 +31,4 @@ Metadata editors and pasted config.
 
 Native textarea props.
 
-Category: Components · Inputs. Source: `packages/ui/src/base/components/general/long-input.tsx`.
+Category: Components · Inputs. Source: `packages/ui/src/base/components/general/long-input.tsx:12-28`.

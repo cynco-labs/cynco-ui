@@ -41,4 +41,4 @@ Top of the purchase orders list.
 
 Responsive by container: StatGrid tiles auto-fit.
 
-Category: Accounting · Tax, assets & operations. Source: `packages/ui/src/accounting/operations.tsx`.
+Category: Accounting · Tax, assets & operations. Source: `packages/ui/src/accounting/operations/purchase-orders.tsx:28-50`.

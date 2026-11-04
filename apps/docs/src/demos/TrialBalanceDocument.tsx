@@ -1,14 +1,14 @@
-import { useState } from "react";
 import {
-	DocumentBrandProvider,
-	GroupedTabButton,
-	TrialBalanceDocument,
-	sumAmounts,
+	type DocBrand,
 	type DocLayout,
 	type DocLocale,
+	DocumentBrandProvider,
+	GroupedTabButton,
+	sumAmounts,
 	type TrialBalanceData,
-	type DocBrand,
+	TrialBalanceDocument,
 } from "@cynco-labs/ui";
+import { useState } from "react";
 
 const BRAND: DocBrand = {
 	company: {
@@ -57,18 +57,9 @@ function Shell({ extra, render }: ShellProps) {
 						{ value: "en-ms", label: "EN+BM" },
 					]}
 				/>
-				{extra ? (
-					<GroupedTabButton
-						className="w-[230px]"
-						value={x}
-						onValueChange={setX}
-						options={extra.options}
-					/>
-				) : null}
+				{extra ? <GroupedTabButton className="w-[230px]" value={x} onValueChange={setX} options={extra.options} /> : null}
 			</div>
-			<DocumentBrandProvider brand={{ ...BRAND, layout: l, locale: g }}>
-				{render(x)}
-			</DocumentBrandProvider>
+			<DocumentBrandProvider brand={{ ...BRAND, layout: l, locale: g }}>{render(x)}</DocumentBrandProvider>
 		</div>
 	);
 }
@@ -226,9 +217,7 @@ const OUT: TrialBalanceData = {
 	balanced: false,
 	difference: "120.00",
 	totalCredit: sumAmounts([DATA.totalCredit, "-120.00"]),
-	accounts: DATA.accounts.map((a) =>
-		a.code === "2100-001" ? { ...a, credit: sumAmounts([a.credit, "-120.00"]) } : a,
-	),
+	accounts: DATA.accounts.map((a) => (a.code === "2100-001" ? { ...a, credit: sumAmounts([a.credit, "-120.00"]) } : a)),
 };
 
 export default function TrialBalanceDocumentDemo() {

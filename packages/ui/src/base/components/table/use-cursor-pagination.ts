@@ -9,13 +9,7 @@ type CursorState = {
 
 export type CursorPaginationState = ReturnType<typeof useCursorPagination>;
 
-export function useCursorPagination({
-	pageSize,
-	resetKey = "",
-}: {
-	pageSize: number;
-	resetKey?: string;
-}) {
+export function useCursorPagination({ pageSize, resetKey = "" }: { pageSize: number; resetKey?: string }) {
 	const [state, setState] = useState<CursorState>({
 		resetKey,
 		stack: [""],
@@ -23,10 +17,7 @@ export function useCursorPagination({
 	const stack = state.resetKey === resetKey ? state.stack : [""];
 	const currentPage = stack.length;
 	const currentCursor = stack[stack.length - 1] ?? "";
-	const pagination = useMemo(
-		() => ({ pageIndex: currentPage - 1, pageSize }),
-		[currentPage, pageSize],
-	);
+	const pagination = useMemo(() => ({ pageIndex: currentPage - 1, pageSize }), [currentPage, pageSize]);
 
 	return {
 		currentCursor,

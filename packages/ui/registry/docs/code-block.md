@@ -44,4 +44,4 @@ Code in assistant replies and tool output.
 
 The bundle carries Shiki grammars for TypeScript, TSX, JavaScript, JSX, JSON, Bash, Python, CSS, HTML, Markdown, YAML, SQL and Go; other languages render as plain text.
 
-Category: AI. Source: `packages/ui/src/base/components/ai-elements/code-block.tsx`.
+Category: AI. Source: `packages/ui/src/base/components/ai-elements/code-block.tsx:110-185`.

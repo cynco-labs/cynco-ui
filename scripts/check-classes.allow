@@ -1,0 +1,16 @@
+# Exceptions to scripts/check-classes.mjs. One `path:pattern # reason` per line.
+#
+# `path`    a file, or a directory prefix.
+# `pattern` a rule id (hex-colour, palette-colour, arbitrary-type-size, important-utility,
+#           legacy-type-class, breakpoint-prefix, transition-all) or the matched text.
+# `# reason` is required, and an entry that matches nothing fails the check, so this file cannot rot.
+#
+# Earning a line here means the rule is genuinely wrong for that file, not that the fix is inconvenient.
+
+packages/ui/src/base/components/ui/chart.tsx:hex-colour  # recharts hard-codes stroke="#ccc" and "#fff" on its grid, dot and sector nodes; the selector has to name the upstream value to override it, and sets the colour itself with stroke-border.
+
+
+packages/ui/src/base/components/ui/sheet.tsx:breakpoint-prefix  # SIDE_STYLES positions a `fixed` panel against the window, so its edges, rounding and max width are a window measurement; a container query would measure the panel it is sizing.
+packages/ui/src/base/components/general/sandbox-banner.tsx:breakpoint-prefix  # The banner is page chrome pinned across the top of the window, not a component sized by the box it sits in; below `sm` it flows inline instead so it cannot cover a phone's first row of content.
+
+packages/ui/src/documents/studio.tsx:text-[9px]  # The layout thumbnails are a 58px drawing of a printed sheet, not UI text: every mark in them is sized in px (h-[3px], size-[10px]), and the monogram has to match. They are aria-hidden; the option's own label names it.

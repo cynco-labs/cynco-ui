@@ -104,4 +104,4 @@ rules [{id, matchType, pattern, account {code, name} | null, category, priority,
 
 Rule sources are StatusChips (You blue, Learned purple, Default neutral); the row menu is a ToolbarButton and the source filter a GroupedTabButton. Responsive: built on DataList: a tray table from 48rem; below that, stacked cards with the source chip, the three figures folded into one line, and the target account.
 
-Category: Accounting · Banking. Source: `packages/ui/src/accounting/banking.tsx`.
+Category: Accounting · Banking. Source: `packages/ui/src/accounting/banking/rules-table.tsx:47-271`.

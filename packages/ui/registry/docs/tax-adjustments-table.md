@@ -80,4 +80,4 @@ Tax computation adjustments sections, one per category.
 
 Codes and account codes in mono.
 
-Category: Accounting · Tax, assets & operations. Source: `packages/ui/src/accounting/operations.tsx`.
+Category: Accounting · Tax, assets & operations. Source: `packages/ui/src/accounting/operations/tax.tsx:294-395`.

@@ -1,27 +1,23 @@
 "use client";
 
 import { CalendarBlankIcon, ClockIcon } from "@phosphor-icons/react";
-import { TimePickerInput } from "./time-picker-input";
-import {
-	display12HourValue,
-	type Period,
-	setDateByType,
-} from "./time-picker-utils";
-import { Calendar } from "../ui/calendar";
-import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger,
-} from "../ui/popover";
-import { cn } from "../../lib/utils";
 import { format } from "date-fns";
 import { type ComponentProps, useRef, useState } from "react";
+import {
+	inputFocusWithinClassName,
+	inputHeightClassName,
+	inputPaddingClassName,
+	inputPopupClassName,
+	inputSurfaceClassName,
+} from "../../lib/input-classes";
+import { cn } from "../../lib/utils";
+import { Calendar } from "../ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { TimePickerInput } from "./time-picker-input";
+import { display12HourValue, type Period, setDateByType } from "./time-picker-utils";
 
-/** Lets a form label the trigger and point it at an error message. */
-type DateInputA11yProps = Pick<
-	ComponentProps<"button">,
-	"id" | "aria-label" | "aria-labelledby" | "aria-describedby" | "aria-invalid"
->;
+/** Native props for the trigger button, so a form can label it and point it at an error. */
+type DateInputTriggerProps = Omit<ComponentProps<"button">, "children" | "onChange" | "value" | "defaultValue">;
 
 function TimePicker({
 	date,
@@ -54,7 +50,9 @@ function TimePicker({
 
 	return (
 		<div className="border-t px-3 py-3">
-			<div className="flex items-center rounded-lg h-input input-base input-shadow-default input-state-focus-within px-2 bg-popover">
+			<div
+				className={cn("flex items-center px-2", inputSurfaceClassName, inputHeightClassName, inputFocusWithinClassName)}
+			>
 				<ClockIcon className="size-3.5 shrink-0 text-tertiary-foreground mr-1" />
 				<TimePickerInput
 					picker={use24Hour ? "hours" : "12hours"}
@@ -79,7 +77,7 @@ function TimePicker({
 							type="button"
 							onClick={togglePeriod}
 							aria-label={`${period}, switch to ${period === "AM" ? "PM" : "AM"}`}
-							className="rounded-sm px-1.5 py-0.5 text-xs font-medium text-muted-foreground transition-none hover:bg-accent select-none"
+							className="rounded-sm px-1.5 py-0.5 text-xs font-medium text-muted-foreground transition-none hover:bg-interactive-secondary-hover select-none"
 						>
 							{period}
 						</button>
@@ -103,8 +101,8 @@ export const DateInputUnix = ({
 	use24Hour,
 	placeholder,
 	className,
-	...a11yProps
-}: DateInputA11yProps & {
+	...triggerProps
+}: DateInputTriggerProps & {
 	unixDate: number | null;
 	setUnixDate: (unixDate: number | null) => void;
 	disabled?: boolean;
@@ -173,11 +171,7 @@ export const DateInputUnix = ({
 
 		// Preserve the current time on the newly selected day.
 		const newDateFull = new Date(dateObj);
-		newDateFull.setFullYear(
-			newDay.getFullYear(),
-			newDay.getMonth(),
-			newDay.getDate(),
-		);
+		newDateFull.setFullYear(newDay.getFullYear(), newDay.getMonth(), newDay.getDate());
 		setUnixDate(clampUnixDate(newDateFull.getTime()));
 	};
 
@@ -191,12 +185,15 @@ export const DateInputUnix = ({
 			<PopoverTrigger asChild>
 				<button
 					type="button"
-					{...a11yProps}
-					data-state={popoverOpen ? "open" : "closed"}
+					data-slot="date-input-unix"
+					{...triggerProps}
 					disabled={disabled}
 					className={cn(
-						"w-full rounded-lg flex items-center justify-start gap-3 text-sm outline-none disabled:cursor-not-allowed disabled:opacity-50",
-						"h-input input-base input-shadow-default input-state-open truncate",
+						"flex w-full cursor-pointer items-center justify-start gap-3 truncate",
+						inputSurfaceClassName,
+						inputHeightClassName,
+						inputPaddingClassName,
+						inputPopupClassName,
 						!unixDate && "text-muted-foreground",
 						className,
 					)}
@@ -205,9 +202,7 @@ export const DateInputUnix = ({
 					{unixDate ? (
 						format(new Date(unixDate), displayFormat)
 					) : (
-						<span>
-							{placeholder ?? `Pick a date${withTime ? " and time" : ""}`}
-						</span>
+						<span>{placeholder ?? `Pick a date${withTime ? " and time" : ""}`}</span>
 					)}
 				</button>
 			</PopoverTrigger>
@@ -225,13 +220,7 @@ export const DateInputUnix = ({
 					startMonth={new Date(fromYear ?? new Date().getFullYear(), 0)}
 					endMonth={new Date(new Date().getFullYear() + 10, 11)}
 				/>
-				{withTime && (
-					<TimePicker
-						date={dateObj}
-						setDate={handleTimeChange}
-						use24Hour={use24Hour}
-					/>
-				)}
+				{withTime && <TimePicker date={dateObj} setDate={handleTimeChange} use24Hour={use24Hour} />}
 			</PopoverContent>
 		</Popover>
 	);

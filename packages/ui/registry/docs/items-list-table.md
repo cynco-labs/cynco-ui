@@ -9,20 +9,15 @@ import { ItemsListTable } from "@cynco-labs/ui";
 ## Usage
 
 ```tsx
-import { useState } from "react";
 import { ItemsListTable } from "@cynco-labs/ui";
+import { useState } from "react";
 
 export default function ItemsListTableDemo() {
-	const [s, setS] = useState(["i3"]);
+	const [selected, setSelected] = useState(["i3"]);
 	return (
 		<ItemsListTable
-			selectedItems={s}
-			onToggle={(id) => {
-				setS(s.indexOf(id) >= 0 ? s.filter((x) => x !== id) : s.concat([id]));
-			}}
-			onToggleAll={(all) => {
-				setS(all ? ["i1", "i2", "i3", "i4", "i5"] : []);
-			}}
+			selectedIds={selected}
+			onSelectionChange={setSelected}
 			items={[
 				{
 					id: "i1",
@@ -102,18 +97,18 @@ Items page list.
 
 ## Props
 
-`items` [{id, name, description, unitPrice, unitCost, costingMode, targetMarginPercent, trackInventory, unitOfMeasure, reorderPoint, taxRate, discountRate, isArchived}], `inventoryByItem`, `realizedByItem`; optional `selectedItems`, `onToggle`, `onToggleAll`; optional `className` and native div props on the root.
+`items` [{id, name, description, unitPrice, unitCost, costingMode, targetMarginPercent, trackInventory, unitOfMeasure, reorderPoint, taxRate, discountRate, isArchived}], `inventoryByItem`, `realizedByItem`; optional `selectedIds`, `defaultSelectedIds`, `onSelectionChange`; optional `className` and native div props on the root.
 
 - `items`: `CatalogItem[]`
 - `inventoryByItem?`: `Record<string, ItemInventoryInfo>`. Default `{}`.
 - `realizedByItem?`: `Record<string, ItemRealized>`. Default `{}`.
-- `selectedItems?`: `string[]`. Default `[]`.
-- `onToggle?`: `(id: string) => void`
-- `onToggleAll?`: `(all: boolean) => void`
+- `selectedIds?`: `string[]`. Controlled ticked rows.
+- `defaultSelectedIds?`: `string[]`. Ticked rows on first render when uncontrolled.
+- `onSelectionChange?`: `(ids: string[]) => void`
 - Also accepts `ComponentProps<"div">`.
 
 ## Notes
 
 Loss-making or below-target margins read in error-text; everything else stays neutral. Responsive: DataList (stacks below 42rem) with the checkbox kept as the leading cell.
 
-Category: Accounting · Tax, assets & operations. Source: `packages/ui/src/accounting/operations.tsx`.
+Category: Accounting · Tax, assets & operations. Source: `packages/ui/src/accounting/operations/items.tsx:70-224`.

@@ -1,34 +1,20 @@
 "use client";
 
-import { LiveStatus } from "./live-status";
-import {
-	IconButton,
-	type IconButtonProps,
-} from "./icon-button";
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipTrigger,
-} from "../ui/tooltip";
-import { cn, copyToClipboard } from "../../lib/utils";
 import { CheckIcon, CopyIcon } from "@phosphor-icons/react";
 import { useCallback, useEffect, useState } from "react";
+import { cn, copyToClipboard } from "../../lib/utils";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
+import { IconButton, type IconButtonProps } from "./icon-button";
+import { LiveStatus } from "./live-status";
 
-/** Hook for copy-to-clipboard with auto-reset state */
-const useCopyAnimation = ({
-	text,
-	timeout = 1500,
-}: {
-	text: string;
-	timeout?: number;
-}) => {
+/** Copy-to-clipboard with a flash of "Copied" that resets itself. */
+function useCopyAnimation(text: string, timeout = 1500) {
 	const [copied, setCopied] = useState(false);
 
 	useEffect(() => {
-		if (copied) {
-			const timer = setTimeout(() => setCopied(false), timeout);
-			return () => clearTimeout(timer);
-		}
+		if (!copied) return;
+		const timer = setTimeout(() => setCopied(false), timeout);
+		return () => clearTimeout(timer);
 	}, [copied, timeout]);
 
 	const handleCopy = useCallback(
@@ -41,175 +27,93 @@ const useCopyAnimation = ({
 	);
 
 	return { copied, handleCopy };
-};
-
-/** Polite live region, mounted before it has text, so "Copied" is announced. */
-/** Animated icon that transitions between copy and check */
-const AnimatedCopyIcon = ({
-	copied,
-	size = "size-3.5",
-}: {
-	copied: boolean;
-	size?: string;
-}) => (
-	<span
-		aria-hidden="true"
-		className={cn("relative inline-flex items-center justify-center", size)}
-	>
-		<CopyIcon
-			className={cn(
-				size,
-				"absolute transition-all duration-100",
-				copied ? "opacity-0 scale-95" : "opacity-100 scale-100",
-			)}
-		/>
-		<CheckIcon
-			className={cn(
-				size,
-				"absolute text-foreground transition-all duration-100",
-				copied ? "opacity-100 scale-100" : "opacity-0 scale-95",
-			)}
-		/>
-	</span>
-);
-
-interface CopyButtonProps extends IconButtonProps {
-	children?: React.ReactNode;
-	side?: "top" | "bottom" | "left" | "right";
-	text: string;
-	iconOrientation?: "left" | "right";
-	innerClassName?: string;
-	/** Classes applied to the copy icon button (MiniCopyButton only). Overrides the default hover-reveal. */
-	iconClassName?: string;
 }
 
-interface MiniCopyButtonProps extends CopyButtonProps {
+/** Crossfades the copy glyph into a check, so the confirmation does not rest on colour. */
+function AnimatedCopyIcon({ copied }: { copied: boolean }) {
+	return (
+		<span aria-hidden="true" className="relative inline-flex size-3.5 items-center justify-center">
+			<CopyIcon
+				className={cn(
+					"absolute size-3.5 transition-[opacity,transform] duration-100",
+					copied ? "opacity-0 scale-95" : "opacity-100 scale-100",
+				)}
+			/>
+			<CheckIcon
+				className={cn(
+					"absolute size-3.5 text-foreground transition-[opacity,transform] duration-100",
+					copied ? "opacity-100 scale-100" : "opacity-0 scale-95",
+				)}
+			/>
+		</span>
+	);
+}
+
+export interface CopyButtonProps
+	extends Omit<IconButtonProps, "icon" | "onClick" | "children" | "variant" | "tooltip"> {
+	/** The string put on the clipboard. */
+	text: string;
+	/**
+	 * `text` is a labelled chip, `icon` is the glyph alone, and `inline` is mono text whose glyph
+	 * appears on hover, focus and every touch screen.
+	 */
+	variant?: "text" | "icon" | "inline";
 	/** Shown instead of `text`; the full `text` is still copied. */
-	displayText?: string;
+	children?: React.ReactNode;
+	/** Which side the "Copied!" tooltip opens on. */
+	side?: "top" | "bottom" | "left" | "right";
 }
 
-export const CopyButton = ({
-	text,
-	side = "right",
-	innerClassName = "",
-	iconOrientation = "right",
-	children,
-	...props
-}: CopyButtonProps) => {
-	const { copied, handleCopy } = useCopyAnimation({ text });
+/**
+ * One copy affordance in three shapes. Each confirms with the same tooltip and the same polite
+ * announcement, so a copy reads and sounds the same wherever it appears.
+ */
+export function CopyButton({ text, variant = "text", side = "right", className, children, ...props }: CopyButtonProps) {
+	const { copied, handleCopy } = useCopyAnimation(text);
 
-	return (
-		<>
-			<Tooltip open={copied} onOpenChange={() => {}}>
-				<TooltipTrigger asChild>
-					<IconButton
-						variant="muted"
-						{...props}
-						size={"sm"}
-						iconOrientation={iconOrientation}
-						onClick={handleCopy}
-						icon={<AnimatedCopyIcon copied={copied} />}
-						className={cn("", props.className)}
-					>
-						<span className={cn("truncate", innerClassName)}>
-							{children ?? text}
-						</span>
-					</IconButton>
-				</TooltipTrigger>
-				<TooltipContent
-					side={side}
-					sideOffset={8}
-					className="bg-background text-body p-2 py-1 border rounded-lg shadow-sm z-100"
-				>
-					<div className="flex items-center gap-1">
-						<span className="text-xs font-medium">Copied!</span>
-					</div>
-				</TooltipContent>
-			</Tooltip>
-			<LiveStatus>{copied ? "Copied" : ""}</LiveStatus>
-		</>
-	);
-};
-
-type CopyIconButtonProps = Omit<IconButtonProps, "icon" | "onClick"> & {
-	text: string;
-	side?: "top" | "bottom" | "left" | "right";
-};
-
-/** Icon-only copy affordance with the "Copied!" tooltip. */
-export const CopyIconButton = ({
-	text,
-	side = "right",
-	className,
-	...props
-}: CopyIconButtonProps) => {
-	const { copied, handleCopy } = useCopyAnimation({ text });
-
-	return (
-		<>
-			<Tooltip open={copied} onOpenChange={() => {}}>
-				<TooltipTrigger asChild>
-					<IconButton
-						variant="skeleton"
-						aria-label="Copy"
-						{...props}
-						iconOrientation="right"
-						icon={<AnimatedCopyIcon copied={copied} />}
-						onClick={handleCopy}
-						className={cn(
-							"relative cursor-pointer px-0! after:absolute after:-inset-x-1 hover:text-foreground!",
-							className,
-							copied && "opacity-100",
-						)}
-					/>
-				</TooltipTrigger>
-				<TooltipContent
-					side={side}
-					sideOffset={8}
-					className="bg-background text-body p-2 py-1 border rounded-lg shadow-sm"
-				>
-					<div className="flex items-center gap-1">
-						<span className="text-xs font-medium">Copied!</span>
-					</div>
-				</TooltipContent>
-			</Tooltip>
-			<LiveStatus>{copied ? "Copied" : ""}</LiveStatus>
-		</>
-	);
-};
-
-export const MiniCopyButton = ({
-	text,
-	side = "right",
-	innerClassName = "",
-	iconOrientation = "right",
-	iconClassName,
-	displayText,
-	children,
-	...props
-}: MiniCopyButtonProps) => {
-	const copyIcon = (
-		<CopyIconButton
-			text={text}
-			side={side}
+	const button = (
+		<IconButton
+			data-slot="copy-button"
+			variant={variant === "text" ? "muted" : "skeleton"}
+			size="sm"
+			iconOrientation="right"
+			aria-label={variant === "text" ? undefined : "Copy"}
 			{...props}
+			icon={<AnimatedCopyIcon copied={copied} />}
+			onClick={handleCopy}
 			className={cn(
-				"opacity-0 group-hover:opacity-100 focus-visible:opacity-100 no-hover:opacity-100",
-				iconClassName,
+				variant !== "text" && "relative cursor-pointer px-0 after:absolute after:-inset-x-1 hover:text-foreground",
+				variant === "inline" &&
+					"opacity-0 group-hover:opacity-100 focus-visible:opacity-100 no-hover:opacity-100 transition-opacity",
+				variant === "inline" && copied && "opacity-100",
+				className,
 			)}
-		/>
+		>
+			{variant === "text" && <span className="truncate">{children ?? text}</span>}
+		</IconButton>
 	);
 
-	return (
-		<div className="flex items-center gap-1 w-fit max-w-full group text-tertiary-foreground">
-			{iconOrientation === "left" && copyIcon}
-			{children}
-			<span
-				className={cn("text-sm text-tiny-id w-full truncate", innerClassName)}
-			>
-				{displayText ?? text}
-			</span>
-			{iconOrientation === "right" && copyIcon}
-		</div>
+	const confirmed = (
+		<>
+			<Tooltip open={copied} onOpenChange={() => {}}>
+				<TooltipTrigger asChild>{button}</TooltipTrigger>
+				<TooltipContent side={side} sideOffset={8}>
+					Copied!
+				</TooltipContent>
+			</Tooltip>
+			<LiveStatus>{copied ? "Copied" : ""}</LiveStatus>
+		</>
 	);
-};
+
+	if (variant !== "inline") return confirmed;
+
+	return (
+		<span
+			data-slot="copy-button-inline"
+			className="group flex w-fit max-w-full items-center gap-1 text-tertiary-foreground"
+		>
+			<span className="w-full truncate font-mono text-2xs font-medium">{children ?? text}</span>
+			{confirmed}
+		</span>
+	);
+}

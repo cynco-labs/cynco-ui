@@ -1,8 +1,8 @@
 import {
 	type DeliveryOrderData,
+	DeliveryOrderDocument,
 	type DocLayout,
 	type DocLocale,
-	DeliveryOrderDocument,
 	DocumentBrandProvider,
 } from "@cynco-labs/ui";
 
@@ -34,10 +34,7 @@ const NUSA = {
 
 const NUSA_SITE = {
 	name: "Nusantara Logistik Bhd — Warehouse B",
-	address: [
-		"Lot 12A, Jalan Sungai Puloh, Kawasan Perindustrian Sungai Puloh",
-		"42100 Klang, Selangor",
-	],
+	address: ["Lot 12A, Jalan Sungai Puloh, Kawasan Perindustrian Sungai Puloh", "42100 Klang, Selangor"],
 	attention: "En. Hafiz Zainal, Facilities",
 	phone: "+60 12-334 8821",
 };

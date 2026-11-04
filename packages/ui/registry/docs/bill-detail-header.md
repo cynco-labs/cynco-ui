@@ -21,7 +21,7 @@ export default function BillDetailHeaderDemo() {
 					billNumber: "TNB-220415887",
 					issueDate: "2026-10-02",
 					dueDate: "2026-10-24",
-					totalAmount: 1284.6,
+					totalAmount: "1284.60",
 					status: "awaiting_payment",
 					overdue: true,
 				}}
@@ -34,7 +34,7 @@ export default function BillDetailHeaderDemo() {
 					billNumber: "GOS-55102",
 					issueDate: "2026-09-14",
 					dueDate: "2026-10-14",
-					totalAmount: 612.3,
+					totalAmount: "612.30",
 					status: "paid",
 					isArchived: true,
 				}}
@@ -67,4 +67,4 @@ bill (vendorName, billNumber, issueDate, dueDate, totalAmount, currency, status,
 
 Responsive by container: title, actions and fact strip wrap on narrow containers; the archived banner moves its action under the text.
 
-Category: Accounting · Expenses & parties. Source: `packages/ui/src/accounting/parties.tsx`.
+Category: Accounting · Expenses & parties. Source: `packages/ui/src/accounting/parties/bill-detail.tsx:78-207`.

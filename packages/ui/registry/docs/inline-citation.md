@@ -20,7 +20,7 @@ import {
 
 export default function InlineCitationDemo() {
 	return (
-		<p className="text-body max-w-[520px]">
+		<p className="text-sm font-medium text-muted-foreground max-w-[520px]">
 			{"SST-registered businesses must issue e-invoices through MyInvois "}
 			<InlineCitation>
 				<InlineCitationText>from their phase start date</InlineCitationText>
@@ -49,4 +49,4 @@ Citing sources inside assistant text.
 
 `InlineCitationText`, `InlineCitationCard` › `InlineCitationCardTrigger sources`, `InlineCitationCardBody` › `InlineCitationSource` (`title`, `url`, `description`) or the carousel parts, `InlineCitationQuote`.
 
-Category: AI. Source: `packages/ui/src/base/components/ai-elements/inline-citation.tsx`.
+Category: AI. Source: `packages/ui/src/base/components/ai-elements/inline-citation.tsx:12-14`.

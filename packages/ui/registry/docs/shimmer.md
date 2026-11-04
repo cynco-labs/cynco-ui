@@ -29,4 +29,4 @@ String children; `duration`, `spread`, `as`.
 - `duration?`: `number`. Default `2`.
 - `spread?`: `number`. Default `2`.
 
-Category: AI. Source: `packages/ui/src/base/components/ai-elements/shimmer.tsx`.
+Category: AI. Source: `packages/ui/src/accounting/banking/shared.tsx:46-53`.

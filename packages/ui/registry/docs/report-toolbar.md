@@ -99,4 +99,4 @@ period ('YYYY-MM'), periods[]; optional title, meta, fiscalYearEnd ('MM-DD'), vi
 
 Layout splits into title row (freshness + Export at right) and a controls row so it fits 720px. State is local, no router. Responsive: title row and controls row are ActionBars that wrap; selects are w-36 max-w-full.
 
-Category: Accounting · Reports. Source: `packages/ui/src/accounting/reports.tsx`.
+Category: Accounting · Reports. Source: `packages/ui/src/accounting/reports/report-toolbar.tsx:54-268`.

@@ -62,4 +62,4 @@ monthName, asOf, statementClosing (null = no statement), unpostedNet, inTransit 
 
 Inherits the equation's wrapping; prose is max-w-prose.
 
-Category: Accounting · Banking. Source: `packages/ui/src/accounting/banking.tsx`.
+Category: Accounting · Banking. Source: `packages/ui/src/accounting/banking/month-proof.tsx:20-168`.

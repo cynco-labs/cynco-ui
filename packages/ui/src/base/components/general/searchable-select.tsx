@@ -1,37 +1,27 @@
 "use client";
 
 import { CaretDownIcon, CheckIcon } from "@phosphor-icons/react";
-import { SmallSpinner } from "./small-spinner";
-import {
-	Command,
-	CommandEmpty,
-	CommandGroup,
-	CommandInput,
-	CommandItem,
-	CommandList,
-} from "../ui/command";
-import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger,
-} from "../ui/popover";
-import { cn } from "../../lib/utils";
 import { AnimatePresence, motion } from "motion/react";
 import type { ComponentProps, ReactNode } from "react";
-import { useControllableState } from "../../hooks/use-controllable-state";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useControllableState } from "../../hooks/use-controllable-state";
+import {
+	inputHeightClassName,
+	inputPaddingClassName,
+	inputPopupClassName,
+	inputSurfaceClassName,
+} from "../../lib/input-classes";
+import { cn } from "../../lib/utils";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "../ui/command";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { SmallSpinner } from "./small-spinner";
 
-export type SearchableSelectFooter =
-	| ReactNode
-	| ((props: { close: () => void }) => ReactNode);
+export type SearchableSelectFooter = ReactNode | ((props: { close: () => void }) => ReactNode);
 
-/** Lets a form label the default trigger and point it at an error message. */
-type SearchableSelectA11yProps = Pick<
-	ComponentProps<"button">,
-	"id" | "aria-label" | "aria-labelledby" | "aria-describedby" | "aria-invalid"
->;
+/** Native props for the default trigger button, so a form can label it and point it at an error. */
+type SearchableSelectTriggerProps = Omit<ComponentProps<"button">, "children" | "onChange" | "value" | "defaultValue">;
 
-export type SearchableSelectProps<T> = SearchableSelectA11yProps & {
+export type SearchableSelectProps<T> = SearchableSelectTriggerProps & {
 	/** Controlled selection; null for none. */
 	value?: string | null;
 	/** Initial selection for uncontrolled use. */
@@ -96,9 +86,13 @@ export function SearchableSelect<T>({
 	onSearchChange,
 	shouldFilter = !onSearchChange,
 	isLoading = false,
-	...a11yProps
+	...triggerProps
 }: SearchableSelectProps<T>) {
-	const [value = null, setValue] = useControllableState<string | null>({ prop: valueProp, defaultProp: defaultValue, onChange: (v) => v !== null && onValueChange?.(v) });
+	const [value = null, setValue] = useControllableState<string | null>({
+		prop: valueProp,
+		defaultProp: defaultValue,
+		onChange: (v) => v !== null && onValueChange?.(v),
+	});
 	const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
 	const open = controlledOpen ?? uncontrolledOpen;
 	const onOpenChangeRef = useRef(onOpenChange);
@@ -123,8 +117,7 @@ export function SearchableSelect<T>({
 	};
 
 	const defaultRenderValue = (option: T | undefined) => {
-		if (!option)
-			return <span className="text-tertiary-foreground">{placeholder}</span>;
+		if (!option) return <span className="text-tertiary-foreground">{placeholder}</span>;
 		return <span>{getOptionLabel(option)}</span>;
 	};
 
@@ -132,9 +125,7 @@ export function SearchableSelect<T>({
 		const isDisabled = getOptionDisabled?.(option) ?? false;
 		return (
 			<>
-				<span className="flex-1 truncate min-w-0">
-					{getOptionLabel(option)}
-				</span>
+				<span className="flex-1 truncate min-w-0">{getOptionLabel(option)}</span>
 				{isSelected && !isDisabled && <CheckIcon className="size-4 shrink-0" />}
 			</>
 		);
@@ -148,19 +139,21 @@ export function SearchableSelect<T>({
 					// is a dialog holding the search box and listbox), so none are set here.
 					<button
 						type="button"
-						{...a11yProps}
+						data-slot="searchable-select"
+						{...triggerProps}
 						disabled={disabled}
 						className={cn(
-							"flex items-center justify-between gap-2 w-full min-w-0 cursor-pointer text-sm outline-none disabled:cursor-not-allowed disabled:opacity-50 rounded-lg",
-							"input-base input-shadow-default input-state-open transition-all duration-150",
+							"flex w-full min-w-0 cursor-pointer items-center justify-between gap-2",
+							inputSurfaceClassName,
+							inputHeightClassName,
+							inputPaddingClassName,
+							inputPopupClassName,
 							triggerClassName,
 						)}
 					>
 						<div className="flex items-center gap-2 min-w-0 flex-1">
 							<span className="truncate min-w-0">
-								{renderValue
-									? renderValue(selectedOption)
-									: defaultRenderValue(selectedOption)}
+								{renderValue ? renderValue(selectedOption) : defaultRenderValue(selectedOption)}
 							</span>
 						</div>
 						<CaretDownIcon className="size-4 shrink-0 opacity-50" />
@@ -172,11 +165,7 @@ export function SearchableSelect<T>({
 					<PopoverContent
 						align="start"
 						aria-label={placeholder}
-						className={cn(
-							"w-(--anchor-width) p-0 z-200 rounded-md overflow-hidden",
-							contentClassName,
-						)}
-						asChild
+						className={cn("w-(--anchor-width) overflow-hidden rounded-md p-0 z-popover", contentClassName)}
 					>
 						<motion.div
 							initial={{ opacity: 0 }}
@@ -194,31 +183,16 @@ export function SearchableSelect<T>({
 										? () => 1
 										: searchable
 											? (optionValue, search) => {
-													const option = options.find(
-														(opt) => getOptionValue(opt) === optionValue,
-													);
+													const option = options.find((opt) => getOptionValue(opt) === optionValue);
 													if (!option) return 0;
 													const searchLower = search.trim().toLowerCase();
-													const haystack = [
-														getOptionLabel(option),
-														optionValue,
-														...(getOptionSearchTerms?.(option) ?? []),
-													];
-													return haystack.some((term) =>
-														term?.toLowerCase().includes(searchLower),
-													)
-														? 1
-														: 0;
+													const haystack = [getOptionLabel(option), optionValue, ...(getOptionSearchTerms?.(option) ?? [])];
+													return haystack.some((term) => term?.toLowerCase().includes(searchLower)) ? 1 : 0;
 												}
 											: undefined
 								}
 							>
-								{searchable && (
-									<CommandInput
-										placeholder={searchPlaceholder}
-										onValueChange={onSearchChange}
-									/>
-								)}
+								{searchable && <CommandInput placeholder={searchPlaceholder} onValueChange={onSearchChange} />}
 								{header}
 								<CommandList>
 									{(emptyText !== null || isLoading) && (
@@ -247,24 +221,16 @@ export function SearchableSelect<T>({
 													// cmdk's aria-selected tracks the highlighted row, not the
 													// chosen value; expose the chosen one separately.
 													aria-current={isSelected ? "true" : undefined}
-													className={cn(
-														"min-w-0 cursor-pointer",
-														isDisabled &&
-															"text-subtle pointer-events-none opacity-50",
-													)}
+													className={cn("min-w-0 cursor-pointer", isDisabled && "text-subtle pointer-events-none opacity-50")}
 												>
-													{renderOption
-														? renderOption(option, isSelected)
-														: defaultRenderOption(option, isSelected)}
+													{renderOption ? renderOption(option, isSelected) : defaultRenderOption(option, isSelected)}
 												</CommandItem>
 											);
 										})}
 									</CommandGroup>
 								</CommandList>
 							</Command>
-							{typeof footer === "function"
-								? footer({ close: () => setOpen(false) })
-								: footer}
+							{typeof footer === "function" ? footer({ close: () => setOpen(false) }) : footer}
 						</motion.div>
 					</PopoverContent>
 				)}

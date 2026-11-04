@@ -1,12 +1,12 @@
-import { InvoiceTotalsPanel, buildSalesTotals } from "@cynco-labs/ui";
+import { buildSalesTotals, InvoiceTotalsPanel } from "@cynco-labs/ui";
 
 export default function InvoiceTotalsPanelDemo() {
 	const rows = buildSalesTotals({
-		subtotal: 12000,
-		discount: 600,
-		discountPercent: 5,
-		taxes: [{ label: "SST (8%)", amount: 912 }],
-		deposit: 3000,
+		subtotal: "12000.00",
+		discount: "600.00",
+		discountPercent: "5.00",
+		taxes: [{ label: "SST (8%)", amount: "912.00" }],
+		deposit: "3000.00",
 	});
 	return (
 		<div className="max-w-[340px] ml-auto">

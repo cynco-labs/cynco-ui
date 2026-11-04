@@ -28,4 +28,4 @@ Descriptions and notes.
 
 Native textarea props.
 
-Category: Components · Inputs. Source: `packages/ui/src/base/components/ui/textarea.tsx`.
+Category: Components · Inputs. Source: `packages/ui/src/base/components/ui/textarea.tsx:10-25`.

@@ -9,8 +9,8 @@ import { InvoiceListTable } from "@cynco-labs/ui";
 ## Usage
 
 ```tsx
-import { useState } from "react";
 import { InvoiceListTable, type SalesInvoiceRow } from "@cynco-labs/ui";
+import { useState } from "react";
 
 export default function InvoiceListTableDemo() {
 	const rows: SalesInvoiceRow[] = [
@@ -20,7 +20,7 @@ export default function InvoiceListTableDemo() {
 			customerName: "Syarikat Maju Jaya Sdn Bhd",
 			invoiceDate: "2026-10-28",
 			dueDate: "2026-11-27",
-			total: 12850,
+			total: "12850.00",
 			status: "finalized",
 			journalEntryId: "je1",
 			emailStatus: "opened",
@@ -31,7 +31,7 @@ export default function InvoiceListTableDemo() {
 			customerName: "Tropika Kopi Enterprise",
 			invoiceDate: "2026-10-02",
 			dueDate: "2026-10-16",
-			total: 3240,
+			total: "3240.00",
 			status: "overdue",
 			journalEntryId: "je3",
 			emailStatus: "bounced",
@@ -42,28 +42,18 @@ export default function InvoiceListTableDemo() {
 			customerName: "Nusantara Logistik Bhd",
 			invoiceDate: "2026-09-30",
 			dueDate: "2026-10-30",
-			total: 28400,
+			total: "28400.00",
 			status: "partially_paid",
 			journalEntryId: null,
 		},
 	];
 	const [sel, setSel] = useState(["3", "4"]);
-	function toggle(id: string) {
-		const s = sel.slice();
-		const i = s.indexOf(id);
-		if (i < 0) s.push(id);
-		else s.splice(i, 1);
-		setSel(s);
-	}
 	return (
 		<InvoiceListTable
 			onRowAction={() => {}}
 			invoices={rows}
 			selectedIds={sel}
-			onToggleRow={toggle}
-			onToggleAll={() => {
-				setSel(sel.length === rows.length ? [] : rows.map((r) => r.id));
-			}}
+			onSelectionChange={setSel}
 			sortField="invoice_date"
 			sortDirection="desc"
 		/>
@@ -77,12 +67,12 @@ The Invoicing page's main list, above which InvoiceBulkBar appears once rows are
 
 ## Props
 
-invoices (invoiceNumber, customerName, invoiceDate, dueDate, total, currency, status, journalEntryId, emailStatus), selectedIds, onToggleRow, onToggleAll, sortField, sortDirection, onSort, optional footer; className.
+invoices (invoiceNumber, customerName, invoiceDate, dueDate, total, currency, status, journalEntryId, emailStatus), selectedIds, defaultSelectedIds, onSelectionChange, sortField, sortDirection, onSort, optional footer; className.
 
 - `invoices`: `SalesInvoiceRow[]`
-- `selectedIds?`: `string[]`. Default `[]`.
-- `onToggleRow?`: `(id: string) => void`
-- `onToggleAll?`: `() => void`
+- `selectedIds?`: `string[]`. The ticked rows. Pass it to control the selection.
+- `defaultSelectedIds?`: `string[]`. The rows ticked to begin with when the selection is uncontrolled.
+- `onSelectionChange?`: `(ids: string[]) => void`. The whole new selection, every time it changes.
 - `sortField?`: `string`. Default `"invoice_date"`.
 - `sortDirection?`: `"asc" | "desc"`. Default `"desc"`.
 - `onSort?`: `(field: string) => void`
@@ -92,6 +82,6 @@ invoices (invoiceNumber, customerName, invoiceDate, dueDate, total, currency, st
 
 ## Notes
 
-Invoice numbers use text-tiny-id in primary and amounts are right-aligned tabular-nums. Responsive: Built on DataList: a tray table from 48rem of container width, a stacked card per invoice below that (customer and amount, then status and signals, then Invoice #, Date and Due Date).
+Invoice numbers use `font-mono text-2xs` in primary and amounts are right-aligned tabular-nums. Responsive: Built on DataList: a tray table from 48rem of container width, a stacked card per invoice below that (customer and amount, then status and signals, then Invoice #, Date and Due Date).
 
-Category: Accounting · Sales. Source: `packages/ui/src/accounting/sales.tsx`.
+Category: Accounting · Sales. Source: `packages/ui/src/accounting/sales/invoice-list.tsx:102-220`.

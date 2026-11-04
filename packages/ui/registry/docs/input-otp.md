@@ -9,8 +9,8 @@ import { InputOTP } from "@cynco-labs/ui";
 ## Usage
 
 ```tsx
-import { useState } from "react";
 import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from "@cynco-labs/ui";
+import { useState } from "react";
 
 export default function InputOTPDemo() {
 	const [s, setS] = useState("3141");
@@ -43,4 +43,8 @@ Sign-in OTP entry.
 - `containerClassName?`: `string`
 - Also accepts `ComponentProps<typeof OTPInput>`.
 
-Category: Components · Inputs. Source: `packages/ui/src/base/components/ui/input-otp.tsx`.
+## Accessibility
+
+The slots are plain divs that paint the character and a blinking fake caret; the real control is the single input rendered by the input-otp package, so aria-label, autoComplete="one-time-code" and any error wiring belong on InputOTP itself. The separator carries role="separator", and the whole group dims when that input is disabled.
+
+Category: Components · Inputs. Source: `packages/ui/src/base/components/ui/input-otp.tsx:8-23`.

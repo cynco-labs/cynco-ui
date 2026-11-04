@@ -1,11 +1,12 @@
 "use client";
 
-import { Separator } from "./separator";
-import { cn } from "../../lib/utils";
 import { mergeProps } from "@base-ui/react/merge-props";
 import { useRender } from "@base-ui/react/use-render";
 import { cva, type VariantProps } from "class-variance-authority";
-import * as React from "react";
+import type * as React from "react";
+import { renderProp } from "../../lib/render";
+import { cn } from "../../lib/utils";
+import { Separator } from "./separator";
 
 const buttonGroupVariants = cva(
 	"flex w-fit items-stretch [&>*]:focus-visible:z-10 [&>*]:focus-visible:relative [&>[data-slot=select-trigger]:not([class*='w-'])]:w-fit [&>input]:flex-1 has-[select[aria-hidden=true]:last-child]:[&>[data-slot=select-trigger]:last-of-type]:rounded-r-md has-[>[data-slot=button-group]]:gap-2",
@@ -30,6 +31,7 @@ function ButtonGroup({
 	...props
 }: React.ComponentProps<"div"> & VariantProps<typeof buttonGroupVariants>) {
 	return (
+		// biome-ignore lint/a11y/useSemanticElements: no HTML element groups buttons; fieldset is for form controls and needs a legend.
 		<div
 			role="group"
 			data-slot="button-group"
@@ -43,14 +45,13 @@ function ButtonGroup({
 function ButtonGroupText({
 	className,
 	asChild = false,
-	render: renderProp,
+	render,
 	children,
 	...props
 }: useRender.ComponentProps<"div"> & {
 	asChild?: boolean;
 }) {
-	const effectiveRender =
-		asChild && React.isValidElement(children) ? children : renderProp;
+	const element = renderProp(asChild, children, render);
 
 	return useRender({
 		defaultTagName: "div",
@@ -61,9 +62,9 @@ function ButtonGroupText({
 					className,
 				),
 			},
-			{ ...props, children: effectiveRender ? undefined : children },
+			{ ...props, ...(element === children ? {} : { children }) },
 		),
-		render: effectiveRender,
+		render: element,
 		state: {
 			slot: "button-group-text",
 		},
@@ -79,10 +80,7 @@ function ButtonGroupSeparator({
 		<Separator
 			data-slot="button-group-separator"
 			orientation={orientation}
-			className={cn(
-				"bg-border relative !m-0 self-stretch data-[orientation=vertical]:h-auto",
-				className,
-			)}
+			className={cn("bg-border relative m-0 self-stretch data-[orientation=vertical]:h-auto", className)}
 			{...props}
 		/>
 	);

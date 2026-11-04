@@ -1,5 +1,5 @@
-import { useState } from "react";
 import { SearchableSelect } from "@cynco-labs/ui";
+import { useState } from "react";
 
 const opts = [
 	{ id: "1000-001", name: "1000-001 · Cash in hand" },

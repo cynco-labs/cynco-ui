@@ -1,5 +1,5 @@
-import { MagnifyingGlassIcon } from "@phosphor-icons/react";
 import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from "@cynco-labs/ui";
+import { MagnifyingGlassIcon } from "@phosphor-icons/react";
 
 export default function InputGroupDemo() {
 	return (

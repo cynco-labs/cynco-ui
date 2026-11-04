@@ -1,12 +1,12 @@
 "use client";
 
 import * as React from "react";
-import { Button, type ButtonProps } from "../ui/button";
-import { useIsMac } from "../../hooks/use-platform";
-import { cn } from "../../lib/utils";
 import { useHotkeys } from "react-hotkeys-hook";
 import { toAriaKeyShortcuts, useShortcutAllowed } from "../../hooks/use-character-key-shortcuts";
 import { useMergedRef } from "../../hooks/use-merged-ref";
+import { useIsMac } from "../../hooks/use-platform";
+import { cn } from "../../lib/utils";
+import { Button, type ButtonProps } from "../ui/button";
 
 export const ShortcutButton = ({
 	metaShortcut,
@@ -34,11 +34,7 @@ export const ShortcutButton = ({
 	const setRef = useMergedRef(buttonRef, ref);
 
 	useHotkeys(
-		metaShortcut
-			? [`mod+${metaShortcut}`]
-			: singleShortcut
-				? [singleShortcut]
-				: [],
+		metaShortcut ? [`mod+${metaShortcut}`] : singleShortcut ? [singleShortcut] : [],
 		(e) => {
 			if (props.disabled || isLoading) return;
 			e.preventDefault();
@@ -55,22 +51,16 @@ export const ShortcutButton = ({
 	const keystrokeContainer = (keyStroke: string, isEnter = false) => {
 		const isSingleChar = keyStroke.length === 1;
 		const sizeClasses = isSingleChar ? "w-4" : "px-1";
-		const baseClasses = `flex items-center justify-center ${sizeClasses} h-4 rounded-md text-tiny font-medium`;
+		const baseClasses = `flex items-center justify-center ${sizeClasses} h-4 rounded-md text-2xs font-medium`;
 		const variantClasses =
 			variant === "secondary"
-				? "bg-muted text-body-secondary"
+				? "bg-muted text-sm text-subtle"
 				: // Outlined, so the key reads on the button's own colour at the button's own text contrast.
 					"ring-1 ring-inset ring-primary-foreground/60";
 
 		return (
-			<div className={`${baseClasses} ${variantClasses}`}>
-				<span
-					className={
-						isEnter ? "inline-block translate-y-[1px] translate-x-[-0.5px]" : ""
-					}
-				>
-					{keyStroke}
-				</span>
+			<div data-slot="shortcut-button" className={`${baseClasses} ${variantClasses}`}>
+				<span className={isEnter ? "inline-block translate-y-[1px] translate-x-[-0.5px]" : ""}>{keyStroke}</span>
 			</div>
 		);
 	};

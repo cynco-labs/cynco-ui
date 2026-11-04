@@ -1,10 +1,10 @@
 ---
-import Docs from "../layouts/Docs.astro";
 import type { AstroComponentFactory } from "astro/runtime/server/index.js";
 import Settings from "../components/Settings.astro";
-import { byCategory, registry } from "../lib/registry";
+import Docs from "../layouts/Docs.astro";
 import { PRINCIPLES, SHOWCASE } from "../lib/home";
 import { installPrompt } from "../lib/prompt";
+import { byCategory, registry } from "../lib/registry";
 
 const islands = import.meta.glob<{ default: AstroComponentFactory }>("../islands/*.astro", { eager: true });
 const byName = new Map(registry.map((c) => [c.name, c]));
@@ -13,7 +13,8 @@ const tiles = SHOWCASE.map((t) => {
 	if (!entry) throw new Error(`Home showcase: ${t.name} is not in the registry`);
 	return { ...t, entry, Island: islands[`../islands/${t.name}.astro`].default };
 });
-const lastSmall = tiles.filter((t) => t.size === "small").length % 2 === 1 ? tiles.findLast((t) => t.size === "small") : undefined;
+const lastSmall =
+	tiles.filter((t) => t.size === "small").length % 2 === 1 ? tiles.findLast((t) => t.size === "small") : undefined;
 const SPAN = {
 	small: "",
 	wide: "md:col-span-2",
@@ -23,9 +24,9 @@ const SPAN = {
 
 <Docs title="Cynco UI" description="The design system for accounting and ERP interfaces: components, layout primitives, productivity patterns and printable business documents." current="/" mdHref="/index.md" wide pager={false}>
 	<section class="pt-6 sm:pt-10">
-		<h1 class="font-serif text-[44px] font-normal leading-[1.05] tracking-[-0.02em] text-foreground sm:text-[56px]">Cynco UI</h1>
-		<p class="mt-3 max-w-[36rem] text-[17px] leading-relaxed text-tertiary-foreground">Quiet, dense components for ledgers, invoices, bank feeds and the documents you print.</p>
-		<p class="mt-2 text-[13px] text-subtle">
+		<h1 class="font-serif text-hero-sm font-normal leading-[1.05] tracking-[-0.02em] text-foreground sm:text-hero">Cynco UI</h1>
+		<p class="mt-3 max-w-[36rem] text-lg leading-relaxed text-tertiary-foreground">Quiet, dense components for ledgers, invoices, bank feeds and the documents you print.</p>
+		<p class="mt-2 text-sm text-subtle">
 			<span class="tabular-nums">{registry.length}</span> components · <span class="tabular-nums">{byCategory("Documents").length}</span> printable documents · 4 themes · English and Malay
 		</p>
 		<div class="mt-6 flex flex-wrap items-center gap-2">
@@ -34,19 +35,19 @@ const SPAN = {
 				data-copy-text={installPrompt()}
 				data-with-theme
 				data-copy-label="Copied. Paste it into your agent"
-				class="inline-flex h-9 items-center gap-2 rounded-lg bg-foreground px-3.5 text-[13.5px] font-medium text-background transition-opacity hover:opacity-90"
+				class="inline-flex h-9 items-center gap-2 rounded-lg bg-foreground px-3.5 text-sm font-medium text-background transition-opacity hover:opacity-90"
 			>
 				<svg class="size-3.5" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M216 32H88a8 8 0 0 0-8 8v40H40a8 8 0 0 0-8 8v128a8 8 0 0 0 8 8h128a8 8 0 0 0 8-8v-40h40a8 8 0 0 0 8-8V40a8 8 0 0 0-8-8Zm-56 176H48V96h112Zm48-48h-32V88a8 8 0 0 0-8-8H96V48h112Z"></path></svg>
 				<span>Copy install prompt</span>
 			</button>
-			<a href="/installation" class="inline-flex h-9 items-center rounded-lg border border-border bg-interactive-secondary px-3.5 text-[13.5px] font-medium text-foreground transition-colors hover:bg-interactive-secondary-hover">Get started</a>
-			<a href="/components" class="inline-flex h-9 items-center rounded-lg px-3 text-[13.5px] font-medium text-tertiary-foreground transition-colors hover:bg-muted hover:text-foreground">Browse all {registry.length}</a>
+			<a href="/installation" class="inline-flex h-9 items-center rounded-lg border border-border bg-interactive-secondary px-3.5 text-sm font-medium text-foreground transition-colors hover:bg-interactive-secondary-hover">Get started</a>
+			<a href="/components" class="inline-flex h-9 items-center rounded-lg px-3 text-sm font-medium text-tertiary-foreground transition-colors hover:bg-muted hover:text-foreground">Browse all {registry.length}</a>
 		</div>
 	</section>
 
 	<section class="mt-12" aria-labelledby="showcase">
 		<div class="flex flex-wrap items-end justify-between gap-x-6 gap-y-3 border-b border-border pb-4">
-			<h2 id="showcase" class="text-[13px] font-semibold text-foreground">Make it yours</h2>
+			<h2 id="showcase" class="text-sm font-semibold text-foreground">Make it yours</h2>
 			<Settings variant="strip" />
 		</div>
 		<div class="mt-4 grid grid-flow-dense auto-rows-[22rem] gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -60,10 +61,10 @@ const SPAN = {
 							<div class="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-background" aria-hidden="true" />
 						</div>
 						<figcaption class="flex items-center justify-between gap-3 border-t border-border px-4 py-2.5">
-							<a href={`/components/${t.entry.slug}`} class="truncate text-[13px] font-medium text-foreground hover:underline">
+							<a href={`/components/${t.entry.slug}`} class="truncate text-sm font-medium text-foreground hover:underline">
 								{t.name}
 							</a>
-							<span class="shrink-0 text-[12px] text-subtle">{t.note}</span>
+							<span class="shrink-0 text-xs text-subtle">{t.note}</span>
 						</figcaption>
 					</figure>
 				))
@@ -72,13 +73,13 @@ const SPAN = {
 	</section>
 
 	<section class="mt-20" aria-labelledby="principles">
-		<h2 id="principles" class="text-[13px] font-semibold text-foreground">Principles</h2>
+		<h2 id="principles" class="text-sm font-semibold text-foreground">Principles</h2>
 		<div class="mt-4 grid gap-x-10 gap-y-8 border-t border-border pt-8 sm:grid-cols-2 lg:grid-cols-3">
 			{
 				PRINCIPLES.map((p) => (
 					<div>
-						<h3 class="text-[15px] font-semibold text-foreground">{p.title}</h3>
-						<p class="mt-1.5 text-[14px] leading-relaxed text-tertiary-foreground">{p.body}</p>
+						<h3 class="text-md font-semibold text-foreground">{p.title}</h3>
+						<p class="mt-1.5 text-md leading-relaxed text-tertiary-foreground">{p.body}</p>
 					</div>
 				))
 			}
@@ -86,8 +87,8 @@ const SPAN = {
 	</section>
 
 	<section class="mt-20 rounded-xl border border-border bg-card p-6 sm:p-8">
-		<h2 class="text-[18px] font-semibold tracking-[-0.01em] text-foreground">Built for people and for agents</h2>
-		<p class="mt-2 max-w-[44rem] text-[14px] leading-relaxed text-tertiary-foreground">
+		<h2 class="text-lg font-semibold tracking-[-0.01em] text-foreground">Built for people and for agents</h2>
+		<p class="mt-2 max-w-[44rem] text-md leading-relaxed text-tertiary-foreground">
 			Every component page has a <strong class="font-medium text-foreground">Copy prompt</strong> button: install steps, import, props, an example and the house rules, ready to paste into a coding agent. Every page also has a Markdown version (add <code class="font-mono text-[0.9em] text-foreground">.md</code> to the URL), <a class="link" href="/llms.txt">/llms.txt</a> indexes them all, and <a class="link" href="/skill.md">/skill.md</a> is an agent skill that teaches the rules.
 		</p>
 	</section>

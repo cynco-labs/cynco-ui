@@ -46,16 +46,10 @@ export function useMenuShortcuts(isOpen: boolean, close: () => void) {
 		if (!isOpen) return;
 		const handler = (e: KeyboardEvent) => {
 			const target = e.target as HTMLElement;
-			if (
-				target.tagName === "INPUT" ||
-				target.tagName === "TEXTAREA" ||
-				target.isContentEditable
-			) {
+			if (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable) {
 				return;
 			}
-			const match = shortcuts.current.find(
-				(s) => s.key.toLowerCase() === e.key.toLowerCase(),
-			);
+			const match = shortcuts.current.find((s) => s.key.toLowerCase() === e.key.toLowerCase());
 			if (match) {
 				e.preventDefault();
 				e.stopPropagation();

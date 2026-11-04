@@ -28,4 +28,4 @@ Progress against a target, setup progress, import progress.
 
 `value` 0–100; optional `ProgressLabel`, `ProgressValue` children.
 
-Category: Components · Feedback. Source: `packages/ui/src/base/components/ui/progress.tsx`.
+Category: Components · Feedback. Source: `packages/ui/src/base/components/ui/progress.tsx:6-20`.

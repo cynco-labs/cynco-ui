@@ -22,7 +22,7 @@ export default function PlanDemo() {
 					<PlanTrigger />
 				</PlanAction>
 			</PlanHeader>
-			<PlanContent className="text-body">
+			<PlanContent className="text-sm font-medium text-muted-foreground">
 				<ol className="list-decimal pl-5 flex flex-col gap-1">
 					<li>Reconcile Maybank and CIMB</li>
 					<li>Post accruals and depreciation</li>
@@ -30,7 +30,7 @@ export default function PlanDemo() {
 				</ol>
 			</PlanContent>
 			<PlanFooter className="px-4">
-				<Button variant="primary" size="mini">
+				<Button variant="primary" size="sm">
 					Start close
 				</Button>
 			</PlanFooter>

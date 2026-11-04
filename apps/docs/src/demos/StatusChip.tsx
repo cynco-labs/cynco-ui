@@ -30,7 +30,7 @@ export default function StatusChipDemo() {
 				<StatusChipIcon tone="green" glyph="coins" />
 				<StatusChipIcon tone="orange" glyph="ticket" />
 				<StatusRing tone="blue" fraction={0.66} />
-				<span className="text-body-secondary">StatusChipIcon · StatusRing</span>
+				<span className="text-sm text-subtle">StatusChipIcon · StatusRing</span>
 			</div>
 		</div>
 	);

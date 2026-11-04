@@ -1,21 +1,13 @@
 "use client";
 
 import { CaretDownIcon, MagnifyingGlassIcon } from "@phosphor-icons/react";
-import {
-	Collapsible,
-	CollapsibleContent,
-	CollapsibleTrigger,
-} from "../ui/collapsible";
-import { cn } from "../../lib/utils";
 import type { ComponentProps } from "react";
+import { cn } from "../../lib/utils";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";
 
 export type TaskItemFileProps = ComponentProps<"div">;
 
-export const TaskItemFile = ({
-	children,
-	className,
-	...props
-}: TaskItemFileProps) => (
+export const TaskItemFile = ({ children, className, ...props }: TaskItemFileProps) => (
 	<div
 		className={cn(
 			"inline-flex items-center gap-1 rounded-md border bg-secondary px-1.5 py-0.5 text-foreground text-xs",
@@ -37,11 +29,7 @@ export const TaskItem = ({ children, className, ...props }: TaskItemProps) => (
 
 export type TaskProps = ComponentProps<typeof Collapsible>;
 
-export const Task = ({
-	defaultOpen = true,
-	className,
-	...props
-}: TaskProps) => (
+export const Task = ({ defaultOpen = true, className, ...props }: TaskProps) => (
 	<Collapsible className={cn(className)} defaultOpen={defaultOpen} {...props} />
 );
 
@@ -49,12 +37,7 @@ export type TaskTriggerProps = ComponentProps<typeof CollapsibleTrigger> & {
 	title: string;
 };
 
-export const TaskTrigger = ({
-	children,
-	className,
-	title,
-	...props
-}: TaskTriggerProps) => (
+export const TaskTrigger = ({ children, className, title, ...props }: TaskTriggerProps) => (
 	<CollapsibleTrigger asChild className={cn("group", className)} {...props}>
 		{children ?? (
 			// A real <button>: Base UI adds no role or Enter/Space handling to a <div> trigger.
@@ -72,11 +55,7 @@ export const TaskTrigger = ({
 
 export type TaskContentProps = ComponentProps<typeof CollapsibleContent>;
 
-export const TaskContent = ({
-	children,
-	className,
-	...props
-}: TaskContentProps) => (
+export const TaskContent = ({ children, className, ...props }: TaskContentProps) => (
 	<CollapsibleContent
 		className={cn(
 			"data-[state=closed]:fade-out-0 data-[state=closed]:slide-out-to-top-2 data-[state=open]:slide-in-from-top-2 text-popover-foreground outline-none data-[state=closed]:animate-out data-[state=open]:animate-in",
@@ -84,8 +63,6 @@ export const TaskContent = ({
 		)}
 		{...props}
 	>
-		<div className="mt-4 space-y-2 border-muted border-l-2 pl-4">
-			{children}
-		</div>
+		<div className="mt-4 space-y-2 border-muted border-l-2 pl-4">{children}</div>
 	</CollapsibleContent>
 );

@@ -1,5 +1,5 @@
-import { useState } from "react";
 import { BillsBoard } from "@cynco-labs/ui";
+import { useState } from "react";
 
 export default function BillsBoardDemo() {
 	const [s, setS] = useState(["b5"]);
@@ -8,15 +8,13 @@ export default function BillsBoardDemo() {
 			onPaidFilterClick={() => {}}
 			columns={["in_review", "awaiting_payment"]}
 			selectedIds={s}
-			onToggleBill={(id) => {
-				setS(s.indexOf(id) >= 0 ? s.filter((x) => x !== id) : s.concat([id]));
-			}}
+			onSelectionChange={setS}
 			bills={[
 				{
 					id: "b1",
 					vendorName: "Grand Office Supplies",
 					billNumber: "GOS-55102",
-					totalAmount: 612.3,
+					totalAmount: "612.30",
 					dueDate: "2026-11-05",
 					status: "in_review",
 					category: "Office supplies",
@@ -26,7 +24,7 @@ export default function BillsBoardDemo() {
 					id: "b2",
 					vendorName: "Petronas Dagangan Bhd",
 					billNumber: "PDB-FLT-88213",
-					totalAmount: 2318.45,
+					totalAmount: "2318.45",
 					dueDate: "2026-11-14",
 					status: "in_review",
 					category: "Fuel",
@@ -36,7 +34,7 @@ export default function BillsBoardDemo() {
 					id: "b3",
 					vendorName: "Kenanga Legal Chambers",
 					billNumber: "KLC-2026-047",
-					totalAmount: 5800,
+					totalAmount: "5800.00",
 					dueDate: "2026-11-20",
 					status: "pending_approval",
 					category: "Professional fees",
@@ -45,7 +43,7 @@ export default function BillsBoardDemo() {
 					id: "b4",
 					vendorName: "Tenaga Nasional Berhad",
 					billNumber: "TNB-220415887",
-					totalAmount: 1284.6,
+					totalAmount: "1284.60",
 					dueDate: "2026-10-24",
 					status: "awaiting_payment",
 					category: "Utilities",
@@ -56,8 +54,8 @@ export default function BillsBoardDemo() {
 					id: "b5",
 					vendorName: "Syarikat Logistik Pantas Sdn Bhd",
 					billNumber: "SLP/INV/2026/0918",
-					totalAmount: 8450,
-					paidAmount: 3000,
+					totalAmount: "8450.00",
+					paidAmount: "3000.00",
 					dueDate: "2026-11-12",
 					status: "partially_paid",
 					category: "Freight & delivery",

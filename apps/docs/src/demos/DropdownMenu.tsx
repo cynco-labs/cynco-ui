@@ -1,4 +1,3 @@
-import { CopyIcon, PencilSimpleIcon, TrashIcon } from "@phosphor-icons/react";
 import {
 	Button,
 	DropdownMenu,
@@ -9,6 +8,7 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@cynco-labs/ui";
+import { CopyIcon, PencilSimpleIcon, TrashIcon } from "@phosphor-icons/react";
 
 export default function DropdownMenuDemo() {
 	return (

@@ -35,4 +35,4 @@ Images returned by an image model.
 - `alt?`: `string`
 - Also accepts `Experimental_GeneratedImage`.
 
-Category: AI. Source: `packages/ui/src/base/components/ai-elements/image.tsx`.
+Category: AI. Source: `packages/ui/src/base/components/ai-elements/image.tsx:9-17`.

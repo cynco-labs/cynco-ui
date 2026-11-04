@@ -47,8 +47,16 @@ Switching sections of a page (`underline`) or modes inside a panel (`default`).
 
 `Tabs value/defaultValue`, `TabsList variant`, `TabsTrigger value variant`, `TabsContent value`.
 
+## Accessibility
+
+| Key | Does |
+| --- | --- |
+| Tab | Draws a 2px focus-visible outline on whichever trigger or panel takes focus. |
+
+The list, triggers and panels are Base UI's tabs, so the active tab is exposed as selected and tied to its panel. The component itself only adds the active styling, keyed on data-active, and a focus ring on the panel.
+
 ## Notes
 
 Pass the same `variant` to the list and its triggers.
 
-Category: Components · Navigation. Source: `packages/ui/src/base/components/ui/tabs.tsx`.
+Category: Components · Navigation. Source: `packages/ui/src/base/components/ui/tabs.tsx:34-36`.

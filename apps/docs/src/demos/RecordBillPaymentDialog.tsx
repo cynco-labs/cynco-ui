@@ -3,7 +3,7 @@ import { RecordBillPaymentDialog } from "@cynco-labs/ui";
 export default function RecordBillPaymentDialogDemo() {
 	return (
 		<RecordBillPaymentDialog
-			billAmount={8450}
+			billAmount={"8450.00"}
 			paidAmount={3000}
 			currency="MYR"
 			defaultDate="2026-10-30"

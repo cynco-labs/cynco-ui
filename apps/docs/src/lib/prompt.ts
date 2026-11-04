@@ -7,6 +7,7 @@ import type { RegistryEntry } from "./registry";
 export const SITE = "https://ui.cynco.io";
 
 const INSTALL = [
+	// biome-ignore lint/suspicious/noTemplateCurlyInString: ${NPM_TOKEN} is .npmrc syntax the reader copies, not an interpolation
 	"Install: `pnpm add @cynco-labs/ui @phosphor-icons/react` (React 19). The package is in the restricted @cynco-labs npm org, so `npm login` with an org account or set `//registry.npmjs.org/:_authToken=${NPM_TOKEN}` in .npmrc.",
 	'Styles, in the main stylesheet: `@import "tailwindcss"; @import "@cynco-labs/ui/fonts.css"; @import "@cynco-labs/ui/theme.css";`. Without Tailwind, `import "@cynco-labs/ui/styles.css"` once at the root instead.',
 	"Wrap the app once in `<TooltipProvider>` from @cynco-labs/ui. Dark mode is the `dark` class on <html>; the Modern theme adds `preset-modern`.",
@@ -14,7 +15,7 @@ const INSTALL = [
 
 const RULES = [
 	"Colours, radii and shadows come from theme tokens (`bg-card`, `text-muted-foreground`, `border-border`, `text-error-text`), never hex values or Tailwind palette colours.",
-	"Amounts are decimal strings (`\"1234.50\"`), never floats. Use `parseAmount`, `sumAmounts`, `formatCurrency` from @cynco-labs/ui. Documents print totals exactly as given.",
+	'Amounts are decimal strings (`"1234.50"`), never floats. Use `parseAmount`, `sumAmounts`, `formatCurrency` from @cynco-labs/ui. Documents print totals exactly as given.',
 	"Lists of records use `DataList`, KPI rows `StatGrid`/`StatTile`, toolbars `ActionBar`. Don't hand-build tables or flex rows for these.",
 	"Components size to their container (container queries), so place them in any column width from 320px up; don't wrap them in fixed widths.",
 	"Printed documents stay black ink: no colour, tints or filled bars.",
@@ -40,7 +41,9 @@ const propsMarkdown = (entry: RegistryEntry): string[] => {
 		const desc = [p.description, p.default ? `Default \`${p.default}\`.` : ""].filter(Boolean).join(" ");
 		return `- \`${p.name}${p.required ? "" : "?"}\`: \`${p.type}\`${desc ? `. ${desc}` : ""}`;
 	});
-	const inherits = entry.props.inherits.length ? [`Also accepts ${entry.props.inherits.map((i) => `\`${i}\``).join(", ")}.`] : [];
+	const inherits = entry.props.inherits.length
+		? [`Also accepts ${entry.props.inherits.map((i) => `\`${i}\``).join(", ")}.`]
+		: [];
 	return ["## Props", "", ...rows, ...inherits, ""];
 };
 

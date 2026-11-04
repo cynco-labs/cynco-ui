@@ -1,27 +1,25 @@
 "use client";
 
 import { XIcon } from "@phosphor-icons/react";
-import {
-	Select,
-	SelectContent,
-	SelectTrigger,
-} from "../ui/select";
-import { cn } from "../../lib/utils";
 import * as React from "react";
+import { cn } from "../../lib/utils";
+import { Select, SelectContent, SelectTrigger } from "../ui/select";
 
 interface TagSelectOption {
 	value: string;
 	label: string;
 }
 
-/** Lets a form label the trigger and point it at an error message. */
+/** Lets a form label the trigger and point it at an error message; these land on the trigger, not the box. */
 type TagSelectA11yProps = Pick<
 	React.ComponentProps<"button">,
 	"id" | "aria-label" | "aria-labelledby" | "aria-describedby" | "aria-invalid"
 >;
 
 /** Controlled only: you add values from `renderContent`; the chips' remove buttons report through `onValueChange`. */
-interface TagSelectProps extends TagSelectA11yProps {
+interface TagSelectProps
+	extends TagSelectA11yProps,
+		Omit<React.ComponentProps<"div">, "children" | "onChange" | keyof TagSelectA11yProps> {
 	value: string[];
 	onValueChange: (values: string[]) => void;
 	options: TagSelectOption[];
@@ -47,7 +45,12 @@ export function TagSelect({
 	renderContent,
 	showAllProducts = false,
 	className,
-	...a11yProps
+	id,
+	"aria-label": ariaLabel,
+	"aria-labelledby": ariaLabelledBy,
+	"aria-describedby": ariaDescribedBy,
+	"aria-invalid": ariaInvalid,
+	...props
 }: TagSelectProps) {
 	const [open, setOpen] = React.useState(false);
 	const triggerRef = React.useRef<HTMLButtonElement>(null);
@@ -69,10 +72,14 @@ export function TagSelect({
 	const showTags = !showAllProducts && value.length > 0;
 
 	return (
-		<div className={cn("relative w-full min-h-input", className)}>
+		<div data-slot="tag-select" className={cn("relative w-full min-h-7", className)} {...props}>
 			<Select open={open} onOpenChange={setOpen}>
 				<SelectTrigger
-					{...a11yProps}
+					id={id}
+					aria-label={ariaLabel}
+					aria-labelledby={ariaLabelledBy}
+					aria-describedby={ariaDescribedBy}
+					aria-invalid={ariaInvalid}
 					ref={triggerRef}
 					className="absolute inset-0 h-auto w-full"
 				>
@@ -100,7 +107,7 @@ export function TagSelect({
 								key={val}
 								className="flex min-w-0 max-w-full items-center gap-1 border border-border bg-background rounded-lg pl-3 pr-2 py-1 text-xs"
 							>
-								<span className="truncate max-w-[280px] text-tiny">{label}</span>
+								<span className="truncate max-w-[280px] text-2xs">{label}</span>
 								<button
 									type="button"
 									aria-label={`Remove ${label}`}

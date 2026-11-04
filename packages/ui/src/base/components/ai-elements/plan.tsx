@@ -1,25 +1,13 @@
 "use client";
 
 import { CaretUpDownIcon } from "@phosphor-icons/react";
-import { Shimmer } from "./shimmer";
-import { Button } from "../ui/button";
-import {
-	Card,
-	CardAction,
-	CardContent,
-	CardDescription,
-	CardFooter,
-	CardHeader,
-	CardTitle,
-} from "../ui/card";
-import {
-	Collapsible,
-	CollapsibleContent,
-	CollapsibleTrigger,
-} from "../ui/collapsible";
-import { cn } from "../../lib/utils";
 import type { ComponentProps } from "react";
 import { createContext, useContext } from "react";
+import { cn } from "../../lib/utils";
+import { Button } from "../ui/button";
+import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../ui/card";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";
+import { Shimmer } from "./shimmer";
 
 type PlanContextValue = {
 	isStreaming: boolean;
@@ -39,12 +27,7 @@ export type PlanProps = ComponentProps<typeof Collapsible> & {
 	isStreaming?: boolean;
 };
 
-export const Plan = ({
-	className,
-	isStreaming = false,
-	children,
-	...props
-}: PlanProps) => (
+export const Plan = ({ className, isStreaming = false, children, ...props }: PlanProps) => (
 	<PlanContext.Provider value={{ isStreaming }}>
 		<Collapsible asChild data-slot="plan" {...props}>
 			<Card className={cn("shadow-none", className)}>{children}</Card>
@@ -55,17 +38,10 @@ export const Plan = ({
 export type PlanHeaderProps = ComponentProps<typeof CardHeader>;
 
 export const PlanHeader = ({ className, ...props }: PlanHeaderProps) => (
-	<CardHeader
-		className={cn("flex items-start justify-between", className)}
-		data-slot="plan-header"
-		{...props}
-	/>
+	<CardHeader className={cn("flex items-start justify-between", className)} data-slot="plan-header" {...props} />
 );
 
-export type PlanTitleProps = Omit<
-	ComponentProps<typeof CardTitle>,
-	"children"
-> & {
+export type PlanTitleProps = Omit<ComponentProps<typeof CardTitle>, "children"> & {
 	children: string;
 };
 
@@ -79,26 +55,15 @@ export const PlanTitle = ({ children, ...props }: PlanTitleProps) => {
 	);
 };
 
-export type PlanDescriptionProps = Omit<
-	ComponentProps<typeof CardDescription>,
-	"children"
-> & {
+export type PlanDescriptionProps = Omit<ComponentProps<typeof CardDescription>, "children"> & {
 	children: string;
 };
 
-export const PlanDescription = ({
-	className,
-	children,
-	...props
-}: PlanDescriptionProps) => {
+export const PlanDescription = ({ className, children, ...props }: PlanDescriptionProps) => {
 	const { isStreaming } = usePlan();
 
 	return (
-		<CardDescription
-			className={cn("text-balance", className)}
-			data-slot="plan-description"
-			{...props}
-		>
+		<CardDescription className={cn("text-balance", className)} data-slot="plan-description" {...props}>
 			{isStreaming ? <Shimmer>{children}</Shimmer> : children}
 		</CardDescription>
 	);
@@ -106,9 +71,7 @@ export const PlanDescription = ({
 
 export type PlanActionProps = ComponentProps<typeof CardAction>;
 
-export const PlanAction = (props: PlanActionProps) => (
-	<CardAction data-slot="plan-action" {...props} />
-);
+export const PlanAction = (props: PlanActionProps) => <CardAction data-slot="plan-action" {...props} />;
 
 export type PlanContentProps = ComponentProps<typeof CardContent>;
 
@@ -120,22 +83,13 @@ export const PlanContent = (props: PlanContentProps) => (
 
 export type PlanFooterProps = ComponentProps<"div">;
 
-export const PlanFooter = (props: PlanFooterProps) => (
-	<CardFooter data-slot="plan-footer" {...props} />
-);
+export const PlanFooter = (props: PlanFooterProps) => <CardFooter data-slot="plan-footer" {...props} />;
 
 export type PlanTriggerProps = ComponentProps<typeof CollapsibleTrigger>;
 
 export const PlanTrigger = ({ className, ...props }: PlanTriggerProps) => (
 	<CollapsibleTrigger
-		render={
-			<Button
-				className={cn("size-8", className)}
-				data-slot="plan-trigger"
-				size="icon"
-				variant="skeleton"
-			/>
-		}
+		render={<Button className={cn("size-8", className)} data-slot="plan-trigger" size="icon" variant="skeleton" />}
 		{...props}
 	>
 		<CaretUpDownIcon className="size-4" />

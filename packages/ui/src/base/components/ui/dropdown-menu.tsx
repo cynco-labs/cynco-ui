@@ -1,11 +1,11 @@
 "use client";
 
+import { Menu as MenuPrimitive } from "@base-ui/react/menu";
 import { CaretRightIcon, CheckIcon } from "@phosphor-icons/react";
-import { SmallSpinner } from "../general/small-spinner";
-import {
-	type ShortcutEntry,
-	useMenuShortcuts,
-} from "../../hooks/use-dropdown-shortcut";
+import { cva, type VariantProps } from "class-variance-authority";
+import * as React from "react";
+import { type ShortcutEntry, useMenuShortcuts } from "../../hooks/use-dropdown-shortcut";
+import { useMergedRef } from "../../hooks/use-merged-ref";
 import {
 	overlayItemClassName,
 	overlayItemHighlightClassName,
@@ -16,11 +16,9 @@ import {
 	overlayShortcutClassName,
 	overlaySurfaceClassName,
 } from "../../lib/overlay-classes";
+import { renderProp } from "../../lib/render";
 import { cn } from "../../lib/utils";
-import { useMergedRef } from "../../hooks/use-merged-ref";
-import { Menu as MenuPrimitive } from "@base-ui/react/menu";
-import { cva, type VariantProps } from "class-variance-authority";
-import * as React from "react";
+import { SmallSpinner } from "../general/small-spinner";
 
 const DropdownMenuContext = React.createContext<{
 	isOpen: boolean;
@@ -32,30 +30,25 @@ const DropdownMenuContext = React.createContext<{
 	close: () => {},
 });
 
-const dropdownMenuItemVariants = cva(
-	cn("group/dropdown-menu-item", overlayItemClassName),
-	{
-		variants: {
-			variant: {
-				default: overlayItemHighlightClassName,
-				destructive:
-					"text-error-text focus:bg-destructive/10 focus:text-error-text [&_svg:not([class*='text-'])]:text-current",
-			},
-			inset: {
-				true: "pl-8",
-				false: "",
-			},
+const dropdownMenuItemVariants = cva(cn("group/dropdown-menu-item", overlayItemClassName), {
+	variants: {
+		variant: {
+			default: overlayItemHighlightClassName,
+			destructive:
+				"text-error-text focus:bg-destructive/10 focus:text-error-text [&_svg:not([class*='text-'])]:text-current",
 		},
-		defaultVariants: {
-			variant: "default",
-			inset: false,
+		inset: {
+			true: "pl-8",
+			false: "",
 		},
 	},
-);
+	defaultVariants: {
+		variant: "default",
+		inset: false,
+	},
+});
 
-type DropdownMenuItemVariantProps = VariantProps<
-	typeof dropdownMenuItemVariants
->;
+type DropdownMenuItemVariantProps = VariantProps<typeof dropdownMenuItemVariants>;
 
 function DropdownMenu({ actionsRef: actionsRefProp, onOpenChange, ...props }: MenuPrimitive.Root.Props) {
 	// Track open state for uncontrolled menus too, so item shortcuts work either way.
@@ -74,10 +67,7 @@ function DropdownMenu({ actionsRef: actionsRefProp, onOpenChange, ...props }: Me
 	);
 	const { shortcuts } = useMenuShortcuts(isOpen, close);
 
-	const ctx = React.useMemo(
-		() => ({ isOpen, shortcuts, close }),
-		[isOpen, shortcuts, close],
-	);
+	const ctx = React.useMemo(() => ({ isOpen, shortcuts, close }), [isOpen, shortcuts, close]);
 
 	return (
 		<DropdownMenuContext.Provider value={ctx}>
@@ -86,30 +76,24 @@ function DropdownMenu({ actionsRef: actionsRefProp, onOpenChange, ...props }: Me
 	);
 }
 
-const DropdownMenuTrigger = React.forwardRef<
-	HTMLButtonElement,
-	MenuPrimitive.Trigger.Props & { asChild?: boolean }
->(function DropdownMenuTrigger({ asChild, children, ...props }, ref) {
-	if (asChild && React.isValidElement(children)) {
-		return (
-			<MenuPrimitive.Trigger
-				ref={ref}
-				data-slot="dropdown-menu-trigger"
-				render={children}
-				{...props}
-			/>
-		);
-	}
+function DropdownMenuTrigger({
+	ref,
+	asChild,
+	children,
+	render,
+	...props
+}: MenuPrimitive.Trigger.Props & { asChild?: boolean } & { ref?: React.Ref<HTMLButtonElement> }) {
+	const element = renderProp(asChild, children, render);
 	return (
 		<MenuPrimitive.Trigger
 			ref={ref}
 			data-slot="dropdown-menu-trigger"
+			render={element}
 			{...props}
-		>
-			{children}
-		</MenuPrimitive.Trigger>
+			{...(element === children ? {} : { children })}
+		/>
 	);
-});
+}
 
 function DropdownMenuGroup(props: MenuPrimitive.Group.Props) {
 	return <MenuPrimitive.Group data-slot="dropdown-menu-group" {...props} />;
@@ -124,12 +108,7 @@ function DropdownMenuSub(props: MenuPrimitive.SubmenuRoot.Props) {
 }
 
 function DropdownMenuRadioGroup(props: MenuPrimitive.RadioGroup.Props) {
-	return (
-		<MenuPrimitive.RadioGroup
-			data-slot="dropdown-menu-radio-group"
-			{...props}
-		/>
-	);
+	return <MenuPrimitive.RadioGroup data-slot="dropdown-menu-radio-group" {...props} />;
 }
 
 type DropdownMenuSubTriggerProps = MenuPrimitive.SubmenuTrigger.Props & {
@@ -137,10 +116,7 @@ type DropdownMenuSubTriggerProps = MenuPrimitive.SubmenuTrigger.Props & {
 	withIcon?: boolean;
 };
 
-const DropdownMenuSubTrigger = React.forwardRef<
-	HTMLDivElement,
-	DropdownMenuSubTriggerProps
->(function DropdownMenuSubTrigger(props, ref) {
+function DropdownMenuSubTrigger({ ref, ...props }: DropdownMenuSubTriggerProps & { ref?: React.Ref<HTMLDivElement> }) {
 	const { inset, withIcon = true, className, children, ...rest } = props;
 	return (
 		<MenuPrimitive.SubmenuTrigger
@@ -156,20 +132,15 @@ const DropdownMenuSubTrigger = React.forwardRef<
 			{...rest}
 		>
 			{children}
-			{withIcon && (
-				<CaretRightIcon className="-mr-0.5 ml-auto size-3.5 text-tertiary-foreground" />
-			)}
+			{withIcon && <CaretRightIcon className="-mr-0.5 ml-auto size-3.5 text-tertiary-foreground" />}
 		</MenuPrimitive.SubmenuTrigger>
 	);
-});
+}
 
-const DropdownMenuSubContent = React.forwardRef<
-	HTMLDivElement,
-	MenuPrimitive.Popup.Props & {
-		sideOffset?: number;
-		alignOffset?: number;
-	}
->(function DropdownMenuSubContent(props, ref) {
+function DropdownMenuSubContent({
+	ref,
+	...props
+}: MenuPrimitive.Popup.Props & { sideOffset?: number; alignOffset?: number } & { ref?: React.Ref<HTMLDivElement> }) {
 	const { className, sideOffset = 6, alignOffset = -4, ...rest } = props;
 	return (
 		<MenuPrimitive.Portal>
@@ -177,7 +148,7 @@ const DropdownMenuSubContent = React.forwardRef<
 				sideOffset={sideOffset}
 				alignOffset={alignOffset}
 				positionMethod="fixed"
-				className="isolate z-[300] outline-none"
+				className="isolate z-popover outline-none"
 			>
 				<MenuPrimitive.Popup
 					ref={ref}
@@ -193,30 +164,17 @@ const DropdownMenuSubContent = React.forwardRef<
 			</MenuPrimitive.Positioner>
 		</MenuPrimitive.Portal>
 	);
-});
+}
 
 type DropdownMenuContentProps = MenuPrimitive.Popup.Props & {
 	sideOffset?: number;
 	side?: "top" | "bottom" | "left" | "right";
 	align?: "start" | "center" | "end";
-	/** Radix compatibility; ignored (Base UI returns focus to the trigger itself). */
-	onCloseAutoFocus?: (event: Event) => void;
 	keepMounted?: boolean;
 };
 
-const DropdownMenuContent = React.forwardRef<
-	HTMLDivElement,
-	DropdownMenuContentProps
->(function DropdownMenuContent(props, ref) {
-	const {
-		className,
-		sideOffset = 4,
-		side = "bottom",
-		align = "start",
-		onCloseAutoFocus: _onCloseAutoFocus,
-		keepMounted = false,
-		...rest
-	} = props;
+function DropdownMenuContent({ ref, ...props }: DropdownMenuContentProps & { ref?: React.Ref<HTMLDivElement> }) {
+	const { className, sideOffset = 4, side = "bottom", align = "start", keepMounted = false, ...rest } = props;
 	return (
 		<MenuPrimitive.Portal keepMounted={keepMounted}>
 			<MenuPrimitive.Positioner
@@ -224,7 +182,7 @@ const DropdownMenuContent = React.forwardRef<
 				side={side}
 				align={align}
 				positionMethod="fixed"
-				className="isolate z-[300] outline-none"
+				className="isolate z-popover outline-none"
 			>
 				<MenuPrimitive.Popup
 					ref={ref}
@@ -240,7 +198,7 @@ const DropdownMenuContent = React.forwardRef<
 			</MenuPrimitive.Positioner>
 		</MenuPrimitive.Portal>
 	);
-});
+}
 
 type DropdownMenuItemProps = MenuPrimitive.Item.Props &
 	DropdownMenuItemVariantProps & {
@@ -251,10 +209,7 @@ type DropdownMenuItemProps = MenuPrimitive.Item.Props &
 		closeOnClick?: boolean;
 	};
 
-const DropdownMenuItem = React.forwardRef<
-	HTMLDivElement,
-	DropdownMenuItemProps
->(function DropdownMenuItem(props, ref) {
+function DropdownMenuItem({ ref, ...props }: DropdownMenuItemProps & { ref?: React.Ref<HTMLDivElement> }) {
 	const {
 		variant,
 		inset,
@@ -266,6 +221,7 @@ const DropdownMenuItem = React.forwardRef<
 		className,
 		children,
 		onClick,
+		render,
 		...rest
 	} = props;
 	const { shortcuts } = React.useContext(DropdownMenuContext);
@@ -285,40 +241,20 @@ const DropdownMenuItem = React.forwardRef<
 		};
 	}, [shortcut, props.disabled, shortcuts]);
 
-	if (asChild && React.isValidElement(children)) {
-		return (
-			<MenuPrimitive.Item
-				ref={setRef}
-				data-slot="dropdown-menu-item"
-				render={children}
-				closeOnClick={closeOnClick}
-				className={cn(
-					dropdownMenuItemVariants({ variant, inset }),
-					shimmer && "shimmer",
-					className,
-				)}
-				disabled={shimmer || isLoading}
-				onClick={onClick}
-				{...rest}
-			/>
-		);
-	}
+	const element = renderProp(asChild, children, render);
 
 	return (
 		<MenuPrimitive.Item
 			ref={setRef}
 			data-slot="dropdown-menu-item"
+			render={element}
 			closeOnClick={closeOnClick}
-			className={cn(
-				dropdownMenuItemVariants({ variant, inset }),
-				shimmer && "shimmer",
-				className,
-			)}
+			className={cn(dropdownMenuItemVariants({ variant, inset }), shimmer && "shimmer", className)}
 			disabled={shimmer || isLoading}
 			onClick={onClick}
 			{...rest}
 		>
-			{isLoading ? (
+			{element ? undefined : isLoading ? (
 				<>
 					{children}
 					<SmallSpinner />
@@ -328,12 +264,12 @@ const DropdownMenuItem = React.forwardRef<
 			)}
 		</MenuPrimitive.Item>
 	);
-});
+}
 
-const DropdownMenuCheckboxItem = React.forwardRef<
-	HTMLDivElement,
-	MenuPrimitive.CheckboxItem.Props & { inset?: boolean }
->(function DropdownMenuCheckboxItem(props, ref) {
+function DropdownMenuCheckboxItem({
+	ref,
+	...props
+}: MenuPrimitive.CheckboxItem.Props & { inset?: boolean } & { ref?: React.Ref<HTMLDivElement> }) {
 	const { className, children, inset, ...rest } = props;
 	return (
 		<MenuPrimitive.CheckboxItem
@@ -341,12 +277,7 @@ const DropdownMenuCheckboxItem = React.forwardRef<
 			data-slot="dropdown-menu-checkbox-item"
 			data-inset={inset}
 			closeOnClick={false}
-			className={cn(
-				overlayItemClassName,
-				overlayItemHighlightClassName,
-				"pr-8 data-inset:pl-8",
-				className,
-			)}
+			className={cn(overlayItemClassName, overlayItemHighlightClassName, "pr-8 data-inset:pl-8", className)}
 			{...rest}
 		>
 			{children}
@@ -357,24 +288,19 @@ const DropdownMenuCheckboxItem = React.forwardRef<
 			</span>
 		</MenuPrimitive.CheckboxItem>
 	);
-});
+}
 
-const DropdownMenuRadioItem = React.forwardRef<
-	HTMLDivElement,
-	MenuPrimitive.RadioItem.Props & { inset?: boolean }
->(function DropdownMenuRadioItem(props, ref) {
+function DropdownMenuRadioItem({
+	ref,
+	...props
+}: MenuPrimitive.RadioItem.Props & { inset?: boolean } & { ref?: React.Ref<HTMLDivElement> }) {
 	const { className, children, inset, ...rest } = props;
 	return (
 		<MenuPrimitive.RadioItem
 			ref={ref}
 			data-slot="dropdown-menu-radio-item"
 			data-inset={inset}
-			className={cn(
-				overlayItemClassName,
-				overlayItemHighlightClassName,
-				"pr-8 data-inset:pl-8",
-				className,
-			)}
+			className={cn(overlayItemClassName, overlayItemHighlightClassName, "pr-8 data-inset:pl-8", className)}
 			{...rest}
 		>
 			<span className={overlayItemIndicatorClassName}>
@@ -385,16 +311,13 @@ const DropdownMenuRadioItem = React.forwardRef<
 			{children}
 		</MenuPrimitive.RadioItem>
 	);
-});
+}
 
 type DropdownMenuLabelProps = MenuPrimitive.GroupLabel.Props & {
 	inset?: boolean;
 };
 
-const DropdownMenuLabel = React.forwardRef<
-	HTMLDivElement,
-	DropdownMenuLabelProps
->(function DropdownMenuLabel(props, ref) {
+function DropdownMenuLabel({ ref, ...props }: DropdownMenuLabelProps & { ref?: React.Ref<HTMLDivElement> }) {
 	const { inset, className, ...rest } = props;
 	return (
 		<MenuPrimitive.GroupLabel
@@ -405,12 +328,9 @@ const DropdownMenuLabel = React.forwardRef<
 			{...rest}
 		/>
 	);
-});
+}
 
-const DropdownMenuSeparator = React.forwardRef<
-	HTMLDivElement,
-	MenuPrimitive.Separator.Props
->(function DropdownMenuSeparator(props, ref) {
+function DropdownMenuSeparator({ ref, ...props }: MenuPrimitive.Separator.Props & { ref?: React.Ref<HTMLDivElement> }) {
 	const { className, ...rest } = props;
 	return (
 		<MenuPrimitive.Separator
@@ -420,19 +340,13 @@ const DropdownMenuSeparator = React.forwardRef<
 			{...rest}
 		/>
 	);
-});
+}
 
 type DropdownMenuShortcutProps = React.HTMLAttributes<HTMLSpanElement>;
 
 function DropdownMenuShortcut(props: DropdownMenuShortcutProps) {
 	const { className, ...rest } = props;
-	return (
-		<span
-			data-slot="dropdown-menu-shortcut"
-			className={cn(overlayShortcutClassName, className)}
-			{...rest}
-		/>
-	);
+	return <span data-slot="dropdown-menu-shortcut" className={cn(overlayShortcutClassName, className)} {...rest} />;
 }
 
 export {

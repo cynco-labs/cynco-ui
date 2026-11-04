@@ -37,4 +37,4 @@ Buttons/inputs as children; `orientation` horizontal (default) or vertical. `But
 
 Inner radii and duplicate borders are removed automatically.
 
-Category: Components · Actions. Source: `packages/ui/src/base/components/ui/button-group.tsx`.
+Category: Components · Actions. Source: `packages/ui/src/base/components/ui/button-group.tsx:28-43`.

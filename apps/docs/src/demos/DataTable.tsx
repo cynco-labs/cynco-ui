@@ -1,6 +1,6 @@
-import { ReceiptIcon } from "@phosphor-icons/react";
-import { getCoreRowModel, useReactTable, type CellContext } from "@tanstack/react-table";
 import { Button, DataTable, StatusChip } from "@cynco-labs/ui";
+import { ReceiptIcon } from "@phosphor-icons/react";
+import { type CellContext, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 
 const tone = { Paid: "green", Sent: "blue", Overdue: "amber" } as const;
 
@@ -23,7 +23,7 @@ const columns = [
 		accessorKey: "id",
 		header: "Invoice",
 		cell: (c: CellContext<Row, string>) => (
-			<span className="text-tiny-id text-tertiary-foreground">{c.getValue()}</span>
+			<span className="font-mono text-2xs font-medium text-tertiary-foreground">{c.getValue()}</span>
 		),
 	},
 	{ accessorKey: "amount", header: "Amount" },
@@ -53,9 +53,7 @@ export default function DataTableDemo() {
 					</DataTable.Actions>
 				</div>
 			</DataTable.Toolbar>
-			<DataTable.Provider
-				config={{ table, numberOfColumns: columns.length, isLoading: false, rowClassName: "h-10" }}
-			>
+			<DataTable.Provider config={{ table, numberOfColumns: columns.length, isLoading: false, rowClassName: "h-10" }}>
 				<DataTable.Container>
 					<DataTable.Content>
 						<DataTable.Header />

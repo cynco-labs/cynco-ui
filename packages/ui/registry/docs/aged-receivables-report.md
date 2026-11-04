@@ -9,17 +9,17 @@ import { AgedReceivablesReport } from "@cynco-labs/ui";
 ## Usage
 
 ```tsx
-import { useState } from "react";
-import type React from "react";
 import {
 	type AgedReceivablesData,
+	AgedReceivablesReport,
 	type DocBrand,
 	type DocLayout,
 	type DocLocale,
-	AgedReceivablesReport,
 	DocumentBrandProvider,
 	GroupedTabButton,
 } from "@cynco-labs/ui";
+import type React from "react";
+import { useState } from "react";
 
 const BRAND: DocBrand = {
 	company: {
@@ -36,10 +36,7 @@ const BRAND: DocBrand = {
 	footerNote: "Thank you for your business.",
 };
 
-function Shell(p: {
-	render: (x: string) => React.ReactNode;
-	extra?: { options: { value: string; label: string }[] };
-}) {
+function Shell(p: { render: (x: string) => React.ReactNode; extra?: { options: { value: string; label: string }[] } }) {
 	const [l, setL] = useState<DocLayout>("minimal"),
 		[g, setG] = useState<DocLocale>("en"),
 		[x, setX] = useState(p.extra ? p.extra.options[0].value : "");
@@ -67,17 +64,10 @@ function Shell(p: {
 					]}
 				/>
 				{p.extra ? (
-					<GroupedTabButton
-						className="w-[230px]"
-						value={x}
-						onValueChange={setX}
-						options={p.extra.options}
-					/>
+					<GroupedTabButton className="w-[230px]" value={x} onValueChange={setX} options={p.extra.options} />
 				) : null}
 			</div>
-			<DocumentBrandProvider brand={{ ...BRAND, layout: l, locale: g }}>
-				{p.render(x)}
-			</DocumentBrandProvider>
+			<DocumentBrandProvider brand={{ ...BRAND, layout: l, locale: g }}>{p.render(x)}</DocumentBrandProvider>
 		</div>
 	);
 }
@@ -258,4 +248,4 @@ report: AgedReceivablesData — period (kind 'asAt'), customers [{name, detail?,
 
 The bucket summary prints each bucket's total and share of the whole. Percentages are supplied by the ledger, not calculated. Customer detail line suits code and terms ('C-0012 · Net 30'). A4 portrait by default (very long names wrap; pass size='a4-landscape' for wide ledgers).
 
-Category: Documents. Source: `packages/ui/src/documents/reports.tsx`.
+Category: Documents. Source: `packages/ui/src/documents/reports.tsx:1137-1158`.

@@ -1,48 +1,35 @@
 "use client";
 
+import React, { useMemo, useState } from "react";
+import { useContainerWidth } from "../../hooks/use-container-width";
+import { cn } from "../../lib/utils";
+import { Table } from "../ui/table";
 import { TableColumnVisibility } from "./table-column-visibility";
-import {
-	TableContext,
-	useShowMobileCards,
-	useTableContext,
-} from "./table-context";
-import { TableHeader } from "./table-header";
 import { TableStatus } from "./table-content";
+import { TableContext, useShowMobileCards, useTableContext } from "./table-context";
+import { TableHeader } from "./table-header";
 import { TableMobileCards } from "./table-mobile-cards";
 import { TABLE_TRAY_CLASS } from "./table-tray-classes";
-import { Table } from "../ui/table";
-import { cn } from "../../lib/utils";
-import React, { useMemo, useState } from "react";
 
-export function TableContentVirtualized({
-	children,
-	className,
-	footer,
-}: {
-	children: React.ReactNode;
-	className?: string;
+export interface TableContentVirtualizedProps extends React.ComponentProps<"div"> {
 	/** Sits on the tray below the scroll area, so it never scrolls away. */
 	footer?: React.ReactNode;
-}) {
+}
+
+export function TableContentVirtualized({ children, className, footer, ...props }: TableContentVirtualizedProps) {
 	const context = useTableContext();
 	const isFlexFill = context.virtualization?.containerHeight === "100%";
-	const {
-		enableColumnVisibility,
-		columnVisibilityInToolbar,
-		columnVisibilityClassName,
-		table,
-		virtualization,
-	} = context;
+	const { enableColumnVisibility, columnVisibilityInToolbar, columnVisibilityClassName, table, virtualization } =
+		context;
 	const { isLoading, isTransitioning } = context;
 	const rows = table.getRowModel().rows;
 	const headerRowCount = table.getHeaderGroups().length;
 	const showsSkeleton = (isLoading || isTransitioning) && !rows.length;
-	const showMobileCards = useShowMobileCards();
+	const { ref: rootRef, width } = useContainerWidth<HTMLDivElement>();
+	const showMobileCards = useShowMobileCards(width);
 
 	// State, not a ref, so the virtualizer re-renders once the container mounts.
-	const [scrollContainer, setScrollContainer] = useState<HTMLDivElement | null>(
-		null,
-	);
+	const [scrollContainer, setScrollContainer] = useState<HTMLDivElement | null>(null);
 
 	const rowHeight = virtualization?.rowHeight ?? 40;
 	const contentHeight = rows.length * rowHeight;
@@ -51,11 +38,8 @@ export function TableContentVirtualized({
 	const MIN_TABLE_HEIGHT = 400;
 	const containerHeight = virtualization?.containerHeight;
 	const containerHeightPx =
-		containerHeight && !containerHeight.startsWith("calc")
-			? Number.parseInt(containerHeight, 10)
-			: undefined;
-	const isShortContainer =
-		containerHeightPx !== undefined && containerHeightPx < MIN_TABLE_HEIGHT;
+		containerHeight && !containerHeight.startsWith("calc") ? Number.parseInt(containerHeight, 10) : undefined;
+	const isShortContainer = containerHeightPx !== undefined && containerHeightPx < MIN_TABLE_HEIGHT;
 	const minHeight =
 		isShortContainer || isFlexFill
 			? undefined
@@ -79,36 +63,34 @@ export function TableContentVirtualized({
 
 	if (showMobileCards) {
 		return (
-			<>
+			<div ref={rootRef} data-slot="table-content" className={cn("min-w-0", className)} {...props}>
 				<TableStatus />
 				<TableMobileCards />
 				{footer}
-			</>
+			</div>
 		);
 	}
 
 	return (
 		<TableContext.Provider value={contextWithRef}>
 			<div
+				ref={rootRef}
+				data-slot="table-content"
 				className={cn(
 					"relative z-50 min-w-0 overflow-hidden",
 					TABLE_TRAY_CLASS,
 					isFlexFill && "h-full flex flex-col",
 					className,
 				)}
+				{...props}
 			>
 				<TableStatus />
 				{(isLoading || isTransitioning) && (
-					<div className="bg-background/40 absolute pointer-events-none rounded-xl -inset-[1px] z-70" />
+					<div className="bg-background/40 absolute pointer-events-none rounded-xl -inset-[1px] z-20" />
 				)}
 
 				{enableColumnVisibility && !columnVisibilityInToolbar && (
-					<div
-						className={cn(
-							"absolute right-7 top-1 z-45",
-							columnVisibilityClassName,
-						)}
-					>
+					<div className={cn("absolute right-7 top-1 z-10", columnVisibilityClassName)}>
 						<TableColumnVisibility />
 					</div>
 				)}
@@ -124,10 +106,7 @@ export function TableContentVirtualized({
 					style={{
 						minHeight: isFlexFill ? undefined : minHeight,
 						maxHeight: isFlexFill ? undefined : containerHeight,
-						height:
-							!isFlexFill && showsSkeleton && containerHeight
-								? containerHeight
-								: undefined,
+						height: !isFlexFill && showsSkeleton && containerHeight ? containerHeight : undefined,
 						willChange: "scroll-position",
 					}}
 				>
@@ -148,9 +127,7 @@ export function TableContentVirtualized({
 							)}
 						/>
 						{React.Children.map(children, (child) =>
-							React.isValidElement(child)
-								? React.cloneElement(child, { key: visibleColumnKey })
-								: child,
+							React.isValidElement(child) ? React.cloneElement(child, { key: visibleColumnKey }) : child,
 						)}
 					</Table>
 					{rows.length > 0 && (

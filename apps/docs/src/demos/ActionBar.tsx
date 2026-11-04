@@ -1,17 +1,7 @@
-import { useState } from "react";
 import { ActionBar, Button, ScrollRow } from "@cynco-labs/ui";
+import { useState } from "react";
 
-const tabs = [
-	"All",
-	"Draft",
-	"Pending",
-	"Partially paid",
-	"Overdue",
-	"Paid",
-	"Voided",
-	"Cancelled",
-	"Refunded",
-];
+const tabs = ["All", "Draft", "Pending", "Partially paid", "Overdue", "Paid", "Voided", "Cancelled", "Refunded"];
 
 export default function ActionBarDemo() {
 	const [s, setS] = useState("Overdue");

@@ -1,4 +1,4 @@
-import { type LedgerPickerAccount, JournalLineEditor } from "@cynco-labs/ui";
+import { JournalLineEditor, type LedgerPickerAccount } from "@cynco-labs/ui";
 
 const ACCTS: LedgerPickerAccount[] = [
 	{

@@ -71,6 +71,6 @@ entry { entryDate, period, currency, documentNumber?, manualReason?, vendorName?
 
 ## Notes
 
-A hairline-divided card (divide-y, bg-card, rounded-xl) with section-label captions. Timeline statuses are DocStatus chips and the timeline dots take StatusChip tones. Dates read "29 Oct 2026, 16:05"; period and reference are text-tiny-id. Responsive: fills its container (no fixed width); long values wrap.
+A hairline-divided card (divide-y, bg-card, rounded-xl) with section-label captions. Timeline statuses are DocStatus chips and the timeline dots take StatusChip tones. Dates read "29 Oct 2026, 16:05"; period and reference are `font-mono text-2xs`. Responsive: fills its container (no fixed width); long values wrap.
 
-Category: Accounting · Ledger. Source: `packages/ui/src/accounting/ledger.tsx`.
+Category: Accounting · Ledger. Source: `packages/ui/src/accounting/ledger/journal-entry.tsx:412-489`.

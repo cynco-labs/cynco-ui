@@ -1,4 +1,3 @@
-import { ArrowsClockwiseIcon, CaretRightIcon } from "@phosphor-icons/react";
 import {
 	WebPreview,
 	WebPreviewConsole,
@@ -6,6 +5,7 @@ import {
 	WebPreviewNavigationButton,
 	WebPreviewUrl,
 } from "@cynco-labs/ui/ai";
+import { ArrowsClockwiseIcon, CaretRightIcon } from "@phosphor-icons/react";
 
 export default function WebPreviewDemo() {
 	return (

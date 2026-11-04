@@ -10,11 +10,11 @@ import { PaymentVoucherDocument } from "@cynco-labs/ui";
 
 ```tsx
 import {
-	DocumentBrandProvider,
-	PaymentVoucherDocument,
 	type DocLayout,
 	type DocLocale,
+	DocumentBrandProvider,
 	type PaymentVoucherData,
+	PaymentVoucherDocument,
 } from "@cynco-labs/ui";
 
 const BRAND = {
@@ -46,7 +46,8 @@ const PV: PaymentVoucherData = {
 		accountName: "Nusantara Office Solutions Sdn Bhd",
 		accountNumber: "8008 4417 3925",
 	},
-	memo: "Office equipment lease, stationery and furniture for the KL office (September – October 2026 bills), net of credit note CN-NOS-0127.",
+	memo:
+		"Office equipment lease, stationery and furniture for the KL office (September – October 2026 bills), net of credit note CN-NOS-0127.",
 	lines: [
 		{
 			reference: "BILL-NOS-4471",
@@ -116,7 +117,10 @@ export const controls = {
 export default function PaymentVoucherDocumentDemo({
 	layout = "minimal",
 	locale = "en",
-}: { layout?: DocLayout; locale?: DocLocale } = {}) {
+}: {
+	layout?: DocLayout;
+	locale?: DocLocale;
+} = {}) {
 	return (
 		<DocumentBrandProvider brand={{ ...BRAND, layout, locale }}>
 			<PaymentVoucherDocument voucher={PV} />
@@ -148,4 +152,4 @@ voucher: PaymentVoucherData { number, date, method: {kind: bank_transfer | chequ
 
 Credit notes netted off appear as negative lines in brackets. Cheque payments show the cheque number (emphasised) in place of the transaction ref. Signatures: Prepared by · Checked by · Approved by · Received by, in four columns, never split across pages. Fits one A4 in modern/minimal English; classic bilingual may move the signature row to page 2. Total in words follows the brand language (both lines when bilingual).
 
-Category: Documents. Source: `packages/ui/src/documents/operations.tsx`.
+Category: Documents. Source: `packages/ui/src/documents/operations.tsx:537-550`.

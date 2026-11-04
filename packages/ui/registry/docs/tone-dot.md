@@ -9,7 +9,7 @@ import { ToneDot } from "@cynco-labs/ui";
 ## Usage
 
 ```tsx
-import { ToneDot, type StatusTone } from "@cynco-labs/ui";
+import { type StatusTone, ToneDot } from "@cynco-labs/ui";
 
 const tones: StatusTone[] = ["green", "blue", "amber", "orange", "red", "purple", "neutral"];
 
@@ -53,4 +53,4 @@ tone, square, className and any span props (title for a hover hint).
 
 Decorative (aria-hidden): the meaning must also be in nearby text.
 
-Category: Layout · Primitives. Source: `packages/ui/src/layout/index.tsx`.
+Category: Layout · Primitives. Source: `packages/ui/src/layout/stats.tsx:63-73`.

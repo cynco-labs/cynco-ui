@@ -31,4 +31,4 @@ Long-running background work ("Syncing bank feed…").
 
 Uses the `.shimmer` gradient from the stylesheet.
 
-Category: Components · Feedback. Source: `packages/ui/src/base/components/general/loading-shimmer-text.tsx`.
+Category: Components · Feedback. Source: `packages/ui/src/base/components/general/loading-shimmer-text.tsx:8-20`.

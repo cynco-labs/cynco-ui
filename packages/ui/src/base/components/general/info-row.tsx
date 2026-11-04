@@ -12,17 +12,17 @@ type InfoRowProps = Omit<React.ComponentProps<"div">, "children"> & {
 export function InfoRow({ icon, label, value, className, valueClassName, mono, ...props }: InfoRowProps) {
 	const isText = typeof value === "string" || typeof value === "number";
 	return (
-		<div className={cn("flex items-center gap-2 min-w-0 overflow-hidden", className)} {...props}>
+		<div data-slot="info-row" className={cn("flex items-center gap-2 min-w-0 overflow-hidden", className)} {...props}>
 			{icon && (
 				<div aria-hidden="true" className="text-subtle shrink-0">
 					{icon}
 				</div>
 			)}
 			<div className="flex min-w-0 items-center overflow-hidden">
-				<div className="text-tertiary-foreground text-sm font-medium w-24 shrink-0 whitespace-nowrap">
-					{label}
-				</div>
-				<div className={cn("text-foreground text-sm wrap-break-word", isText && mono && "font-mono text-xs", valueClassName)}>
+				<div className="text-tertiary-foreground text-sm font-medium w-24 shrink-0 whitespace-nowrap">{label}</div>
+				<div
+					className={cn("text-foreground text-sm wrap-break-word", isText && mono && "font-mono text-xs", valueClassName)}
+				>
 					{value}
 				</div>
 			</div>

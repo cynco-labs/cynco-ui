@@ -1,10 +1,4 @@
-import {
-	Carousel,
-	CarouselContent,
-	CarouselItem,
-	CarouselNext,
-	CarouselPrevious,
-} from "@cynco-labs/ui";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@cynco-labs/ui";
 
 export default function CarouselDemo() {
 	return (
@@ -13,7 +7,7 @@ export default function CarouselDemo() {
 				<CarouselContent>
 					{["Free", "Pro", "Team", "Enterprise"].map((n) => (
 						<CarouselItem key={n} className="basis-1/2">
-							<div className="h-20 rounded-lg border bg-card flex items-center justify-center text-main text-sm">
+							<div className="h-20 rounded-lg border bg-card flex items-center justify-center text-lg font-semibold text-foreground text-sm">
 								{n}
 							</div>
 						</CarouselItem>

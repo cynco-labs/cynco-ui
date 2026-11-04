@@ -34,4 +34,4 @@ Inside search bars and toolbars to show applied filters.
 - `onRemove`: `() => void`
 - Also accepts `ComponentProps<"span">`.
 
-Category: Components · Data display. Source: `packages/ui/src/base/components/general/filter-chip.tsx`.
+Category: Components · Data display. Source: `packages/ui/src/base/components/general/filter-chip.tsx:6-39`.

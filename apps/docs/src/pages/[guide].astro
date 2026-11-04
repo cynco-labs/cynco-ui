@@ -15,7 +15,7 @@ const current = `/${guide.id}`;
 <Docs title={guide.data.title} description={guide.data.description} current={current} mdHref={`/${guide.id}.md`} headings={headings}>
 	<article class="prose guide">
 		<h1>{guide.data.title}</h1>
-		<p class="!mt-3 text-[16px] text-tertiary-foreground">{guide.data.description}</p>
+		<p class="!mt-3 text-lg text-tertiary-foreground">{guide.data.description}</p>
 		<Content />
 	</article>
 </Docs>

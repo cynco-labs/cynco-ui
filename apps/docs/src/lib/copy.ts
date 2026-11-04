@@ -27,5 +27,8 @@ export async function copyWithFeedback(label: Element, text: string, done = "Cop
 	const ok = await copyText(text);
 	label.textContent = ok ? done : "Couldn't copy";
 	clearTimeout(timers.get(label));
-	timers.set(label, setTimeout(() => (label.textContent = originals.get(label) ?? ""), ms));
+	timers.set(
+		label,
+		setTimeout(() => (label.textContent = originals.get(label) ?? ""), ms),
+	);
 }

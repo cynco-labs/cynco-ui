@@ -1,13 +1,14 @@
 "use client";
 
-import { CaretRightIcon, DotsThreeIcon } from "@phosphor-icons/react";
-import { cn } from "../../lib/utils";
 import { mergeProps } from "@base-ui/react/merge-props";
 import { useRender } from "@base-ui/react/use-render";
-import * as React from "react";
+import { CaretRightIcon, DotsThreeIcon } from "@phosphor-icons/react";
+import type * as React from "react";
+import { renderProp } from "../../lib/render";
+import { cn } from "../../lib/utils";
 
-function Breadcrumb({ ...props }: React.ComponentProps<"nav">) {
-	return <nav aria-label="breadcrumb" data-slot="breadcrumb" {...props} />;
+function Breadcrumb({ className, ...props }: React.ComponentProps<"nav">) {
+	return <nav aria-label="breadcrumb" data-slot="breadcrumb" className={cn("@container", className)} {...props} />;
 }
 
 function BreadcrumbList({ className, ...props }: React.ComponentProps<"ol">) {
@@ -15,7 +16,7 @@ function BreadcrumbList({ className, ...props }: React.ComponentProps<"ol">) {
 		<ol
 			data-slot="breadcrumb-list"
 			className={cn(
-				"text-muted-foreground flex flex-wrap items-center gap-1.5 text-sm break-words sm:gap-2.5",
+				"text-muted-foreground flex flex-wrap items-center gap-1.5 text-sm break-words @sm:gap-2.5",
 				className,
 			)}
 			{...props}
@@ -24,26 +25,19 @@ function BreadcrumbList({ className, ...props }: React.ComponentProps<"ol">) {
 }
 
 function BreadcrumbItem({ className, ...props }: React.ComponentProps<"li">) {
-	return (
-		<li
-			data-slot="breadcrumb-item"
-			className={cn("inline-flex items-center gap-1.5", className)}
-			{...props}
-		/>
-	);
+	return <li data-slot="breadcrumb-item" className={cn("inline-flex items-center gap-1.5", className)} {...props} />;
 }
 
 function BreadcrumbLink({
 	asChild,
 	className,
-	render: renderProp,
+	render,
 	children,
 	...props
 }: useRender.ComponentProps<"a"> & {
 	asChild?: boolean;
 }) {
-	const effectiveRender =
-		asChild && React.isValidElement(children) ? children : renderProp;
+	const element = renderProp(asChild, children, render);
 
 	return useRender({
 		defaultTagName: "a",
@@ -51,9 +45,9 @@ function BreadcrumbLink({
 			{
 				className: cn("hover:text-foreground transition-colors", className),
 			},
-			{ ...props, children: effectiveRender ? undefined : children },
+			{ ...props, ...(element === children ? {} : { children }) },
 		),
-		render: effectiveRender,
+		render: element,
 		state: {
 			slot: "breadcrumb-link",
 		},
@@ -71,11 +65,7 @@ function BreadcrumbPage({ className, ...props }: React.ComponentProps<"span">) {
 	);
 }
 
-function BreadcrumbSeparator({
-	children,
-	className,
-	...props
-}: React.ComponentProps<"li">) {
+function BreadcrumbSeparator({ children, className, ...props }: React.ComponentProps<"li">) {
 	return (
 		<li
 			data-slot="breadcrumb-separator"
@@ -89,16 +79,9 @@ function BreadcrumbSeparator({
 	);
 }
 
-function BreadcrumbEllipsis({
-	className,
-	...props
-}: React.ComponentProps<"span">) {
+function BreadcrumbEllipsis({ className, ...props }: React.ComponentProps<"span">) {
 	return (
-		<span
-			data-slot="breadcrumb-ellipsis"
-			className={cn("flex size-9 items-center justify-center", className)}
-			{...props}
-		>
+		<span data-slot="breadcrumb-ellipsis" className={cn("flex size-9 items-center justify-center", className)} {...props}>
 			{/* The text stays exposed so a menu trigger wrapping the ellipsis has a name. */}
 			<DotsThreeIcon className="size-4" />
 			<span className="sr-only">More</span>

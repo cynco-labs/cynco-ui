@@ -1,30 +1,16 @@
 "use client";
 
 import { BookmarkSimpleIcon, type IconProps } from "@phosphor-icons/react";
+import type { ComponentProps, HTMLAttributes } from "react";
+import { cn } from "../../lib/utils";
 import { Button } from "../ui/button";
 import { Separator } from "../ui/separator";
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipTrigger,
-} from "../ui/tooltip";
-import { cn } from "../../lib/utils";
-import type { ComponentProps, HTMLAttributes } from "react";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
 export type CheckpointProps = HTMLAttributes<HTMLDivElement>;
 
-export const Checkpoint = ({
-	className,
-	children,
-	...props
-}: CheckpointProps) => (
-	<div
-		className={cn(
-			"flex items-center gap-0.5 text-muted-foreground overflow-hidden",
-			className,
-		)}
-		{...props}
-	>
+export const Checkpoint = ({ className, children, ...props }: CheckpointProps) => (
+	<div className={cn("flex items-center gap-0.5 text-muted-foreground overflow-hidden", className)} {...props}>
 		{children}
 		<Separator />
 	</div>
@@ -32,14 +18,8 @@ export const Checkpoint = ({
 
 export type CheckpointIconProps = IconProps;
 
-export const CheckpointIcon = ({
-	className,
-	children,
-	...props
-}: CheckpointIconProps) =>
-	children ?? (
-		<BookmarkSimpleIcon className={cn("size-4 shrink-0", className)} {...props} />
-	);
+export const CheckpointIcon = ({ className, children, ...props }: CheckpointIconProps) =>
+	children ?? <BookmarkSimpleIcon className={cn("size-4 shrink-0", className)} {...props} />;
 
 export type CheckpointTriggerProps = ComponentProps<typeof Button> & {
 	tooltip?: string;

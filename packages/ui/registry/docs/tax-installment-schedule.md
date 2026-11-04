@@ -24,22 +24,11 @@ export default function TaxInstallmentScheduleDemo() {
 		"2026-11-15",
 		"2026-12-15",
 	];
-	const st = [
-		"paid",
-		"paid",
-		"paid",
-		"paid",
-		"paid",
-		"paid",
-		"partial",
-		"overdue",
-		"pending",
-		"pending",
-	];
+	const st = ["paid", "paid", "paid", "paid", "paid", "paid", "partial", "overdue", "pending", "pending"];
 	const rows = m.map((d, i) => {
 		const s = st[i];
 		return {
-			id: "cp" + i,
+			id: `cp${i}`,
 			installmentNumber: i + 1,
 			dueDate: d,
 			amount: 7200,
@@ -67,8 +56,8 @@ Tax return page, CP204 tab.
 `installments` [{id, installmentNumber, dueDate, amount, paidAmount, status: paid|pending|partial|overdue}], `totalDue`, `totalPaid`; optional `onMarkPaid(id)`, `isSubmitting`; optional `description` (defaults to Cynco's 12-instalment copy), `className` and native div props on the root.
 
 - `installments`: `CP204Installment[]`
-- `totalDue`: `number`
-- `totalPaid`: `number`
+- `totalDue`: `Num`
+- `totalPaid`: `Num`
 - `isSubmitting?`: `boolean`. Default `false`.
 - `onMarkPaid?`: `(id: string) => void`
 - `description?`: `ReactNode`. Default `"12 monthly installments, due 15th of each month"`.
@@ -78,4 +67,4 @@ Tax return page, CP204 tab.
 
 A table in the DataTable tray (table-tray / table-surface); the totals row sits on the tray and progress shows in the header. Responsive: built on DataList: a tray table when wide, stacked cards (due date, amount, status, paid) when narrow.
 
-Category: Accounting · Tax, assets & operations. Source: `packages/ui/src/accounting/operations.tsx`.
+Category: Accounting · Tax, assets & operations. Source: `packages/ui/src/accounting/operations/tax.tsx:169-276`.

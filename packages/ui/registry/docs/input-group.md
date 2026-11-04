@@ -9,8 +9,8 @@ import { InputGroup } from "@cynco-labs/ui";
 ## Usage
 
 ```tsx
-import { MagnifyingGlassIcon } from "@phosphor-icons/react";
 import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from "@cynco-labs/ui";
+import { MagnifyingGlassIcon } from "@phosphor-icons/react";
 
 export default function InputGroupDemo() {
 	return (
@@ -41,4 +41,4 @@ Search fields, inputs with units or prefixes, inline submit buttons.
 
 Uses `input-state-focus-within`.
 
-Category: Components · Inputs. Source: `packages/ui/src/base/components/ui/input-group.tsx`.
+Category: Components · Inputs. Source: `packages/ui/src/base/components/ui/input-group.tsx:18-54`.

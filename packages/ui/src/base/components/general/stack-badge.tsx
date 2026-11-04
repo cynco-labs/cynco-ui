@@ -1,8 +1,8 @@
 "use client";
 
+import type * as React from "react";
 import { cn } from "../../lib/utils";
 import { SelectedMark } from "./selected-mark";
-import type * as React from "react";
 
 interface StackBadgeProps extends Omit<React.HTMLAttributes<HTMLElement>, "onClick"> {
 	stack: string;
@@ -38,6 +38,7 @@ export function StackBadge({
 
 	return (
 		<Component
+			data-slot="stack-badge"
 			{...props}
 			type={isClickable ? "button" : undefined}
 			onClick={isClickable ? handleClick : undefined}
@@ -45,9 +46,7 @@ export function StackBadge({
 			data-state={isSelected ? "selected" : "unselected"}
 			className={cn(
 				"relative pr-2 rounded-md shadow-bevel outline outline-1 outline-offset-[-1px] inline-flex justify-start items-center gap-1.5 transition-none",
-				isSelected
-					? "bg-interactive-secondary outline-primary"
-					: "bg-interactive-secondary outline-border",
+				isSelected ? "bg-interactive-secondary outline-primary" : "bg-interactive-secondary outline-border",
 				isClickable && !isSelected && "hover:outline-primary cursor-pointer",
 				isClickable && "focus-ring",
 				className,
@@ -56,9 +55,7 @@ export function StackBadge({
 			<div
 				className={cn(
 					"size-auto p-1 rounded-tl rounded-bl shadow-bevel-pressed outline outline-1 outline-offset-[-1px] flex justify-center items-center gap-2.5",
-					isSelected
-						? "bg-interactive-secondary outline-primary"
-						: "bg-interactive-secondary outline-border",
+					isSelected ? "bg-interactive-secondary outline-primary" : "bg-interactive-secondary outline-border",
 				)}
 			>
 				{asset ? (
@@ -70,12 +67,7 @@ export function StackBadge({
 					</div>
 				)}
 			</div>
-			<div
-				className={cn(
-					"justify-start text-xs font-medium",
-					isSelected ? "text-primary" : "text-muted-foreground",
-				)}
-			>
+			<div className={cn("justify-start text-xs font-medium", isSelected ? "text-primary" : "text-muted-foreground")}>
 				{stack}
 				{isSelected && !isToggle && <span className="sr-only"> (selected)</span>}
 			</div>

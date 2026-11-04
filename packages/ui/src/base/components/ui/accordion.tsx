@@ -1,6 +1,6 @@
+import { Accordion as AccordionPrimitive } from "@base-ui/react/accordion";
 import { CaretDownIcon } from "@phosphor-icons/react/ssr";
 import { cn } from "../../lib/utils";
-import { Accordion as AccordionPrimitive } from "@base-ui/react/accordion";
 
 type AccordionProps = AccordionPrimitive.Root.Props & {
 	type?: "single" | "multiple";
@@ -8,36 +8,20 @@ type AccordionProps = AccordionPrimitive.Root.Props & {
 };
 
 function Accordion({ type, collapsible, ...props }: AccordionProps) {
-	return (
-		<AccordionPrimitive.Root
-			data-slot="accordion"
-			multiple={type === "multiple"}
-			{...props}
-		/>
-	);
+	return <AccordionPrimitive.Root data-slot="accordion" multiple={type === "multiple"} {...props} />;
 }
 
 function AccordionItem({ className, ...props }: AccordionPrimitive.Item.Props) {
-	return (
-		<AccordionPrimitive.Item
-			data-slot="accordion-item"
-			className={cn("", className)}
-			{...props}
-		/>
-	);
+	return <AccordionPrimitive.Item data-slot="accordion-item" className={cn("", className)} {...props} />;
 }
 
-function AccordionTrigger({
-	className,
-	children,
-	...props
-}: AccordionPrimitive.Trigger.Props) {
+function AccordionTrigger({ className, children, ...props }: AccordionPrimitive.Trigger.Props) {
 	return (
 		<AccordionPrimitive.Header className="flex">
 			<AccordionPrimitive.Trigger
 				data-slot="accordion-trigger"
 				className={cn(
-					"flex flex-1 items-start justify-between gap-4 rounded-md py-4 text-left text-sm font-medium transition-all outline-none focus-ring disabled:pointer-events-none disabled:opacity-50 [&[aria-expanded=true]>svg]:rotate-180",
+					"flex flex-1 items-start justify-between gap-4 rounded-md py-4 text-left text-sm font-medium transition-colors outline-none focus-ring disabled:pointer-events-none disabled:opacity-50 [&[aria-expanded=true]>svg]:rotate-180",
 					className,
 				)}
 				{...props}
@@ -49,11 +33,7 @@ function AccordionTrigger({
 	);
 }
 
-function AccordionContent({
-	className,
-	children,
-	...props
-}: AccordionPrimitive.Panel.Props) {
+function AccordionContent({ className, children, ...props }: AccordionPrimitive.Panel.Props) {
 	return (
 		<AccordionPrimitive.Panel
 			data-slot="accordion-content"
@@ -65,4 +45,4 @@ function AccordionContent({
 	);
 }
 
-export { Accordion, AccordionItem, AccordionTrigger, AccordionContent };
+export { Accordion, AccordionContent, AccordionItem, AccordionTrigger };

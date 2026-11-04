@@ -60,4 +60,4 @@ Showing what the agent will do next.
 
 `QueueSection` › `QueueSectionTrigger` › `QueueSectionLabel count label`, `QueueSectionContent` › `QueueList` › `QueueItem` › `QueueItemIndicator completed`, `QueueItemContent`, `QueueItemDescription`, `QueueItemActions`.
 
-Category: AI. Source: `packages/ui/src/base/components/ai-elements/queue.tsx`.
+Category: AI. Source: `packages/ui/src/base/components/ai-elements/queue.tsx:191-199`.

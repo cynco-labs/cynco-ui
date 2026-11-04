@@ -23,11 +23,7 @@ export default function ChainOfThoughtDemo() {
 		<ChainOfThought defaultOpen className="max-w-[520px]">
 			<ChainOfThoughtHeader>Reconciling October</ChainOfThoughtHeader>
 			<ChainOfThoughtContent>
-				<ChainOfThoughtStep
-					label="Read the bank statement"
-					description="142 lines, Maybank Current"
-					status="complete"
-				/>
+				<ChainOfThoughtStep label="Read the bank statement" description="142 lines, Maybank Current" status="complete" />
 				<ChainOfThoughtStep label="Match open invoices" status="active">
 					<ChainOfThoughtSearchResults>
 						<ChainOfThoughtSearchResult>INV-2026-0142</ChainOfThoughtSearchResult>
@@ -54,4 +50,4 @@ Showing how an answer was reached.
 - `onOpenChange?`: `(open: boolean) => void`
 - Also accepts `ComponentProps<"div">`.
 
-Category: AI. Source: `packages/ui/src/base/components/ai-elements/chain-of-thought.tsx`.
+Category: AI. Source: `packages/ui/src/base/components/ai-elements/chain-of-thought.tsx:32-57`.

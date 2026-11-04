@@ -30,4 +30,4 @@ Inline loading (buttons use it automatically when `isLoading`).
 
 `size` in px.
 
-Category: Components · Feedback. Source: `packages/ui/src/base/components/general/small-spinner.tsx`.
+Category: Components · Feedback. Source: `packages/ui/src/base/components/general/small-spinner.tsx:5-20`.

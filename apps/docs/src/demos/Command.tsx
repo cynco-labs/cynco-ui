@@ -1,4 +1,3 @@
-import { ReceiptIcon, UserIcon } from "@phosphor-icons/react";
 import {
 	Command,
 	CommandEmpty,
@@ -9,6 +8,7 @@ import {
 	CommandSeparator,
 	CommandShortcut,
 } from "@cynco-labs/ui";
+import { ReceiptIcon, UserIcon } from "@phosphor-icons/react";
 
 export default function CommandDemo() {
 	return (

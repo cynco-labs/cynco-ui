@@ -2,18 +2,24 @@
   "name": "cynco-ui",
   "private": true,
   "packageManager": "pnpm@9.15.0",
-  "engines": { "node": ">=20" },
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "dev": "pnpm --filter @cynco-labs/docs dev",
     "build": "pnpm --filter @cynco-labs/ui build && pnpm --filter @cynco-labs/docs build",
     "build:ui": "pnpm --filter @cynco-labs/ui build",
     "typecheck": "pnpm -r typecheck",
     "test": "pnpm -r test",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "check:classes": "node scripts/check-classes.mjs",
     "registry": "node scripts/extract-props.mjs && node scripts/build-registry.mjs",
     "changeset": "changeset",
     "release": "pnpm build:ui && changeset publish"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2",
     "@changesets/cli": "^2.27.11"
   }
 }

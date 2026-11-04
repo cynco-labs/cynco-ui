@@ -9,8 +9,8 @@ import { InlineAction } from "@cynco-labs/ui";
 ## Usage
 
 ```tsx
-import { PencilSimpleIcon, PlusIcon } from "@phosphor-icons/react";
 import { InlineAction } from "@cynco-labs/ui";
+import { PencilSimpleIcon, PlusIcon } from "@phosphor-icons/react";
 
 export default function InlineActionDemo() {
 	return (
@@ -37,4 +37,4 @@ Button attributes plus `icon`; children is the label.
 
 Text in `tertiary-foreground`, `primary` on hover.
 
-Category: Components · Actions. Source: `packages/ui/src/base/components/general/inline-action.tsx`.
+Category: Components · Actions. Source: `packages/ui/src/base/components/general/inline-action.tsx:8-23`.

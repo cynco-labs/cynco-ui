@@ -9,8 +9,8 @@ import { Collapsible } from "@cynco-labs/ui";
 ## Usage
 
 ```tsx
-import { CaretDownIcon } from "@phosphor-icons/react";
 import { Button, Collapsible, CollapsibleContent, CollapsibleTrigger } from "@cynco-labs/ui";
+import { CaretDownIcon } from "@phosphor-icons/react";
 
 export default function CollapsibleDemo() {
 	return (
@@ -20,7 +20,7 @@ export default function CollapsibleDemo() {
 				Advanced settings
 			</CollapsibleTrigger>
 			<CollapsibleContent>
-				<div className="text-body rounded-lg border bg-card p-3">
+				<div className="text-sm font-medium text-muted-foreground rounded-lg border bg-card p-3">
 					Auto-number invoices from INV-2026-0001.
 				</div>
 			</CollapsibleContent>
@@ -40,4 +40,8 @@ export default function CollapsibleDemo() {
 - `asChild?`: `boolean`
 - Also accepts `CollapsiblePrimitive.Root.Props`.
 
-Category: Components · Navigation. Source: `packages/ui/src/base/components/ui/collapsible.tsx`.
+## Accessibility
+
+The component is a thin pass-through to the Base UI collapsible, with data-slot names on the root, trigger and panel and no aria, label or sr-only text of its own. The trigger's own content is therefore its accessible name.
+
+Category: Components · Navigation. Source: `packages/ui/src/base/components/ui/collapsible.tsx:4-14`.

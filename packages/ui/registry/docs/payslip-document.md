@@ -9,12 +9,7 @@ import { PayslipDocument } from "@cynco-labs/ui";
 ## Usage
 
 ```tsx
-import {
-	type DocLayout,
-	type DocLocale,
-	DocumentBrandProvider,
-	PayslipDocument,
-} from "@cynco-labs/ui";
+import { type DocLayout, type DocLocale, DocumentBrandProvider, PayslipDocument } from "@cynco-labs/ui";
 
 const BRAND = {
 	company: {
@@ -170,4 +165,4 @@ payslip: PayslipData { number?, periodFrom, periodTo, payDate, currency?, employ
 
 Line labels take keys that translate (basicSalary, allowance, overtime, commission, bonus, epf → KWSP, socso → PERKESO, eis → SIP, pcb, zakat, advance, hrdf → HRD Corp levy), {en, ms} or text; the optional detail line carries the basis (e.g. '11% of EPF wages RM 4,930.00'). All statutory amounts come from the payroll engine and are printed as given (EPF 11% employee / 13% or 12% employer, SOCSO, EIS 0.2%, PCB, zakat, HRDF). A4: meta strip, employee and employer side by side, then a gross, deductions and net strip. A5: one half-sheet: pay period and date move into the letterhead, employer numbers share the Employee row, basis lines are hidden and net pay is a single total with words beside it. Bilingual stacks line labels (English, Malay beneath); basis lines stay in English.
 
-Category: Documents. Source: `packages/ui/src/documents/operations.tsx`.
+Category: Documents. Source: `packages/ui/src/documents/operations.tsx:1051-1068`.

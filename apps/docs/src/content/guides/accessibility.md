@@ -25,8 +25,8 @@ Focus is always visible. Inputs darken their border and add a soft 3px ring; but
 
 ## Labels
 
-- Icon-only buttons need an accessible name. Use `IconTooltipButton` (its tooltip text is the label) or pass `aria-label`.
-- Form fields take a visible label (`LabelInput`, `FormLabel`, `FieldLabel`). Placeholders are examples, never labels.
+- Icon-only buttons need an accessible name. Pass `IconButton` a `tooltip` (its text becomes the label) or an `aria-label`.
+- Form fields take a visible label. Use `Field` with `FieldLabel`, or a `Label` bound with `htmlFor`. Placeholders are examples, never labels.
 - `ToneDot` is decorative (`aria-hidden`): put the meaning in nearby text.
 - Live regions announce changes that happen away from focus: `BulkActionBar`'s count and total, `InlineEditCell`'s save status and the undo toast stack.
 

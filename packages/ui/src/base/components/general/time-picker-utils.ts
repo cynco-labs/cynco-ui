@@ -73,17 +73,7 @@ function getValidMinuteOrSecond(value: string) {
 // Arrow-key stepping (with wrap-around)
 // ---------------------------------------------------------------------------
 
-function getValidArrowNumber({
-	value,
-	min,
-	max,
-	step,
-}: {
-	value: string;
-	min: number;
-	max: number;
-	step: number;
-}) {
+function getValidArrowNumber({ value, min, max, step }: { value: string; min: number; max: number; step: number }) {
 	let num = Number.parseInt(value, 10);
 	if (Number.isNaN(num)) return "00";
 	num += step;
@@ -98,13 +88,7 @@ function getValidArrow12Hour({ value, step }: { value: string; step: number }) {
 	return getValidArrowNumber({ value, min: 1, max: 12, step });
 }
 
-function getValidArrowMinuteOrSecond({
-	value,
-	step,
-}: {
-	value: string;
-	step: number;
-}) {
+function getValidArrowMinuteOrSecond({ value, step }: { value: string; step: number }) {
 	return getValidArrowNumber({ value, min: 0, max: 59, step });
 }
 
@@ -130,15 +114,7 @@ function setHours({ date, value }: { date: Date; value: string }) {
 	return date;
 }
 
-function set12Hours({
-	date,
-	value,
-	period,
-}: {
-	date: Date;
-	value: string;
-	period: Period;
-}) {
+function set12Hours({ date, value, period }: { date: Date; value: string; period: Period }) {
 	const hours = Number.parseInt(getValid12Hour(value), 10);
 	const h24 = convert12HourTo24Hour({ hour: hours, period });
 	date.setHours(h24);
@@ -175,13 +151,7 @@ export function setDateByType({
 	return assertUnreachable(type);
 }
 
-export function getDateByType({
-	date,
-	type,
-}: {
-	date: Date;
-	type: TimePickerType;
-}) {
+export function getDateByType({ date, type }: { date: Date; type: TimePickerType }) {
 	switch (type) {
 		case "minutes":
 			return getValidMinuteOrSecond(String(date.getMinutes()));
@@ -197,15 +167,7 @@ export function getDateByType({
 	return assertUnreachable(type);
 }
 
-export function getArrowByType({
-	value,
-	step,
-	type,
-}: {
-	value: string;
-	step: number;
-	type: TimePickerType;
-}) {
+export function getArrowByType({ value, step, type }: { value: string; step: number; type: TimePickerType }) {
 	switch (type) {
 		case "minutes":
 			return getValidArrowMinuteOrSecond({ value, step });
@@ -223,13 +185,7 @@ export function getArrowByType({
 // 12h ↔ 24h conversion
 // ---------------------------------------------------------------------------
 
-function convert12HourTo24Hour({
-	hour,
-	period,
-}: {
-	hour: number;
-	period: Period;
-}) {
+function convert12HourTo24Hour({ hour, period }: { hour: number; period: Period }) {
 	if (period === "PM") {
 		return hour <= 11 ? hour + 12 : hour;
 	}

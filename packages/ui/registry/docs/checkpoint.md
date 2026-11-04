@@ -29,4 +29,4 @@ Between messages, to roll back.
 
 `CheckpointIcon`, `CheckpointTrigger` (Button props + `tooltip`).
 
-Category: AI. Source: `packages/ui/src/base/components/ai-elements/checkpoint.tsx`.
+Category: AI. Source: `packages/ui/src/base/components/ai-elements/checkpoint.tsx:12-17`.

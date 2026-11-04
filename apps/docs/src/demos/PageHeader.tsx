@@ -1,5 +1,5 @@
-import { ReceiptIcon } from "@phosphor-icons/react";
 import { Badge, Button, PageHeader } from "@cynco-labs/ui";
+import { ReceiptIcon } from "@phosphor-icons/react";
 
 export default function PageHeaderDemo() {
 	return (

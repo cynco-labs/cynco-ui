@@ -1,45 +1,28 @@
 "use client";
 
 import { CaretDownIcon, CaretUpIcon } from "@phosphor-icons/react";
+import { flexRender, type HeaderGroup } from "@tanstack/react-table";
+import { cn } from "../../lib/utils";
+import { Checkbox } from "../ui/checkbox";
+import { TableHeader as ShadcnTableHeader, TableHead, TableRow } from "../ui/table";
 import { useTableContext } from "./table-context";
 import { getColumnWidthStyle } from "./table-row-cells";
-import { Checkbox } from "../ui/checkbox";
-import {
-	TableHeader as ShadcnTableHeader,
-	TableHead,
-	TableRow,
-} from "../ui/table";
-import { cn } from "../../lib/utils";
-import { flexRender, type HeaderGroup } from "@tanstack/react-table";
 
 function SortIcon({ sortDirection }: { sortDirection: string | false }) {
 	if (sortDirection === "asc") {
-		return (
-			<CaretUpIcon
-				aria-hidden="true"
-				className="shrink-0 text-foreground"
-				size={12}
-			/>
-		);
+		return <CaretUpIcon aria-hidden="true" className="shrink-0 text-foreground" size={12} />;
 	}
 
 	return (
 		<CaretDownIcon
 			aria-hidden="true"
-			className={cn(
-				"shrink-0",
-				sortDirection ? "text-foreground" : "opacity-30",
-			)}
+			className={cn("shrink-0", sortDirection ? "text-foreground" : "opacity-30")}
 			size={12}
 		/>
 	);
 }
 
-function HeaderContent<T>({
-	header,
-}: {
-	header: HeaderGroup<T>["headers"][number];
-}) {
+function HeaderContent<T>({ header }: { header: HeaderGroup<T>["headers"][number] }) {
 	const { enableSorting } = useTableContext();
 	if (header.isPlaceholder) {
 		return null;
@@ -47,11 +30,7 @@ function HeaderContent<T>({
 
 	// Without table-level sorting there is nothing to activate, so no button.
 	if (!(enableSorting && header.column.getCanSort())) {
-		return (
-			<span className="truncate w-full">
-				{flexRender(header.column.columnDef.header, header.getContext())}
-			</span>
-		);
+		return <span className="truncate w-full">{flexRender(header.column.columnDef.header, header.getContext())}</span>;
 	}
 
 	return (
@@ -60,9 +39,7 @@ function HeaderContent<T>({
 			onClick={header.column.getToggleSortingHandler()}
 			type="button"
 		>
-			<span className="truncate">
-				{flexRender(header.column.columnDef.header, header.getContext())}
-			</span>
+			<span className="truncate">{flexRender(header.column.columnDef.header, header.getContext())}</span>
 			<SortIcon sortDirection={header.column.getIsSorted()} />
 		</button>
 	);
@@ -74,27 +51,18 @@ const ARIA_SORT = { asc: "ascending", desc: "descending" } as const;
 const INDETERMINATE_CLASS =
 	"data-indeterminate:border-primary data-indeterminate:bg-primary data-indeterminate:[&_svg]:hidden data-indeterminate:before:h-0.5 data-indeterminate:before:w-2 data-indeterminate:before:rounded-full data-indeterminate:before:bg-primary-foreground";
 
-export function TableHeader({ className }: { className?: string }) {
-	const {
-		table,
-		enableSelection,
-		enableColumnVisibility,
-		enableSorting,
-		flexibleTableColumns,
-	} = useTableContext();
+export function TableHeader({ className, ...props }: React.ComponentProps<"thead">) {
+	const { table, enableSelection, enableColumnVisibility, enableSorting, flexibleTableColumns } = useTableContext();
 	const headerGroups = table.getHeaderGroups();
 	const rows = table.getRowModel().rows;
 
 	return (
-		<ShadcnTableHeader className={cn("sticky top-0 z-20 bg-card", className)}>
+		<ShadcnTableHeader data-slot="table-header" className={cn("sticky top-0 z-20 bg-card", className)} {...props}>
 			{headerGroups.map((headerGroup, headerGroupIndex) => (
 				<TableRow
 					// Virtualized bodies number their rows after the header rows.
 					aria-rowindex={headerGroupIndex + 1}
-					className={cn(
-						"bg-card text-subtle border-b",
-						!rows.length && "border-dashed",
-					)}
+					className={cn("bg-card text-subtle border-b", !rows.length && "border-dashed")}
 					key={headerGroup.id}
 				>
 					{enableSelection && table && (
@@ -104,9 +72,7 @@ export function TableHeader({ className }: { className?: string }) {
 								checked={table.getIsAllPageRowsSelected()}
 								indeterminate={table.getIsSomePageRowsSelected()}
 								className={INDETERMINATE_CLASS}
-								onCheckedChange={(checked) =>
-									table.toggleAllPageRowsSelected(!!checked)
-								}
+								onCheckedChange={(checked) => table.toggleAllPageRowsSelected(!!checked)}
 							/>
 						</TableHead>
 					)}
@@ -114,9 +80,7 @@ export function TableHeader({ className }: { className?: string }) {
 						const isLast = index === arr.length - 1;
 						const sortDirection = header.column.getIsSorted();
 						const ariaSort =
-							enableSorting &&
-							header.column.getCanSort() &&
-							!header.isPlaceholder
+							enableSorting && header.column.getCanSort() && !header.isPlaceholder
 								? sortDirection
 									? ARIA_SORT[sortDirection]
 									: "none"
@@ -128,11 +92,7 @@ export function TableHeader({ className }: { className?: string }) {
 						});
 						return (
 							<TableHead
-								className={cn(
-									"px-2",
-									index === 0 && "pl-4",
-									isLast && enableColumnVisibility && "pr-8",
-								)}
+								className={cn("px-2", index === 0 && "pl-4", isLast && enableColumnVisibility && "pr-8")}
 								key={header.id}
 								aria-sort={ariaSort}
 								style={headerStyle}

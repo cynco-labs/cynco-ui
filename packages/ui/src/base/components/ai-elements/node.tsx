@@ -1,17 +1,9 @@
 "use client";
 
-import {
-	Card,
-	CardAction,
-	CardContent,
-	CardDescription,
-	CardFooter,
-	CardHeader,
-	CardTitle,
-} from "../ui/card";
-import { cn } from "../../lib/utils";
 import { Handle, Position } from "@xyflow/react";
 import type { ComponentProps, KeyboardEvent } from "react";
+import { cn } from "../../lib/utils";
+import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../ui/card";
 
 export type NodeProps = ComponentProps<typeof Card> & {
 	handles: {
@@ -33,13 +25,7 @@ const connectFromKeyboard = (event: KeyboardEvent<HTMLDivElement>) => {
 const HANDLE_FOCUS = "focus-ring";
 
 export const Node = ({ handles, className, ...props }: NodeProps) => (
-	<Card
-		className={cn(
-			"node-container relative size-full h-auto w-sm gap-0 rounded-md p-0",
-			className,
-		)}
-		{...props}
-	>
+	<Card className={cn("node-container relative size-full h-auto w-sm gap-0 rounded-md p-0", className)} {...props}>
 		{handles.target && (
 			<Handle
 				aria-label="Connect here (input)"
@@ -69,10 +55,8 @@ export const Node = ({ handles, className, ...props }: NodeProps) => (
 export type NodeHeaderProps = ComponentProps<typeof CardHeader>;
 
 export const NodeHeader = ({ className, ...props }: NodeHeaderProps) => (
-	<CardHeader
-		className={cn("gap-0.5 rounded-t-md border-b bg-secondary p-3!", className)}
-		{...props}
-	/>
+	// `[.border-b]:pb-3` answers CardHeader's own `[.border-b]:pb-4`, which outranks a plain `p-3`.
+	<CardHeader className={cn("gap-0.5 rounded-t-md border-b bg-secondary p-3 [.border-b]:pb-3", className)} {...props} />
 );
 
 export type NodeTitleProps = ComponentProps<typeof CardTitle>;
@@ -81,9 +65,7 @@ export const NodeTitle = (props: NodeTitleProps) => <CardTitle {...props} />;
 
 export type NodeDescriptionProps = ComponentProps<typeof CardDescription>;
 
-export const NodeDescription = (props: NodeDescriptionProps) => (
-	<CardDescription {...props} />
-);
+export const NodeDescription = (props: NodeDescriptionProps) => <CardDescription {...props} />;
 
 export type NodeActionProps = ComponentProps<typeof CardAction>;
 
@@ -98,8 +80,6 @@ export const NodeContent = ({ className, ...props }: NodeContentProps) => (
 export type NodeFooterProps = ComponentProps<typeof CardFooter>;
 
 export const NodeFooter = ({ className, ...props }: NodeFooterProps) => (
-	<CardFooter
-		className={cn("rounded-b-md border-t bg-secondary p-3!", className)}
-		{...props}
-	/>
+	// `[.border-t]:pt-3` answers CardFooter's own `[.border-t]:pt-4`, which outranks a plain `p-3`.
+	<CardFooter className={cn("rounded-b-md border-t bg-secondary p-3 [.border-t]:pt-3", className)} {...props} />
 );

@@ -13,22 +13,11 @@ export default function TaxInstallmentScheduleDemo() {
 		"2026-11-15",
 		"2026-12-15",
 	];
-	const st = [
-		"paid",
-		"paid",
-		"paid",
-		"paid",
-		"paid",
-		"paid",
-		"partial",
-		"overdue",
-		"pending",
-		"pending",
-	];
+	const st = ["paid", "paid", "paid", "paid", "paid", "paid", "partial", "overdue", "pending", "pending"];
 	const rows = m.map((d, i) => {
 		const s = st[i];
 		return {
-			id: "cp" + i,
+			id: `cp${i}`,
 			installmentNumber: i + 1,
 			dueDate: d,
 			amount: 7200,

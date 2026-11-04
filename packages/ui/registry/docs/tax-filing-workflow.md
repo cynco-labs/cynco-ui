@@ -15,12 +15,7 @@ export default function TaxFilingWorkflowDemo() {
 	return (
 		<div className="flex flex-col gap-3">
 			<TaxFilingWorkflow status="reviewed" reviewedAt="2026-10-21" />
-			<TaxFilingWorkflow
-				status="filed"
-				filingReference="C-2025-0048213"
-				reviewedAt="2026-10-21"
-				filedAt="2026-10-28"
-			/>
+			<TaxFilingWorkflow status="filed" filingReference="C-2025-0048213" reviewedAt="2026-10-21" filedAt="2026-10-28" />
 		</div>
 	);
 }
@@ -48,4 +43,4 @@ Top of a tax return page.
 
 Amended shows the DocStatus chip after the steps. Responsive by container: steps in a ScrollRow; actions wrap under the steps below 42rem.
 
-Category: Accounting · Tax, assets & operations. Source: `packages/ui/src/accounting/operations.tsx`.
+Category: Accounting · Tax, assets & operations. Source: `packages/ui/src/accounting/operations/tax.tsx:406-499`.

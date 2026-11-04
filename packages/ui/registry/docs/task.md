@@ -38,4 +38,4 @@ Showing an agent's search or edit work.
 - `asChild?`: `boolean`
 - Also accepts `CollapsiblePrimitive.Root.Props`.
 
-Category: AI. Source: `packages/ui/src/base/components/ai-elements/task.tsx`.
+Category: AI. Source: `packages/ui/src/base/components/ai-elements/task.tsx:32-34`.

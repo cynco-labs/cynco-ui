@@ -1,10 +1,7 @@
-import {
-	overlayMotionClassName,
-	overlaySurfaceClassName,
-} from "../../lib/overlay-classes";
-import { cn } from "../../lib/utils";
 import { Popover as PopoverPrimitive } from "@base-ui/react/popover";
-import * as React from "react";
+import { overlayMotionClassName, overlaySurfaceClassName } from "../../lib/overlay-classes";
+import { renderProp } from "../../lib/render";
+import { cn } from "../../lib/utils";
 
 function Popover({ ...props }: PopoverPrimitive.Root.Props) {
 	return <PopoverPrimitive.Root data-slot="popover" {...props} />;
@@ -13,21 +10,17 @@ function Popover({ ...props }: PopoverPrimitive.Root.Props) {
 function PopoverTrigger({
 	asChild,
 	children,
+	render,
 	...props
 }: PopoverPrimitive.Trigger.Props & { asChild?: boolean }) {
-	if (asChild && React.isValidElement(children)) {
-		return (
-			<PopoverPrimitive.Trigger
-				data-slot="popover-trigger"
-				render={children}
-				{...props}
-			/>
-		);
-	}
+	const element = renderProp(asChild, children, render);
 	return (
-		<PopoverPrimitive.Trigger data-slot="popover-trigger" {...props}>
-			{children}
-		</PopoverPrimitive.Trigger>
+		<PopoverPrimitive.Trigger
+			data-slot="popover-trigger"
+			render={element}
+			{...props}
+			{...(element === children ? {} : { children })}
+		/>
 	);
 }
 
@@ -38,26 +31,9 @@ function PopoverContent({
 	side = "bottom",
 	anchor,
 	collisionAvoidance,
-	onEscapeKeyDown: _onEscapeKeyDown,
-	onPointerDownOutside: _onPointerDownOutside,
-	onOpenAutoFocus: _onOpenAutoFocus,
-	onCloseAutoFocus: _onCloseAutoFocus,
-	forceMount: _forceMount,
-	asChild: _asChild,
 	...props
 }: PopoverPrimitive.Popup.Props &
-	Pick<
-		PopoverPrimitive.Positioner.Props,
-		"align" | "side" | "sideOffset" | "anchor" | "collisionAvoidance"
-	> & {
-		/** Radix compatibility props; accepted and ignored (Base UI handles dismissal and focus itself). */
-		onEscapeKeyDown?: (event: Event) => void;
-		onPointerDownOutside?: (event: Event) => void;
-		onOpenAutoFocus?: (event: Event) => void;
-		onCloseAutoFocus?: (event: Event) => void;
-		forceMount?: boolean;
-		asChild?: boolean;
-	}) {
+	Pick<PopoverPrimitive.Positioner.Props, "align" | "side" | "sideOffset" | "anchor" | "collisionAvoidance">) {
 	return (
 		<PopoverPrimitive.Portal>
 			<PopoverPrimitive.Positioner
@@ -67,16 +43,11 @@ function PopoverContent({
 				anchor={anchor}
 				collisionAvoidance={collisionAvoidance}
 				positionMethod="fixed"
-				className="isolate z-[300]"
+				className="isolate z-popover"
 			>
 				<PopoverPrimitive.Popup
 					data-slot="popover-content"
-					className={cn(
-						"w-72 p-3 outline-hidden",
-						overlaySurfaceClassName,
-						overlayMotionClassName,
-						className,
-					)}
+					className={cn("w-72 p-3 outline-hidden", overlaySurfaceClassName, overlayMotionClassName, className)}
 					{...props}
 				/>
 			</PopoverPrimitive.Positioner>
@@ -84,4 +55,4 @@ function PopoverContent({
 	);
 }
 
-export { Popover, PopoverTrigger, PopoverContent };
+export { Popover, PopoverContent, PopoverTrigger };

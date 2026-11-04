@@ -9,8 +9,8 @@ import { IconBadge } from "@cynco-labs/ui";
 ## Usage
 
 ```tsx
-import { ArrowSquareOutIcon, CoinsIcon, UsersIcon } from "@phosphor-icons/react";
 import { IconBadge } from "@cynco-labs/ui";
+import { ArrowSquareOutIcon, CoinsIcon, UsersIcon } from "@phosphor-icons/react";
 
 export default function IconBadgeDemo() {
 	return (
@@ -35,11 +35,11 @@ Metadata like currency, branch, external links.
 
 `icon`/`rightIcon`, `variant` (`default` · `muted`), `position`.
 
-- `variant?`: `"default" | "muted"`. Default `"muted"`.
 - `icon?`: `ReactNode`
-- `asChild?`: `boolean`. Default `false`.
 - `rightIcon?`: `ReactNode`
+- `variant?`: `"default" | "muted"`. Default `"muted"`.
+- `asChild?`: `boolean`. Default `false`.
 - `position?`: `"left" | "right"`. Default `"left"`.
 - Also accepts `ComponentProps<"span">`.
 
-Category: Components · Data display. Source: `packages/ui/src/base/components/general/icon-badge.tsx`.
+Category: Components · Data display. Source: `packages/ui/src/base/components/general/icon-badge.tsx:32-109`.

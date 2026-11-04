@@ -9,7 +9,6 @@ import { WebPreview } from "@cynco-labs/ui/ai";
 ## Usage
 
 ```tsx
-import { ArrowsClockwiseIcon, CaretRightIcon } from "@phosphor-icons/react";
 import {
 	WebPreview,
 	WebPreviewConsole,
@@ -17,6 +16,7 @@ import {
 	WebPreviewNavigationButton,
 	WebPreviewUrl,
 } from "@cynco-labs/ui/ai";
+import { ArrowsClockwiseIcon, CaretRightIcon } from "@phosphor-icons/react";
 
 export default function WebPreviewDemo() {
 	return (
@@ -65,4 +65,4 @@ Previewing a page the agent built.
 
 The demo leaves out the iframe body.
 
-Category: AI. Source: `packages/ui/src/base/components/ai-elements/web-preview.tsx`.
+Category: AI. Source: `packages/ui/src/base/components/ai-elements/web-preview.tsx:34-57`.

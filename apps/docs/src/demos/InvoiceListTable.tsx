@@ -1,5 +1,5 @@
-import { useState } from "react";
 import { InvoiceListTable, type SalesInvoiceRow } from "@cynco-labs/ui";
+import { useState } from "react";
 
 export default function InvoiceListTableDemo() {
 	const rows: SalesInvoiceRow[] = [
@@ -9,7 +9,7 @@ export default function InvoiceListTableDemo() {
 			customerName: "Syarikat Maju Jaya Sdn Bhd",
 			invoiceDate: "2026-10-28",
 			dueDate: "2026-11-27",
-			total: 12850,
+			total: "12850.00",
 			status: "finalized",
 			journalEntryId: "je1",
 			emailStatus: "opened",
@@ -20,7 +20,7 @@ export default function InvoiceListTableDemo() {
 			customerName: "Tropika Kopi Enterprise",
 			invoiceDate: "2026-10-02",
 			dueDate: "2026-10-16",
-			total: 3240,
+			total: "3240.00",
 			status: "overdue",
 			journalEntryId: "je3",
 			emailStatus: "bounced",
@@ -31,28 +31,18 @@ export default function InvoiceListTableDemo() {
 			customerName: "Nusantara Logistik Bhd",
 			invoiceDate: "2026-09-30",
 			dueDate: "2026-10-30",
-			total: 28400,
+			total: "28400.00",
 			status: "partially_paid",
 			journalEntryId: null,
 		},
 	];
 	const [sel, setSel] = useState(["3", "4"]);
-	function toggle(id: string) {
-		const s = sel.slice();
-		const i = s.indexOf(id);
-		if (i < 0) s.push(id);
-		else s.splice(i, 1);
-		setSel(s);
-	}
 	return (
 		<InvoiceListTable
 			onRowAction={() => {}}
 			invoices={rows}
 			selectedIds={sel}
-			onToggleRow={toggle}
-			onToggleAll={() => {
-				setSel(sel.length === rows.length ? [] : rows.map((r) => r.id));
-			}}
+			onSelectionChange={setSel}
 			sortField="invoice_date"
 			sortDirection="desc"
 		/>

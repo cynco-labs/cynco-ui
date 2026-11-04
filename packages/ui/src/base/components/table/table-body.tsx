@@ -1,19 +1,17 @@
 "use client";
 
+import { useRef } from "react";
+import { cn } from "../../lib/utils";
+import { TableCell, TableRow } from "../ui/table";
 import { useTableContext } from "./table-context";
 import { MotionTbody, useTableFadeIn } from "./table-motion";
-import {
-	isRowButtonKeyPress,
-	TableRowCells,
-	TableSkeletonRows,
-} from "./table-row-cells";
-import { TableCell, TableRow } from "../ui/table";
-import { cn } from "../../lib/utils";
-import { useRef } from "react";
+import { isRowButtonKeyPress, TableRowCells, TableSkeletonRows } from "./table-row-cells";
 
 const DEFAULT_SKELETON_ROWS = 5;
 
-export function TableBody() {
+export type TableBodyProps = Omit<React.ComponentProps<typeof MotionTbody>, "children">;
+
+export function TableBody({ className, ...props }: TableBodyProps) {
 	const {
 		table,
 		numberOfColumns,
@@ -40,8 +38,7 @@ export function TableBody() {
 	if (!isLoading) hasLoadedRef.current = true;
 
 	const hasRows = rows.length > 0;
-	const showSkeleton =
-		isLoading || !!isTransitioning || (!hasRows && !hasLoadedRef.current);
+	const showSkeleton = isLoading || !!isTransitioning || (!hasRows && !hasLoadedRef.current);
 
 	const columns = table.getVisibleLeafColumns().map((col) => ({
 		id: col.id,
@@ -53,9 +50,11 @@ export function TableBody() {
 	if (showSkeleton) {
 		return (
 			<MotionTbody
+				data-slot="table-body"
 				key="skeleton"
 				{...fadeIn}
-				className="divide-y bg-interactive-secondary"
+				className={cn("divide-y bg-interactive-secondary", className)}
+				{...props}
 			>
 				<TableSkeletonRows
 					columns={columns}
@@ -70,12 +69,9 @@ export function TableBody() {
 
 	if (!hasRows) {
 		return (
-			<MotionTbody key="empty" {...fadeIn}>
+			<MotionTbody data-slot="table-body" key="empty" {...fadeIn} className={className} {...props}>
 				<TableRow className="hover:bg-transparent dark:hover:bg-transparent">
-					<TableCell
-						className="h-10 text-center py-0"
-						colSpan={numberOfColumns}
-					>
+					<TableCell className="h-10 text-center py-0" colSpan={numberOfColumns}>
 						<div className="text-subtle text-xs text-center w-full h-full items-center justify-center flex">
 							{emptyStateChildren || emptyStateText}
 						</div>
@@ -92,13 +88,14 @@ export function TableBody() {
 
 	return (
 		<MotionTbody
+			data-slot="table-body"
 			key="content"
 			{...fadeIn}
-			className="divide-y bg-interactive-secondary"
+			className={cn("divide-y bg-interactive-secondary", className)}
+			{...props}
 		>
 			{rows.map((row) => {
-				const isSelected =
-					selectedItemId === (row.original as { id?: string }).id;
+				const isSelected = selectedItemId === (row.original as { id?: string }).id;
 				const rowHref = getRowHref?.(row.original);
 
 				return (
@@ -107,7 +104,7 @@ export function TableBody() {
 							"text-tertiary-foreground transition-none h-12 py-4 relative",
 							rowClassName,
 							getRowClassName?.(row.original),
-							isSelected ? "z-100" : "hover:bg-interactive-secondary-hover",
+							isSelected ? "z-sticky" : "hover:bg-interactive-secondary-hover",
 							(onRowClick || rowHref) && "cursor-pointer",
 						)}
 						aria-current={isSelected || undefined}
@@ -123,11 +120,7 @@ export function TableBody() {
 									}
 								: undefined
 						}
-						onDoubleClick={
-							onRowDoubleClick
-								? () => onRowDoubleClick(row.original)
-								: undefined
-						}
+						onDoubleClick={onRowDoubleClick ? () => onRowDoubleClick(row.original) : undefined}
 					>
 						<TableRowCells
 							row={row}

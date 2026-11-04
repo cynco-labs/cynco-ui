@@ -9,8 +9,8 @@ import { AmountInput } from "@cynco-labs/ui";
 ## Usage
 
 ```tsx
-import { useState, type ReactNode } from "react";
-import { AmountInput, Kbd } from "@cynco-labs/ui";
+import { AmountInput, Field, FieldControl, FieldLabel, Kbd } from "@cynco-labs/ui";
+import { type ReactNode, useState } from "react";
 
 function Hint({ children }: { children: ReactNode }) {
 	return <p className="text-xs text-tertiary-foreground">{children}</p>;
@@ -18,15 +18,6 @@ function Hint({ children }: { children: ReactNode }) {
 
 function K(k: string) {
 	return <Kbd keys={k} className="mx-0.5 align-middle" />;
-}
-
-function Field({ label, children }: { label: string; children: ReactNode }) {
-	return (
-		<label className="flex min-w-0 flex-col gap-1">
-			<span className="text-xs font-medium text-muted-foreground">{label}</span>
-			{children}
-		</label>
-	);
 }
 
 export default function AmountInputDemo() {
@@ -42,37 +33,38 @@ export default function AmountInputDemo() {
 				{" reverts while editing."}
 			</Hint>
 			<div className="grid grid-cols-1 gap-4 @md:grid-cols-2">
-				<Field label="Bill amount (controlled)">
-					<AmountInput value={amt} onValueChange={setAmt} currency="MYR" aria-label="Bill amount" />
+				<Field className="min-w-0">
+					<FieldLabel className="text-xs font-medium text-muted-foreground">Bill amount (controlled)</FieldLabel>
+					<FieldControl>
+						<AmountInput value={amt} onValueChange={setAmt} currency="MYR" />
+					</FieldControl>
 					<span className="text-2xs text-tertiary-foreground">
 						{"onValueChange → "}
-						<code className="text-tiny-id text-foreground">{JSON.stringify(amt)}</code>
+						<code className="font-mono text-2xs font-medium text-foreground">{JSON.stringify(amt)}</code>
 					</span>
 				</Field>
-				<Field label="Adjustment (negatives allowed)">
-					<AmountInput
-						defaultValue="-500.00"
-						allowNegative
-						currency="MYR"
-						aria-label="Adjustment"
-					/>
+				<Field className="min-w-0">
+					<FieldLabel className="text-xs font-medium text-muted-foreground">Adjustment (negatives allowed)</FieldLabel>
+					<FieldControl>
+						<AmountInput defaultValue="-500.00" allowNegative currency="MYR" />
+					</FieldControl>
 				</Field>
-				<Field label="Petty cash count (no prefix)">
-					<AmountInput
-						value={b}
-						onValueChange={setB}
-						placeholder="0.00"
-						aria-label="Petty cash count"
-					/>
+				<Field className="min-w-0">
+					<FieldLabel className="text-xs font-medium text-muted-foreground">Petty cash count (no prefix)</FieldLabel>
+					<FieldControl>
+						<AmountInput value={b} onValueChange={setB} placeholder="0.00" />
+					</FieldControl>
 				</Field>
-				<Field label="Payment against PO-2026-0088">
-					<AmountInput
-						defaultValue="12850.00"
-						currency="MYR"
-						invalid
-						errorMessage="Exceeds the PO balance of RM 12,000.00"
-						aria-label="Payment amount"
-					/>
+				<Field className="min-w-0" invalid>
+					<FieldLabel className="text-xs font-medium text-muted-foreground">Payment against PO-2026-0088</FieldLabel>
+					<FieldControl>
+						<AmountInput
+							defaultValue="12850.00"
+							currency="MYR"
+							invalid
+							errorMessage="Exceeds the PO balance of RM 12,000.00"
+						/>
+					</FieldControl>
 				</Field>
 			</div>
 		</div>
@@ -105,4 +97,4 @@ value / defaultValue (decimal string, "" for empty), onValueChange(value: string
 
 Maths via parseAmount / toSen (BigInt, half-up), so 0.1 + 0.2 is 0.30. Fills its container's width; negatives display bracketed in text-error-text.
 
-Category: Productivity. Source: `packages/ui/src/productivity/entry.tsx`.
+Category: Productivity. Source: `packages/ui/src/productivity/entry/amount-input.tsx:44-238`.

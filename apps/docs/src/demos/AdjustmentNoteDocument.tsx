@@ -1,8 +1,8 @@
 import {
 	type AdjustmentNoteData,
+	AdjustmentNoteDocument,
 	type DocLayout,
 	type DocLocale,
-	AdjustmentNoteDocument,
 	DocumentBrandProvider,
 } from "@cynco-labs/ui";
 
@@ -32,16 +32,6 @@ const NUSA = {
 	attention: "Puan Aisyah Rahman, Finance",
 };
 
-const NUSA_SITE = {
-	name: "Nusantara Logistik Bhd — Warehouse B",
-	address: [
-		"Lot 12A, Jalan Sungai Puloh, Kawasan Perindustrian Sungai Puloh",
-		"42100 Klang, Selangor",
-	],
-	attention: "En. Hafiz Zainal, Facilities",
-	phone: "+60 12-334 8821",
-};
-
 const QRSLOT = (t: string) => (
 	<div className="flex size-full items-center justify-center rounded-[1.5mm] border border-dashed border-[var(--doc-subtle)] text-center text-[6pt] leading-tight text-[var(--doc-subtle)]">
 		{t}
@@ -59,7 +49,8 @@ const CN: AdjustmentNoteData = {
 	originalInvoice: ORIG,
 	reason: {
 		category: "Goods returned and service adjustment",
-		text: "40 m of unused AC cable returned on 30 Oct 2026 (GRN-2026-0211); first-year maintenance prorated after the customer moved the service start to January 2027.",
+		text:
+			"40 m of unused AC cable returned on 30 Oct 2026 (GRN-2026-0211); first-year maintenance prorated after the customer moved the service start to January 2027.",
 	},
 	lines: [
 		{

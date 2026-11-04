@@ -1,5 +1,5 @@
-import { useState } from "react";
 import { GroupedTabButton } from "@cynco-labs/ui";
+import { useState } from "react";
 
 export default function GroupedTabButtonDemo() {
 	const [s, setS] = useState("month");

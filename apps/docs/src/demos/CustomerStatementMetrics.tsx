@@ -5,12 +5,12 @@ export default function CustomerStatementMetricsDemo() {
 		<CustomerStatementMetrics
 			metrics={{
 				totalTransactions: 14,
-				invoicedAmount: 64246.5,
+				invoicedAmount: "64246.50",
 				collectionRate: 62.4,
-				amountReceived: 40096.1,
-				creditedAmount: 10746,
-				debitedAmount: 1250,
-				balanceDue: 48250.4,
+				amountReceived: "40096.10",
+				creditedAmount: "10746.00",
+				debitedAmount: "1250.00",
+				balanceDue: "48250.40",
 			}}
 		/>
 	);

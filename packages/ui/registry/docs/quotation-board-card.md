@@ -1,6 +1,6 @@
 # QuotationBoardCard
 
-One quotation on the Kanban board: customer, quotation number, status, total and relative age ('3d ago', 'Yesterday').
+One quotation on the Kanban board: customer, quotation number, status, total and relative age ('3h ago', '2d ago').
 
 ```tsx
 import { QuotationBoardCard } from "@cynco-labs/ui";
@@ -20,7 +20,7 @@ export default function QuotationBoardCardDemo() {
 					id: "1",
 					quotationNumber: "QT-2026-0088",
 					customerName: "Syarikat Maju Jaya Sdn Bhd",
-					totalAmount: 18600,
+					totalAmount: "18600.00",
 					status: "sent",
 					createdAt: "2026-10-27",
 				}}
@@ -31,7 +31,7 @@ export default function QuotationBoardCardDemo() {
 					id: "2",
 					quotationNumber: "QT-2026-0085",
 					customerName: "Bayu Dental Clinic",
-					totalAmount: 7450,
+					totalAmount: "7450.00",
 					status: "accepted",
 					createdAt: "2026-10-14",
 				}}
@@ -42,7 +42,7 @@ export default function QuotationBoardCardDemo() {
 					id: "3",
 					quotationNumber: "QT-2026-0079",
 					customerName: "Rimba Hijau Landscaping",
-					totalAmount: 2300,
+					totalAmount: "2300.00",
 					status: "expired",
 					createdAt: "2026-08-29",
 				}}
@@ -58,15 +58,15 @@ Inside QuotationBoardColumn, or anywhere you show a quotation at a glance.
 
 ## Props
 
-quotation ({id, quotationNumber, customerName, totalAmount, currency, status, createdAt}), now (reference date for the relative time), onOpen; className and native button props.
+quotation ({id, quotationNumber, customerName, totalAmount, currency, status, createdAt}), now (reference date for the relative time), onRowClick(quotation); className and native button props.
 
 - `quotation`: `SalesQuotation`
 - `now?`: `string`
-- `onOpen?`: `(id: string) => void`
+- `onRowClick?`: `(quotation: SalesQuotation) => void`
 - Also accepts `ComponentProps<"button">`.
 
 ## Notes
 
 A bg-card rounded-xl button that hovers to interactive-secondary-hover. The status is a DocStatus chip, with Converted on the refresh glyph. Responsive: the status moves under the name when the card is very narrow.
 
-Category: Accounting · Sales. Source: `packages/ui/src/accounting/sales.tsx`.
+Category: Accounting · Sales. Source: `packages/ui/src/accounting/sales/quotations.tsx:35-79`.

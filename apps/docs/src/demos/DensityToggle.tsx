@@ -1,127 +1,31 @@
-import { useState } from "react";
 import {
 	type DataColumn,
-	type Density,
 	DataList,
+	type Density,
 	DensityProvider,
 	DensityToggle,
 	formatDate,
 	sumAmounts,
 } from "@cynco-labs/ui";
 import type React from "react";
+import { useState } from "react";
 
 const L = [
-	[
-		"2026-10-01",
-		"JV-2026-0301",
-		"1000-001",
-		"Maybank Current Account",
-		"Opening balance b/f",
-		"48250.00",
-		"",
-	],
-	[
-		"2026-10-02",
-		"INV-2026-0131",
-		"1200-001",
-		"Trade Debtors",
-		"Syarikat Maju Jaya Sdn Bhd",
-		"12850.00",
-		"",
-	],
-	[
-		"2026-10-02",
-		"INV-2026-0131",
-		"4000-001",
-		"Sales — Services",
-		"Syarikat Maju Jaya Sdn Bhd",
-		"",
-		"11898.15",
-	],
+	["2026-10-01", "JV-2026-0301", "1000-001", "Maybank Current Account", "Opening balance b/f", "48250.00", ""],
+	["2026-10-02", "INV-2026-0131", "1200-001", "Trade Debtors", "Syarikat Maju Jaya Sdn Bhd", "12850.00", ""],
+	["2026-10-02", "INV-2026-0131", "4000-001", "Sales — Services", "Syarikat Maju Jaya Sdn Bhd", "", "11898.15"],
 	["2026-10-02", "INV-2026-0131", "2300-001", "SST Payable (8%)", "Output tax", "", "951.85"],
-	[
-		"2026-10-05",
-		"BILL-2026-0088",
-		"6100-002",
-		"Rent Expense",
-		"Pelita Hartanah — October rent",
-		"4500.00",
-		"",
-	],
-	[
-		"2026-10-05",
-		"BILL-2026-0088",
-		"2000-001",
-		"Trade Creditors",
-		"Pelita Hartanah Sdn Bhd",
-		"",
-		"4500.00",
-	],
-	[
-		"2026-10-09",
-		"RCPT-2026-0412",
-		"1000-001",
-		"Maybank Current Account",
-		"Receipt — Tropika Kopi",
-		"3240.00",
-		"",
-	],
-	[
-		"2026-10-09",
-		"RCPT-2026-0412",
-		"1200-001",
-		"Trade Debtors",
-		"Tropika Kopi Enterprise",
-		"",
-		"3240.00",
-	],
-	[
-		"2026-10-15",
-		"PAY-2026-0210",
-		"6200-001",
-		"Salaries & Wages",
-		"October payroll",
-		"18600.00",
-		"",
-	],
+	["2026-10-05", "BILL-2026-0088", "6100-002", "Rent Expense", "Pelita Hartanah — October rent", "4500.00", ""],
+	["2026-10-05", "BILL-2026-0088", "2000-001", "Trade Creditors", "Pelita Hartanah Sdn Bhd", "", "4500.00"],
+	["2026-10-09", "RCPT-2026-0412", "1000-001", "Maybank Current Account", "Receipt — Tropika Kopi", "3240.00", ""],
+	["2026-10-09", "RCPT-2026-0412", "1200-001", "Trade Debtors", "Tropika Kopi Enterprise", "", "3240.00"],
+	["2026-10-15", "PAY-2026-0210", "6200-001", "Salaries & Wages", "October payroll", "18600.00", ""],
 	["2026-10-15", "PAY-2026-0210", "2210-001", "EPF Payable", "Employer 13%", "", "2418.00"],
-	[
-		"2026-10-15",
-		"PAY-2026-0210",
-		"2220-001",
-		"SOCSO / EIS Payable",
-		"Employer share",
-		"",
-		"412.30",
-	],
-	[
-		"2026-10-15",
-		"PAY-2026-0210",
-		"1000-001",
-		"Maybank Current Account",
-		"Net salaries",
-		"",
-		"15769.70",
-	],
+	["2026-10-15", "PAY-2026-0210", "2220-001", "SOCSO / EIS Payable", "Employer share", "", "412.30"],
+	["2026-10-15", "PAY-2026-0210", "1000-001", "Maybank Current Account", "Net salaries", "", "15769.70"],
 	["2026-10-28", "JV-2026-0311", "6500-001", "Depreciation", "Office equipment", "820.00", ""],
-	[
-		"2026-10-28",
-		"JV-2026-0311",
-		"1510-001",
-		"Acc. Depreciation — Equipment",
-		"Office equipment",
-		"",
-		"820.00",
-	],
-	[
-		"2026-10-31",
-		"JV-2026-0312",
-		"3000-001",
-		"Retained Earnings",
-		"Opening balance b/f",
-		"",
-		"48250.00",
-	],
+	["2026-10-28", "JV-2026-0311", "1510-001", "Acc. Depreciation — Equipment", "Office equipment", "", "820.00"],
+	["2026-10-31", "JV-2026-0312", "3000-001", "Retained Earnings", "Opening balance b/f", "", "48250.00"],
 ].map((a, i) => ({
 	id: String(i),
 	date: a[0],
@@ -179,7 +83,7 @@ const cols: DataColumn<LedgerRow>[] = [
 		mobile: "meta",
 		className: "w-full max-w-0",
 		cell: (r) => (
-			<span className="block truncate text-muted-foreground" title={r.ref + " · " + r.memo}>
+			<span className="block truncate text-muted-foreground" title={`${r.ref} · ${r.memo}`}>
 				{r.memo}
 			</span>
 		),
@@ -196,8 +100,7 @@ export default function DensityToggleDemo() {
 				<div>
 					<div className="text-md font-semibold text-foreground">General ledger · October 2026</div>
 					<div className="text-xs text-tertiary-foreground">
-						Try: Tab to the toggle, ← → to change density; scroll the list — header and totals stay
-						put
+						Try: Tab to the toggle, ← → to change density; scroll the list — header and totals stay put
 					</div>
 				</div>
 				<DensityToggle value={density} onValueChange={setDensity} />

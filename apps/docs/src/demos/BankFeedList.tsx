@@ -1,4 +1,4 @@
-import { type BankFeedDay, type BankMatch, BankFeedList } from "@cynco-labs/ui";
+import { type BankFeedDay, BankFeedList, type BankMatch } from "@cynco-labs/ui";
 
 const MATCH_INV: BankMatch = {
 	id: "m1",
@@ -6,23 +6,9 @@ const MATCH_INV: BankMatch = {
 	targetReference: "INV-2026-0142",
 	confidence: 0.94,
 	status: "proposed",
-	evidence: [
-		"Amount equal (RM 12,720.00)",
-		"Reference INV-2026-0142 in description",
-		"Paid 2 days after due date",
-	],
+	evidence: ["Amount equal (RM 12,720.00)", "Reference INV-2026-0142 in description", "Paid 2 days after due date"],
 	consequence:
 		"Accepting records the receipt against INV-2026-0142 and marks it Paid. The line posts to 1200-001 Trade Receivables instead of a revenue account.",
-};
-
-const MATCH_BILL: BankMatch = {
-	id: "m2",
-	targetLabel: "Bill · Tenaga Nasional Berhad",
-	targetReference: "BILL-2026-0088",
-	confidence: 0.81,
-	status: "proposed",
-	evidence: ["Amount equal (RM 1,184.30)", "Payee matches supplier", "Within 3 days of bill date"],
-	consequence: "Accepting settles BILL-2026-0088 and posts the line to 2100-001 Trade Payables.",
 };
 
 const MBB = { name: "Maybank Current", color: "#E5A21F" },
@@ -31,7 +17,7 @@ const MBB = { name: "Maybank Current", color: "#E5A21F" },
 const DAYS: BankFeedDay[] = [
 	{
 		date: "2026-10-29",
-		net: { amount: 11535.7 },
+		net: { amount: "11535.70" },
 		rows: [
 			{
 				id: "t1",
@@ -103,13 +89,5 @@ const DAYS: BankFeedDay[] = [
 ];
 
 export default function BankFeedListDemo() {
-	return (
-		<BankFeedList
-			onRestore={() => {}}
-			days={DAYS}
-			total={248}
-			showAccount
-			defaultSelectedIds={["t2"]}
-		/>
-	);
+	return <BankFeedList onRestore={() => {}} days={DAYS} total={248} showAccount defaultSelectedIds={["t2"]} />;
 }

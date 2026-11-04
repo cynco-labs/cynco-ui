@@ -51,4 +51,4 @@ Detail pages (Customers › Acme › Invoices).
 
 Links in `muted-foreground`, current page in `foreground`.
 
-Category: Components · Navigation. Source: `packages/ui/src/base/components/ui/breadcrumb.tsx`.
+Category: Components · Navigation. Source: `packages/ui/src/base/components/ui/breadcrumb.tsx:10-12`.

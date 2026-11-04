@@ -9,17 +9,17 @@ import { GeneralLedgerReport } from "@cynco-labs/ui";
 ## Usage
 
 ```tsx
-import * as React from "react";
-import { useState } from "react";
 import {
-	DocumentBrandProvider,
-	GeneralLedgerReport,
-	GroupedTabButton,
 	type DocBrand,
 	type DocLayout,
 	type DocLocale,
+	DocumentBrandProvider,
 	type GeneralLedgerData,
+	GeneralLedgerReport,
+	GroupedTabButton,
 } from "@cynco-labs/ui";
+import type * as React from "react";
+import { useState } from "react";
 
 const BRAND: DocBrand = {
 	company: {
@@ -65,18 +65,9 @@ function Shell({ extra, render }: ShellProps) {
 						{ value: "en-ms", label: "EN+BM" },
 					]}
 				/>
-				{extra ? (
-					<GroupedTabButton
-						className="w-[230px]"
-						value={x}
-						onValueChange={setX}
-						options={extra.options}
-					/>
-				) : null}
+				{extra ? <GroupedTabButton className="w-[230px]" value={x} onValueChange={setX} options={extra.options} /> : null}
 			</div>
-			<DocumentBrandProvider brand={Object.assign({}, BRAND, { layout: l, locale: g })}>
-				{render(x)}
-			</DocumentBrandProvider>
+			<DocumentBrandProvider brand={Object.assign({}, BRAND, { layout: l, locale: g })}>{render(x)}</DocumentBrandProvider>
 		</div>
 	);
 }
@@ -716,4 +707,4 @@ report: GeneralLedgerData — period, accounts [{code, name, openingBalance, lin
 
 Assembled on the kit's DocumentTable (sections per account, dense) so the column header repeats on every printed page; account headers don't orphan and the closing row doesn't start a page. Balances are debit-positive decimal strings printed with a Dr/Cr suffix (Dt/Kt in BM). Running balances come from the ledger — never recomputed.
 
-Category: Documents. Source: `packages/ui/src/documents/reports.tsx`.
+Category: Documents. Source: `packages/ui/src/documents/reports.tsx:991-1082`.

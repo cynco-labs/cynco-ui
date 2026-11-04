@@ -1,6 +1,6 @@
+import { type CollectionEntry, getCollection, getEntry } from "astro:content";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
-import { getCollection, getEntry, type CollectionEntry } from "astro:content";
 import { uiRoot } from "./paths";
 
 export async function guides() {

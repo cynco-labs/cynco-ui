@@ -1,13 +1,13 @@
 "use client";
 
 import { ArrowDownIcon } from "@phosphor-icons/react";
-import { LiveStatus } from "../general/live-status";
-import { Button } from "../ui/button";
-import { cn } from "../../lib/utils";
 import { useReducedMotion } from "motion/react";
 import type { ComponentProps } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { StickToBottom, useStickToBottomContext } from "use-stick-to-bottom";
+import { cn } from "../../lib/utils";
+import { LiveStatus } from "../general/live-status";
+import { Button } from "../ui/button";
 
 /** How long the transcript must stay unchanged before new assistant text is announced. */
 const ANNOUNCE_SETTLE_MS = 1000;
@@ -29,18 +29,14 @@ const ConversationAnnouncer = () => {
 		}
 
 		const readLatest = () => {
-			const messages = content.querySelectorAll<HTMLElement>(
-				'[data-from="assistant"]',
-			);
+			const messages = content.querySelectorAll<HTMLElement>('[data-from="assistant"]');
 			const latest = messages[messages.length - 1] ?? null;
 			if (!latest) {
 				return { message: null, text: "" };
 			}
 			const parts = latest.querySelectorAll('[data-slot="message-content"]');
 			const text =
-				parts.length > 0
-					? Array.from(parts, (part) => part.textContent ?? "").join(" ")
-					: (latest.textContent ?? "");
+				parts.length > 0 ? Array.from(parts, (part) => part.textContent ?? "").join(" ") : (latest.textContent ?? "");
 			return { message: latest, text: text.trim() };
 		};
 
@@ -62,9 +58,7 @@ const ConversationAnnouncer = () => {
 					return;
 				}
 				// Announce only what is new since the last pause.
-				const fresh = text.startsWith(announcedText)
-					? text.slice(announcedText.length).trim()
-					: text;
+				const fresh = text.startsWith(announcedText) ? text.slice(announcedText.length).trim() : text;
 				announcedText = text;
 				if (fresh) {
 					setAnnouncement(fresh);
@@ -84,20 +78,12 @@ const ConversationAnnouncer = () => {
 		};
 	}, []);
 
-	return (
-		<LiveStatus ref={statusRef}>
-			{announcement}
-		</LiveStatus>
-	);
+	return <LiveStatus ref={statusRef}>{announcement}</LiveStatus>;
 };
 
 export type ConversationProps = ComponentProps<typeof StickToBottom>;
 
-export const Conversation = ({
-	className,
-	children,
-	...props
-}: ConversationProps) => {
+export const Conversation = ({ className, children, ...props }: ConversationProps) => {
 	const reduceMotion = useReducedMotion();
 	const animation = reduceMotion ? "instant" : "smooth";
 
@@ -122,15 +108,9 @@ export const Conversation = ({
 	);
 };
 
-export type ConversationContentProps = ComponentProps<
-	typeof StickToBottom.Content
->;
+export type ConversationContentProps = ComponentProps<typeof StickToBottom.Content>;
 
-export const ConversationContent = ({
-	className,
-	scrollClassName,
-	...props
-}: ConversationContentProps) => {
+export const ConversationContent = ({ className, scrollClassName, ...props }: ConversationContentProps) => {
 	const { scrollRef } = useStickToBottomContext();
 
 	// The scroller is rendered by use-stick-to-bottom without prop forwarding;
@@ -145,10 +125,7 @@ export const ConversationContent = ({
 	return (
 		<StickToBottom.Content
 			className={cn("flex flex-col gap-8 p-4", className)}
-			scrollClassName={cn(
-				"outline-none focus-ring-inset",
-				scrollClassName,
-			)}
+			scrollClassName={cn("outline-none focus-ring-inset", scrollClassName)}
 			{...props}
 		/>
 	);
@@ -168,13 +145,7 @@ export const ConversationEmptyState = ({
 	children,
 	...props
 }: ConversationEmptyStateProps) => (
-	<div
-		className={cn(
-			"flex size-full flex-col items-center justify-center gap-3 p-8 text-center",
-			className,
-		)}
-		{...props}
-	>
+	<div className={cn("flex size-full flex-col items-center justify-center gap-3 p-8 text-center", className)} {...props}>
 		{children ?? (
 			<>
 				{icon && (
@@ -184,9 +155,7 @@ export const ConversationEmptyState = ({
 				)}
 				<div className="space-y-1">
 					<h3 className="font-medium text-sm">{title}</h3>
-					{description && (
-						<p className="text-muted-foreground text-sm">{description}</p>
-					)}
+					{description && <p className="text-muted-foreground text-sm">{description}</p>}
 				</div>
 			</>
 		)}
@@ -195,10 +164,7 @@ export const ConversationEmptyState = ({
 
 export type ConversationScrollButtonProps = ComponentProps<typeof Button>;
 
-export const ConversationScrollButton = ({
-	className,
-	...props
-}: ConversationScrollButtonProps) => {
+export const ConversationScrollButton = ({ className, ...props }: ConversationScrollButtonProps) => {
 	const { isAtBottom, scrollToBottom, scrollRef } = useStickToBottomContext();
 	const reduceMotion = useReducedMotion();
 
@@ -213,10 +179,7 @@ export const ConversationScrollButton = ({
 		!isAtBottom && (
 			<Button
 				aria-label="Scroll to bottom"
-				className={cn(
-					"absolute bottom-4 left-[50%] translate-x-[-50%] rounded-full",
-					className,
-				)}
+				className={cn("absolute bottom-4 left-[50%] translate-x-[-50%] rounded-full", className)}
 				onClick={handleScrollToBottom}
 				size="icon"
 				type="button"

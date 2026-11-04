@@ -32,4 +32,4 @@ Top of the inventory workspace.
 
 Responsive by container: steps 1 / 2 / 3 / 5 per row by container width.
 
-Category: Accounting · Tax, assets & operations. Source: `packages/ui/src/accounting/operations.tsx`.
+Category: Accounting · Tax, assets & operations. Source: `packages/ui/src/accounting/operations/inventory.tsx:15-90`.

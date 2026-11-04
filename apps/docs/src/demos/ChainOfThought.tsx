@@ -12,11 +12,7 @@ export default function ChainOfThoughtDemo() {
 		<ChainOfThought defaultOpen className="max-w-[520px]">
 			<ChainOfThoughtHeader>Reconciling October</ChainOfThoughtHeader>
 			<ChainOfThoughtContent>
-				<ChainOfThoughtStep
-					label="Read the bank statement"
-					description="142 lines, Maybank Current"
-					status="complete"
-				/>
+				<ChainOfThoughtStep label="Read the bank statement" description="142 lines, Maybank Current" status="complete" />
 				<ChainOfThoughtStep label="Match open invoices" status="active">
 					<ChainOfThoughtSearchResults>
 						<ChainOfThoughtSearchResult>INV-2026-0142</ChainOfThoughtSearchResult>

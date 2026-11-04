@@ -9,16 +9,8 @@ import { DataList } from "@cynco-labs/ui";
 ## Usage
 
 ```tsx
+import { Checkbox, type DataColumn, DataList, DocStatus, formatDate, INVOICE_STATUS, Money } from "@cynco-labs/ui";
 import { useState } from "react";
-import {
-	Checkbox,
-	DataList,
-	DocStatus,
-	INVOICE_STATUS,
-	Money,
-	formatDate,
-	type DataColumn,
-} from "@cynco-labs/ui";
 
 type Row = {
 	id: string;
@@ -106,12 +98,12 @@ function List() {
 					onCheckedChange={(v) => {
 						set(v ? sel.concat(r.id) : sel.filter((x) => x !== r.id));
 					}}
-					aria-label={"Select " + r.no}
+					aria-label={`Select ${r.no}`}
 				/>
 			)}
 			isRowSelected={(r) => sel.indexOf(r.id) >= 0}
 			onRowClick={() => {}}
-			totals={{ label: "Total", amount: <Money amount={44490} /> }}
+			totals={{ label: "Total", amount: <Money amount="44490.00" /> }}
 		/>
 	);
 }
@@ -130,7 +122,7 @@ export default function DataListDemo() {
 
 ## Use
 
-Any list of documents, accounts, transactions or lines. Don't hand-build <table> markup in a screen; declare columns and let DataList handle layout, selection, totals and the narrow-width card view.
+Any list of documents, accounts, transactions or lines you can describe as columns and rows. Don't hand-build <table> markup in a screen; declare columns and let DataList handle layout, selection, totals and the narrow-width card view. When the rows come from a TanStack table instance, use `DataTable`; for a handful of static rows, use the `Table` primitives.
 
 ## Props
 
@@ -156,8 +148,16 @@ columns (key, header, cell, align, className, mobile: title | value | badge | me
 - `maxHeight?`: `string`. Scroll the rows inside this height (any CSS length, e.g. "24rem"); headers and totals stay put when `stickyHeader`.
 - Also accepts `ComponentProps<"div">`.
 
+## Accessibility
+
+| Key | Does |
+| --- | --- |
+| Tab | Reaches the row's primary cell, which becomes a real button when onRowClick is set, and the scrolling region itself when the rows overflow it. |
+
+The primary column renders as the row header (th scope="row"), column headers are th scope="col" and carry aria-sort from each column's sortDirection, and a trailing actions column gets an sr-only "Actions" header. A clickable row is never itself the focus stop, so its primary cell holds the button and the row's checkbox and menu are not nested inside a focusable row. Selection without a leading checkbox is reported as aria-current, and caption becomes an sr-only table caption and the label for the stacked list and for the scrollable region.
+
 ## Notes
 
 Responds to its own container (CSS container queries), so the same list works in a page, a side sheet and on a phone. The primary column renders as the row header (th scope=row). Rows are never focus stops themselves: with onRowClick the primary cell holds a real button (focus-ring-inset), so screen readers announce it and the row's checkbox and menu aren't nested inside a focusable row. Selection without a leading checkbox is aria-current on that button. Leading/trailing cells and any control inside a row keep their clicks; keep a clickable row's primary cell free of links and buttons.
 
-Category: Layout · Primitives. Source: `packages/ui/src/layout/index.tsx`.
+Category: Layout · Primitives. Source: `packages/ui/src/layout/data-list.tsx:119-452`.

@@ -12,15 +12,7 @@ import {
 } from "@xyflow/react";
 import { useReducedMotion } from "motion/react";
 
-const Temporary = ({
-	id,
-	sourceX,
-	sourceY,
-	targetX,
-	targetY,
-	sourcePosition,
-	targetPosition,
-}: EdgeProps) => {
+const Temporary = ({ id, sourceX, sourceY, targetX, targetY, sourcePosition, targetPosition }: EdgeProps) => {
 	const [edgePath] = getSimpleBezierPath({
 		sourceX,
 		sourceY,
@@ -42,16 +34,11 @@ const Temporary = ({
 	);
 };
 
-const getHandleCoordsByPosition = (
-	node: InternalNode<Node>,
-	handlePosition: Position,
-) => {
+const getHandleCoordsByPosition = (node: InternalNode<Node>, handlePosition: Position) => {
 	// Choose the handle type based on position - Left is for target, Right is for source
 	const handleType = handlePosition === Position.Left ? "target" : "source";
 
-	const handle = node.internals.handleBounds?.[handleType]?.find(
-		(h) => h.position === handlePosition,
-	);
+	const handle = node.internals.handleBounds?.[handleType]?.find((h) => h.position === handlePosition);
 
 	if (!handle) {
 		return [0, 0] as const;
@@ -86,10 +73,7 @@ const getHandleCoordsByPosition = (
 	return [x, y] as const;
 };
 
-const getEdgeParams = (
-	source: InternalNode<Node>,
-	target: InternalNode<Node>,
-) => {
+const getEdgeParams = (source: InternalNode<Node>, target: InternalNode<Node>) => {
 	const sourcePos = Position.Right;
 	const [sx, sy] = getHandleCoordsByPosition(source, sourcePos);
 	const targetPos = Position.Left;
@@ -114,10 +98,7 @@ const Animated = ({ id, source, target, markerEnd, style }: EdgeProps) => {
 		return null;
 	}
 
-	const { sx, sy, tx, ty, sourcePos, targetPos } = getEdgeParams(
-		sourceNode,
-		targetNode,
-	);
+	const { sx, sy, tx, ty, sourcePos, targetPos } = getEdgeParams(sourceNode, targetNode);
 
 	const [edgePath] = getBezierPath({
 		sourceX: sx,
@@ -133,6 +114,7 @@ const Animated = ({ id, source, target, markerEnd, style }: EdgeProps) => {
 			<BaseEdge id={id} markerEnd={markerEnd} path={edgePath} style={style} />
 			{/* SMIL ignores CSS reduced-motion rules, so drop the travelling dot here. */}
 			{!reduceMotion && (
+				// biome-ignore lint/a11y/noAriaHiddenOnFocusable: an SVG shape takes no focus; Biome reads every one as focusable.
 				<circle aria-hidden="true" fill="var(--primary)" r="4">
 					<animateMotion dur="2s" path={edgePath} repeatCount="indefinite" />
 				</circle>

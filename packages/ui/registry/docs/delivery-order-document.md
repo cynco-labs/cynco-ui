@@ -11,9 +11,9 @@ import { DeliveryOrderDocument } from "@cynco-labs/ui";
 ```tsx
 import {
 	type DeliveryOrderData,
+	DeliveryOrderDocument,
 	type DocLayout,
 	type DocLocale,
-	DeliveryOrderDocument,
 	DocumentBrandProvider,
 } from "@cynco-labs/ui";
 
@@ -45,10 +45,7 @@ const NUSA = {
 
 const NUSA_SITE = {
 	name: "Nusantara Logistik Bhd — Warehouse B",
-	address: [
-		"Lot 12A, Jalan Sungai Puloh, Kawasan Perindustrian Sungai Puloh",
-		"42100 Klang, Selangor",
-	],
+	address: ["Lot 12A, Jalan Sungai Puloh, Kawasan Perindustrian Sungai Puloh", "42100 Klang, Selangor"],
 	attention: "En. Hafiz Zainal, Facilities",
 	phone: "+60 12-334 8821",
 };
@@ -180,4 +177,4 @@ order: DeliveryOrderData { number, status, date, deliveryDate?, reference? (PO),
 
 Layouts minimal / classic / modern in black ink only, any font, locales en / ms / en-ms (bilingual labels stacked or slashed). Money is printed exactly as given (decimal strings); nothing is recomputed. Print: named @page with page numbers, table headers repeat, rows and the totals/sign-off blocks avoid splitting; isolate (default true) prints only the sheet. Quantities are strings printed as given; the back-ordered column only appears when something is outstanding, with zero shown as a dash. The receiving side uses AcceptanceBlock (signature, name, IC no., date and company-stamp box); fill-in lines print blank until received details are passed.
 
-Category: Documents. Source: `packages/ui/src/documents/sales.tsx`.
+Category: Documents. Source: `packages/ui/src/documents/sales.tsx:1153-1168`.

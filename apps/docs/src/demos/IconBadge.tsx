@@ -1,5 +1,5 @@
-import { ArrowSquareOutIcon, CoinsIcon, UsersIcon } from "@phosphor-icons/react";
 import { IconBadge } from "@cynco-labs/ui";
+import { ArrowSquareOutIcon, CoinsIcon, UsersIcon } from "@phosphor-icons/react";
 
 export default function IconBadgeDemo() {
 	return (

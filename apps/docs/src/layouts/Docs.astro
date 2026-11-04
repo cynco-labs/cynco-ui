@@ -1,9 +1,9 @@
 ---
-import Base from "./Base.astro";
 import Header from "../components/Header.astro";
 import Sidebar from "../components/Sidebar.astro";
 import Toc from "../components/Toc.astro";
 import { neighbours } from "../lib/nav";
+import Base from "./Base.astro";
 
 interface Props {
 	title: string;
@@ -32,16 +32,16 @@ const { prev, next } = neighbours(current);
 						<nav class="mt-20 grid gap-3 border-t border-border pt-6 sm:grid-cols-2" aria-label="Pagination">
 							{prev ? (
 								<a href={prev.href} class="group rounded-xl border border-border px-4 py-3 transition-colors hover:border-input-border-hover hover:bg-card">
-									<span class="block text-[12px] text-subtle">Previous</span>
-									<span class="mt-0.5 block text-[14px] font-medium text-foreground">{prev.label}</span>
+									<span class="block text-xs text-subtle">Previous</span>
+									<span class="mt-0.5 block text-md font-medium text-foreground">{prev.label}</span>
 								</a>
 							) : (
 								<span />
 							)}
 							{next && (
 								<a href={next.href} class="group rounded-xl border border-border px-4 py-3 text-right transition-colors hover:border-input-border-hover hover:bg-card">
-									<span class="block text-[12px] text-subtle">Next</span>
-									<span class="mt-0.5 block text-[14px] font-medium text-foreground">{next.label}</span>
+									<span class="block text-xs text-subtle">Next</span>
+									<span class="mt-0.5 block text-md font-medium text-foreground">{next.label}</span>
 								</a>
 							)}
 						</nav>
@@ -73,7 +73,7 @@ const { prev, next } = neighbours(current);
 		wrap.append(pre);
 		const b = document.createElement("button");
 		b.type = "button";
-		b.className = "absolute right-2 top-2 rounded-md border border-border bg-background px-2 py-0.5 text-[11.5px] font-medium text-tertiary-foreground opacity-0 transition-opacity hover:text-foreground focus-visible:opacity-100 group-hover/code:opacity-100 no-hover:opacity-100";
+		b.className = "absolute right-2 top-2 rounded-md border border-border bg-background px-2 py-0.5 text-xs font-medium text-tertiary-foreground opacity-0 transition-opacity hover:text-foreground focus-visible:opacity-100 group-hover/code:opacity-100 no-hover:opacity-100";
 		b.textContent = "Copy";
 		b.addEventListener("click", async () => {
 			await copyWithFeedback(b, pre.innerText);

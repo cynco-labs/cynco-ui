@@ -56,15 +56,15 @@ Payroll run page.
 
 ## Props
 
-`payslips` (PayslipSummary shape, sen); optional `payable` (false for correction runs), `onOpen(id)`; optional `className` and native div props on the root.
+`payslips` (PayslipSummary shape, sen); optional `payable` (false for correction runs), `onRowClick(payslip)`; optional `className` and native div props on the root.
 
 - `payslips`: `PayslipData[]`
 - `payable?`: `boolean`. Default `true`.
-- `onOpen?`: `(id: string) => void`
+- `onRowClick?`: `(payslip: PayslipData) => void`
 - Also accepts `ComponentProps<"div">`.
 
 ## Notes
 
 Responsive by container: DataList: table when wide, employee/net cards when narrow; totals wrap.
 
-Category: Accounting · Tax, assets & operations. Source: `packages/ui/src/accounting/operations.tsx`.
+Category: Accounting · Tax, assets & operations. Source: `packages/ui/src/accounting/operations/payroll.tsx:181-266`.

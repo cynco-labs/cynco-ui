@@ -22,7 +22,7 @@ const MONTHS: [string, number, number][] = [
 
 export default function BankCashFlowChartDemo() {
 	const d = MONTHS.map(([month, credits, debits]) => ({
-		label: month + " 2026",
+		label: `${month} 2026`,
 		credits,
 		debits,
 		net: credits - debits,
@@ -48,4 +48,4 @@ data [{label, credits, debits, net}], currency, title, className and native prop
 
 Built on SectionPanel: the legend wraps under the title when narrow; chart fills the width.
 
-Category: Accounting · Banking. Source: `packages/ui/src/accounting/banking.tsx`.
+Category: Accounting · Banking. Source: `packages/ui/src/accounting/banking/cash-flow-chart.tsx:14-129`.

@@ -2,7 +2,8 @@
 
 import * as React from "react";
 
-const FOCUSABLE = 'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"]),[contenteditable="true"]';
+const FOCUSABLE =
+	'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"]),[contenteditable="true"]';
 
 /**
  * True while `ref` overflows and holds nothing focusable. Such a scroller needs its own tab stop,

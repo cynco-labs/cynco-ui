@@ -30,4 +30,4 @@ Loading states shaped like the content.
 
 Sizing classes.
 
-Category: Components · Feedback. Source: `packages/ui/src/base/components/ui/skeleton.tsx`.
+Category: Components · Feedback. Source: `packages/ui/src/base/components/ui/skeleton.tsx:3-11`.

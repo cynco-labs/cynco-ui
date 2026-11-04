@@ -9,9 +9,10 @@ import { DocumentPage } from "@cynco-labs/ui";
 ## Usage
 
 ```tsx
-import { useState } from "react";
 import {
+	type DocBrand,
 	DocItem,
+	type DocLayout,
 	DocStack,
 	DocumentBrandProvider,
 	DocumentFooter,
@@ -19,15 +20,14 @@ import {
 	DocumentPage,
 	DocumentTable,
 	EInvoiceBlock,
+	formatDocAmount,
 	GroupedTabButton,
 	Letterhead,
 	PartyGrid,
 	PaymentBlock,
 	TotalsBlock,
-	formatDocAmount,
-	type DocBrand,
-	type DocLayout,
 } from "@cynco-labs/ui";
+import { useState } from "react";
 
 const BRAND: DocBrand = {
 	company: {
@@ -88,7 +88,7 @@ function Sheet({ layout }: { layout: DocLayout }) {
 								width: "24mm",
 								cell: (r) => formatDocAmount(r.u),
 							},
-							{ key: "s", header: "sst", numeric: true, width: "12mm", cell: (r) => r.s + "%" },
+							{ key: "s", header: "sst", numeric: true, width: "12mm", cell: (r) => `${r.s}%` },
 							{
 								key: "a",
 								header: "amount",
@@ -185,4 +185,4 @@ DocumentBrandProvider brand (company {name, registrationNo, tin, sstNo, address,
 
 Black ink on white paper only — no colour, tints or filled bars; hierarchy from type, spacing and hairlines. In print: real paper size and margins, page numbers "2 / 3", headers repeat, rows never split, and only the document prints (isolate). On screen the sheet scales to its container. amountInWords writes Ringgit Malaysia in English or Malay; formatDocAmount and formatDocDate are exact and timezone-safe.
 
-Category: Documents. Source: `packages/ui/src/documents/kit.tsx`.
+Category: Documents. Source: `packages/ui/src/documents/kit.tsx:297-414`.

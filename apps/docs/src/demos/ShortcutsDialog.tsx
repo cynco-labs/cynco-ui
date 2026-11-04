@@ -1,11 +1,5 @@
-import { Fragment, useState } from "react";
-import {
-	Button,
-	Kbd,
-	ShortcutsDialog,
-	useCharacterKeyShortcuts,
-	useGoToShortcuts,
-} from "@cynco-labs/ui";
+import { Button, Kbd, ShortcutsDialog, useCharacterKeyShortcuts, useGoToShortcuts } from "@cynco-labs/ui";
+import { useState } from "react";
 
 // G then a letter goes to a page; C then a letter creates something. Keys are the letter after "g", or a full sequence.
 const ROUTES = {
@@ -151,8 +145,7 @@ export default function ShortcutsDialogDemo() {
 						<Kbd keys={g.pending} />
 						<span className="text-muted-foreground">
 							{"… then "}
-							<Kbd keys="d" /> <Kbd keys="i" /> <Kbd keys="q" /> <Kbd keys="c" /> <Kbd keys="v" />{" "}
-							<Kbd keys="b" />
+							<Kbd keys="d" /> <Kbd keys="i" /> <Kbd keys="q" /> <Kbd keys="c" /> <Kbd keys="v" /> <Kbd keys="b" />
 						</span>
 					</>
 				) : went ? (
@@ -181,6 +174,7 @@ export default function ShortcutsDialogDemo() {
 								<span>{label}</span>
 								<span className="flex gap-1">
 									{keys.split(" ").map((k, i) => (
+										// biome-ignore lint/suspicious/noArrayIndexKey: a chord is a fixed positional sequence of key names
 										<Kbd key={i} keys={k} />
 									))}
 								</span>

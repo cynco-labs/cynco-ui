@@ -1,8 +1,8 @@
 "use client";
 
-import { cn, hasSubmitShortcutModifier } from "../../lib/utils";
 import { Switch as SwitchPrimitive } from "@base-ui/react/switch";
 import { createContext, type ReactNode, useContext } from "react";
+import { cn, hasSubmitShortcutModifier } from "../../lib/utils";
 
 const SWITCH_SIZE_CLASSES = {
 	default: {
@@ -20,18 +20,8 @@ type SwitchSize = keyof typeof SWITCH_SIZE_CLASSES;
 const SwitchSizeContext = createContext<SwitchSize>("default");
 
 /** Sets the default size for every Switch rendered inside it. */
-function SwitchSizeProvider({
-	size,
-	children,
-}: {
-	size: SwitchSize;
-	children: ReactNode;
-}) {
-	return (
-		<SwitchSizeContext.Provider value={size}>
-			{children}
-		</SwitchSizeContext.Provider>
-	);
+function SwitchSizeProvider({ size, children }: { size: SwitchSize; children: ReactNode }) {
+	return <SwitchSizeContext.Provider value={size}>{children}</SwitchSizeContext.Provider>;
 }
 
 function Switch({
@@ -58,7 +48,7 @@ function Switch({
 			data-slot="switch"
 			onKeyDown={handleKeyDown}
 			className={cn(
-				"peer data-checked:bg-primary data-unchecked:bg-input inline-flex shrink-0 items-center rounded-[3px] border-2 border-transparent transition-all outline-none focus-ring disabled:cursor-not-allowed disabled:opacity-50",
+				"peer data-checked:bg-primary data-unchecked:bg-input inline-flex shrink-0 items-center rounded-[3px] border-2 border-transparent transition-colors outline-none focus-ring disabled:cursor-not-allowed disabled:opacity-50",
 				sizeClasses.root,
 				className,
 			)}

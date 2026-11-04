@@ -10,29 +10,29 @@ import { DocumentStudio } from "@cynco-labs/ui";
 
 ```tsx
 import {
+	type BalanceSheetData,
 	BalanceSheetReport,
+	type DeliveryOrderData,
 	DeliveryOrderDocument,
-	DocumentStudio,
-	PayslipDocument,
-	ProfitAndLossReport,
-	PurchaseOrderDocument,
-	QuotationDocument,
-	ReceiptDocument,
-	StatementOfAccountDocument,
-	TaxInvoiceDocument,
 	type DocBrand,
 	type DocumentStamp,
+	DocumentStudio,
 	type PaperSize,
-	type StudioDocument,
-	type TaxInvoiceData,
-	type QuotationData,
-	type ReceiptData,
-	type DeliveryOrderData,
-	type PurchaseOrderData,
-	type StatementOfAccountData,
+	PayslipDocument,
 	type PayslipDocumentData,
 	type ProfitAndLossData,
-	type BalanceSheetData,
+	ProfitAndLossReport,
+	type PurchaseOrderData,
+	PurchaseOrderDocument,
+	type QuotationData,
+	QuotationDocument,
+	type ReceiptData,
+	ReceiptDocument,
+	type StatementOfAccountData,
+	StatementOfAccountDocument,
+	type StudioDocument,
+	type TaxInvoiceData,
+	TaxInvoiceDocument,
 } from "@cynco-labs/ui";
 
 const NUSA = {
@@ -46,10 +46,7 @@ const NUSA = {
 
 const NUSA_SITE = {
 	name: "Nusantara Logistik Bhd — Warehouse B",
-	address: [
-		"Lot 12A, Jalan Sungai Puloh, Kawasan Perindustrian Sungai Puloh",
-		"42100 Klang, Selangor",
-	],
+	address: ["Lot 12A, Jalan Sungai Puloh, Kawasan Perindustrian Sungai Puloh", "42100 Klang, Selangor"],
 	attention: "En. Hafiz Zainal, Facilities",
 	phone: "+60 12-334 8821",
 };
@@ -254,9 +251,7 @@ const D_RCPT: ReceiptData = {
 	},
 	payment: { method: "cash" },
 	amountReceived: "1284.40",
-	allocations: [
-		{ number: "INV-2026-0151", date: "2026-10-29", invoiceAmount: "1284.42", applied: "1284.42" },
-	],
+	allocations: [{ number: "INV-2026-0151", date: "2026-10-29", invoiceAmount: "1284.42", applied: "1284.42" }],
 	totals: [
 		{ label: "totalDue", value: "1284.42" },
 		{ label: "rounding", value: "-0.02", kind: "rounding" },
@@ -576,8 +571,7 @@ const D_SOA: StatementOfAccountData = {
 		accountNumber: "3197 5520 14",
 		reference: "C-0147",
 	},
-	notes:
-		"RM 420.00 from INV-2026-1188 (August) is now over 60 days. Please settle to avoid a hold on deliveries.",
+	notes: "RM 420.00 from INV-2026-1188 (August) is now over 60 days. Please settle to avoid a hold on deliveries.",
 };
 
 const D_PS: PayslipDocumentData = {
@@ -918,8 +912,7 @@ const D_BS: BalanceSheetData = {
 	columns: [{ label: "31 Oct 2026" }, { label: "31 Dec 2025", sublabel: "RM · audited" }],
 	preparedBy: "Aisyah Rahman, Finance Manager",
 	preparedOn: "2026-11-01",
-	notes:
-		"Comparative figures as at 31 December 2025 are taken from the audited financial statements.",
+	notes: "Comparative figures as at 31 December 2025 are taken from the audited financial statements.",
 	nonCurrentAssets: [
 		{ label: "Property, plant and equipment", values: ["1284600.00", "1326400.00"], note: "3" },
 		{ label: "Right-of-use assets", values: ["186000.00", "214000.00"], note: "4" },
@@ -1049,4 +1042,4 @@ brand / defaultBrand / onBrandChange (DocBrand), documents ([{id, label, render(
 
 Controls stack above the preview below 48rem of container width. Logo upload reads the file to a data URL (production should upload it and store the URL). Layout thumbnails and Inter / Geist / Newsreader; documents stay black ink, so there is no colour picker. Print prints only the previewed document.
 
-Category: Documents. Source: `packages/ui/src/documents/studio.tsx`.
+Category: Documents. Source: `packages/ui/src/documents/studio.tsx:204-467`.

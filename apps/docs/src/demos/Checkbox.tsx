@@ -1,5 +1,5 @@
-import { useState } from "react";
 import { Checkbox, Label } from "@cynco-labs/ui";
+import { useState } from "react";
 
 export default function CheckboxDemo() {
 	const [s, setS] = useState(true);

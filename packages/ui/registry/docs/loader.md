@@ -16,7 +16,7 @@ export default function LoaderDemo() {
 		<div className="flex flex-wrap items-center gap-2">
 			<Loader size={14} />
 			<Loader size={20} />
-			<span className="text-body-secondary">Thinking…</span>
+			<span className="text-sm text-subtle">Thinking…</span>
 		</div>
 	);
 }
@@ -33,4 +33,4 @@ While the assistant is working.
 - `size?`: `number`. Default `16`.
 - Also accepts `HTMLAttributes<HTMLDivElement>`.
 
-Category: AI. Source: `packages/ui/src/base/components/ai-elements/loader.tsx`.
+Category: AI. Source: `packages/ui/src/base/components/ai-elements/loader.tsx:42-47`.

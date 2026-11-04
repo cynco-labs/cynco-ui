@@ -18,7 +18,7 @@ const items: ActivityItem[] = [
 		direction: "in",
 		title: "Syarikat Bina Jaya Sdn. Bhd.",
 		subtitle: "DuitNow · INV-2026-0138",
-		amount: 6800,
+		amount: "6800.00",
 		status: "succeeded",
 		date: "2026-10-30T08:40:00Z",
 	},
@@ -28,7 +28,7 @@ const items: ActivityItem[] = [
 		direction: "neutral",
 		title: "Penang Precision Tooling Sdn. Bhd.",
 		subtitle: "INV-2026-0142",
-		amount: 12720,
+		amount: "12720.00",
 		status: "pending",
 		date: "2026-10-30T05:15:00Z",
 	},
@@ -38,7 +38,7 @@ const items: ActivityItem[] = [
 		direction: "out",
 		title: "Tenaga Nasional Berhad",
 		subtitle: "BILL-2026-0087",
-		amount: 1045,
+		amount: "1045.00",
 		status: "paid",
 		date: "2026-10-29T10:02:00Z",
 	},
@@ -48,7 +48,7 @@ const items: ActivityItem[] = [
 		direction: "out",
 		title: "KWSP — EPF October",
 		subtitle: "FPX · Payroll run Oct 2026",
-		amount: 4185,
+		amount: "4185.00",
 		status: "completed",
 		date: "2026-10-28T02:30:00Z",
 	},
@@ -58,7 +58,7 @@ const items: ActivityItem[] = [
 		direction: "neutral",
 		title: "Kopi Kampung Trading",
 		subtitle: "INV-2026-0117",
-		amount: 2200,
+		amount: "2200.00",
 		status: "overdue",
 		date: "2026-10-25T09:00:00Z",
 	},
@@ -96,4 +96,4 @@ items [{id, kind: invoice|payment|bill, direction: in|out|neutral, title, subtit
 
 Responsive: status chip moves under the counterparty below 28rem; names and references wrap instead of truncating.
 
-Category: Accounting · Reports. Source: `packages/ui/src/accounting/reports.tsx`.
+Category: Accounting · Reports. Source: `packages/ui/src/accounting/reports/activity-feed.tsx:55-144`.

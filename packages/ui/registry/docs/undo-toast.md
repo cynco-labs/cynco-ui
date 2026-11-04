@@ -9,18 +9,18 @@ import { UndoToast } from "@cynco-labs/ui";
 ## Usage
 
 ```tsx
-import { useEffect, useState } from "react";
 import {
 	ActionBar,
 	Button,
+	type DataColumn,
 	DataList,
 	DocStatus,
 	INVOICE_STATUS,
 	Money,
 	UndoToastProvider,
 	useUndoToast,
-	type DataColumn,
 } from "@cynco-labs/ui";
+import { useEffect, useState } from "react";
 
 const START = [
 	{
@@ -53,12 +53,17 @@ const START = [
 	},
 ];
 
+let logId = 0;
+
 function Demo() {
 	const toast = useUndoToast();
 	const [rows, setRows] = useState(START);
 	const [pending, setPending] = useState<string[]>([]);
 	const [log, setLog] = useState([
-		"Try: Void → Undo (or Ctrl/⌘+Z) · hover pauses the countdown · F8 focuses the toast, Esc dismisses",
+		{
+			id: ++logId,
+			text: "Try: Void → Undo (or Ctrl/⌘+Z) · hover pauses the countdown · F8 focuses the toast, Esc dismisses",
+		},
 	]);
 	function voidIds(ids: string[]) {
 		if (!ids.length) return;
@@ -72,20 +77,16 @@ function Demo() {
 						{" voided"}
 					</span>
 				) : (
-					ids.length + " invoices voided"
+					`${ids.length} invoices voided`
 				),
 			onUndo: () => {
 				setPending((ps) => ps.filter((x) => ids.indexOf(x) < 0));
-				setLog((L) => ["Undone: " + nos.join(", ") + " restored"].concat(L).slice(0, 3));
+				setLog((L) => [{ id: ++logId, text: `Undone: ${nos.join(", ")} restored` }].concat(L).slice(0, 3));
 			},
 			onCommit: () => {
 				setPending((ps) => ps.filter((x) => ids.indexOf(x) < 0));
-				setRows((rs) =>
-					rs.map((x) => (ids.indexOf(x.id) >= 0 ? Object.assign({}, x, { status: "voided" }) : x)),
-				);
-				setLog((L) =>
-					["Committed: " + nos.join(", ") + " voided on the server"].concat(L).slice(0, 3),
-				);
+				setRows((rs) => rs.map((x) => (ids.indexOf(x.id) >= 0 ? Object.assign({}, x, { status: "voided" }) : x)));
+				setLog((L) => [{ id: ++logId, text: `Committed: ${nos.join(", ")} voided on the server` }].concat(L).slice(0, 3));
 			},
 		});
 	}
@@ -136,7 +137,7 @@ function Demo() {
 						voidIds(overdue);
 					}}
 				>
-					{"Void " + overdue.length + " overdue"}
+					{`Void ${overdue.length} overdue`}
 				</Button>
 				<Button
 					variant="skeleton"
@@ -154,15 +155,13 @@ function Demo() {
 				getKey={(x) => x.id}
 				caption="Invoices"
 				dense
-				rowClassName={(x) =>
-					pending.indexOf(x.id) >= 0 ? "line-through decoration-tertiary-foreground" : undefined
-				}
+				rowClassName={(x) => (pending.indexOf(x.id) >= 0 ? "line-through decoration-tertiary-foreground" : undefined)}
 				trailing={(x) =>
 					x.status === "voided" || pending.indexOf(x.id) >= 0 ? null : (
 						<Button
 							variant="skeleton"
 							size="sm"
-							aria-label={"Void " + x.no}
+							aria-label={`Void ${x.no}`}
 							onClick={() => {
 								voidIds([x.id]);
 							}}
@@ -173,8 +172,8 @@ function Demo() {
 				}
 			/>
 			<ul className="flex flex-col gap-0.5 text-xs text-tertiary-foreground">
-				{log.map((t, i) => (
-					<li key={i + t}>{t}</li>
+				{log.map((e) => (
+					<li key={e.id}>{e.text}</li>
 				))}
 			</ul>
 		</div>
@@ -209,8 +208,18 @@ UndoToastProvider: children, max (default 3; a 4th toast commits the oldest), du
 - `returnFocusTo?`: `MutableRefObject<HTMLElement | null>`. Focus target when this toast closes while focused.
 - Also accepts `ComponentProps<"li">`.
 
+## Accessibility
+
+| Key | Does |
+| --- | --- |
+| ⌘Z / Ctrl+Z | Undoes the newest toast, unless the user is typing in a field outside the toast stack. |
+| F8 | Moves focus to the newest toast's Undo button. |
+| Esc | Dismisses the focused toast. |
+
+The viewport is a section labelled "Notifications (F8)" wrapping an ol with aria-live="polite" and aria-relevant="additions text", so a new toast is read out without taking focus. The Undo button carries aria-keyshortcuts for the undo chord while its keycap is aria-hidden, the dismiss button is labelled "Dismiss", and the countdown bar is aria-hidden. When a toast closes while focus is inside it, focus moves to the next remaining Undo button, or back to the element named by returnFocusTo.
+
 ## Notes
 
 Keyboard: ⌘/Ctrl+Z undoes the newest toast (left alone while typing in a field, where it is the field's own undo); F8 jumps to the newest Undo button; Esc on a focused toast dismisses (commits) it; focus returns to where it was. The countdown pauses on hover, on focus and while the tab is hidden; the stack is an aria-live="polite" list. Each toast settles exactly once; anything pending commits when the provider unmounts or on pagehide. No toast library — the countdown is a CSS animation whose end commits. Width is min(24rem, viewport − 2rem); hidden in print.
 
-Category: Productivity. Source: `packages/ui/src/productivity/workflow.tsx`.
+Category: Productivity. Source: `packages/ui/src/productivity/workflow/undo-toast.tsx:232-352`.

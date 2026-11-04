@@ -1,6 +1,9 @@
 import {
 	Button,
-	LabelInput,
+	Field,
+	FieldControl,
+	FieldLabel,
+	Input,
 	Sheet,
 	SheetContent,
 	SheetDescription,
@@ -18,7 +21,12 @@ export default function SheetDemo() {
 					<SheetDescription>Add a customer to invoice and track receivables.</SheetDescription>
 				</SheetHeader>
 				<div className="px-4 flex flex-col gap-2">
-					<LabelInput label="Company name" placeholder="e.g. Nusantara Logistik Bhd" />
+					<Field>
+						<FieldLabel>Company name</FieldLabel>
+						<FieldControl>
+							<Input placeholder="e.g. Nusantara Logistik Bhd" />
+						</FieldControl>
+					</Field>
 				</div>
 				<SheetFooter>
 					<Button variant="primary">Save customer</Button>

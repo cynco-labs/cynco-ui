@@ -1,14 +1,8 @@
 "use client";
 
-import { cn } from "../../lib/utils";
 import { motion, useReducedMotion } from "motion/react";
-import {
-	type CSSProperties,
-	type ElementType,
-	type JSX,
-	memo,
-	useMemo,
-} from "react";
+import { type CSSProperties, type ElementType, type JSX, memo, useMemo } from "react";
+import { cn } from "../../lib/utils";
 
 export type TextShimmerProps = {
 	children: string;
@@ -18,30 +12,15 @@ export type TextShimmerProps = {
 	spread?: number;
 };
 
-const ShimmerComponent = ({
-	children,
-	as: Component = "p",
-	className,
-	duration = 2,
-	spread = 2,
-}: TextShimmerProps) => {
+const ShimmerComponent = ({ children, as: Component = "p", className, duration = 2, spread = 2 }: TextShimmerProps) => {
 	const reduceMotion = useReducedMotion();
-	const MotionComponent = motion.create(
-		Component as keyof JSX.IntrinsicElements,
-	);
+	const MotionComponent = motion.create(Component as keyof JSX.IntrinsicElements);
 
-	const dynamicSpread = useMemo(
-		() => (children?.length ?? 0) * spread,
-		[children, spread],
-	);
+	const dynamicSpread = useMemo(() => (children?.length ?? 0) * spread, [children, spread]);
 
 	// The sweep loops forever; under reduced motion render the same text, still.
 	if (reduceMotion) {
-		return (
-			<Component className={cn("text-muted-foreground", className)}>
-				{children}
-			</Component>
-		);
+		return <Component className={cn("text-muted-foreground", className)}>{children}</Component>;
 	}
 
 	return (
@@ -56,8 +35,7 @@ const ShimmerComponent = ({
 			style={
 				{
 					"--spread": `${dynamicSpread}px`,
-					backgroundImage:
-						"var(--bg), linear-gradient(var(--color-muted-foreground), var(--color-muted-foreground))",
+					backgroundImage: "var(--bg), linear-gradient(var(--color-muted-foreground), var(--color-muted-foreground))",
 				} as CSSProperties
 			}
 			transition={{

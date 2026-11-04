@@ -11,7 +11,10 @@ import { Sheet } from "@cynco-labs/ui";
 ```tsx
 import {
 	Button,
-	LabelInput,
+	Field,
+	FieldControl,
+	FieldLabel,
+	Input,
 	Sheet,
 	SheetContent,
 	SheetDescription,
@@ -29,7 +32,12 @@ export default function SheetDemo() {
 					<SheetDescription>Add a customer to invoice and track receivables.</SheetDescription>
 				</SheetHeader>
 				<div className="px-4 flex flex-col gap-2">
-					<LabelInput label="Company name" placeholder="e.g. Nusantara Logistik Bhd" />
+					<Field>
+						<FieldLabel>Company name</FieldLabel>
+						<FieldControl>
+							<Input placeholder="e.g. Nusantara Logistik Bhd" />
+						</FieldControl>
+					</Field>
 				</div>
 				<SheetFooter>
 					<Button variant="primary">Save customer</Button>
@@ -48,8 +56,17 @@ Most create and edit forms in Cynco (new customer, new item).
 
 `open`/`onOpenChange`; `SheetContent side`, `SheetHeader` › `SheetTitle` + `SheetDescription`, body, `SheetFooter`.
 
+## Accessibility
+
+| Key | Does |
+| --- | --- |
+| ⌘Enter / Ctrl+Enter | Reaches a ShortcutButton in the sheet instead of toggling a Checkbox or Switch inside it. |
+| Tab | Reaches the close button in the top corner, which draws a focus-visible outline and is a 40px target on phones. |
+
+SheetTitle and SheetDescription name and describe the panel. The close button is icon-only and carries the sr-only text Close. The sheet is portalled into document.body, or into the container an app names with SheetPortalContainerProvider or the portalContainer prop, so its place in the reading order follows that container.
+
 ## Notes
 
 Submit with a ShortcutButton (`metaShortcut="enter"`).
 
-Category: Components · Overlays. Source: `packages/ui/src/base/components/ui/sheet.tsx`.
+Category: Components · Overlays. Source: `packages/ui/src/base/components/ui/sheet.tsx:31-33`.

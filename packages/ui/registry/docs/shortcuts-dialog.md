@@ -9,14 +9,8 @@ import { ShortcutsDialog } from "@cynco-labs/ui";
 ## Usage
 
 ```tsx
-import { Fragment, useState } from "react";
-import {
-	Button,
-	Kbd,
-	ShortcutsDialog,
-	useCharacterKeyShortcuts,
-	useGoToShortcuts,
-} from "@cynco-labs/ui";
+import { Button, Kbd, ShortcutsDialog, useCharacterKeyShortcuts, useGoToShortcuts } from "@cynco-labs/ui";
+import { useState } from "react";
 
 // G then a letter goes to a page; C then a letter creates something. Keys are the letter after "g", or a full sequence.
 const ROUTES = {
@@ -162,8 +156,7 @@ export default function ShortcutsDialogDemo() {
 						<Kbd keys={g.pending} />
 						<span className="text-muted-foreground">
 							{"… then "}
-							<Kbd keys="d" /> <Kbd keys="i" /> <Kbd keys="q" /> <Kbd keys="c" /> <Kbd keys="v" />{" "}
-							<Kbd keys="b" />
+							<Kbd keys="d" /> <Kbd keys="i" /> <Kbd keys="q" /> <Kbd keys="c" /> <Kbd keys="v" /> <Kbd keys="b" />
 						</span>
 					</>
 				) : went ? (
@@ -192,6 +185,7 @@ export default function ShortcutsDialogDemo() {
 								<span>{label}</span>
 								<span className="flex gap-1">
 									{keys.split(" ").map((k, i) => (
+										// biome-ignore lint/suspicious/noArrayIndexKey: a chord is a fixed positional sequence of key names
 										<Kbd key={i} keys={k} />
 									))}
 								</span>
@@ -220,9 +214,12 @@ ShortcutsDialog: open / defaultOpen / onOpenChange; sections ([{title, items: [{
 - `onOpenChange?`: `(open: boolean) => void`
 - `hotkey?`: `string | false | string[]`. Key that opens the sheet. Default "?" (Shift+/); `false` to bind your own. Default `"?"`.
 - `title?`: `string`. Default `"Keyboard shortcuts"`.
+- `showCloseButton?`: `boolean`
+- `overlayClassName?`: `string`
+- Also accepts `DialogPrimitive.Popup.Props`.
 
 ## Notes
 
 Keys: “?” opens (never while typing), type to filter by label, key or section, Esc closes and returns focus. Sequences are ignored while typing, inside dialogs and menus, and with ⌘/Ctrl/Alt held; any other key or the timeout cancels. Sections flow into two columns once the dialog is 36rem wide. WCAG 2.1.4: the footer has a “Single-key shortcuts” switch. Off unbinds “?”, every useGoToShortcuts sequence and bare-letter ShortcutButtons, and marks those rows Off; ⌘/Ctrl chords and named keys are unaffected. With no provider the choice is saved in localStorage (cy-character-key-shortcuts) and syncs across tabs; pass characterKeys to store it yourself. When it is off, the dialog opens from the command palette or a button. Gate your own printable-only page shortcuts on useCharacterKeyShortcuts().
 
-Category: Productivity. Source: `packages/ui/src/productivity/navigation.tsx`.
+Category: Productivity. Source: `packages/ui/src/productivity/navigation/shortcuts-dialog.tsx:49-183`.

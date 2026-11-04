@@ -1,5 +1,5 @@
+import { type BankCloseMonth, BankReconciliationYearStrip } from "@cynco-labs/ui";
 import { useState } from "react";
-import { BankReconciliationYearStrip, type BankCloseMonth } from "@cynco-labs/ui";
 
 const MONTHS: BankCloseMonth[] = [
 	{ period: "2026-01", state: "closed" },
@@ -22,7 +22,7 @@ export default function BankReconciliationYearStripDemo() {
 		<BankReconciliationYearStrip
 			months={MONTHS}
 			selected={selected}
-			onMonthSelect={setSelected}
+			onSelectedChange={setSelected}
 			onPreviousYear={() => {}}
 			onNextYear={() => {}}
 			yearLabel="FY 2026"

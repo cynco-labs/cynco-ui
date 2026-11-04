@@ -1,6 +1,6 @@
 import { DensityProvider, TooltipProvider } from "@cynco-labs/ui";
-import { Component, useEffect, useState, useSyncExternalStore, type ComponentType, type ReactNode } from "react";
-import { resolveControls, type ControlValues, type Controls, type DemoPropsMessage } from "../lib/controls";
+import { Component, type ComponentType, type ReactNode, useEffect, useState, useSyncExternalStore } from "react";
+import { type Controls, type ControlValues, type DemoPropsMessage, isToggle, resolveControls } from "../lib/controls";
 import { DEFAULT_SETTINGS, onSettings, readSettings, type SiteSettings } from "../lib/settings";
 
 /** A demo module: the component and its optional playground controls. */
@@ -71,17 +71,33 @@ function useOverrides(): ControlValues {
  * Renders one demo inside the site settings (density, document language) and the demo's own controls.
  * Each generated island in src/islands imports its demo statically and renders it through this frame, so
  * /demo/<slug> and the home page ship only that demo's code.
+ *
+ * `matrix` names one of the demo's select controls and renders the demo once per option, labelled. The
+ * component page frames that in /matrix/<slug>, so a reader sees every variant without clicking through.
  */
-export function DemoFrame({ name, mod }: { name: string; mod: DemoModule }) {
+export function DemoFrame({ name, mod, matrix }: { name: string; mod: DemoModule; matrix?: string }) {
 	const settings = useSiteSettings();
 	const overrides = useOverrides();
 	const Body = mod.default;
+	const values = resolveControls(mod.controls, settings, overrides);
+	const control = matrix ? mod.controls?.[matrix] : undefined;
 	return (
 		<TooltipProvider>
 			<Boundary name={name}>
 				<Ready>
 					<DensityProvider density={settings.density}>
-						<Body {...resolveControls(mod.controls, settings, overrides)} />
+						{control && !isToggle(control) ? (
+							<div className="cy-matrix">
+								{control.options.map((option) => (
+									<section key={option.value} className="min-w-0">
+										<h2 className="mb-2 text-xs font-medium text-tertiary-foreground">{option.label}</h2>
+										<Body {...values} {...{ [matrix as string]: option.value }} />
+									</section>
+								))}
+							</div>
+						) : (
+							<Body {...values} />
+						)}
 					</DensityProvider>
 				</Ready>
 			</Boundary>

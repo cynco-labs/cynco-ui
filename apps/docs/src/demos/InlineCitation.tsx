@@ -9,7 +9,7 @@ import {
 
 export default function InlineCitationDemo() {
 	return (
-		<p className="text-body max-w-[520px]">
+		<p className="text-sm font-medium text-muted-foreground max-w-[520px]">
 			{"SST-registered businesses must issue e-invoices through MyInvois "}
 			<InlineCitation>
 				<InlineCitationText>from their phase start date</InlineCitationText>

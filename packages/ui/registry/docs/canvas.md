@@ -29,7 +29,7 @@ const NT = {
 				<NodeTitle>{p.data.title}</NodeTitle>
 				<NodeDescription>{p.data.sub}</NodeDescription>
 			</NodeHeader>
-			<NodeContent className="text-body">{p.data.body}</NodeContent>
+			<NodeContent className="text-sm font-medium text-muted-foreground">{p.data.body}</NodeContent>
 		</Node>
 	),
 };
@@ -63,7 +63,7 @@ export default function CanvasDemo() {
 			<Canvas nodes={nodes} edges={edges} nodeTypes={NT} edgeTypes={ET} fitView>
 				<Controls />
 				<Panel position="top-right">
-					<Button variant="secondary" size="mini">
+					<Button variant="secondary" size="sm">
 						Run
 					</Button>
 				</Panel>
@@ -85,4 +85,4 @@ React Flow props: `nodes`, `edges`, `nodeTypes` (use Node), `edgeTypes` (use Edg
 
 Imports `@xyflow/react/dist/style.css`, so your bundler must handle CSS imports (Vite, Next.js and Astro do).
 
-Category: AI. Source: `packages/ui/src/base/components/ai-elements/canvas.tsx`.
+Category: AI. Source: `packages/ui/src/base/components/ai-elements/canvas.tsx:39-58`.

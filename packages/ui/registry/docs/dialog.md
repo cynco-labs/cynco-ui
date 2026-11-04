@@ -47,4 +47,12 @@ Confirmations and short, blocking decisions. Longer forms go in a Sheet.
 
 `open`/`onOpenChange`; `DialogContent` (`showCloseButton`), `DialogHeader` › `DialogTitle` + `DialogDescription`, `DialogFooter` with secondary then primary/destructive buttons.
 
-Category: Components · Overlays. Source: `packages/ui/src/base/components/ui/dialog.tsx`.
+## Accessibility
+
+| Key | Does |
+| --- | --- |
+| Tab | Reaches the close button in the corner, which draws a 2px focus-visible outline. |
+
+DialogTitle and DialogDescription are what name and describe the popup, and they work visually hidden, which is how the command palette names its own dialog. The built-in close button is icon-only and carries the sr-only text Close.
+
+Category: Components · Overlays. Source: `packages/ui/src/base/components/ui/dialog.tsx:9-11`.

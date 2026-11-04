@@ -52,8 +52,16 @@ Choosing one of a short, known list (payment terms, currencies). Use SearchableS
 - `onOpenChange?`: `(open: boolean) => void`
 - Also accepts `SelectPrimitive.Root.Props<string>`.
 
+## Accessibility
+
+| Key | Does |
+| --- | --- |
+| Tab | Moves focus to the trigger, which keeps its open treatment rather than its focus treatment while the popup is open, because focus has moved into the popup. |
+
+The trigger shows the selected item's text, or the placeholder while the value is null, and takes its accessible name from you. A selected row draws a check icon unless you pass indicator false. The invalid treatment is keyed on aria-invalid so the state is announced as well as drawn.
+
 ## Notes
 
 Trigger uses `input-state-open`. `SelectItem indicator={false}` drops the checkmark.
 
-Category: Components · Inputs. Source: `packages/ui/src/base/components/ui/select.tsx`.
+Category: Components · Inputs. Source: `packages/ui/src/base/components/ui/select.tsx:24-52`.

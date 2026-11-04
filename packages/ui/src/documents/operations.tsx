@@ -1,5 +1,6 @@
 "use client";
 
+import { ScissorsIcon } from "@phosphor-icons/react";
 /**
  * Cynco UI — operational documents, assembled from the document kit (./documents via ./shared).
  *
@@ -19,46 +20,43 @@
  *   DocAmountWords            — "Ringgit Malaysia … Only" for any amount, EN / BM / bilingual
  *   DocRemittanceSlip         — tear-off remittance advice with a dashed cut line
  */
-import * as React from "react";
-import { ScissorsIcon } from "@phosphor-icons/react";
+import type * as React from "react";
 import { cn } from "../base";
 import {
-	DocumentPage,
-	type DocumentPageProps,
-	Letterhead,
-	DocLabel,
-	DocSection,
-	DocumentMeta,
-	PartyBlock,
-	PartyGrid,
-	DocumentTable,
-	DocItem,
-	TotalsBlock,
-	PaymentBlock,
-	NotesBlock,
-	SignatureBlock,
-	DocumentFooter,
-	DocStack,
+	currencySymbol,
+	DocAmountWords,
+	type DocColumn,
 	DocColumns,
-	useDocumentBrand,
+	type DocFieldItem,
 	DocFields,
 	DocFigureStrip,
-	DocAmountWords,
-	DocSignedFigure,
-	type DocFieldItem,
-	type DocText,
-	type DocFigure,
-	useDocLabel,
-	formatDocDate,
-	formatDocAmount,
-	currencySymbol,
-	amountInWords,
-	type DocParty,
-	type DocSignatory,
-	type DocColumn,
+	DocItem,
+	DocLabel,
 	type DocLabelKey,
-	type TotalsRow,
+	type DocParty,
+	DocSection,
+	type DocSignatory,
+	DocSignedFigure,
+	DocStack,
+	type DocText,
+	DocumentFooter,
+	DocumentMeta,
 	type DocumentMetaItem,
+	DocumentPage,
+	type DocumentPageProps,
+	DocumentTable,
+	formatDocAmount,
+	formatDocDate,
+	Letterhead,
+	NotesBlock,
+	PartyBlock,
+	PartyGrid,
+	PaymentBlock,
+	SignatureBlock,
+	TotalsBlock,
+	type TotalsRow,
+	useDocLabel,
+	useDocumentBrand,
 } from "../lib/shared";
 
 /* ═════════════ Shared types ═════════════ */
@@ -84,7 +82,13 @@ function useTotalsRows(x: OpsDocTotals, totalLabel: DocLabelKey = "total"): Tota
 	const rows: TotalsRow[] = [];
 	if (x.subtotal != null) rows.push({ label: L("subtotal"), value: x.subtotal, kind: "subtotal" });
 	if (x.discount != null) rows.push({ label: L(x.discountLabel ?? "discount"), value: x.discount, kind: "discount" });
-	for (const tx of x.taxes ?? []) rows.push({ label: L(tx.label ?? "sst"), hint: tx.rate != null ? `${tx.rate}%` : undefined, value: tx.amount, kind: "tax" });
+	for (const tx of x.taxes ?? [])
+		rows.push({
+			label: L(tx.label ?? "sst"),
+			hint: tx.rate != null ? `${tx.rate}%` : undefined,
+			value: tx.amount,
+			kind: "tax",
+		});
 	if (x.shipping != null) rows.push({ label: L("shipping"), value: x.shipping, kind: "line" });
 	if (x.rounding != null) rows.push({ label: L("rounding"), value: x.rounding, kind: "rounding" });
 	rows.push({ label: L(totalLabel), value: x.total, kind: "total" });
@@ -93,7 +97,8 @@ function useTotalsRows(x: OpsDocTotals, totalLabel: DocLabelKey = "total"): Tota
 
 /** "1 – 31 Oct 2026", "15 Sep – 14 Oct 2026", "1 Dec 2025 – 31 Jan 2026". */
 function period(from: string, to: string, locale: Parameters<typeof formatDocDate>[1]) {
-	const a = formatDocDate(from, locale).split(" "), b = formatDocDate(to, locale);
+	const a = formatDocDate(from, locale).split(" "),
+		b = formatDocDate(to, locale);
 	const [, bm, by] = b.split(" ");
 	if (a.length === 3 && a[2] === by) return a[1] === bm ? `${a[0]} – ${b}` : `${a[0]} ${a[1]} – ${b}`;
 	return `${a.join(" ")} – ${b}`;
@@ -114,47 +119,72 @@ export type DocRemittanceSlipProps = {
 	currency?: string;
 	/** A short line under the slip (cheque payee, bank account, reference to quote). */
 	note?: React.ReactNode;
-	className?: string;
-};
+} & Omit<React.ComponentProps<"section">, "children">;
 
 /** Tear-off remittance advice: a dashed cut line, who is paying and how much, and a blank for the amount enclosed. */
-export function DocRemittanceSlip({ payTo, fields, amountDue, currency, note, className }: DocRemittanceSlipProps) {
+export function DocRemittanceSlip({
+	payTo,
+	fields,
+	amountDue,
+	currency,
+	note,
+	className,
+	...props
+}: DocRemittanceSlipProps) {
 	const { company, layout, baseCurrency } = useDocumentBrand();
 	const L = useDocLabel();
 	const sym = currencySymbol(currency ?? baseCurrency);
 	return (
-		<section data-slot="cy-doc-remittance" className={cn("cy-doc-break-avoid mt-[7mm]", className)}>
+		<section data-slot="cy-doc-remittance" className={cn("cy-doc-break-avoid mt-[7mm]", className)} {...props}>
 			{/* The cut line is decoration; the instruction on it is content. */}
-			<div className="flex items-center gap-[2mm] text-[6.5pt] text-[var(--doc-subtle)]">
+			<div className="flex items-center gap-[2mm] text-[6.5pt] text-doc-ink-subtle">
 				<ScissorsIcon size={11} weight="regular" className="shrink-0 -scale-x-100" aria-hidden="true" />
-				<div aria-hidden="true" className="h-0 flex-1 border-t border-dashed border-[var(--doc-subtle)]" />
+				<div aria-hidden="true" className="h-0 flex-1 border-t border-dashed border-doc-ink-subtle" />
 				<span className="shrink-0 tracking-[0.04em]">{L("detachAndReturn")}</span>
-				<div aria-hidden="true" className="h-0 w-[10mm] border-t border-dashed border-[var(--doc-subtle)]" />
+				<div aria-hidden="true" className="h-0 w-[10mm] border-t border-dashed border-doc-ink-subtle" />
 			</div>
 			<div className="mt-[4.5mm] grid grid-cols-[1.25fr_1fr] gap-[8mm]">
 				<div className="min-w-0">
 					<h2>
 						<DocLabel>{L("remittanceAdvice")}</DocLabel>
 					</h2>
-					<div className="mt-[1.5mm] text-[7.5pt] text-[var(--doc-muted)]">
-						{L("payTo")} <span className="font-semibold text-[var(--doc-ink)]">{payTo ?? company.name}</span>
+					<div className="mt-[1.5mm] text-[7.5pt] text-doc-ink-muted">
+						{L("payTo")} <span className="font-semibold text-doc-ink">{payTo ?? company.name}</span>
 					</div>
 					<DocFields variant="grid" items={fields} columns={2} className="mt-[3mm]" />
-					{note && <div className="mt-[3mm] text-[7pt] leading-snug text-[var(--doc-muted)]">{note}</div>}
+					{note && <div className="mt-[3mm] text-[7pt] leading-snug text-doc-ink-muted">{note}</div>}
 				</div>
 				<dl className="flex flex-col gap-[2mm] self-start">
-					<div className={cn("flex items-baseline justify-between gap-4 px-[3.5mm] py-[2.4mm]", "border-b border-[var(--doc-rule)]", layout !== "modern" && "px-0")}>
-						<dt className="text-[7pt] font-semibold tracking-[0.08em] text-[var(--doc-muted)] uppercase">{L("amountDue")}</dt>
-						<dd className={cn("cy-doc-num text-[11pt] font-semibold whitespace-nowrap", layout === "classic" && "[font-family:var(--doc-display)]")}>
-							<span className="mr-1 text-[7.5pt] font-medium text-[var(--doc-muted)]">{sym}</span>
+					<div
+						className={cn(
+							"flex items-baseline justify-between gap-4 px-[3.5mm] py-[2.4mm]",
+							"border-b border-doc-rule-soft",
+							layout !== "modern" && "px-0",
+						)}
+					>
+						<dt className="text-[7pt] font-semibold tracking-[0.08em] text-doc-ink-muted uppercase">{L("amountDue")}</dt>
+						<dd
+							className={cn(
+								"cy-doc-num text-[11pt] font-semibold whitespace-nowrap",
+								layout === "classic" && "[font-family:var(--doc-display)]",
+							)}
+						>
+							<span className="mr-1 text-[7.5pt] font-medium text-doc-ink-muted">{sym}</span>
 							{formatDocAmount(amountDue)}
 						</dd>
 					</div>
-					<div className={cn("flex items-end justify-between gap-4 px-[3.5mm] pt-[2.4mm] pb-[2mm]", layout === "modern" ? "rounded-[2mm] border border-[var(--doc-rule)]" : "border-b border-[var(--doc-rule-strong)] px-0")}>
-						<dt className="pb-[0.4mm] text-[7pt] font-semibold tracking-[0.08em] text-[var(--doc-muted)] uppercase">{L("amountEnclosed")}</dt>
-						<dd className="flex h-[7mm] min-w-[34mm] items-end gap-1 text-[7.5pt] text-[var(--doc-muted)]">
+					<div
+						className={cn(
+							"flex items-end justify-between gap-4 px-[3.5mm] pt-[2.4mm] pb-[2mm]",
+							layout === "modern" ? "rounded-[2mm] border border-doc-rule-soft" : "border-b border-doc-rule px-0",
+						)}
+					>
+						<dt className="pb-[0.4mm] text-[7pt] font-semibold tracking-[0.08em] text-doc-ink-muted uppercase">
+							{L("amountEnclosed")}
+						</dt>
+						<dd className="flex h-[7mm] min-w-[34mm] items-end gap-1 text-[7.5pt] text-doc-ink-muted">
 							{sym}
-							<span className="mb-[0.6mm] flex-1 border-b border-dotted border-[var(--doc-subtle)]" />
+							<span className="mb-[0.6mm] flex-1 border-b border-dotted border-doc-ink-subtle" />
 						</dd>
 					</div>
 				</dl>
@@ -209,13 +239,18 @@ export type PurchaseOrderData = {
 };
 
 function PurchaseOrderBody({ order }: { order: PurchaseOrderData }) {
-	const { locale , baseCurrency } = useDocumentBrand();
+	const { locale, baseCurrency } = useDocumentBrand();
 	const L = useDocLabel();
 	const currency = order.currency ?? baseCurrency;
 	const rows = useTotalsRows(order.totals);
 
 	const columns: DocColumn<PurchaseOrderLine>[] = [
-		{ key: "code", header: L("itemCode"), width: "25mm", cell: (r) => <span className="cy-doc-num text-[7.25pt] whitespace-nowrap text-[var(--doc-muted)]">{r.itemCode}</span> },
+		{
+			key: "code",
+			header: L("itemCode"),
+			width: "25mm",
+			cell: (r) => <span className="cy-doc-num text-[7.25pt] whitespace-nowrap text-doc-ink-muted">{r.itemCode}</span>,
+		},
 		{ key: "desc", header: L("description"), cell: (r) => <DocItem title={r.description} detail={r.detail} /> },
 		{
 			key: "qty",
@@ -225,7 +260,7 @@ function PurchaseOrderBody({ order }: { order: PurchaseOrderData }) {
 			cell: (r) => (
 				<>
 					{r.quantity}
-					{r.unit && <span className="ml-1 text-[7.5pt] text-[var(--doc-muted)]">{r.unit}</span>}
+					{r.unit && <span className="ml-1 text-[7.5pt] text-doc-ink-muted">{r.unit}</span>}
 				</>
 			),
 		},
@@ -238,10 +273,10 @@ function PurchaseOrderBody({ order }: { order: PurchaseOrderData }) {
 			cell: (r) =>
 				r.taxRate != null && Number(r.taxRate) !== 0 ? (
 					<>
-						{r.taxRate}%{r.taxCode && <div className="text-[6.75pt] text-[var(--doc-subtle)]">{r.taxCode}</div>}
+						{r.taxRate}%{r.taxCode && <div className="text-[6.75pt] text-doc-ink-subtle">{r.taxCode}</div>}
 					</>
 				) : (
-					<span className="text-[var(--doc-subtle)]">{r.taxCode ?? "—"}</span>
+					<span className="text-doc-ink-subtle">{r.taxCode ?? "—"}</span>
 				),
 		},
 		{ key: "amt", header: L("amount"), numeric: true, width: "25mm", cell: (r) => formatDocAmount(r.amount) },
@@ -257,7 +292,9 @@ function PurchaseOrderBody({ order }: { order: PurchaseOrderData }) {
 			value: order.requester && (
 				<>
 					{order.requester.name}
-					{order.requester.department && <div className="text-[7.5pt] font-normal text-[var(--doc-muted)]">{order.requester.department}</div>}
+					{order.requester.department && (
+						<div className="text-[7.5pt] font-normal text-doc-ink-muted">{order.requester.department}</div>
+					)}
 				</>
 			),
 		},
@@ -267,7 +304,8 @@ function PurchaseOrderBody({ order }: { order: PurchaseOrderData }) {
 		{ ...order.preparedBy, label: L("preparedBy") },
 		{ ...order.approvedBy, label: L("approvedBy") },
 	];
-	if (order.acceptedBy) signatories.push({ ...(order.acceptedBy === true ? {} : order.acceptedBy), label: L("acceptedBy") });
+	if (order.acceptedBy)
+		signatories.push({ ...(order.acceptedBy === true ? {} : order.acceptedBy), label: L("acceptedBy") });
 
 	return (
 		<>
@@ -289,7 +327,9 @@ function PurchaseOrderBody({ order }: { order: PurchaseOrderData }) {
 					aside={
 						(order.deliveryInstructions || order.termsAndConditions || order.notes) && (
 							<DocStack gap="sm">
-								{order.deliveryInstructions && <NotesBlock title={L("deliveryInstructions")}>{order.deliveryInstructions}</NotesBlock>}
+								{order.deliveryInstructions && (
+									<NotesBlock title={L("deliveryInstructions")}>{order.deliveryInstructions}</NotesBlock>
+								)}
 								{order.termsAndConditions && <NotesBlock title="termsAndConditions">{order.termsAndConditions}</NotesBlock>}
 								{order.notes && <NotesBlock title="notes">{order.notes}</NotesBlock>}
 							</DocStack>
@@ -304,7 +344,13 @@ function PurchaseOrderBody({ order }: { order: PurchaseOrderData }) {
 }
 
 /** A purchase order to a vendor: deliver-to, required-by date, requester, priced lines with SST, posted totals, terms and signatures. */
-export function PurchaseOrderDocument({ order, size = "a4", stamp, className, ...page }: OpsDocumentProps & { order: PurchaseOrderData; size?: "a4" | "letter" }) {
+export function PurchaseOrderDocument({
+	order,
+	size = "a4",
+	stamp,
+	className,
+	...page
+}: OpsDocumentProps & { order: PurchaseOrderData; size?: "a4" | "letter" }) {
 	return (
 		<DocumentPage {...page} size={size} stamp={stamp} className={className}>
 			<PurchaseOrderBody order={order} />
@@ -357,10 +403,16 @@ export type PaymentVoucherData = {
 	receivedBy?: DocSignatory;
 };
 
-const METHOD_LABEL: Record<PaymentVoucherMethod["kind"], DocLabelKey> = { bank_transfer: "bankTransfer", cheque: "cheque", cash: "cash", duitnow: "duitnow", card: "card" };
+const METHOD_LABEL: Record<PaymentVoucherMethod["kind"], DocLabelKey> = {
+	bank_transfer: "bankTransfer",
+	cheque: "cheque",
+	cash: "cash",
+	duitnow: "duitnow",
+	card: "card",
+};
 
 function PaymentVoucherBody({ voucher }: { voucher: PaymentVoucherData }) {
-	const { locale , baseCurrency } = useDocumentBrand();
+	const { locale, baseCurrency } = useDocumentBrand();
 	const L = useDocLabel();
 	const currency = voucher.currency ?? baseCurrency;
 	const rows = useTotalsRows(voucher.totals, "totalPaid");
@@ -373,18 +425,22 @@ function PaymentVoucherBody({ voucher }: { voucher: PaymentVoucherData }) {
 			value: (
 				<>
 					{L(METHOD_LABEL[m.kind])}
-					{m.bank && <div className="text-[7.5pt] font-normal text-[var(--doc-muted)]">{m.bank}</div>}
+					{m.bank && <div className="text-[7.5pt] font-normal text-doc-ink-muted">{m.bank}</div>}
 				</>
 			),
 		},
-		m.kind === "cheque" ? { label: L("chequeNo"), value: m.chequeNo, emphasis: true } : { label: L("transactionRef"), value: m.reference },
+		m.kind === "cheque"
+			? { label: L("chequeNo"), value: m.chequeNo, emphasis: true }
+			: { label: L("transactionRef"), value: m.reference },
 		{
 			label: L("paidFrom"),
 			value:
 				typeof voucher.paidFrom === "object" ? (
 					<>
 						{voucher.paidFrom.name}
-						{voucher.paidFrom.accountNumber && <div className="cy-doc-num text-[7.5pt] font-normal text-[var(--doc-muted)]">{voucher.paidFrom.accountNumber}</div>}
+						{voucher.paidFrom.accountNumber && (
+							<div className="cy-doc-num text-[7.5pt] font-normal text-doc-ink-muted">{voucher.paidFrom.accountNumber}</div>
+						)}
 					</>
 				) : (
 					voucher.paidFrom
@@ -400,7 +456,7 @@ function PaymentVoucherBody({ voucher }: { voucher: PaymentVoucherData }) {
 			cell: (r) => (
 				<div>
 					<div className="cy-doc-num font-medium">{r.reference}</div>
-					{r.date && <div className="mt-0.5 text-[7.5pt] text-[var(--doc-muted)]">{formatDocDate(r.date, locale)}</div>}
+					{r.date && <div className="mt-0.5 text-[7.5pt] text-doc-ink-muted">{formatDocDate(r.date, locale)}</div>}
 				</div>
 			),
 		},
@@ -412,11 +468,17 @@ function PaymentVoucherBody({ voucher }: { voucher: PaymentVoucherData }) {
 			cell: (r) => (
 				<div>
 					<div className="cy-doc-num text-[8pt] tracking-[0.02em]">{r.accountCode}</div>
-					{r.accountName && <div className="mt-0.5 text-[7.5pt] leading-snug text-[var(--doc-muted)]">{r.accountName}</div>}
+					{r.accountName && <div className="mt-0.5 text-[7.5pt] leading-snug text-doc-ink-muted">{r.accountName}</div>}
 				</div>
 			),
 		},
-		{ key: "amt", header: L("amount"), numeric: true, width: "27mm", cell: (r) => <DocSignedFigure text={formatDocAmount(r.amount, { brackets: true })} /> },
+		{
+			key: "amt",
+			header: L("amount"),
+			numeric: true,
+			width: "27mm",
+			cell: (r) => <DocSignedFigure text={formatDocAmount(r.amount, { brackets: true })} />,
+		},
 	];
 
 	const bank = voucher.payeeBank;
@@ -431,7 +493,8 @@ function PaymentVoucherBody({ voucher }: { voucher: PaymentVoucherData }) {
 					<PartyBlock heading={L("payee")} party={voucher.payee} />
 					{bank && (
 						<DocSection title={L("payeeBank")}>
-							<DocFields variant="grid"
+							<DocFields
+								variant="grid"
 								columns={2}
 								className="mt-[1mm]"
 								items={[
@@ -450,10 +513,20 @@ function PaymentVoucherBody({ voucher }: { voucher: PaymentVoucherData }) {
 					</DocSection>
 				)}
 				<DocumentTable numbered columns={columns} rows={voucher.lines} />
-				<TotalsBlock rows={rows} currency={currency} words aside={voucher.notes ? <NotesBlock>{voucher.notes}</NotesBlock> : undefined} />
+				<TotalsBlock
+					rows={rows}
+					currency={currency}
+					words
+					aside={voucher.notes ? <NotesBlock>{voucher.notes}</NotesBlock> : undefined}
+				/>
 				<SignatureBlock
 					className="mt-[3mm] grid-cols-4 gap-[6mm]"
-					signatories={[sign(voucher.preparedBy, "preparedBy"), sign(voucher.checkedBy, "checkedBy"), sign(voucher.approvedBy, "approvedBy"), sign(voucher.receivedBy, "receivedBy")]}
+					signatories={[
+						sign(voucher.preparedBy, "preparedBy"),
+						sign(voucher.checkedBy, "checkedBy"),
+						sign(voucher.approvedBy, "approvedBy"),
+						sign(voucher.receivedBy, "receivedBy"),
+					]}
 				/>
 			</DocStack>
 			<DocumentFooter hideNotice className="pt-[4mm]" />
@@ -462,7 +535,13 @@ function PaymentVoucherBody({ voucher }: { voucher: PaymentVoucherData }) {
 }
 
 /** A payment voucher: payee and bank details, method (transfer / cheque / cash), the bills paid with account codes, total in words and four signatures. */
-export function PaymentVoucherDocument({ voucher, size = "a4", stamp, className, ...page }: OpsDocumentProps & { voucher: PaymentVoucherData; size?: "a4" | "letter" }) {
+export function PaymentVoucherDocument({
+	voucher,
+	size = "a4",
+	stamp,
+	className,
+	...page
+}: OpsDocumentProps & { voucher: PaymentVoucherData; size?: "a4" | "letter" }) {
 	return (
 		<DocumentPage {...page} size={size} stamp={stamp} className={className}>
 			<PaymentVoucherBody voucher={voucher} />
@@ -484,7 +563,13 @@ export type StatementTransactionRow = {
 	balance: string;
 };
 
-export type StatementAging = { current: string; days1to30: string; days31to60: string; days61to90: string; days90plus: string };
+export type StatementAging = {
+	current: string;
+	days1to30: string;
+	days31to60: string;
+	days61to90: string;
+	days90plus: string;
+};
 
 export type StatementOfAccountData = {
 	number?: string;
@@ -506,7 +591,13 @@ export type StatementOfAccountData = {
 	transactions: StatementTransactionRow[];
 	aging: StatementAging;
 	totalDue: string;
-	payment?: { bankName?: string; accountName?: string; accountNumber?: string; reference?: string; qr?: React.ReactNode };
+	payment?: {
+		bankName?: string;
+		accountName?: string;
+		accountNumber?: string;
+		reference?: string;
+		qr?: React.ReactNode;
+	};
 	notes?: string;
 	/** Force the remittance slip on/off (default: on for customers). */
 	remittance?: boolean;
@@ -515,7 +606,7 @@ export type StatementOfAccountData = {
 type StatementLine = StatementTransactionRow & { opening?: true };
 
 function StatementOfAccountBody({ statement: s }: { statement: StatementOfAccountData }) {
-	const { locale , baseCurrency } = useDocumentBrand();
+	const { locale, baseCurrency } = useDocumentBrand();
 	const L = useDocLabel();
 	const currency = s.currency ?? baseCurrency;
 	const role = s.role ?? "customer";
@@ -523,13 +614,42 @@ function StatementOfAccountBody({ statement: s }: { statement: StatementOfAccoun
 	const amt = (v?: string) => (v == null ? "" : formatDocAmount(v, { zero: "" }));
 
 	const columns: DocColumn<StatementLine>[] = [
-		{ key: "date", header: L("date"), width: "19mm", cell: (r) => <span className="cy-doc-num whitespace-nowrap">{formatDocDate(r.date, locale)}</span> },
-		{ key: "type", header: L("type"), width: "21mm", cell: (r) => (r.opening ? "" : <span className="text-[var(--doc-muted)]">{L(r.type, { stacked: true })}</span>) },
-		{ key: "no", header: L("number"), width: "23mm", cell: (r) => <span className="cy-doc-num font-medium whitespace-nowrap">{r.number}</span> },
-		{ key: "desc", header: L("description"), cell: (r) => (r.opening ? <span className="text-[var(--doc-muted)] italic">{L("balanceBroughtForward")}</span> : <span className="text-[var(--doc-muted)]">{r.description}</span>) },
+		{
+			key: "date",
+			header: L("date"),
+			width: "19mm",
+			cell: (r) => <span className="cy-doc-num whitespace-nowrap">{formatDocDate(r.date, locale)}</span>,
+		},
+		{
+			key: "type",
+			header: L("type"),
+			width: "21mm",
+			cell: (r) => (r.opening ? "" : <span className="text-doc-ink-muted">{L(r.type, { stacked: true })}</span>),
+		},
+		{
+			key: "no",
+			header: L("number"),
+			width: "23mm",
+			cell: (r) => <span className="cy-doc-num font-medium whitespace-nowrap">{r.number}</span>,
+		},
+		{
+			key: "desc",
+			header: L("description"),
+			cell: (r) =>
+				r.opening ? (
+					<span className="text-doc-ink-muted italic">{L("balanceBroughtForward")}</span>
+				) : (
+					<span className="text-doc-ink-muted">{r.description}</span>
+				),
+		},
 		{ key: "dr", header: L("debit"), numeric: true, width: "19mm", cell: (r) => amt(r.debit) },
 		{ key: "cr", header: L("credit"), numeric: true, width: "19mm", cell: (r) => amt(r.credit) },
-		{ key: "bal", header: L("balance"), numeric: true, width: "21mm", cell: (r) => (
+		{
+			key: "bal",
+			header: L("balance"),
+			numeric: true,
+			width: "21mm",
+			cell: (r) => (
 				<span className="font-medium">
 					<DocSignedFigure text={formatDocAmount(r.balance, { brackets: true })} />
 				</span>
@@ -537,11 +657,15 @@ function StatementOfAccountBody({ statement: s }: { statement: StatementOfAccoun
 		},
 	];
 
-	const lines: StatementLine[] = [{ opening: true, date: s.periodFrom, type: "", balance: s.openingBalance }, ...s.transactions];
+	const lines: StatementLine[] = [
+		{ opening: true, date: s.periodFrom, type: "", balance: s.openingBalance },
+		...s.transactions,
+	];
 
 	const summary: TotalsRow[] = [{ label: L("openingBalance"), value: s.openingBalance, kind: "line" }];
 	if (s.totalDebit != null) summary.push({ label: L("invoicesAndCharges"), value: s.totalDebit, kind: "line" });
-	if (s.totalCredit != null) summary.push({ label: L("paymentsAndCredits"), value: asNegative(s.totalCredit), kind: "paid" });
+	if (s.totalCredit != null)
+		summary.push({ label: L("paymentsAndCredits"), value: asNegative(s.totalCredit), kind: "paid" });
 	summary.push({ label: L("closingBalance"), value: s.closingBalance, kind: "balance" });
 
 	const a = s.aging;
@@ -556,10 +680,17 @@ function StatementOfAccountBody({ statement: s }: { statement: StatementOfAccoun
 						{ label: L("period"), value: period(s.periodFrom, s.periodTo, locale) },
 						{ label: L("accountNo"), value: s.accountNo },
 						{ label: L("terms"), value: s.terms },
-						{ label: L("currency"), value: currencySymbol(currency) === currency ? currency : `${currency} (${currencySymbol(currency)})` },
+						{
+							label: L("currency"),
+							value: currencySymbol(currency) === currency ? currency : `${currency} (${currencySymbol(currency)})`,
+						},
 					]}
 				/>
-				<TotalsBlock rows={summary} currency={currency} aside={<PartyBlock heading={L(role === "vendor" ? "vendor" : "customer")} party={s.party} />} />
+				<TotalsBlock
+					rows={summary}
+					currency={currency}
+					aside={<PartyBlock heading={L(role === "vendor" ? "vendor" : "customer")} party={s.party} />}
+				/>
 				<DocumentTable
 					dense
 					columns={columns}
@@ -570,7 +701,7 @@ function StatementOfAccountBody({ statement: s }: { statement: StatementOfAccoun
 								<div className="flex items-baseline justify-between gap-4">
 									<span>
 										{L("closingBalance")}
-										<span className="ml-1.5 font-normal text-[var(--doc-subtle)]">
+										<span className="ml-1.5 font-normal text-doc-ink-subtle">
 											{L("asAt")} {formatDocDate(s.periodTo, locale)}
 										</span>
 									</span>
@@ -614,7 +745,11 @@ function StatementOfAccountBody({ statement: s }: { statement: StatementOfAccoun
 						{ label: "statementDate", value: formatDocDate(s.date, locale) },
 						{ label: "reference", value: s.number, figures: true },
 					]}
-					note={s.payment?.bankName && s.payment.accountNumber ? `${s.payment.bankName} ${s.payment.accountNumber}${s.payment.accountName ? ` · ${s.payment.accountName}` : ""}` : undefined}
+					note={
+						s.payment?.bankName && s.payment.accountNumber
+							? `${s.payment.bankName} ${s.payment.accountNumber}${s.payment.accountName ? ` · ${s.payment.accountName}` : ""}`
+							: undefined
+					}
 				/>
 			)}
 		</>
@@ -626,7 +761,13 @@ function StatementOfAccountBody({ statement: s }: { statement: StatementOfAccoun
  * closing balance, an aging strip ending in the total due, and a tear-off remittance slip.
  * Long statements flow onto more pages; the table header repeats on each printed page.
  */
-export function StatementOfAccountDocument({ statement, size = "a4", stamp, className, ...page }: OpsDocumentProps & { statement: StatementOfAccountData; size?: "a4" | "letter" }) {
+export function StatementOfAccountDocument({
+	statement,
+	size = "a4",
+	stamp,
+	className,
+	...page
+}: OpsDocumentProps & { statement: StatementOfAccountData; size?: "a4" | "letter" }) {
 	return (
 		<DocumentPage {...page} size={size} stamp={stamp} className={className}>
 			<StatementOfAccountBody statement={statement} />
@@ -680,7 +821,7 @@ export type PayslipDocumentData = {
 };
 
 function PayslipBody({ payslip: p, size }: { payslip: PayslipDocumentData; size: "a4" | "a5" }) {
-	const { locale , baseCurrency } = useDocumentBrand();
+	const { locale, baseCurrency } = useDocumentBrand();
 	const L = useDocLabel();
 	const currency = p.currency ?? baseCurrency;
 	const a5 = size === "a5";
@@ -690,8 +831,18 @@ function PayslipBody({ payslip: p, size }: { payslip: PayslipDocumentData; size:
 
 	const lineColumns: DocColumn<PayslipLine>[] = [
 		// A5 drops the basis lines so the slip fits one half-sheet.
-		{ key: "label", header: "", cell: (r) => <DocItem title={L(r.label, { stacked: true })} detail={a5 ? undefined : detail(r.detail)} /> },
-		{ key: "amt", header: currencySymbol(currency), numeric: true, width: a5 ? "19mm" : "26mm", cell: (r) => formatDocAmount(r.amount) },
+		{
+			key: "label",
+			header: "",
+			cell: (r) => <DocItem title={L(r.label, { stacked: true })} detail={a5 ? undefined : detail(r.detail)} />,
+		},
+		{
+			key: "amt",
+			header: currencySymbol(currency),
+			numeric: true,
+			width: a5 ? "19mm" : "26mm",
+			cell: (r) => formatDocAmount(r.amount),
+		},
 	];
 	const ledger = (title: DocLabelKey, rows: PayslipLine[], totalLabel: DocLabelKey, total: string) => (
 		<DocumentTable
@@ -720,8 +871,8 @@ function PayslipBody({ payslip: p, size }: { payslip: PayslipDocumentData; size:
 	const hasEmployer = employerFields.some((f) => f.value);
 	// A5: the employer's statutory numbers share the "Employee" label row, on one quiet line.
 	const employerLine = hasEmployer && (
-		<div className="flex flex-wrap justify-end gap-x-3 gap-y-0.5 text-[7pt] leading-tight text-[var(--doc-muted)]">
-			<span className="text-[var(--doc-subtle)]">{L("employer")}</span>
+		<div className="flex flex-wrap justify-end gap-x-3 gap-y-0.5 text-[7pt] leading-tight text-doc-ink-muted">
+			<span className="text-doc-ink-subtle">{L("employer")}</span>
 			{(
 				[
 					["epf", p.employer?.epfNo],
@@ -732,7 +883,7 @@ function PayslipBody({ payslip: p, size }: { payslip: PayslipDocumentData; size:
 				.filter(([, v]) => v)
 				.map(([k, v]) => (
 					<span key={k} className="whitespace-nowrap">
-						<span className="text-[var(--doc-subtle)]">{L(k)}</span> <span className="cy-doc-num text-[var(--doc-ink)]">{v}</span>
+						<span className="text-doc-ink-subtle">{L(k)}</span> <span className="cy-doc-num text-doc-ink">{v}</span>
 					</span>
 				))}
 		</div>
@@ -763,9 +914,9 @@ function PayslipBody({ payslip: p, size }: { payslip: PayslipDocumentData; size:
 							<>
 								<span className="mt-0.5 grid grid-cols-[auto_auto] items-baseline justify-end gap-x-2 gap-y-0.5 leading-tight">
 									<span>{L("payPeriod", { stacked: true })}</span>
-									<span className="font-medium whitespace-nowrap text-[var(--doc-ink)]">{period(p.periodFrom, p.periodTo, locale)}</span>
+									<span className="font-medium whitespace-nowrap text-doc-ink">{period(p.periodFrom, p.periodTo, locale)}</span>
 									<span>{L("payDate", { stacked: true })}</span>
-									<span className="font-medium whitespace-nowrap text-[var(--doc-ink)]">{formatDocDate(p.payDate, locale)}</span>
+									<span className="font-medium whitespace-nowrap text-doc-ink">{formatDocDate(p.payDate, locale)}</span>
 								</span>
 								<span className="mt-1 block">{L("privateConfidential", { stacked: true })}</span>
 							</>
@@ -784,7 +935,12 @@ function PayslipBody({ payslip: p, size }: { payslip: PayslipDocumentData; size:
 							{employerLine}
 						</div>
 						<div className="mt-1 text-[9.5pt] leading-tight font-semibold">{e.name}</div>
-						<DocFields variant="grid" className="mt-[2.5mm] gap-x-[4mm] gap-y-[2mm]" columns={4} items={[payFields[2], ...employeeFields]} />
+						<DocFields
+							variant="grid"
+							className="mt-[2.5mm] gap-x-[4mm] gap-y-[2mm]"
+							columns={4}
+							items={[payFields[2], ...employeeFields]}
+						/>
 					</section>
 				) : (
 					<>
@@ -804,7 +960,7 @@ function PayslipBody({ payslip: p, size }: { payslip: PayslipDocumentData; size:
 								<DocFields variant="grid" className="mt-[3mm]" columns={4} items={employeeFields} />
 							</section>
 							{hasEmployer && (
-								<section className="min-w-0 border-l border-[var(--doc-rule)] pl-[6mm]">
+								<section className="min-w-0 border-l border-doc-rule-soft pl-[6mm]">
 									<h2>
 										<DocLabel>{L("employer")}</DocLabel>
 									</h2>
@@ -820,7 +976,12 @@ function PayslipBody({ payslip: p, size }: { payslip: PayslipDocumentData; size:
 				</div>
 				{a5 ? (
 					// A5: gross and deductions are already the ledger totals — lead straight to net pay, words beside it.
-					<TotalsBlock rows={[{ label: L("netPay"), value: p.netPay, kind: "total" }]} currency={currency} aside={<DocAmountWords amount={p.netPay} currency={currency} className="pt-[1.5mm]" />} className="[&_dl]:w-[60mm]" />
+					<TotalsBlock
+						rows={[{ label: L("netPay"), value: p.netPay, kind: "total" }]}
+						currency={currency}
+						aside={<DocAmountWords amount={p.netPay} currency={currency} className="pt-[1.5mm]" />}
+						className="[&_dl]:w-[60mm]"
+					/>
 				) : (
 					<div>
 						<DocFigureStrip
@@ -839,7 +1000,14 @@ function PayslipBody({ payslip: p, size }: { payslip: PayslipDocumentData; size:
 						title={
 							<>
 								{L("employerContributions")}
-								<span className={cn("font-normal tracking-normal text-[var(--doc-subtle)] normal-case", locale === "en-ms" ? "mt-0.5 block" : "ml-2")}>{L("notDeducted")}</span>
+								<span
+									className={cn(
+										"font-normal tracking-normal text-doc-ink-subtle normal-case",
+										locale === "en-ms" ? "mt-0.5 block" : "ml-2",
+									)}
+								>
+									{L("notDeducted")}
+								</span>
 							</>
 						}
 					>
@@ -849,18 +1017,33 @@ function PayslipBody({ payslip: p, size }: { payslip: PayslipDocumentData; size:
 							currency={currency}
 							items={[
 								...p.employerContributions.map((c) => ({ label: c.label, value: c.amount })),
-								...(p.totalEmployerContributions ? [{ label: "total" as const, value: p.totalEmployerContributions, emphasis: true }] : []),
+								...(p.totalEmployerContributions
+									? [{ label: "total" as const, value: p.totalEmployerContributions, emphasis: true }]
+									: []),
 							]}
 						/>
 					</DocSection>
 				)}
 				{p.ytd && p.ytd.length > 0 && (
 					<DocSection title={L("ytd")}>
-						<DocFigureStrip quiet className={cn(a5 && "[&>div]:pt-[1.5mm]")} currency={currency} items={p.ytd.map((y, i) => ({ label: y.label, value: y.amount, emphasis: i === p.ytd!.length - 1 }))} />
+						<DocFigureStrip
+							quiet
+							className={cn(a5 && "[&>div]:pt-[1.5mm]")}
+							currency={currency}
+							items={p.ytd.map((y, i) => ({ label: y.label, value: y.amount, emphasis: i === p.ytd!.length - 1 }))}
+						/>
 					</DocSection>
 				)}
 			</DocStack>
-			<DocumentFooter hideNotice={a5} className={a5 ? "pt-[3mm]" : "pt-[4mm]"} note={<span className="text-[7.25pt] text-[var(--doc-muted)] not-italic [font-family:var(--doc-font)]">{p.note ?? L(a5 ? "confidentialShort" : "confidentialNote")}</span>} />
+			<DocumentFooter
+				hideNotice={a5}
+				className={a5 ? "pt-[3mm]" : "pt-[4mm]"}
+				note={
+					<span className="text-[7.25pt] text-doc-ink-muted not-italic [font-family:var(--doc-font)]">
+						{p.note ?? L(a5 ? "confidentialShort" : "confidentialNote")}
+					</span>
+				}
+			/>
 		</>
 	);
 }
@@ -870,7 +1053,13 @@ function PayslipBody({ payslip: p, size }: { payslip: PayslipDocumentData; size:
  * side by side, gross / deductions / net pay (net in words), employer EPF/SOCSO/EIS/HRDF contributions, year to date.
  * A4 by default; A5 for the half-sheet many SMEs print.
  */
-export function PayslipDocument({ payslip, size = "a4", stamp, className, ...page }: OpsDocumentProps & { payslip: PayslipDocumentData; size?: "a4" | "a5" }) {
+export function PayslipDocument({
+	payslip,
+	size = "a4",
+	stamp,
+	className,
+	...page
+}: OpsDocumentProps & { payslip: PayslipDocumentData; size?: "a4" | "a5" }) {
 	return (
 		<DocumentPage {...page} size={size} stamp={stamp} className={cn(size === "a5" && "text-[7.5pt]", className)}>
 			<PayslipBody payslip={payslip} size={size} />

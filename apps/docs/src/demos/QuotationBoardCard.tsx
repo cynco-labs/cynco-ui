@@ -9,7 +9,7 @@ export default function QuotationBoardCardDemo() {
 					id: "1",
 					quotationNumber: "QT-2026-0088",
 					customerName: "Syarikat Maju Jaya Sdn Bhd",
-					totalAmount: 18600,
+					totalAmount: "18600.00",
 					status: "sent",
 					createdAt: "2026-10-27",
 				}}
@@ -20,7 +20,7 @@ export default function QuotationBoardCardDemo() {
 					id: "2",
 					quotationNumber: "QT-2026-0085",
 					customerName: "Bayu Dental Clinic",
-					totalAmount: 7450,
+					totalAmount: "7450.00",
 					status: "accepted",
 					createdAt: "2026-10-14",
 				}}
@@ -31,7 +31,7 @@ export default function QuotationBoardCardDemo() {
 					id: "3",
 					quotationNumber: "QT-2026-0079",
 					customerName: "Rimba Hijau Landscaping",
-					totalAmount: 2300,
+					totalAmount: "2300.00",
 					status: "expired",
 					createdAt: "2026-08-29",
 				}}

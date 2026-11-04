@@ -44,15 +44,15 @@ PO detail sidebar.
 
 ## Props
 
-`bills` [{id, billNumber, status, totalAmount, currency, issueDate}]; optional `currency`, `onOpen(id)`; optional `className` and native div props on the root.
+`bills` [{id, billNumber, status, totalAmount, currency, issueDate}]; optional `currency`, `onRowClick(bill)`; optional `className` and native div props on the root.
 
-- `bills`: `{ id: string; billNumber: string | null; status: string | null; totalAmount: Num; currency?: string | null; issueDate: string | null }[]`
+- `bills`: `LinkedBill[]`
 - `currency?`: `string`. Default `"MYR"`.
-- `onOpen?`: `(id: string) => void`
+- `onRowClick?`: `(bill: LinkedBill) => void`
 - Also accepts `ComponentProps<"div">`.
 
 ## Notes
 
-Responsive by container: rows wrap amount and status under the bill number when narrow.
+Responsive by container: built on DataList: a tray table from 36rem, a stacked card per bill below that.
 
-Category: Accounting · Tax, assets & operations. Source: `packages/ui/src/accounting/operations.tsx`.
+Category: Accounting · Tax, assets & operations. Source: `packages/ui/src/accounting/operations/purchase-orders.tsx:294-357`.

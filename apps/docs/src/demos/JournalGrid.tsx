@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { Button, JournalGrid, Kbd, type JournalGridLine } from "@cynco-labs/ui";
+import { Button, JournalGrid, type JournalGridLine, Kbd } from "@cynco-labs/ui";
 import type { ReactNode } from "react";
+import { useState } from "react";
 
 function Hint(p: { children: ReactNode }) {
 	return <p className="text-xs text-tertiary-foreground">{p.children}</p>;
@@ -89,9 +89,7 @@ export default function JournalGridDemo() {
 		<div className="flex flex-col gap-2">
 			<div className="flex flex-wrap items-center justify-between gap-2">
 				<div className="min-w-0">
-					<div className="text-sm font-semibold text-foreground">
-						JV-2026-1031 · October payroll accrual
-					</div>
+					<div className="text-sm font-semibold text-foreground">JV-2026-1031 · October payroll accrual</div>
 					<Hint>
 						{"Try: Tab through a line, "}
 						{K("alt+b")}
@@ -133,11 +131,9 @@ export default function JournalGridDemo() {
 				</div>
 			</div>
 			<div
-				className={
-					(narrow
-						? "w-full max-w-[340px] rounded-xl border border-dashed border-border p-2 "
-						: "") + "max-h-[490px] overflow-y-auto pb-1"
-				}
+				className={`${
+					narrow ? "w-full max-w-[340px] rounded-xl border border-dashed border-border p-2 " : ""
+				}max-h-[490px] overflow-y-auto pb-1`}
 			>
 				{grid}
 			</div>

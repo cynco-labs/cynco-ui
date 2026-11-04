@@ -1,9 +1,4 @@
-import {
-	type DocLayout,
-	type DocLocale,
-	DocumentBrandProvider,
-	PayslipDocument,
-} from "@cynco-labs/ui";
+import { type DocLayout, type DocLocale, DocumentBrandProvider, PayslipDocument } from "@cynco-labs/ui";
 
 const BRAND = {
 	company: {

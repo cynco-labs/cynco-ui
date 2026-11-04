@@ -71,4 +71,4 @@ period, rows (StatementRow: {key, kind: heading|section-header|account|section-t
 
 Prior column in text-tertiary-foreground. Responsive: bespoke container-query ladder on surfaces.tray; Variance/% drop below 32rem and the (MYR) suffix below 28rem, account names wrap.
 
-Category: Accounting · Reports. Source: `packages/ui/src/accounting/reports.tsx`.
+Category: Accounting · Reports. Source: `packages/ui/src/accounting/reports/statements.tsx:255-298`.

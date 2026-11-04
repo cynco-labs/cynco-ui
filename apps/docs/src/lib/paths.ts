@@ -1,6 +1,6 @@
+import { existsSync, readFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import { dirname, join } from "node:path";
-import { existsSync, readFileSync } from "node:fs";
 
 const require = createRequire(import.meta.url);
 
@@ -15,5 +15,11 @@ export function uiRoot(): string {
 
 export function readUi(path: string): string | null {
 	const p = join(uiRoot(), path);
+	return existsSync(p) ? readFileSync(p, "utf8") : null;
+}
+
+/** Reads a repository-relative path, as the registry records `sourcePath`. Build-time only. */
+export function readRepo(path: string): string | null {
+	const p = join(uiRoot(), "../..", path);
 	return existsSync(p) ? readFileSync(p, "utf8") : null;
 }

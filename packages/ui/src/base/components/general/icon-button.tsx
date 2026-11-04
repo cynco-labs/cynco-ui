@@ -1,155 +1,120 @@
-/* eslint-disable react-refresh/only-export-components */
+"use client";
 
-import { Button, type ButtonProps } from "../ui/button";
-import { cn } from "../../lib/utils";
 import { cva, type VariantProps } from "class-variance-authority";
 import * as React from "react";
+import { cn } from "../../lib/utils";
+import { Button, type ButtonProps } from "../ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
-const iconButtonVariants = cva(
-	"", // Empty base - we'll use buttonVariants as base
-	{
-		variants: {
-			iconOrientation: {
-				left: "flex-row",
-				center: "flex-row justify-center",
-				right: "flex-row",
-			},
-		},
-		compoundVariants: [
-			{
-				className: "gap-1",
-			},
-		],
-		defaultVariants: {
-			iconOrientation: "left",
+const iconButtonVariants = cva("", {
+	variants: {
+		iconOrientation: {
+			left: "flex-row gap-1",
+			center: "flex-row justify-center gap-1",
+			right: "flex-row gap-1",
 		},
 	},
-);
+	defaultVariants: {
+		iconOrientation: "left",
+	},
+});
 
-export interface IconButtonProps
-	extends ButtonProps,
-		VariantProps<typeof iconButtonVariants> {
+export interface IconButtonProps extends ButtonProps, VariantProps<typeof iconButtonVariants> {
 	icon?: React.ReactNode;
 	rightIcon?: React.ReactNode;
+	/** A hint on hover and focus. On an icon-only button it also names the button when no `aria-label` is given. */
+	tooltip?: React.ReactNode;
+	/** Which side the tooltip opens on. */
+	tooltipSide?: "top" | "bottom" | "left" | "right";
 }
 
-const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
-	(
-		{
-			className,
-			variant,
-			size,
-			iconOrientation = "left",
-			asChild = false,
-			icon,
-			rightIcon,
-			children,
-			...props
-		},
-		ref,
-	) => {
-		const getIconColor = () => {
-			switch (variant) {
-				case "secondary":
-				case "muted":
-					return "group-hover:text-inherit";
-				case "skeleton":
-					return "";
-				case "primary":
-					return "text-primary-foreground";
-				case "destructive":
-					return "text-error-light";
-				default:
-					return "text-tertiary-foreground"; // Default fallback
-			}
-		};
+function IconButton({
+	className,
+	variant,
+	size,
+	iconOrientation = "left",
+	asChild = false,
+	icon,
+	rightIcon,
+	tooltip,
+	tooltipSide,
+	children,
+	"aria-label": ariaLabel,
+	...props
+}: IconButtonProps) {
+	const getIconColor = () => {
+		switch (variant) {
+			case "secondary":
+			case "muted":
+				return "group-hover:text-inherit";
+			case "skeleton":
+				return "";
+			case "primary":
+				return "text-primary-foreground";
+			case "destructive":
+				return "text-error-light";
+			default:
+				return "text-tertiary-foreground";
+		}
+	};
 
-		const renderIcon = (icon: React.ReactNode) => {
-			if (!icon) return null;
+	const renderIcon = (icon: React.ReactNode) => {
+		if (!icon) return null;
 
-			if (
-				React.isValidElement<{ className?: string; "aria-label"?: string }>(
-					icon,
-				)
-			) {
-				return React.cloneElement(icon, {
-					// Decorative unless the caller named the icon itself.
-					...(icon.props["aria-label"] ? {} : { "aria-hidden": true }),
-					className: cn(
-						size === "sm" ? "size-3" : "size-3.5",
-						getIconColor(),
-						icon.props.className,
-					),
-				} as React.HTMLAttributes<HTMLElement>);
-			}
+		if (React.isValidElement<{ className?: string; "aria-label"?: string }>(icon)) {
+			return React.cloneElement(icon, {
+				// Decorative unless the caller named the icon itself.
+				...(icon.props["aria-label"] ? {} : { "aria-hidden": true }),
+				className: cn(size === "sm" ? "size-3" : "size-3.5", getIconColor(), icon.props.className),
+			} as React.HTMLAttributes<HTMLElement>);
+		}
 
-			return icon;
-		};
+		return icon;
+	};
 
-		const renderContent = () => {
-			switch (iconOrientation) {
-				case "left":
-					return (
-						<>
-							{renderIcon(icon)}
-							{children}
-							{renderIcon(rightIcon)}
-						</>
-					);
-				case "right":
-					return (
-						<>
-							{children}
-							{renderIcon(icon)}
-							{renderIcon(rightIcon)}
-						</>
-					);
-				case "center":
-					return (
-						<>
-							{renderIcon(icon || rightIcon)}
-							{children}
-						</>
-					);
-				default:
-					return (
-						<>
-							{renderIcon(icon)}
-							{children}
-							{renderIcon(rightIcon)}
-						</>
-					);
-			}
-		};
-
-		const iconToMainClass = () => {
-			switch (iconOrientation) {
-				case "center":
-					return "!h-6 w-6"; // by default is size small
-				default:
-					return "";
-			}
-		};
-
-		return (
-			<Button
-				ref={ref}
-				variant={variant}
-				size={size}
-				asChild={asChild}
-				className={cn(
-					iconButtonVariants({ iconOrientation }),
-					iconToMainClass(),
-					className,
-				)}
-				{...props}
-			>
-				{renderContent()}
-			</Button>
+	const content =
+		iconOrientation === "right" ? (
+			<>
+				{children}
+				{renderIcon(icon)}
+				{renderIcon(rightIcon)}
+			</>
+		) : iconOrientation === "center" ? (
+			<>
+				{renderIcon(icon || rightIcon)}
+				{children}
+			</>
+		) : (
+			<>
+				{renderIcon(icon)}
+				{children}
+				{renderIcon(rightIcon)}
+			</>
 		);
-	},
-);
 
-IconButton.displayName = "IconButton";
+	const button = (
+		<Button
+			data-slot="icon-button"
+			variant={variant}
+			size={size}
+			asChild={asChild}
+			// A centred icon has no label beside it, so the button is square at the small size.
+			className={cn(iconButtonVariants({ iconOrientation }), iconOrientation === "center" && "h-6 w-6", className)}
+			aria-label={ariaLabel ?? (!children && typeof tooltip === "string" ? tooltip : undefined)}
+			{...props}
+		>
+			{content}
+		</Button>
+	);
+
+	if (!tooltip) return button;
+
+	return (
+		<Tooltip>
+			<TooltipTrigger asChild>{button}</TooltipTrigger>
+			<TooltipContent side={tooltipSide}>{tooltip}</TooltipContent>
+		</Tooltip>
+	);
+}
 
 export { IconButton, iconButtonVariants };

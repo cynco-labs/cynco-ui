@@ -1,5 +1,5 @@
-import { useState } from "react";
 import { TagInput } from "@cynco-labs/ui";
+import { useState } from "react";
 
 export default function TagInputDemo() {
 	const [s, setS] = useState(["finance@nusantara.my", "ap@nusantara.my"]);

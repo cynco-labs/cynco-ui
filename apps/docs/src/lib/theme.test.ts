@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { ACCENTS, ACCENT_ORDER, type Hex, customAccent, fillsDark, fillsLight, readsDark, themeCss } from "./theme.ts";
+import { ACCENT_ORDER, ACCENTS, customAccent, fillsDark, fillsLight, type Hex, readsDark, themeCss } from "./theme.ts";
 
 test("every preset passes contrast on both themes", () => {
 	for (const name of ACCENT_ORDER) {
@@ -32,7 +32,11 @@ test("an accent overrides primary wherever the theme sets it, a radius only on t
 	const blocks = css.split("\n}\n").map((b) => b.split(" {\n"));
 	assert.deepEqual(
 		blocks.map(([selector]) => selector.split(",\n")),
-		[[":root", ".light:not(.react-flow)", '[data-theme="light"]', ".preset-modern", '[data-theme="modern"]'], [".dark:not(.react-flow)", '[data-theme$="dark"]'], [":root"]],
+		[
+			[":root", ".light:not(.react-flow)", '[data-theme="light"]', ".preset-modern", '[data-theme="modern"]'],
+			[".dark:not(.react-flow)", '[data-theme$="dark"]'],
+			[":root"],
+		],
 	);
 	assert.equal(blocks[0][1], "\t--primary: #117c39;");
 	assert.equal(blocks[1][1], "\t--primary: #12823b;\n\t--primary-text: #4ade80;");

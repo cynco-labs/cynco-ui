@@ -1,10 +1,6 @@
 "use client";
 
-import type {
-	ColumnDef,
-	Updater,
-	VisibilityState,
-} from "@tanstack/react-table";
+import type { ColumnDef, Updater, VisibilityState } from "@tanstack/react-table";
 import { useCallback, useMemo, useRef, useState, useSyncExternalStore } from "react";
 
 const STORAGE_PREFIX = "cynco-ui:table-columns:";
@@ -127,16 +123,10 @@ export function useColumnVisibility<T>({
 
 	// Only user-initiated changes (column toggles) flow through this setter,
 	// so the dirty flag accurately reflects unsaved user intent.
-	const setColumnVisibility = useCallback(
-		(updaterOrValue: Updater<VisibilityState>) => {
-			const newState =
-				typeof updaterOrValue === "function"
-					? updaterOrValue(columnVisibilityRef.current)
-					: updaterOrValue;
-			setEdited(newState);
-		},
-		[],
-	);
+	const setColumnVisibility = useCallback((updaterOrValue: Updater<VisibilityState>) => {
+		const newState = typeof updaterOrValue === "function" ? updaterOrValue(columnVisibilityRef.current) : updaterOrValue;
+		setEdited(newState);
+	}, []);
 
 	const saveColumnVisibility = useCallback(() => {
 		if (!storageKey) return;

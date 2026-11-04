@@ -9,10 +9,9 @@ import { SavedViewsBar } from "@cynco-labs/ui";
 ## Usage
 
 ```tsx
-import { Fragment, useState } from "react";
-import { DotsThreeIcon, PlusIcon } from "@phosphor-icons/react";
 import {
 	Button,
+	type DataColumn,
 	DataList,
 	DocStatus,
 	DropdownMenu,
@@ -22,16 +21,17 @@ import {
 	DropdownMenuLabel,
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
+	formatDate,
 	INVOICE_STATUS,
 	Kbd,
 	Money,
-	SavedViewsBar,
-	formatDate,
-	sumAmounts,
-	type DataColumn,
 	type SavedView,
 	type SavedViewFilter,
+	SavedViewsBar,
+	sumAmounts,
 } from "@cynco-labs/ui";
+import { DotsThreeIcon, PlusIcon } from "@phosphor-icons/react";
+import { Fragment, useState } from "react";
 
 const TODAY = "2026-11-01";
 
@@ -133,18 +133,17 @@ function match(r: Row, f: SavedViewFilter) {
 	if (f.field === "customer") return r.customer === f.value;
 	if (f.field === "owner") return f.value === "Me" ? r.owner === "me" : true;
 	if (f.field === "due")
-		return f.value === "This week"
-			? r.due >= TODAY && r.due <= "2026-11-07" && r.status !== "paid"
-			: true;
+		return f.value === "This week" ? r.due >= TODAY && r.due <= "2026-11-07" && r.status !== "paid" : true;
 	if (f.field === "amount") return Number(r.amount) >= 10000;
 	return true;
 }
 
 function apply(fs: SavedViewFilter[]) {
 	const byField: Record<string, SavedViewFilter[]> = {};
-	fs.forEach((f) => {
-		(byField[f.field] = byField[f.field] || []).push(f);
-	});
+	for (const f of fs) {
+		byField[f.field] ??= [];
+		byField[f.field].push(f);
+	}
 	return rows.filter((r) => Object.keys(byField).every((k) => byField[k].some((f) => match(r, f))));
 }
 
@@ -233,7 +232,7 @@ export default function SavedViewsBarDemo() {
 	const shown = apply(filters);
 	function add(field: string, label: string, value: string) {
 		if (filters.some((x) => x.field === field && x.value === value)) return;
-		setFilters(filters.concat({ id: "f" + seq++, field, label, value }));
+		setFilters(filters.concat({ id: `f${seq++}`, field, label, value }));
 	}
 	const addFilter = (
 		<DropdownMenu>
@@ -294,7 +293,7 @@ export default function SavedViewsBarDemo() {
 				totals={
 					shown.length
 						? {
-								label: shown.length + " invoice" + (shown.length === 1 ? "" : "s"),
+								label: `${shown.length} invoice${shown.length === 1 ? "" : "s"}`,
 								amount: <Money amount={sumAmounts(shown.map((r) => r.amount))} />,
 							}
 						: undefined
@@ -331,4 +330,4 @@ views / defaultViews / onViewsChange (SavedView: id, name, filters, count, share
 
 A blue dot marks a modified view; locked views offer Save as new only. The tab row scrolls sideways on narrow containers and the save actions wrap under the chips.
 
-Category: Productivity. Source: `packages/ui/src/productivity/navigation.tsx`.
+Category: Productivity. Source: `packages/ui/src/productivity/navigation/saved-views-bar.tsx:78-443`.

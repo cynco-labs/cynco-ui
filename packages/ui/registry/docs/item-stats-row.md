@@ -34,7 +34,7 @@ Above the items list.
 
 `stats` {avgProfitMargin, avgRevenuePerItem, highestEarningItem, mostSoldItem}; optional `realizedMargins` {marginPercent, lineCount, belowCostItemCount}, `currency`, `windowDays`; optional `className` and native div props on the root.
 
-- `stats`: `{ avgProfitMargin: number | null; avgRevenuePerItem: number | null; highestEarningItem: { name: string; revenue: number } | null; mostSoldItem: { name: string; quantity: number } | null }`
+- `stats`: `{ avgProfitMargin: number | null; avgRevenuePerItem: Num; highestEarningItem: { name: string; revenue: Num } | null; mostSoldItem: { name: string; quantity: number } | null }`
 - `realizedMargins?`: `{ marginPercent: number | null; lineCount: number; belowCostItemCount: number }`
 - `currency?`: `string`. Default `"MYR"`.
 - `windowDays?`: `number`. Default `30`.
@@ -44,4 +44,4 @@ Above the items list.
 
 Responsive by container: StatGrid tiles auto-fit and never truncate.
 
-Category: Accounting · Tax, assets & operations. Source: `packages/ui/src/accounting/operations.tsx`.
+Category: Accounting · Tax, assets & operations. Source: `packages/ui/src/accounting/operations/items.tsx:226-298`.

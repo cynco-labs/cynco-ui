@@ -18,7 +18,7 @@ export function PageHeader({
 	titleAccessory?: ReactNode;
 }) {
 	return (
-		<div className={cn("flex flex-wrap items-center gap-2 min-h-10 pb-4", className)} {...props}>
+		<div data-slot="page-header" className={cn("flex flex-wrap items-center gap-2 min-h-10 pb-4", className)} {...props}>
 			<div className="flex w-full justify-between items-center">
 				<div className="text-muted-foreground text-md py-0 px-2 rounded-lg flex gap-2 items-center">
 					{icon}

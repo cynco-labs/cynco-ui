@@ -13,9 +13,7 @@ export default function ConfirmationDemo() {
 		<div className="max-w-[520px]">
 			<Confirmation state="approval-requested" approval={{ id: "a1" }}>
 				<ConfirmationTitle>
-					<ConfirmationRequest>
-						{"Post 14 journal entries for October? This updates the ledger."}
-					</ConfirmationRequest>
+					<ConfirmationRequest>{"Post 14 journal entries for October? This updates the ledger."}</ConfirmationRequest>
 					<ConfirmationAccepted>Approved</ConfirmationAccepted>
 					<ConfirmationRejected>Rejected</ConfirmationRejected>
 				</ConfirmationTitle>

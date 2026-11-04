@@ -1,9 +1,6 @@
 "use client";
 
 import { CheckIcon, CopyIcon } from "@phosphor-icons/react";
-import { LiveStatus } from "../general/live-status";
-import { Button } from "../ui/button";
-import { cn } from "../../lib/utils";
 import {
 	type ComponentProps,
 	createContext,
@@ -19,6 +16,9 @@ import { createHighlighterCore, type HighlighterCore } from "shiki/core";
 import { createJavaScriptRegexEngine } from "shiki/engine/javascript";
 import { bundledLanguages } from "shiki/langs";
 import { bundledThemes } from "shiki/themes";
+import { cn } from "../../lib/utils";
+import { LiveStatus } from "../general/live-status";
+import { Button } from "../ui/button";
 
 type CodeBlockProps = HTMLAttributes<HTMLDivElement> & {
 	code: string;
@@ -34,14 +34,7 @@ const CodeBlockContext = createContext<CodeBlockContextType>({
 	code: "",
 });
 
-const LINE_NUMBER_CLASSES = [
-	"inline-block",
-	"min-w-10",
-	"mr-4",
-	"text-right",
-	"select-none",
-	"text-muted-foreground",
-];
+const LINE_NUMBER_CLASSES = ["inline-block", "min-w-10", "mr-4", "text-right", "select-none", "text-muted-foreground"];
 
 const lineNumberTransformer: ShikiTransformer = {
 	name: "line-numbers",
@@ -53,6 +46,18 @@ const lineNumberTransformer: ShikiTransformer = {
 			properties: { "aria-hidden": "true", className: LINE_NUMBER_CLASSES },
 			children: [{ type: "text", value: String(line) }],
 		});
+	},
+};
+
+/**
+ * Shiki writes the theme's background and foreground onto the `<pre>` as an inline style, which only an
+ * `!important` utility could override. Dropping it lets the pane's own `bg-background` / `text-foreground`
+ * apply, so the block follows the theme while the token colours stay inline.
+ */
+const paneColourTransformer: ShikiTransformer = {
+	name: "pane-colours",
+	pre(node) {
+		node.properties.style = undefined;
 	},
 };
 
@@ -87,8 +92,8 @@ export async function highlightCode(
 ): Promise<[string, string]> {
 	const highlighter = await getHighlighter(language);
 	const transformers: ShikiTransformer[] = showLineNumbers
-		? [lineNumberTransformer]
-		: [];
+		? [lineNumberTransformer, paneColourTransformer]
+		: [paneColourTransformer];
 	return [
 		highlighter.codeToHtml(code, { lang: language, theme: LIGHT_THEME, transformers }),
 		highlighter.codeToHtml(code, { lang: language, theme: "one-dark-pro", transformers }),
@@ -96,7 +101,11 @@ export async function highlightCode(
 }
 
 const PANE_CLASSES =
-	"overflow-auto outline-none focus-ring-inset [&>pre]:m-0 [&>pre]:bg-background! [&>pre]:p-4 [&>pre]:text-foreground! [&>pre]:text-sm [&_code]:font-mono [&_code]:text-sm";
+	"overflow-auto outline-none focus-ring-inset [&>pre]:m-0 [&>pre]:bg-background [&>pre]:p-4 [&>pre]:text-foreground [&>pre]:text-sm [&_code]:font-mono [&_code]:text-sm";
+
+/** The scrolling pane. Long lines scroll sideways, which only a focusable container lets a keyboard reach. */
+// biome-ignore lint/a11y/noNoninteractiveTabindex: a scroll container must take focus or keyboard users cannot scroll it.
+const CodePane = (props: HTMLAttributes<HTMLDivElement>) => <div tabIndex={0} {...props} />;
 
 export const CodeBlock = ({
 	code,
@@ -127,36 +136,31 @@ export const CodeBlock = ({
 	return (
 		<CodeBlockContext.Provider value={{ code }}>
 			<div
-				className={cn(
-					"group relative w-full overflow-hidden rounded-md border bg-background text-foreground",
-					className,
-				)}
+				className={cn("group relative w-full overflow-hidden rounded-md border bg-background text-foreground", className)}
 				{...props}
 			>
 				<div className="relative">
-					{/* tabIndex: long lines scroll horizontally, which keyboard users must reach. */}
 					{html ? (
 						<>
-							<div
+							<CodePane
 								className={cn(PANE_CLASSES, "dark:hidden")}
-								// biome-ignore lint/security/noDangerouslySetInnerHtml: "this is needed."
+								// biome-ignore lint/security/noDangerouslySetInnerHtml: Shiki's own highlighter output, built here from the `code` prop.
 								dangerouslySetInnerHTML={{ __html: html }}
-								tabIndex={0}
 							/>
-							<div
+							<CodePane
 								className={cn(PANE_CLASSES, "hidden dark:block")}
-								// biome-ignore lint/security/noDangerouslySetInnerHtml: "this is needed."
+								// biome-ignore lint/security/noDangerouslySetInnerHtml: Shiki's own highlighter output, built here from the `code` prop.
 								dangerouslySetInnerHTML={{ __html: darkHtml }}
-								tabIndex={0}
 							/>
 						</>
 					) : (
 						// Plain text with Shiki's line structure until the highlighter is ready, so the code is
 						// readable on first paint (and server-rendered) and the colours swap in without a shift.
-						<div className={PANE_CLASSES} tabIndex={0}>
-							<pre tabIndex={0}>
+						<CodePane className={PANE_CLASSES}>
+							<pre>
 								<code>
 									{code.split("\n").map((line, i) => (
+										// biome-ignore lint/suspicious/noArrayIndexKey: a line of code is identified by its position and the list never reorders.
 										<Fragment key={i}>
 											{i > 0 && "\n"}
 											<span className="line">
@@ -171,13 +175,9 @@ export const CodeBlock = ({
 									))}
 								</code>
 							</pre>
-						</div>
+						</CodePane>
 					)}
-					{children && (
-						<div className="absolute top-2 right-2 flex items-center gap-2">
-							{children}
-						</div>
-					)}
+					{children && <div className="absolute top-2 right-2 flex items-center gap-2">{children}</div>}
 				</div>
 			</div>
 		</CodeBlockContext.Provider>
@@ -237,9 +237,7 @@ export const CodeBlockCopyButton = ({
 				{children ?? <Icon size={14} />}
 			</Button>
 			{/* Rendered empty up front so the confirmation is announced reliably. */}
-			<LiveStatus>
-				{isCopied ? "Copied" : ""}
-			</LiveStatus>
+			<LiveStatus>{isCopied ? "Copied" : ""}</LiveStatus>
 		</>
 	);
 };

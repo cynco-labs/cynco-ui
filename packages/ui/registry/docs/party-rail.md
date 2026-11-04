@@ -17,26 +17,26 @@ export default function PartyRailDemo() {
 			onSetPrimaryContact={() => {}}
 			onEditContact={() => {}}
 			onAddContact={() => {}}
-			role="customer"
+			party="customer"
 			className="max-w-[640px]"
-			ledgerBalance={48250.4}
-			openItemsTotal={48250.4}
-			aging={{ current: 21470.4, days1to30: 14100, days31to60: 8180, days61plus: 4500 }}
-			credits={[{ currency: "MYR", amount: 1200, count: 2 }]}
+			ledgerBalance={"48250.40"}
+			openItemsTotal={"48250.40"}
+			aging={{ current: "21470.40", days1to30: "14100.00", days31to60: "8180.00", days61plus: "4500.00" }}
+			credits={[{ currency: "MYR", amount: "1200.00", count: 2 }]}
 			creditNotesHref="/sales/credit-notes?customer=tropika-kopi"
 			trend={[
-				{ month: "2025-11", total: 12400 },
-				{ month: "2025-12", total: 18900 },
-				{ month: "2026-01", total: 9800 },
-				{ month: "2026-02", total: 14200 },
-				{ month: "2026-03", total: 16750 },
-				{ month: "2026-04", total: 11300 },
-				{ month: "2026-05", total: 20450 },
-				{ month: "2026-06", total: 15800 },
-				{ month: "2026-07", total: 17200 },
-				{ month: "2026-08", total: 13900 },
-				{ month: "2026-09", total: 19100 },
-				{ month: "2026-10", total: 16620.75 },
+				{ month: "2025-11", total: "12400.00" },
+				{ month: "2025-12", total: "18900.00" },
+				{ month: "2026-01", total: "9800.00" },
+				{ month: "2026-02", total: "14200.00" },
+				{ month: "2026-03", total: "16750.00" },
+				{ month: "2026-04", total: "11300.00" },
+				{ month: "2026-05", total: "20450.00" },
+				{ month: "2026-06", total: "15800.00" },
+				{ month: "2026-07", total: "17200.00" },
+				{ month: "2026-08", total: "13900.00" },
+				{ month: "2026-09", total: "19100.00" },
+				{ month: "2026-10", total: "16620.75" },
 			]}
 			contacts={[
 				{
@@ -66,15 +66,15 @@ Right column of customer and vendor pages.
 
 ## Props
 
-role, currency, ledgerBalance, openItemsTotal, aging {current, days1to30, days31to60, days61plus}, trend [{month, total}], credits [{currency, amount, count}], contacts [{name, role, email, phone, isPrimary}], className (e.g. grid-cols-2); className and native aside props.
+party, currency, ledgerBalance, openItemsTotal, aging {current, days1to30, days31to60, days61plus}, trend [{month, total}], credits [{currency, amount, count}], contacts [{name, party, email, phone, isPrimary}], className (e.g. grid-cols-2); className and native aside props.
 
-- `role`: `"customer" | "vendor"`
-- `ledgerBalance`: `number`. Subledger balance (ground truth).
-- `openItemsTotal`: `number`. Sum of open bills / invoices — ties out against the ledger.
+- `party`: `"customer" | "vendor"`
+- `ledgerBalance`: `Amount`. Subledger balance (ground truth).
+- `openItemsTotal`: `Amount`. Sum of open bills / invoices — ties out against the ledger.
 - `aging`: `PartyAging`
 - `currency?`: `string`. Default `"MYR"`.
-- `trend?`: `Array<{ month: string; total: number }>`. Last 12 months: { month: "2026-10", total }.
-- `credits?`: `Array<{ currency: string; amount: number; count: number }>`. Unused credit notes per currency (customers only).
+- `trend?`: `Array<{ month: string; total: Amount }>`. Last 12 months: { month: "2026-10", total }.
+- `credits?`: `Array<{ currency: string; amount: Amount; count: number }>`. Unused credit notes per currency (customers only).
 - `creditNotesHref?`: `string`. Where "View credit notes" goes; renders it as a real link.
 - `onViewCreditNotes?`: `() => void`. In-app handler for "View credit notes" when there is no URL; renders it as a button. Without either, the action is hidden.
 - `contacts?`: `PartyContact[]`
@@ -87,4 +87,4 @@ role, currency, ledgerBalance, openItemsTotal, aging {current, days1to30, days31
 
 Responsive by container: one column as a rail, two from a 36rem container, three from 64rem.
 
-Category: Accounting · Expenses & parties. Source: `packages/ui/src/accounting/parties.tsx`.
+Category: Accounting · Expenses & parties. Source: `packages/ui/src/accounting/parties/party-rail.tsx:85-344`.

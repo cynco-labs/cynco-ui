@@ -1,7 +1,7 @@
 ---
-import { ACCENT_SHORTCUT, DEFAULT_SETTINGS, SETTINGS } from "../lib/settings";
-import { ACCENTS, ACCENT_ORDER } from "../lib/theme";
 import { KBD, SEG, SEG_GROUP } from "../lib/classes";
+import { ACCENT_SHORTCUT, DEFAULT_SETTINGS, SETTINGS } from "../lib/settings";
+import { ACCENT_ORDER, ACCENTS } from "../lib/theme";
 
 interface Props {
 	/** `panel`: one setting per row (header popover). `strip`: settings side by side, wrapping (home page). */
@@ -15,7 +15,7 @@ const SWATCH =
 
 <div class:list={[variant === "strip" ? "flex flex-wrap items-center gap-x-6 gap-y-3" : "grid gap-2.5"]} data-settings>
 	<div class:list={row} role="group" aria-label="Accent">
-		<span class="flex items-center gap-1.5 text-[12.5px] text-tertiary-foreground">
+		<span class="flex items-center gap-1.5 text-sm text-tertiary-foreground">
 			Accent
 			<kbd class:list={[KBD, "max-sm:hidden"]} title={`Press ${ACCENT_SHORTCUT.toUpperCase()} to switch`}>{ACCENT_SHORTCUT.toUpperCase()}</kbd>
 		</span>
@@ -41,7 +41,7 @@ const SWATCH =
 	{
 		SETTINGS.map((s) => (
 			<div class:list={row} role="group" aria-label={s.label}>
-				<span class="flex items-center gap-1.5 text-[12.5px] text-tertiary-foreground">
+				<span class="flex items-center gap-1.5 text-sm text-tertiary-foreground">
 					{s.label}
 					<kbd class:list={[KBD, "max-sm:hidden"]} title={`Press ${s.shortcut.toUpperCase()} to switch`}>
 						{s.shortcut.toUpperCase()}
@@ -58,11 +58,11 @@ const SWATCH =
 		))
 	}
 	<div class:list={["flex items-center gap-3", variant === "panel" ? "justify-end border-t border-border pt-3" : ""]}>
-		<p class="mr-auto text-[12px] leading-snug text-subtle empty:hidden" data-accent-note></p>
+		<p class="mr-auto text-xs leading-snug text-subtle empty:hidden" data-accent-note></p>
 		<button
 			type="button"
 			data-copy-theme
-			class="inline-flex h-7 shrink-0 items-center gap-1.5 rounded-md border border-border bg-interactive-secondary px-2.5 text-[12.5px] font-medium text-foreground transition-colors hover:bg-interactive-secondary-hover"
+			class="inline-flex h-7 shrink-0 items-center gap-1.5 rounded-md border border-border bg-interactive-secondary px-2.5 text-sm font-medium text-foreground transition-colors hover:bg-interactive-secondary-hover"
 			title="Copy the CSS and setup for these settings"
 		>
 			<svg class="size-3.5" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M216 32H88a8 8 0 0 0-8 8v40H40a8 8 0 0 0-8 8v128a8 8 0 0 0 8 8h128a8 8 0 0 0 8-8v-40h40a8 8 0 0 0 8-8V40a8 8 0 0 0-8-8Zm-56 176H48V96h112Zm48-48h-32V88a8 8 0 0 0-8-8H96V48h112Z"></path></svg>

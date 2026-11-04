@@ -1,5 +1,5 @@
-import { ArrowSquareOutIcon, PlusIcon } from "@phosphor-icons/react";
 import { AccountingWorkbenchHeader, IconButton } from "@cynco-labs/ui";
+import { ArrowSquareOutIcon, PlusIcon } from "@phosphor-icons/react";
 
 export default function AccountingWorkbenchHeaderDemo() {
 	return (

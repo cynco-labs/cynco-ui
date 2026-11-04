@@ -6,10 +6,10 @@ export default function PanelDemo() {
 		<div style={{ height: 180 }} className="rounded-lg border">
 			<Canvas nodes={[]} edges={[]}>
 				<Panel position="top-left">
-					<span className="text-body px-1">Workflow · draft</span>
+					<span className="text-sm font-medium text-muted-foreground px-1">Workflow · draft</span>
 				</Panel>
 				<Panel position="top-right">
-					<Button variant="primary" size="mini">
+					<Button variant="primary" size="sm">
 						Publish
 					</Button>
 				</Panel>

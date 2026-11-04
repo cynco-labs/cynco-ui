@@ -1,6 +1,6 @@
 # CopyablePre
 
-A code block (or inline span) with a copy button.
+A code block with a copy button pinned to its corner.
 
 ```tsx
 import { CopyablePre } from "@cynco-labs/ui";
@@ -9,13 +9,12 @@ import { CopyablePre } from "@cynco-labs/ui";
 ## Usage
 
 ```tsx
-import { CopyablePre, CopyableSpan } from "@cynco-labs/ui";
+import { CopyablePre } from "@cynco-labs/ui";
 
 export default function CopyablePreDemo() {
 	return (
-		<div className="flex flex-col gap-3 max-w-[460px]">
-			<CopyablePre text="npm install @cynco-labs/ui" />
-			<CopyableSpan text="am_pk_test_81Hx" />
+		<div className="max-w-[460px]">
+			<CopyablePre text={'pnpm add @cynco-labs/ui\nimport { DataTable } from "@cynco-labs/ui";'} />
 		</div>
 	);
 }
@@ -23,13 +22,13 @@ export default function CopyablePreDemo() {
 
 ## Use
 
-Install commands and API keys in onboarding.
+Install commands and multi-line snippets. For a single value inline, use `CopyButton`.
 
 ## Props
 
-`text`; `CopyableSpan` for inline.
+`text`, plus any div props.
 
 - `text`: `string`
 - Also accepts `ComponentProps<"div">`.
 
-Category: Components · Data display. Source: `packages/ui/src/base/components/general/copyable-pre.tsx`.
+Category: Components · Data display. Source: `packages/ui/src/base/components/general/copyable-pre.tsx:7-21`.

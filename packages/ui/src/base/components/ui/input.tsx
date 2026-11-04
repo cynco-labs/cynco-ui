@@ -1,21 +1,33 @@
 "use client";
 
-import { cn } from "../../lib/utils";
 import { cva, type VariantProps } from "class-variance-authority";
-import * as React from "react";
+import type * as React from "react";
+import {
+	inputFocusClassName,
+	inputHeightClassName,
+	inputInvalidClassName,
+	inputPaddingClassName,
+	inputSurfaceClassName,
+} from "../../lib/input-classes";
+import { cn } from "../../lib/utils";
 
 const inputVariants = cva(
-	`file:text-foreground selection:bg-primary selection:text-primary-foreground w-full min-w-0 rounded-lg border bg-transparent text-base outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm placeholder:select-none transition-[border-color,box-shadow] duration-100 p-2
-
-	// Custom classes
-	h-input input-base input-shadow-default
-	`,
+	cn(
+		"w-full min-w-0 file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground selection:bg-primary selection:text-primary-foreground",
+		inputSurfaceClassName,
+		inputHeightClassName,
+		inputPaddingClassName,
+	),
 	{
 		variants: {
 			variant: {
-				default: "input-state-focus",
-				destructive: "input-destructive-base input-destructive-shadow",
-				headless: "!border-0 !shadow-none !ring-0 !bg-transparent !p-0 !px-0.5",
+				default: inputFocusClassName,
+				destructive: cn(
+					inputFocusClassName,
+					"border-destructive hover:border-destructive focus:border-destructive focus:shadow-input-destructive",
+				),
+				/** No surface of its own: for a field already framed by its container, such as a table cell. */
+				headless: "border-transparent bg-transparent p-0 px-0.5 shadow-none",
 			},
 		},
 		defaultVariants: {
@@ -24,33 +36,14 @@ const inputVariants = cva(
 	},
 );
 
-interface InputProps
-	extends React.ComponentProps<"input">,
-		VariantProps<typeof inputVariants> {}
+interface InputProps extends React.ComponentProps<"input">, VariantProps<typeof inputVariants> {}
 
-function Input({
-	className,
-	type,
-	variant,
-	onFocus,
-	onBlur,
-	...props
-}: InputProps) {
-	const [isFocused, setIsFocused] = React.useState(false);
+function Input({ className, type, variant, ...props }: InputProps) {
 	return (
 		<input
 			type={type}
 			data-slot="input"
-			onFocus={(e) => {
-				setIsFocused(true);
-				onFocus?.(e);
-			}}
-			onBlur={(e) => {
-				setIsFocused(false);
-				onBlur?.(e);
-			}}
-			data-state={isFocused ? "open" : "closed"}
-			className={cn(inputVariants({ variant }), className)}
+			className={cn(inputVariants({ variant }), inputInvalidClassName, className)}
 			{...props}
 		/>
 	);

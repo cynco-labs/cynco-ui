@@ -1,5 +1,5 @@
-import { existsSync } from "node:fs";
 import { defineCollection, z } from "astro:content";
+import { existsSync } from "node:fs";
 import { glob } from "astro/loaders";
 
 const guides = defineCollection({

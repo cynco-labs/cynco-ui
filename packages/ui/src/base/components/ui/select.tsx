@@ -1,6 +1,15 @@
 "use client";
 
+import { Select as SelectPrimitive } from "@base-ui/react/select";
 import { CaretDownIcon, CheckIcon } from "@phosphor-icons/react";
+import type * as React from "react";
+import {
+	inputHeightClassName,
+	inputInvalidClassName,
+	inputPaddingClassName,
+	inputPopupClassName,
+	inputSurfaceClassName,
+} from "../../lib/input-classes";
 import {
 	overlayItemClassName,
 	overlayItemHighlightClassName,
@@ -11,8 +20,6 @@ import {
 	overlaySurfaceClassName,
 } from "../../lib/overlay-classes";
 import { cn } from "../../lib/utils";
-import { Select as SelectPrimitive } from "@base-ui/react/select";
-import type * as React from "react";
 
 function Select({
 	onValueChange,
@@ -21,19 +28,14 @@ function Select({
 	defaultValue,
 	items,
 	...props
-}: Omit<
-	SelectPrimitive.Root.Props<string>,
-	"onValueChange" | "onOpenChange"
-> & {
+}: Omit<SelectPrimitive.Root.Props<string>, "onValueChange" | "onOpenChange"> & {
 	/** `null` when the selection is cleared. */
 	onValueChange?: (value: string | null) => void;
 	onOpenChange?: (open: boolean) => void;
 	/** `null` means nothing is selected (the placeholder shows) while staying controlled. */
 	value?: string | null;
 	defaultValue?: string;
-	items?:
-		| Record<string, string>
-		| ReadonlyArray<{ label: string; value: string }>;
+	items?: Record<string, string> | ReadonlyArray<{ label: string; value: string }>;
 }) {
 	const Root = SelectPrimitive.Root<string>;
 	return (
@@ -54,30 +56,28 @@ function SelectGroup({ ...props }: SelectPrimitive.Group.Props) {
 }
 
 function SelectValue({ className, ...props }: SelectPrimitive.Value.Props) {
-	return (
-		<SelectPrimitive.Value
-			data-slot="select-value"
-			className={cn("min-w-0 truncate", className)}
-			{...props}
-		/>
-	);
+	return <SelectPrimitive.Value data-slot="select-value" className={cn("min-w-0 truncate", className)} {...props} />;
 }
 
 function SelectTrigger({
 	className,
-	size = "default",
+	size = "md",
 	children,
 	...props
 }: SelectPrimitive.Trigger.Props & {
-	size?: "sm" | "default";
+	/** `md` matches an Input (28px); `sm` is the 24px field for dense toolbars. */
+	size?: "sm" | "md";
 }) {
 	return (
 		<SelectPrimitive.Trigger
 			data-slot="select-trigger"
 			data-size={size}
 			className={cn(
-				"[&_svg:not([class*='text-'])]:text-muted-foreground rounded-lg flex items-center justify-between gap-2 text-sm outline-none focus-ring disabled:cursor-not-allowed disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 cursor-pointer min-w-0 whitespace-nowrap",
-				`input-base input-shadow-default input-state-open`,
+				"flex min-w-0 cursor-pointer items-center justify-between gap-2 whitespace-nowrap [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground",
+				inputSurfaceClassName,
+				inputPopupClassName,
+				inputInvalidClassName,
+				size === "sm" ? "h-6 px-1.5 py-0.5" : cn(inputHeightClassName, inputPaddingClassName),
 				className,
 			)}
 			{...props}
@@ -110,7 +110,7 @@ function SelectContent({
 				side={side}
 				alignItemWithTrigger={false}
 				positionMethod="fixed"
-				className="isolate z-[300] outline-none"
+				className="isolate z-popover outline-none"
 			>
 				<SelectPrimitive.Popup
 					data-slot="select-content"
@@ -129,16 +129,9 @@ function SelectContent({
 	);
 }
 
-function SelectLabel({
-	className,
-	...props
-}: SelectPrimitive.GroupLabel.Props) {
+function SelectLabel({ className, ...props }: SelectPrimitive.GroupLabel.Props) {
 	return (
-		<SelectPrimitive.GroupLabel
-			data-slot="select-label"
-			className={cn(overlayLabelClassName, className)}
-			{...props}
-		/>
+		<SelectPrimitive.GroupLabel data-slot="select-label" className={cn(overlayLabelClassName, className)} {...props} />
 	);
 }
 
@@ -170,9 +163,7 @@ function SelectItem({
 					</SelectPrimitive.ItemIndicator>
 				</span>
 			) : null}
-			<SelectPrimitive.ItemText className="flex items-center gap-2">
-				{children}
-			</SelectPrimitive.ItemText>
+			<SelectPrimitive.ItemText className="flex items-center gap-2">{children}</SelectPrimitive.ItemText>
 		</SelectPrimitive.Item>
 	);
 }
@@ -181,23 +172,10 @@ function SelectSeparator({ className, ...props }: React.ComponentProps<"div">) {
 	return (
 		<div
 			data-slot="select-separator"
-			className={cn(
-				overlaySeparatorClassName,
-				"pointer-events-none",
-				className,
-			)}
+			className={cn(overlaySeparatorClassName, "pointer-events-none", className)}
 			{...props}
 		/>
 	);
 }
 
-export {
-	Select,
-	SelectContent,
-	SelectGroup,
-	SelectItem,
-	SelectLabel,
-	SelectSeparator,
-	SelectTrigger,
-	SelectValue,
-};
+export { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectSeparator, SelectTrigger, SelectValue };

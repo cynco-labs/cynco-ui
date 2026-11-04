@@ -19,11 +19,11 @@ export default function BillAlertsDemo() {
 				duplicateBill={{
 					vendorName: "Grand Office Supplies",
 					billNumber: "GOS-55102",
-					totalAmount: 612.3,
+					totalAmount: "612.30",
 				}}
 				status="rejected"
 				rejectionNotes="SST charged at 10% — vendor is not SST-registered. Ask for a corrected invoice."
-				unusedCredit={{ amount: 450, currency: "MYR" }}
+				unusedCredit={{ amount: "450.00", currency: "MYR" }}
 				vendorLoadError
 				lineItemsCorrupted
 			/>
@@ -41,12 +41,12 @@ Above the bill form on the bill detail page.
 isDuplicate, duplicateBill, status, rejectionNotes, unusedCredit {amount, currency}, vendorLoadError, lineItemsCorrupted, onDismissDuplicate, onApplyCredit; className and native div props.
 
 - `isDuplicate?`: `boolean`
-- `duplicateBill?`: `{ vendorName: string | null; billNumber?: string | null; totalAmount?: number; currency?: string } | null`
+- `duplicateBill?`: `{ vendorName: string | null; billNumber?: string | null; totalAmount?: Amount; currency?: string } | null`
 - `status?`: `string`
 - `rejectionNotes?`: `string | null`
 - `vendorLoadError?`: `boolean`
 - `lineItemsCorrupted?`: `boolean`
-- `unusedCredit?`: `{ amount: number; currency?: string } | null`. Vendor credits in the bill's currency (cynco ApplyVendorCreditPanel).
+- `unusedCredit?`: `{ amount: Amount; currency?: string } | null`. Vendor credits in the bill's currency (cynco ApplyVendorCreditPanel).
 - `onDismissDuplicate?`: `() => void`
 - `onApplyCredit?`: `() => void`
 - Also accepts `ComponentProps<"div">`.
@@ -55,4 +55,4 @@ isDuplicate, duplicateBill, status, rejectionNotes, unusedCredit {amount, curren
 
 Responsive by container: each alert's action drops under its text below a 28rem container.
 
-Category: Accounting · Expenses & parties. Source: `packages/ui/src/accounting/parties.tsx`.
+Category: Accounting · Expenses & parties. Source: `packages/ui/src/accounting/parties/bill-detail.tsx:227-314`.

@@ -9,8 +9,8 @@ import { InvoiceLineItems } from "@cynco-labs/ui";
 ## Usage
 
 ```tsx
-import { useState } from "react";
 import { InvoiceLineItems, type SalesLineItem } from "@cynco-labs/ui";
+import { useState } from "react";
 
 export default function InvoiceLineItemsDemo() {
 	const [s, setS] = useState<SalesLineItem[]>([
@@ -18,8 +18,8 @@ export default function InvoiceLineItemsDemo() {
 			name: "Website maintenance retainer",
 			description: "October 2026 · 20 hours",
 			quantity: 1,
-			price: 3500,
-			discount: 0,
+			price: "3500.00",
+			discount: "0.00",
 			taxCode: "sst8",
 			margin: "healthy",
 		},
@@ -27,8 +27,8 @@ export default function InvoiceLineItemsDemo() {
 			name: "A4 brochure printing",
 			description: "Art card 157gsm, full colour",
 			quantity: 500,
-			price: 1.2,
-			discount: 10,
+			price: "1.20",
+			discount: "10.00",
 			taxCode: "sst8",
 			margin: "below_target",
 		},
@@ -38,7 +38,7 @@ export default function InvoiceLineItemsDemo() {
 			items={s}
 			onChange={setS}
 			currency="MYR"
-			estimatedProfit={{ amount: 1265.4, percent: 28, health: "healthy" }}
+			estimatedProfit={{ amount: "1265.40", percent: 28, health: "healthy" }}
 		/>
 	);
 }
@@ -57,7 +57,7 @@ items (name, description, quantity, price, discount, discountType, taxCode, marg
 - `currency?`: `string`. Default `"MYR"`.
 - `taxCodes?`: `readonly SalesTaxCode[]`. Default `DEFAULT_SALES_TAX_CODES`.
 - `readOnly?`: `boolean`. Default `false`.
-- `estimatedProfit?`: `{ amount: number; percent: number; health: NonNullable<SalesLineItem["margin"]> }`. Document-level estimated profit line under the total.
+- `estimatedProfit?`: `{ amount: Amount; percent: number; health: NonNullable<SalesLineItem["margin"]> }`. Document-level estimated profit line under the total.
 - `onAddItem?`: `() => void`
 - `onBrowseLibrary?`: `() => void`
 - Also accepts `ComponentProps<"div">`.
@@ -66,4 +66,4 @@ items (name, description, quantity, price, discount, discountType, taxCode, marg
 
 The footer sits on the tray, below the rows.
 
-Category: Accounting · Sales. Source: `packages/ui/src/accounting/sales.tsx`.
+Category: Accounting · Sales. Source: `packages/ui/src/accounting/sales/invoice-line-items.tsx:42-411`.

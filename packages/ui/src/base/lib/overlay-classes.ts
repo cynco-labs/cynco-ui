@@ -12,14 +12,10 @@ export const overlayItemClassName = `${overlayItemLayoutClassName} data-disabled
 export const overlayItemHighlightClassName =
 	"focus:bg-overlay-hover focus:text-foreground data-highlighted:bg-overlay-hover data-highlighted:text-foreground";
 
-export const overlayItemIndicatorClassName =
-	"pointer-events-none absolute right-2.5 flex items-center justify-center";
+export const overlayItemIndicatorClassName = "pointer-events-none absolute right-2.5 flex items-center justify-center";
 
-export const overlayLabelClassName =
-	"px-2 pt-1.5 pb-1 text-xs font-medium text-tertiary-foreground";
+export const overlayLabelClassName = "px-2 pt-1.5 pb-1 text-xs font-medium text-tertiary-foreground";
 
-export const overlaySeparatorClassName =
-	"-mx-1 my-1 h-px bg-overlay-separator preset:bg-border";
+export const overlaySeparatorClassName = "-mx-1 my-1 h-px bg-overlay-separator preset:bg-border";
 
-export const overlayShortcutClassName =
-	"ml-auto pl-3 text-xs text-tertiary-foreground";
+export const overlayShortcutClassName = "ml-auto pl-3 text-xs text-tertiary-foreground";

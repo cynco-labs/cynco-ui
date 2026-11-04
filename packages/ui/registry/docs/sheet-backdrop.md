@@ -14,7 +14,7 @@ import { SheetBackdrop } from "@cynco-labs/ui";
 export default function SheetBackdropDemo() {
 	return (
 		<div className="flex flex-col gap-2">
-			<div className="text-body">Content behind an inline sheet</div>
+			<div className="text-sm font-medium text-muted-foreground">Content behind an inline sheet</div>
 			<SheetBackdrop isOpen onClose={() => {}} />
 		</div>
 	);
@@ -32,9 +32,10 @@ Behind floating inline sheet panels.
 - `isOpen`: `boolean`
 - `onClose`: `() => void`
 - `zIndex?`: `number`. Default `SHEET_BACKDROP_Z_INDEX`.
+- Also accepts `ComponentProps<typeof motion.div>`.
 
 ## Notes
 
 Click closes.
 
-Category: Components · Overlays. Source: `packages/ui/src/base/components/general/sheet-backdrop.tsx`.
+Category: Components · Overlays. Source: `packages/ui/src/base/components/general/sheet-backdrop.tsx:17-47`.

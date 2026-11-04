@@ -1,14 +1,14 @@
 "use client";
 
 import { XIcon } from "@phosphor-icons/react";
-import { LiveStatus } from "./live-status";
-import { useControllableState } from "../../hooks/use-controllable-state";
-import { cn } from "../../lib/utils";
 import * as React from "react";
 import { useHotkeys } from "react-hotkeys-hook";
+import { useControllableState } from "../../hooks/use-controllable-state";
+import { inputFocusWithinClassName, inputInvalidClassName, inputSurfaceClassName } from "../../lib/input-classes";
+import { cn } from "../../lib/utils";
+import { LiveStatus } from "./live-status";
 
-interface TagInputProps
-	extends Omit<React.ComponentProps<"input">, "value" | "defaultValue" | "onChange"> {
+interface TagInputProps extends Omit<React.ComponentProps<"input">, "value" | "defaultValue" | "onChange"> {
 	/** Controlled tags. */
 	value?: string[];
 	/** Initial tags for uncontrolled use. */
@@ -33,17 +33,18 @@ function TagInput({
 	onTagRemove,
 	...props
 }: TagInputProps) {
-	const [value = defaultValue, setValue] = useControllableState({ prop: valueProp, defaultProp: defaultValue, onChange: onValueChange });
+	const [value = defaultValue, setValue] = useControllableState({
+		prop: valueProp,
+		defaultProp: defaultValue,
+		onChange: onValueChange,
+	});
 	const [internalInputValue, setInternalInputValue] = React.useState("");
 	const [isFocused, setIsFocused] = React.useState(false);
 	// Tags change without focus moving (Space, paste, Backspace), so announce them.
 	const [announcement, setAnnouncement] = React.useState("");
 	const inputRef = React.useRef<HTMLInputElement>(null);
 
-	const inputValue =
-		controlledInputValue !== undefined
-			? controlledInputValue
-			: internalInputValue;
+	const inputValue = controlledInputValue !== undefined ? controlledInputValue : internalInputValue;
 	const setInputValue = onInputChange || setInternalInputValue;
 
 	const addTag = React.useCallback(() => {
@@ -124,31 +125,30 @@ function TagInput({
 	});
 
 	return (
-		<div
+		// A label, so a click anywhere in the box focuses the field without a handler on a plain div.
+		<label
 			className={cn(
-				"file:text-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input-background border-input w-full min-w-0 rounded-lg border bg-transparent outline-none disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",
-				"aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
-				"placeholder:text-placeholder placeholder:select-none min-h-input",
-				"flex items-center flex-wrap gap-2 p-2 cursor-text text-left",
-				isFocused && "data-state-open",
-				"input-base input-shadow-default input-state-focus-within",
+				"flex w-full min-w-0 cursor-text flex-wrap items-center gap-2 p-2 text-left selection:bg-primary selection:text-primary-foreground",
+				inputSurfaceClassName,
+				inputFocusWithinClassName,
+				inputInvalidClassName,
+				"min-h-7",
 				className,
 			)}
 			data-slot="input"
 			data-state={isFocused ? "open" : "closed"}
-			onClick={() => inputRef.current?.focus()}
 		>
 			{value.map((tag, index) => {
 				const displayValue = typeof tag === "string" ? tag : String(tag);
 				return (
 					<div
-						key={index}
+						key={displayValue}
 						className="flex items-center gap-1 border border-border bg-muted rounded-lg pl-3 pr-2 py-1 text-xs"
 					>
-						<span className="text-tiny">{displayValue}</span>
+						<span className="text-2xs">{displayValue}</span>
 						<button
 							type="button"
-							className="relative after:absolute after:-inset-y-1.5 after:-right-2 after:-left-1"
+							className="relative rounded-sm focus-ring after:absolute after:-inset-y-1.5 after:-right-2 after:-left-1"
 							aria-label={`Remove ${displayValue}`}
 							onClick={(e) => {
 								e.stopPropagation();
@@ -166,7 +166,7 @@ function TagInput({
 				{...props}
 				ref={inputRef}
 				type="text"
-				className="outline-none bg-transparent flex-grow min-w-[100px] text-base md:text-sm"
+				className="min-w-[100px] flex-grow bg-transparent text-sm outline-none touch:text-base"
 				placeholder={value.length === 0 ? placeholder : ""}
 				value={inputValue}
 				onChange={handleInputChange}
@@ -181,10 +181,8 @@ function TagInput({
 				data-lpignore="true"
 				data-bwignore="true"
 			/>
-			<LiveStatus>
-				{announcement}
-			</LiveStatus>
-		</div>
+			<LiveStatus>{announcement}</LiveStatus>
+		</label>
 	);
 }
 

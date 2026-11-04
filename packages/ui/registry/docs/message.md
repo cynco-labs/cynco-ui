@@ -9,14 +9,8 @@ import { Message } from "@cynco-labs/ui/ai";
 ## Usage
 
 ```tsx
+import { Message, MessageAction, MessageActions, MessageContent, MessageResponse } from "@cynco-labs/ui/ai";
 import { ArrowsClockwiseIcon, CopyIcon } from "@phosphor-icons/react";
-import {
-	Message,
-	MessageAction,
-	MessageActions,
-	MessageContent,
-	MessageResponse,
-} from "@cynco-labs/ui/ai";
 
 export default function MessageDemo() {
 	return (
@@ -61,4 +55,4 @@ Every chat turn.
 
 Mermaid diagrams inside Markdown are not bundled and render as nothing.
 
-Category: AI. Source: `packages/ui/src/base/components/ai-elements/message.tsx`.
+Category: AI. Source: `packages/ui/src/base/components/ai-elements/message.tsx:17-27`.

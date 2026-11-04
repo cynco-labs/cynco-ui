@@ -59,4 +59,4 @@ Dialog props; `ModelSelectorTrigger`, `ModelSelectorContent title` › `ModelSel
 
 Logos load from models.dev at runtime.
 
-Category: AI. Source: `packages/ui/src/base/components/ai-elements/model-selector.tsx`.
+Category: AI. Source: `packages/ui/src/base/components/ai-elements/model-selector.tsx:18-18`.

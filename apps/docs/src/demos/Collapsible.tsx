@@ -1,5 +1,5 @@
-import { CaretDownIcon } from "@phosphor-icons/react";
 import { Button, Collapsible, CollapsibleContent, CollapsibleTrigger } from "@cynco-labs/ui";
+import { CaretDownIcon } from "@phosphor-icons/react";
 
 export default function CollapsibleDemo() {
 	return (
@@ -9,7 +9,7 @@ export default function CollapsibleDemo() {
 				Advanced settings
 			</CollapsibleTrigger>
 			<CollapsibleContent>
-				<div className="text-body rounded-lg border bg-card p-3">
+				<div className="text-sm font-medium text-muted-foreground rounded-lg border bg-card p-3">
 					Auto-number invoices from INV-2026-0001.
 				</div>
 			</CollapsibleContent>

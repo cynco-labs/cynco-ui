@@ -13,7 +13,11 @@ const px = (v: string) => Math.round(parseFloat(v) * 10) / 10;
 function describe(el: Element, cs: CSSStyleDeclaration, rect: DOMRect): string {
 	const tag = el.tagName.toLowerCase();
 	const pad = [cs.paddingTop, cs.paddingRight, cs.paddingBottom, cs.paddingLeft].map(px);
-	const padText = pad.every((p) => p === pad[0]) ? `${pad[0]}` : pad[0] === pad[2] && pad[1] === pad[3] ? `${pad[0]} ${pad[1]}` : pad.join(" ");
+	const padText = pad.every((p) => p === pad[0])
+		? `${pad[0]}`
+		: pad[0] === pad[2] && pad[1] === pad[3]
+			? `${pad[0]} ${pad[1]}`
+			: pad.join(" ");
 	const parts = [`${tag} ${px(String(rect.width))} × ${px(String(rect.height))}`];
 	if (pad.some(Boolean)) parts.push(`pad ${padText}`);
 	if (px(cs.borderTopLeftRadius)) parts.push(`radius ${px(cs.borderTopLeftRadius)}`);

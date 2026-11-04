@@ -62,4 +62,4 @@ Corporate tax return page, Computation tab.
 
 Responsive by container: two panels side by side from 42rem of container width, stacked below.
 
-Category: Accounting · Tax, assets & operations. Source: `packages/ui/src/accounting/operations.tsx`.
+Category: Accounting · Tax, assets & operations. Source: `packages/ui/src/accounting/operations/tax.tsx:83-150`.

@@ -6,10 +6,7 @@ export default function ToolDemo() {
 			<ToolHeader type="tool-find_invoice" state="output-available" title="find_invoice" />
 			<ToolContent>
 				<ToolInput input={{ reference: "INV-2026-0142" }} />
-				<ToolOutput
-					output={{ number: "INV-2026-0142", status: "sent", balanceDue: "12720.00" }}
-					errorText={undefined}
-				/>
+				<ToolOutput output={{ number: "INV-2026-0142", status: "sent", balanceDue: "12720.00" }} errorText={undefined} />
 			</ToolContent>
 		</Tool>
 	);

@@ -16,12 +16,12 @@ export default function CustomerStatementMetricsDemo() {
 		<CustomerStatementMetrics
 			metrics={{
 				totalTransactions: 14,
-				invoicedAmount: 64246.5,
+				invoicedAmount: "64246.50",
 				collectionRate: 62.4,
-				amountReceived: 40096.1,
-				creditedAmount: 10746,
-				debitedAmount: 1250,
-				balanceDue: 48250.4,
+				amountReceived: "40096.10",
+				creditedAmount: "10746.00",
+				debitedAmount: "1250.00",
+				balanceDue: "48250.40",
 			}}
 		/>
 	);
@@ -46,4 +46,4 @@ metrics {totalTransactions, invoicedAmount, collectionRate, amountReceived, cred
 
 Responsive by container: StatGrid tiles: four-up from 48rem, wrapping to one per row on phones.
 
-Category: Accounting · Expenses & parties. Source: `packages/ui/src/accounting/parties.tsx`.
+Category: Accounting · Expenses & parties. Source: `packages/ui/src/accounting/parties/customer-statement.tsx:38-95`.

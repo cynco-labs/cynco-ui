@@ -48,6 +48,6 @@ Native input props, `variant`.
 
 ## Notes
 
-Built on the form layers: `input-base` + `input-shadow-default` + `input-state-focus` (see Forms). Focus darkens the border and adds a soft 3px ring, never a coloured outline.
+Built on the shared input surface (border, radius, placeholder colour and focus treatment are the same ones SelectTrigger and Textarea use). Focus darkens the border and adds a soft 3px ring, never a coloured outline.
 
-Category: Components · Inputs. Source: `packages/ui/src/base/components/ui/input.tsx`.
+Category: Components · Inputs. Source: `packages/ui/src/base/components/ui/input.tsx:41-50`.

@@ -1,13 +1,13 @@
-import { StatGrid, StatTile, formatCurrency } from "@cynco-labs/ui";
+import { formatCurrency, StatGrid, StatTile } from "@cynco-labs/ui";
 
 function Tiles() {
 	return (
 		<StatGrid min="sm">
-			<StatTile label="Sales" value={formatCurrency(184520.75)} tone="green" sub="October 2026" />
-			<StatTile label="Pending" value={formatCurrency(46890.35)} tone="blue" />
+			<StatTile label="Sales" value={formatCurrency("184520.75")} tone="green" sub="October 2026" />
+			<StatTile label="Pending" value={formatCurrency("46890.35")} tone="blue" />
 			<StatTile
 				label="Overdue"
-				value={formatCurrency(11320)}
+				value={formatCurrency("11320.00")}
 				tone="red"
 				negative
 				badge={<span className="text-xs text-error-text">3 invoices</span>}

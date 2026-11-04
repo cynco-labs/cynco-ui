@@ -22,9 +22,9 @@ export default function BankLedgerHeaderDemo() {
 				currency: "MYR",
 			}}
 			month="2026-10"
-			tieOut={{ status: "off", difference: -1240.0 }}
-			bookBalance={198465.0}
-			statement={{ date: "2026-10-28", balance: 197225.0, unreconciledDifference: -1240.0 }}
+			tieOut={{ status: "off", difference: "-1240.00" }}
+			bookBalance={"198465.00"}
+			statement={{ date: "2026-10-28", balance: "197225.00", unreconciledDifference: "-1240.00" }}
 			notCounted={[
 				{
 					label: "2 USD lines not counted",
@@ -32,8 +32,8 @@ export default function BankLedgerHeaderDemo() {
 				},
 			]}
 			transactionCount={48}
-			credits={96420.0}
-			debits={80355.0}
+			credits={"96420.00"}
+			debits={"80355.00"}
 			canNext={false}
 		/>
 	);
@@ -50,12 +50,12 @@ account { name, number?, glCode?, institutionName?, currency }, month (YYYY-MM),
 
 - `account`: `{ name: string; number?: string; glCode?: string; institutionName?: string; currency: string }`
 - `month`: `string`. "2026-10"
-- `tieOut`: `{ status: "tied"; statementClosing: number } | { status: "off"; difference: number } | { status: "none"; basis: "statement" | "unverified" }`
-- `bookBalance`: `number`
+- `tieOut`: `{ status: "tied"; statementClosing: Amount } | { status: "off"; difference: Amount } | { status: "none"; basis: "statement" | "unverified" }`
+- `bookBalance`: `Amount`
 - `transactionCount`: `number`
-- `credits`: `number`
-- `debits`: `number`
-- `statement?`: `{ date: string; balance: number; unreconciledDifference: number } | null`
+- `credits`: `Amount`
+- `debits`: `Amount`
+- `statement?`: `{ date: string; balance: Amount; unreconciledDifference: Amount } | null`
 - `notCounted?`: `{ label: string; title?: string }[]`. Default `[]`.
 - `canPrev?`: `boolean`. Default `true`.
 - `canNext?`: `boolean`. Default `true`.
@@ -67,4 +67,4 @@ account { name, number?, glCode?, institutionName?, currency }, month (YYYY-MM),
 
 The GL code sits in a mono tag. Credits and debits are neutral figures; an unreconciled gap gets an amber warning glyph rather than coloured text. CSV export is a skeleton icon button (wire onExport yourself). Responsive: balances, the tie-out chip and the month stepper all wrap on narrow containers.
 
-Category: Accounting · Ledger. Source: `packages/ui/src/accounting/ledger.tsx`.
+Category: Accounting · Ledger. Source: `packages/ui/src/accounting/ledger/bank-ledger-header.tsx:38-163`.

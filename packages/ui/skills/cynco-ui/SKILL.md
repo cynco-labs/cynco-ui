@@ -17,7 +17,7 @@ import from `@cynco-labs/ui/ai`. Docs with live demos: <https://ui.cynco.io>.
 
 ## Find the right component first
 
-Before writing UI, look for the component that already does it. 234 exist, across Layout, Components,
+Before writing UI, look for the component that already does it. 228 exist, across Layout, Components,
 Productivity, Documents, Accounting and AI.
 
 - Offline, in a project with the package installed: `npx cynco-ui search <words>`, then
@@ -62,19 +62,53 @@ hover, selection and focus tints are mixed from it. Corners follow `--radius-sm`
    `ScrollRow`. Grouped content uses `SectionPanel`; label/value pairs use `KeyValueList`. Don't
    hand-build `<table>` markup or flex rows for these.
 5. **Responsive by container.** Components size to their container with container queries and work
-   from 320px up. Don't wrap them in fixed pixel widths; give the parent the width instead.
+   from 320px up. Don't wrap them in fixed pixel widths; give the parent the width instead. Reach for
+   the container variants `@sm:`…`@3xl:`, not the viewport ones (`md:`), so a component laid out in a
+   sidebar reads the sidebar's width rather than the window's.
 6. **Status is never colour alone.** Use `StatusChip`, which pairs a shape, a glyph and a word.
 7. **Documents are black ink.** Invoices, receipts, statements, payslips and reports print in black on
    white: no colour, tints or filled bars. Pass totals exactly as posted; documents never recalculate.
-   Labels come from the kit's English/Malay dictionary through `DocumentBrandProvider`'s locale.
+   Labels come from the kit's English/Malay dictionary through `DocumentBrandProvider`'s locale. Their
+   own tokens are `text-doc-ink`, `text-doc-ink-muted`, `text-doc-ink-subtle`, `border-doc-rule` (the
+   rule that closes a table), `border-doc-rule-soft` (the hairline), `bg-doc-paper` and
+   `bg-doc-paper-tint`. They are the same in every theme, so a document on a dark page still prints as
+   paper; never redefine them under `.dark`.
 8. **Accessibility.** Icon-only buttons get `aria-label`. Keep the visible focus ring. A control revealed on
    hover also takes `no-hover:opacity-100`, so touch screens show it. Prefer Undo (`useUndoToast`) to
    "Are you sure?" dialogs for reversible bulk actions.
 9. **Composable.** Every component takes `className` (merged, so your classes win) and native props on
-   its root. Stateful ones support `value`/`defaultValue`/`onValueChange`.
+   its root. Stateful ones support `value`/`defaultValue`/`onValueChange`. Because they already win,
+   you never need `!` to force one through (`!px-2`, `px-2!`); reaching for it means the override
+   belongs somewhere else. Animate the properties that change (`transition-colors`), not
+   `transition-all`.
+10. **One way to do each thing.** Buttons come in three sizes, `sm` (24px, dense rows), `md` (28px,
+   lines up with an `Input`) and `icon` (24px square); there is no other size. A form field is
+   `Field` wrapping `FieldLabel`, an optional `FieldDescription`, `FieldControl` and `FieldError`,
+   which owns the `id`, `aria-describedby` and `aria-invalid` wiring so it cannot be forgotten. Text
+   entry carries `touch:text-base`, because iOS Safari zooms the page into a field under 16px and
+   never zooms back out. Stacking order comes from `z-sticky`, `z-sheet`, `z-dialog`, `z-popover` and
+   `z-tooltip`, not from a number you pick. A layout that changes structure, rather than styling,
+   measures its own box with `useContainerWidth`.
+
+## Names that moved
+
+Older code and older answers reach for these. They are gone; use the one on the right.
+
+| Was | Now |
+| --- | --- |
+| `FormLabel`, `LabelInput`, the old `FieldLabel` | `Field` with `FieldLabel` and `FieldControl` |
+| `TextCheckbox` | `Checkbox` with its own label |
+| `IconCheckbox` | `ToggleButton` |
+| `CopyIconButton`, `MiniCopyButton`, `CopyTextButton` | `CopyButton` with `variant="icon"`, `"inline"` or `"text"` |
+| `IconTooltipButton` | `IconButton` with its `tooltip` prop |
+| `SheetCloseButton` | `SheetClose` |
+| `CursorPagination`, `PageSizeSelector`, `TablePaginationFooter` | `DataTable.Pagination` |
+| `useIsMobile` | `useContainerWidth` (a component reads its own box, never the window) |
 
 ## Before you finish
 
 Check the screen at a narrow width (about 360px) and in dark mode. Search the diff for hex colours,
-`text-[`, `parseFloat`/`Number(` on amounts and hand-built `<table>`s; each is usually a rule above
-being broken.
+Tailwind palette colours (`text-blue-500`), `text-[`, viewport breakpoints (`md:` where `@md:` was
+meant), `!` important utilities, `transition-all`, `parseFloat`/`Number(` on amounts and hand-built
+`<table>`s; each is usually a rule above being broken. In this repo, `pnpm lint` and
+`pnpm check:classes` check all of that for you.

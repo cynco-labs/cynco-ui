@@ -32,15 +32,12 @@ Empty chats and follow-up ideas.
 
 - `suggestion`: `string`
 - `variant?`: `"primary" | "secondary" | "skeleton" | "muted" | "destructive" | "dotted"`. Default `"secondary"`.
-- `size?`: `"sm" | "default" | "mini" | "icon"`. Default `"sm"`.
-- `asChild?`: `boolean`
-- `isLoading?`: `boolean`
-- `transition?`: `boolean`
-- `disableActive?`: `boolean`
-- `hide?`: `boolean`
-- `render?`: `ReactElement`
+- `size?`: `"sm" | "md" | "icon"`. Default `"sm"`.
+- `isLoading?`: `boolean`. Swaps the label for a spinner and disables the button, while the label stays its accessible name.
+- `asChild?`: `boolean`. Radix compatibility: render the single child element instead of a `<button>`.
+- `render?`: `ReactElement`. The element to render instead of a `<button>` (Base UI).
 - `focusableWhenDisabled?`: `boolean`. Keep the button in the tab order while disabled (Base UI). Set automatically while `isLoading`.
 - `onClick?`: `(suggestion: string) => void`
 - Also accepts `ComponentProps<"button">`.
 
-Category: AI. Source: `packages/ui/src/base/components/ai-elements/suggestion.tsx`.
+Category: AI. Source: `packages/ui/src/base/components/ai-elements/suggestion.tsx:22-47`.

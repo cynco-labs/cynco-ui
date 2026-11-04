@@ -46,7 +46,7 @@ export default function BalanceSheetStatementDemo() {
 			asAt="31 Oct 2026"
 			rows={rows}
 			showTotalsStrip={false}
-			totals={{ assets: 280820.4, liabilities: 51240.6, equity: 229579.8 }}
+			totals={{ assets: "280820.40", liabilities: "51240.60", equity: "229579.80" }}
 		/>
 	);
 }
@@ -62,7 +62,7 @@ asAt, rows (StatementRow ladder, see ProfitLossStatement), totals {assets, liabi
 
 - `asAt`: `string`. "As at" label, e.g. "31 Oct 2026".
 - `rows`: `StatementRow[]`
-- `totals`: `{ assets: number; liabilities: number; equity: number }`. Tiles + balance check.
+- `totals`: `{ assets: Amount; liabilities: Amount; equity: Amount }`. Tiles + balance check.
 - `priorPeriod?`: `string`
 - `equityLabel?`: `string`. "Total equity", "Total owner's equity" (sole prop), "Total partners' capital"… Default `"Total equity"`.
 - `showTotalsStrip?`: `boolean`. The Total assets / liabilities / equity tiles above the statement. Default `true`.
@@ -75,4 +75,4 @@ asAt, rows (StatementRow ladder, see ProfitLossStatement), totals {assets, liabi
 
 Responsive: totals in an auto-fit StatGrid; same container-query ladder as the P&L.
 
-Category: Accounting · Reports. Source: `packages/ui/src/accounting/reports.tsx`.
+Category: Accounting · Reports. Source: `packages/ui/src/accounting/reports/statements.tsx:300-373`.

@@ -1,4 +1,4 @@
-import { type BankTxEvent, BankTransactionTimeline } from "@cynco-labs/ui";
+import { BankTransactionTimeline, type BankTxEvent } from "@cynco-labs/ui";
 
 const EVENTS: BankTxEvent[] = [
 	{
@@ -33,9 +33,7 @@ const EVENTS: BankTxEvent[] = [
 export default function BankTransactionTimelineDemo() {
 	return (
 		<div className="max-w-[520px] rounded-xl border border-border bg-card p-4">
-			<BankTransactionTimeline
-				events={EVENTS.concat([{ actor: "user", action: "post", at: "2026-10-29" }])}
-			/>
+			<BankTransactionTimeline events={EVENTS.concat([{ actor: "user", action: "post", at: "2026-10-29" }])} />
 		</div>
 	);
 }

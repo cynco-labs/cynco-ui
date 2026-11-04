@@ -6,7 +6,7 @@ export default function ToolbarButtonDemo() {
 			{["Pro", "Enterprise"].map((n) => (
 				<div
 					key={n}
-					className="flex items-center justify-between h-10 px-3 border-b border-table-row-divider last:border-0 text-body"
+					className="flex items-center justify-between h-10 px-3 border-b border-table-row-divider last:border-0 text-sm font-medium text-muted-foreground"
 				>
 					{n}
 					<ToolbarButton aria-label="Row actions" />

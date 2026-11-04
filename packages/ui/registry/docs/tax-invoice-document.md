@@ -10,12 +10,12 @@ import { TaxInvoiceDocument } from "@cynco-labs/ui";
 
 ```tsx
 import {
-	DocumentBrandProvider,
-	TaxInvoiceDocument,
 	type DocBrand,
 	type DocLayout,
 	type DocLocale,
+	DocumentBrandProvider,
 	type TaxInvoiceData,
+	TaxInvoiceDocument,
 } from "@cynco-labs/ui";
 
 const BRAND: DocBrand = {
@@ -46,10 +46,7 @@ const NUSA = {
 
 const NUSA_SITE = {
 	name: "Nusantara Logistik Bhd — Warehouse B",
-	address: [
-		"Lot 12A, Jalan Sungai Puloh, Kawasan Perindustrian Sungai Puloh",
-		"42100 Klang, Selangor",
-	],
+	address: ["Lot 12A, Jalan Sungai Puloh, Kawasan Perindustrian Sungai Puloh", "42100 Klang, Selangor"],
 	attention: "En. Hafiz Zainal, Facilities",
 	phone: "+60 12-334 8821",
 };
@@ -331,4 +328,4 @@ invoice: TaxInvoiceData { title ('taxInvoice'|'invoice'), number, status, subtit
 
 Layouts minimal / classic / modern in black ink only, any font, locales en / ms / en-ms (bilingual labels stacked or slashed). Money is printed exactly as given (decimal strings); nothing is recomputed. Print: named @page with page numbers, table headers repeat, rows and the totals/sign-off blocks avoid splitting; isolate (default true) prints only the sheet. Stamp from status (paid/void/overdue/draft; override with stamp, null hides). Discount and tax columns appear only when a line uses them; tax shows rate with the SST code under it. Totals rows may use label keys subtotal, discount, serviceTax, salesTax, sst, rounding, total, totalDue, deposit, amountPaid, balanceDue. Foreign currency: the exchange rate and MYR equivalents are printed in a ForeignCurrencyNote under the totals. Production must pass the posted totals, the MyInvois QR element once validated, and the DuitNow QR element if used. The computer-generated notice is hidden when a signature is printed.
 
-Category: Documents. Source: `packages/ui/src/documents/sales.tsx`.
+Category: Documents. Source: `packages/ui/src/documents/sales.tsx:456-463`.

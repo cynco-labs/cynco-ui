@@ -1,5 +1,5 @@
-import { act, renderHook } from "@testing-library/react";
 import type { ColumnDef } from "@tanstack/react-table";
+import { act, renderHook } from "@testing-library/react";
 import { renderToString } from "react-dom/server";
 import { afterEach, describe, expect, test } from "vitest";
 import { useColumnVisibility } from "./use-column-visibility";
@@ -12,17 +12,25 @@ const columns: ColumnDef<Row, unknown>[] = [
 const options = { columns, defaultVisibleColumnIds: ["a", "b"], storageKey: "test" };
 const KEY = "cynco-ui:table-columns:test";
 
+/** Reports what the hook returns on the render pass, so a server render can be read back. */
+function Probe({ report }: { report: (visibility: unknown) => void }): null {
+	report(useColumnVisibility(options).columnVisibility);
+	return null;
+}
+
 afterEach(() => localStorage.clear());
 
 describe("useColumnVisibility", () => {
 	test("the server renders the defaults, whatever the browser has saved", () => {
 		localStorage.setItem(KEY, JSON.stringify({ b: false }));
 		let seen: unknown;
-		function Probe(): null {
-			seen = useColumnVisibility(options).columnVisibility;
-			return null;
-		}
-		renderToString(<Probe />);
+		renderToString(
+			<Probe
+				report={(visibility) => {
+					seen = visibility;
+				}}
+			/>,
+		);
 		expect(seen).toEqual({ a: true, b: true });
 	});
 
@@ -40,7 +48,10 @@ describe("useColumnVisibility", () => {
 		act(() => result.current.saveColumnVisibility());
 		expect(result.current.isDirty).toBe(false);
 		expect(result.current.columnVisibility).toEqual({ a: false, b: true });
-		expect(JSON.parse(localStorage.getItem(KEY) ?? "{}")).toEqual({ a: { visible: false, name: "A" }, b: { visible: true, name: "B" } });
+		expect(JSON.parse(localStorage.getItem(KEY) ?? "{}")).toEqual({
+			a: { visible: false, name: "A" },
+			b: { visible: true, name: "B" },
+		});
 	});
 
 	test("saving updates other tables in the tab that share the key", () => {

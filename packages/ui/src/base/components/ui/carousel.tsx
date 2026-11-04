@@ -1,12 +1,10 @@
 "use client";
 
 import { CaretLeftIcon, CaretRightIcon } from "@phosphor-icons/react";
-import { Button } from "./button";
-import { cn } from "../../lib/utils";
-import useEmblaCarousel, {
-	type UseEmblaCarouselType,
-} from "embla-carousel-react";
+import useEmblaCarousel, { type UseEmblaCarouselType } from "embla-carousel-react";
 import * as React from "react";
+import { cn } from "../../lib/utils";
+import { Button } from "./button";
 
 type CarouselApi = UseEmblaCarouselType[1];
 type UseCarouselParameters = Parameters<typeof useEmblaCarousel>;
@@ -33,8 +31,7 @@ const CarouselContext = React.createContext<CarouselContextProps | null>(null);
 
 /** Slide changes jump instead of animating when the user asks for reduced motion (embla's motion is JS, not CSS). */
 const prefersReducedMotion = () =>
-	typeof window !== "undefined" &&
-	window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+	typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 /** Arrow keys typed into a field, or handled by a nested widget, are not slide navigation. */
 const isOwnedKeyTarget = (target: EventTarget) =>
@@ -125,14 +122,14 @@ function Carousel({
 				carouselRef,
 				api: api,
 				opts,
-				orientation:
-					orientation || (opts?.axis === "y" ? "vertical" : "horizontal"),
+				orientation: orientation || (opts?.axis === "y" ? "vertical" : "horizontal"),
 				scrollPrev,
 				scrollNext,
 				canScrollPrev,
 				canScrollNext,
 			}}
 		>
+			{/* biome-ignore lint/a11y/useSemanticElements: <section> is only a region once it has an accessible name, which the consumer supplies; the explicit role holds either way. */}
 			<div
 				onKeyDownCapture={handleKeyDown}
 				className={cn("relative", className)}
@@ -151,19 +148,8 @@ function CarouselContent({ className, ...props }: React.ComponentProps<"div">) {
 	const { carouselRef, orientation } = useCarousel();
 
 	return (
-		<div
-			ref={carouselRef}
-			className="overflow-hidden"
-			data-slot="carousel-content"
-		>
-			<div
-				className={cn(
-					"flex",
-					orientation === "horizontal" ? "-ml-4" : "-mt-4 flex-col",
-					className,
-				)}
-				{...props}
-			/>
+		<div ref={carouselRef} className="overflow-hidden" data-slot="carousel-content">
+			<div className={cn("flex", orientation === "horizontal" ? "-ml-4" : "-mt-4 flex-col", className)} {...props} />
 		</div>
 	);
 }
@@ -172,15 +158,12 @@ function CarouselItem({ className, ...props }: React.ComponentProps<"div">) {
 	const { orientation } = useCarousel();
 
 	return (
+		// biome-ignore lint/a11y/useSemanticElements: the carousel pattern puts role="group" on a slide; fieldset is for form controls and needs a legend.
 		<div
 			role="group"
 			aria-roledescription="slide"
 			data-slot="carousel-item"
-			className={cn(
-				"min-w-0 shrink-0 grow-0 basis-full",
-				orientation === "horizontal" ? "pl-4" : "pt-4",
-				className,
-			)}
+			className={cn("min-w-0 shrink-0 grow-0 basis-full", orientation === "horizontal" ? "pl-4" : "pt-4", className)}
 			{...props}
 		/>
 	);
@@ -201,9 +184,7 @@ function CarouselPrevious({
 			size={size}
 			className={cn(
 				"absolute touch-manipulation rounded-full",
-				orientation === "horizontal"
-					? "inset-y-0 -left-12 my-auto"
-					: "-top-12 left-1/2 -translate-x-1/2 rotate-90",
+				orientation === "horizontal" ? "inset-y-0 -left-12 my-auto" : "-top-12 left-1/2 -translate-x-1/2 rotate-90",
 				className,
 			)}
 			disabled={!canScrollPrev}
@@ -218,12 +199,7 @@ function CarouselPrevious({
 	);
 }
 
-function CarouselNext({
-	className,
-	variant = "muted",
-	size = "icon",
-	...props
-}: React.ComponentProps<typeof Button>) {
+function CarouselNext({ className, variant = "muted", size = "icon", ...props }: React.ComponentProps<typeof Button>) {
 	const { orientation, scrollNext, canScrollNext } = useCarousel();
 
 	return (
@@ -233,9 +209,7 @@ function CarouselNext({
 			size={size}
 			className={cn(
 				"absolute touch-manipulation rounded-full",
-				orientation === "horizontal"
-					? "inset-y-0 -right-12 my-auto"
-					: "-bottom-12 left-1/2 -translate-x-1/2 rotate-90",
+				orientation === "horizontal" ? "inset-y-0 -right-12 my-auto" : "-bottom-12 left-1/2 -translate-x-1/2 rotate-90",
 				className,
 			)}
 			disabled={!canScrollNext}
@@ -250,12 +224,4 @@ function CarouselNext({
 	);
 }
 
-export {
-	type CarouselApi,
-	Carousel,
-	CarouselContent,
-	CarouselItem,
-	CarouselPrevious,
-	CarouselNext,
-	useCarousel,
-};
+export { Carousel, type CarouselApi, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, useCarousel };

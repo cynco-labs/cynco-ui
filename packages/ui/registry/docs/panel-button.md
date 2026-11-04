@@ -9,9 +9,9 @@ import { PanelButton } from "@cynco-labs/ui";
 ## Usage
 
 ```tsx
-import { useState } from "react";
-import { CoinsIcon, CreditCardIcon, LightningIcon } from "@phosphor-icons/react";
 import { PanelButton } from "@cynco-labs/ui";
+import { CoinsIcon, CreditCardIcon, LightningIcon } from "@phosphor-icons/react";
+import { useState } from "react";
 
 export default function PanelButtonDemo() {
 	const [s, setS] = useState(0);
@@ -63,4 +63,4 @@ Picking one of a few big options in onboarding (business type, tax registration)
 
 Selection is exposed as `aria-pressed` and shown by the corner check mark, not by colour alone. The mark sits slightly outside the tile, so leave a few pixels of room around it.
 
-Category: Components · Actions. Source: `packages/ui/src/base/components/general/panel-button.tsx`.
+Category: Components · Actions. Source: `packages/ui/src/base/components/general/panel-button.tsx:16-75`.

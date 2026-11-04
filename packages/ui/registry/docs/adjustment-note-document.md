@@ -11,9 +11,9 @@ import { AdjustmentNoteDocument } from "@cynco-labs/ui";
 ```tsx
 import {
 	type AdjustmentNoteData,
+	AdjustmentNoteDocument,
 	type DocLayout,
 	type DocLocale,
-	AdjustmentNoteDocument,
 	DocumentBrandProvider,
 } from "@cynco-labs/ui";
 
@@ -43,16 +43,6 @@ const NUSA = {
 	attention: "Puan Aisyah Rahman, Finance",
 };
 
-const NUSA_SITE = {
-	name: "Nusantara Logistik Bhd — Warehouse B",
-	address: [
-		"Lot 12A, Jalan Sungai Puloh, Kawasan Perindustrian Sungai Puloh",
-		"42100 Klang, Selangor",
-	],
-	attention: "En. Hafiz Zainal, Facilities",
-	phone: "+60 12-334 8821",
-};
-
 const QRSLOT = (t: string) => (
 	<div className="flex size-full items-center justify-center rounded-[1.5mm] border border-dashed border-[var(--doc-subtle)] text-center text-[6pt] leading-tight text-[var(--doc-subtle)]">
 		{t}
@@ -70,7 +60,8 @@ const CN: AdjustmentNoteData = {
 	originalInvoice: ORIG,
 	reason: {
 		category: "Goods returned and service adjustment",
-		text: "40 m of unused AC cable returned on 30 Oct 2026 (GRN-2026-0211); first-year maintenance prorated after the customer moved the service start to January 2027.",
+		text:
+			"40 m of unused AC cable returned on 30 Oct 2026 (GRN-2026-0211); first-year maintenance prorated after the customer moved the service start to January 2027.",
 	},
 	lines: [
 		{
@@ -224,4 +215,4 @@ note: AdjustmentNoteData { kind ('credit'|'debit'), number, status, date, curren
 
 Layouts minimal / classic / modern in black ink only, any font, locales en / ms / en-ms (bilingual labels stacked or slashed). Money is printed exactly as given (decimal strings); nothing is recomputed. Print: named @page with page numbers, table headers repeat, rows and the totals/sign-off blocks avoid splitting; isolate (default true) prints only the sheet. The original invoice (number, date, amount) sits in the meta band; the reason is a DocCallout beside the customer. Settlement rows (e.g. label 'appliedTo' with the invoice number as hint) follow the total.
 
-Category: Documents. Source: `packages/ui/src/documents/sales.tsx`.
+Category: Documents. Source: `packages/ui/src/documents/sales.tsx:747-762`.

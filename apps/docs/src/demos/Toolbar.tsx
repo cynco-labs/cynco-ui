@@ -1,6 +1,6 @@
-import { PencilSimpleIcon, TrashIcon } from "@phosphor-icons/react";
 import { Button } from "@cynco-labs/ui";
 import { Canvas, Node, NodeHeader, NodeTitle, Position, Toolbar } from "@cynco-labs/ui/ai";
+import { PencilSimpleIcon, TrashIcon } from "@phosphor-icons/react";
 
 const NT2 = {
 	card: (_p: { data: Record<string, unknown> }) => (
@@ -25,12 +25,7 @@ const NT2 = {
 export default function ToolbarDemo() {
 	return (
 		<div style={{ height: 220 }} className="rounded-lg border">
-			<Canvas
-				nodes={[{ id: "a", type: "card", position: { x: 0, y: 0 }, data: {} }]}
-				edges={[]}
-				nodeTypes={NT2}
-				fitView
-			/>
+			<Canvas nodes={[{ id: "a", type: "card", position: { x: 0, y: 0 }, data: {} }]} edges={[]} nodeTypes={NT2} fitView />
 		</div>
 	);
 }

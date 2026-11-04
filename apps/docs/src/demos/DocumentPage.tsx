@@ -1,6 +1,7 @@
-import { useState } from "react";
 import {
+	type DocBrand,
 	DocItem,
+	type DocLayout,
 	DocStack,
 	DocumentBrandProvider,
 	DocumentFooter,
@@ -8,15 +9,14 @@ import {
 	DocumentPage,
 	DocumentTable,
 	EInvoiceBlock,
+	formatDocAmount,
 	GroupedTabButton,
 	Letterhead,
 	PartyGrid,
 	PaymentBlock,
 	TotalsBlock,
-	formatDocAmount,
-	type DocBrand,
-	type DocLayout,
 } from "@cynco-labs/ui";
+import { useState } from "react";
 
 const BRAND: DocBrand = {
 	company: {
@@ -77,7 +77,7 @@ function Sheet({ layout }: { layout: DocLayout }) {
 								width: "24mm",
 								cell: (r) => formatDocAmount(r.u),
 							},
-							{ key: "s", header: "sst", numeric: true, width: "12mm", cell: (r) => r.s + "%" },
+							{ key: "s", header: "sst", numeric: true, width: "12mm", cell: (r) => `${r.s}%` },
 							{
 								key: "a",
 								header: "amount",

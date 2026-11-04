@@ -1,24 +1,21 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { useContainerWidth } from "../../hooks/use-container-width";
+import { cn } from "../../lib/utils";
 import { LiveStatus } from "../general/live-status";
+import { Table } from "../ui/table";
 import { TableColumnVisibility } from "./table-column-visibility";
-import {
-	useShowMobileCards,
-	useTableContext,
-} from "./table-context";
+import { useShowMobileCards, useTableContext } from "./table-context";
 import { TableMobileCards } from "./table-mobile-cards";
 import { TABLE_TRAY_CLASS } from "./table-tray-classes";
-import { Table } from "../ui/table";
-import { cn } from "../../lib/utils";
-import { useEffect, useState } from "react";
 
 /**
  * Polite live region for loading and result counts. It renders empty on mount and
  * fills in after, so screen readers register the region before its first message.
  */
 export function TableStatus() {
-	const { table, isLoading, isTransitioning, emptyStateText } =
-		useTableContext();
+	const { table, isLoading, isTransitioning, emptyStateText } = useTableContext();
 	const [isMounted, setIsMounted] = useState(false);
 	useEffect(() => setIsMounted(true), []);
 
@@ -32,11 +29,15 @@ export function TableStatus() {
 		message = `${rowCount} ${rowCount === 1 ? "row" : "rows"}`;
 	}
 
-	return (
-		<LiveStatus>
-			{isMounted ? message : ""}
-		</LiveStatus>
-	);
+	return <LiveStatus>{isMounted ? message : ""}</LiveStatus>;
+}
+
+export interface TableContentProps extends React.ComponentProps<"div"> {
+	/** Sits on the tray below the rows. */
+	footer?: React.ReactNode;
+	/** Names the table for screen readers ("Invoices"); or point aria-labelledby at a visible heading. */
+	"aria-label"?: string;
+	"aria-labelledby"?: string;
 }
 
 export function TableContent({
@@ -45,66 +46,49 @@ export function TableContent({
 	footer,
 	"aria-label": ariaLabel,
 	"aria-labelledby": ariaLabelledBy,
-}: {
-	children: React.ReactNode;
-	className?: string;
-	/** Sits on the tray below the rows. */
-	footer?: React.ReactNode;
-	/** Names the table for screen readers ("Invoices"); or point aria-labelledby at a visible heading. */
-	"aria-label"?: string;
-	"aria-labelledby"?: string;
-}) {
-	const {
-		flexibleTableColumns,
-		enableColumnVisibility,
-		isLoading,
-		isTransitioning,
-		table,
-	} = useTableContext();
+	...props
+}: TableContentProps) {
+	const { flexibleTableColumns, enableColumnVisibility, isLoading, isTransitioning, table } = useTableContext();
 	const rows = table.getRowModel().rows;
-	const showMobileCards = useShowMobileCards();
+	const { ref: rootRef, width } = useContainerWidth<HTMLDivElement>();
+	const showMobileCards = useShowMobileCards(width);
 	const showsSkeleton = (isLoading || isTransitioning) && !rows.length;
-
-	if (showMobileCards) {
-		return (
-			<>
-				<TableStatus />
-				<TableMobileCards />
-				{footer}
-			</>
-		);
-	}
 
 	return (
 		<div
+			ref={rootRef}
+			data-slot="table-content"
 			className={cn(
-				"relative z-50 min-w-0",
-				TABLE_TRAY_CLASS,
+				"min-w-0",
+				!showMobileCards && ["relative z-50", TABLE_TRAY_CLASS, showsSkeleton && "overflow-hidden"],
 				className,
-				showsSkeleton && "overflow-hidden",
 			)}
+			{...props}
 		>
 			<TableStatus />
-			{(isLoading || isTransitioning) && (
-				<div className="bg-background/40 absolute pointer-events-none rounded-xl -inset-[1px] z-70" />
+			{showMobileCards ? (
+				<TableMobileCards />
+			) : (
+				<>
+					{(isLoading || isTransitioning) && (
+						<div className="bg-background/40 absolute pointer-events-none rounded-xl -inset-[1px] z-20" />
+					)}
+					{enableColumnVisibility && (
+						<div className="absolute right-2 top-1 z-10 h-fit">
+							<TableColumnVisibility />
+						</div>
+					)}
+					<Table
+						className={cn("p-0 w-full overflow-auto", showsSkeleton && "overflow-hidden")}
+						flexibleTableColumns={flexibleTableColumns}
+						aria-busy={isLoading || isTransitioning || undefined}
+						aria-label={ariaLabel}
+						aria-labelledby={ariaLabelledBy}
+					>
+						{children}
+					</Table>
+				</>
 			)}
-			{enableColumnVisibility && (
-				<div className="absolute right-2 top-1 z-45 h-fit">
-					<TableColumnVisibility />
-				</div>
-			)}
-			<Table
-				className={cn(
-					"p-0 w-full overflow-auto",
-					showsSkeleton && "overflow-hidden",
-				)}
-				flexibleTableColumns={flexibleTableColumns}
-				aria-busy={isLoading || isTransitioning || undefined}
-				aria-label={ariaLabel}
-				aria-labelledby={ariaLabelledBy}
-			>
-				{children}
-			</Table>
 			{footer}
 		</div>
 	);

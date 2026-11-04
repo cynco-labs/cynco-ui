@@ -47,7 +47,16 @@ type RadiusScale = Record<(typeof RADIUS_KEYS)[number], string> & { base: string
 
 export const RADII = {
 	sharp: { label: "Sharp", base: "2px", xs: "0px", sm: "0px", md: "1px", lg: "2px", xl: "3px", "2xl": "4px" },
-	default: { label: "Default", base: "0.375rem", xs: "0.125rem", sm: "2px", md: "4px", lg: "6px", xl: "10px", "2xl": "12px" },
+	default: {
+		label: "Default",
+		base: "0.375rem",
+		xs: "0.125rem",
+		sm: "2px",
+		md: "4px",
+		lg: "6px",
+		xl: "10px",
+		"2xl": "12px",
+	},
 	round: { label: "Round", base: "10px", xs: "3px", sm: "4px", md: "7px", lg: "10px", xl: "14px", "2xl": "18px" },
 } as const satisfies Record<string, RadiusScale & { label: string }>;
 
@@ -82,7 +91,13 @@ const minContrast = (hex: Hex, surfaces: readonly Hex[]) => Math.min(...surfaces
 function mix(from: Hex, to: Hex, t: number): Hex {
 	const a = channels(from);
 	const b = channels(to);
-	return `#${a.map((v, i) => Math.round(v + (b[i] - v) * t).toString(16).padStart(2, "0")).join("")}`;
+	return `#${a
+		.map((v, i) =>
+			Math.round(v + (b[i] - v) * t)
+				.toString(16)
+				.padStart(2, "0"),
+		)
+		.join("")}`;
 }
 
 /** The least mix of `base` toward `to` that satisfies `ok`. */
@@ -114,7 +129,8 @@ export function customAccent(accent: Hex): AccentColors & { adjusted: boolean } 
 	return { light, dark, darkText: nudge(hex, WHITE, readsDark), adjusted: light !== hex || dark !== hex };
 }
 
-export const accentColors = (accent: Accent): AccentColors => (isAccentPreset(accent) ? ACCENTS[accent] : customAccent(accent));
+export const accentColors = (accent: Accent): AccentColors =>
+	isAccentPreset(accent) ? ACCENTS[accent] : customAccent(accent);
 
 // ------------------------------------------------------------------ CSS
 
@@ -123,7 +139,8 @@ export interface ThemeChoice {
 	radius: Radius;
 }
 
-const LIGHT_SELECTORS = ':root,\n.light:not(.react-flow),\n[data-theme="light"],\n.preset-modern,\n[data-theme="modern"]';
+const LIGHT_SELECTORS =
+	':root,\n.light:not(.react-flow),\n[data-theme="light"],\n.preset-modern,\n[data-theme="modern"]';
 const DARK_SELECTORS = '.dark:not(.react-flow),\n[data-theme$="dark"]';
 
 /** The CSS that applies a choice on top of @cynco-labs/ui/theme.css. Empty when every value is the default. */
@@ -140,12 +157,9 @@ export function themeCss({ accent, radius }: ThemeChoice): string {
 		const r = RADII[radius];
 		corners.push(`--radius: ${r.base};`, ...RADIUS_KEYS.map((k) => `--radius-${k}: ${r[k]};`));
 	}
-	const block = (selector: string, lines: string[]) => (lines.length ? [`${selector} {`, ...lines.map((l) => `\t${l}`), "}"] : []);
+	const block = (selector: string, lines: string[]) =>
+		lines.length ? [`${selector} {`, ...lines.map((l) => `\t${l}`), "}"] : [];
 	// Every selector tokens.css sets --primary on, light before dark, so each override wins by coming later at
 	// equal specificity, on the root and on any themed subtree.
-	return [
-		...block(LIGHT_SELECTORS, light),
-		...block(DARK_SELECTORS, dark),
-		...block(":root", corners),
-	].join("\n");
+	return [...block(LIGHT_SELECTORS, light), ...block(DARK_SELECTORS, dark), ...block(":root", corners)].join("\n");
 }

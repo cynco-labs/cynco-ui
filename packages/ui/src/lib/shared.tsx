@@ -4,21 +4,41 @@
  * utils/report-helpers.ts: currency-derived locale (MYR → en-MY, "RM"),
  * bracketed negatives and em-dash zeros in statements, ISO code on foreign lines.
  */
-import * as React from "react";
-import { StatusChip, cn, type StatusTone, type StatusGlyph } from "../base";
-import { parseDate } from "../base/lib/utils";
+import type * as React from "react";
+import { cn, StatusChip, type StatusGlyph, type StatusTone } from "../base";
 import { type Amount, fromSen, isDecimalString, toSen } from "./money";
-import { WarningCircleIcon } from "@phosphor-icons/react/ssr";
 
 const LOCALE: Record<string, string> = {
-	MYR: "en-MY", SGD: "en-SG", USD: "en-US", GBP: "en-GB", AUD: "en-AU", EUR: "en-IE", IDR: "id-ID", THB: "th-TH", PHP: "en-PH", JPY: "ja-JP", CNY: "zh-CN", HKD: "en-HK",
+	MYR: "en-MY",
+	SGD: "en-SG",
+	USD: "en-US",
+	GBP: "en-GB",
+	AUD: "en-AU",
+	EUR: "en-IE",
+	IDR: "id-ID",
+	THB: "th-TH",
+	PHP: "en-PH",
+	JPY: "ja-JP",
+	CNY: "zh-CN",
+	HKD: "en-HK",
 };
 /**
  * ISO 4217 minor units, fixed rather than left to the runtime: newer CLDR data prints IDR with no decimals, which
  * would round a posted "10000.50" to "Rp 10.001". Currencies not listed keep the runtime's default.
  */
 const MINOR_UNITS: Record<string, number> = {
-	MYR: 2, SGD: 2, USD: 2, GBP: 2, AUD: 2, EUR: 2, IDR: 2, THB: 2, PHP: 2, JPY: 0, CNY: 2, HKD: 2,
+	MYR: 2,
+	SGD: 2,
+	USD: 2,
+	GBP: 2,
+	AUD: 2,
+	EUR: 2,
+	IDR: 2,
+	THB: 2,
+	PHP: 2,
+	JPY: 0,
+	CNY: 2,
+	HKD: 2,
 };
 const fmtCache = new Map<string, Intl.NumberFormat>();
 function fmt(currency: string, opts: Intl.NumberFormatOptions = {}) {
@@ -33,40 +53,58 @@ function fmt(currency: string, opts: Intl.NumberFormatOptions = {}) {
 	return f;
 }
 
-/** "RM 1,234.56" — locale derived from the currency, as cynco's formatCurrency. */
-export function formatCurrency(amount: number | string, currency = "MYR"): string {
-	// Decimal strings ("1234.565") are formatted exactly — Intl accepts them without a float round-trip.
+/**
+ * Applies `f` to an `Amount`. Decimal strings ("1234.565") are handed to Intl as strings and format
+ * exactly, with no float round-trip; anything unparseable formats as zero.
+ */
+function formatAmount(f: Intl.NumberFormat, amount: Amount): string {
 	if (typeof amount === "string") {
 		const s = amount.trim().replace(/,(?=\d{3}(?:\D|$))/g, "");
-		return isDecimalString(s) ? fmt(currency).format(s) : fmt(currency).format(0);
+		return isDecimalString(s) ? f.format(s) : f.format(0);
 	}
-	return fmt(currency).format(Number.isFinite(amount) ? amount : 0);
+	return f.format(Number.isFinite(amount) ? amount : 0);
+}
+
+/** "RM 1,234.56" — locale derived from the currency, as cynco's formatCurrency. */
+export function formatCurrency(amount: Amount, currency = "MYR"): string {
+	return formatAmount(fmt(currency), amount);
 }
 /** Whole-unit currency for KPIs and charts: "RM 184,500". */
-export function formatCurrencyWhole(amount: number, currency = "MYR"): string {
-	return fmt(currency, { maximumFractionDigits: 0, minimumFractionDigits: 0 }).format(amount);
+export function formatCurrencyWhole(amount: Amount, currency = "MYR"): string {
+	return formatAmount(fmt(currency, { maximumFractionDigits: 0, minimumFractionDigits: 0 }), amount);
 }
 /** Compact currency: "RM 184.5K". */
-export function formatCurrencyCompact(amount: number, currency = "MYR"): string {
+export function formatCurrencyCompact(amount: Amount, currency = "MYR"): string {
 	// minimumFractionDigits is explicit because engines disagree on the default (Node prints "RM 208.0K", Chrome "RM 208K").
-	return fmt(currency, { notation: "compact", compactDisplay: "short", minimumFractionDigits: 0, maximumFractionDigits: 1 }).format(amount);
+	return formatAmount(
+		fmt(currency, { notation: "compact", compactDisplay: "short", minimumFractionDigits: 0, maximumFractionDigits: 1 }),
+		amount,
+	);
+}
+
+const plainFmt = new Intl.NumberFormat("en-MY", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+/**
+ * A figure with no currency symbol, exact to the sen: "1,234.50". Negatives keep a minus sign and zero
+ * prints "0.00". Statement figures use `formatBracketed`, which brackets negatives and dashes zero.
+ */
+export function formatPlain(amount: Amount): string {
+	return plainFmt.format(fromSen(toSen(amount)));
 }
 /** Report figure without a symbol: "1,234.00"; negative bracketed, zero "—". Decimal strings format exactly. */
 export function formatBracketed(amount: Amount): string {
 	const sen = toSen(amount);
 	if (sen === 0n) return "—";
-	const s = new Intl.NumberFormat("en-MY", { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(fromSen(sen < 0n ? -sen : sen));
+	const s = plainFmt.format(fromSen(sen < 0n ? -sen : sen));
 	return sen < 0n ? `(${s})` : s;
 }
-/** "29 Oct 2026" */
-export function formatDate(d: string | Date): string {
-	const date = parseDate(d);
-	const M = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-	return `${date.getDate()} ${M[date.getMonth()]} ${date.getFullYear()}`;
-}
-
 /** A money figure: tabular numerals, right-aligned by its cell. */
-export function Money({ amount, currency = "MYR", className, muted, ...props }: Omit<React.ComponentProps<"span">, "children"> & { amount: Amount; currency?: string; muted?: boolean }) {
+export function Money({
+	amount,
+	currency = "MYR",
+	className,
+	muted,
+	...props
+}: Omit<React.ComponentProps<"span">, "children"> & { amount: Amount; currency?: string; muted?: boolean }) {
 	return (
 		<span className={cn("tabular-nums whitespace-nowrap", muted && "text-tertiary-foreground", className)} {...props}>
 			{formatCurrency(amount, currency)}
@@ -86,7 +124,13 @@ export function AmountCell({
 	zero = null,
 	className,
 	...props
-}: Omit<React.ComponentProps<"span">, "children"> & { amount: Amount; baseAmount?: Amount; currency?: string; baseCurrency?: string; zero?: React.ReactNode }) {
+}: Omit<React.ComponentProps<"span">, "children"> & {
+	amount: Amount;
+	baseAmount?: Amount;
+	currency?: string;
+	baseCurrency?: string;
+	zero?: React.ReactNode;
+}) {
 	if (toSen(amount) === 0n) return <>{zero}</>;
 	if (currency === baseCurrency)
 		return (
@@ -95,9 +139,18 @@ export function AmountCell({
 			</span>
 		);
 	return (
-		<span className={cn("inline-flex flex-col items-end leading-tight tabular-nums", className)} title={`${currency} line · ${formatCurrency(baseAmount ?? 0, baseCurrency)} in ${baseCurrency}`} {...props}>
-			<span className="whitespace-nowrap"><span className="mr-1 text-2xs text-tertiary-foreground">{currency}</span>{formatCurrency(amount, currency)}</span>
-			<span className="whitespace-nowrap text-2xs text-tertiary-foreground">≈ {formatCurrency(baseAmount ?? 0, baseCurrency)}</span>
+		<span
+			className={cn("inline-flex flex-col items-end leading-tight tabular-nums", className)}
+			title={`${currency} line · ${formatCurrency(baseAmount ?? 0, baseCurrency)} in ${baseCurrency}`}
+			{...props}
+		>
+			<span className="whitespace-nowrap">
+				<span className="mr-1 text-2xs text-tertiary-foreground">{currency}</span>
+				{formatCurrency(amount, currency)}
+			</span>
+			<span className="whitespace-nowrap text-2xs text-tertiary-foreground">
+				≈ {formatCurrency(baseAmount ?? 0, baseCurrency)}
+			</span>
 		</span>
 	);
 }
@@ -118,7 +171,12 @@ export function BracketedFigure({ value }: { value: Amount }) {
 }
 
 /** A figure in a financial statement (cynco ReportAmount): negatives bracketed (and red unless `red={false}`), zero a muted em dash. */
-export function ReportAmount({ amount, red = true, className, ...props }: Omit<React.ComponentProps<"span">, "children"> & { amount: Amount; red?: boolean }) {
+export function ReportAmount({
+	amount,
+	red = true,
+	className,
+	...props
+}: Omit<React.ComponentProps<"span">, "children"> & { amount: Amount; red?: boolean }) {
 	const sen = toSen(amount);
 	if (sen === 0n)
 		return (
@@ -134,20 +192,8 @@ export function ReportAmount({ amount, red = true, className, ...props }: Omit<R
 	);
 }
 
-/** An inline field error: a warning glyph plus the words, so it never relies on colour. Point the field at it with `fieldErrorProps`. */
-export function FieldError({ className, children, ...props }: React.ComponentProps<"p"> & { id: string }) {
-	return (
-		<p className={cn("flex items-start gap-1 text-2xs text-error-text", className)} {...props}>
-			<WarningCircleIcon size={12} weight="fill" aria-hidden="true" className="mt-px shrink-0" />
-			{children}
-		</p>
-	);
-}
-
-/** `aria-invalid` + `aria-describedby` for a field while its error (with id `errorId`) is shown. */
-export function fieldErrorProps(errorId: string, shown: boolean) {
-	return shown ? { "aria-invalid": true, "aria-describedby": errorId } : {};
-}
+/** Re-exported so existing imports keep working; the field kit owns them (base/components/ui/field.tsx). */
+export { FieldError, fieldErrorProps } from "../base";
 
 /** cynco badge variants → StatusChip tone + glyph. */
 export type CyncoVariant = "success" | "info" | "warning" | "error" | "neutral";
@@ -161,11 +207,25 @@ const VARIANT: Record<CyncoVariant, { tone: StatusTone; glyph: StatusGlyph }> = 
 export type StatusEntry = { label: string; variant: CyncoVariant; strike?: boolean; glyph?: StatusGlyph };
 
 /** Document status as a StatusChip (label neutral, square carries the state). */
-export function DocStatus({ status, config, className, ...props }: Omit<React.ComponentProps<typeof StatusChip>, "children" | "tone" | "glyph"> & { status: string; config: Record<string, StatusEntry> }) {
+export function DocStatus({
+	status,
+	config,
+	className,
+	...props
+}: Omit<React.ComponentProps<typeof StatusChip>, "children" | "tone" | "glyph"> & {
+	status: string;
+	config: Record<string, StatusEntry>;
+}) {
 	const e = config[status] ?? { label: status, variant: "neutral" as CyncoVariant };
 	const v = VARIANT[e.variant];
 	return (
-		<StatusChip tone={v.tone} glyph={e.glyph ?? v.glyph} dashed={status === "draft"} className={cn(e.strike && "line-through", className)} {...props}>
+		<StatusChip
+			tone={v.tone}
+			glyph={e.glyph ?? v.glyph}
+			dashed={status === "draft"}
+			className={cn(e.strike && "line-through", className)}
+			{...props}
+		>
 			{e.label}
 		</StatusChip>
 	);
@@ -186,9 +246,20 @@ export const INVOICE_STATUS: Record<string, StatusEntry> = {
 };
 
 /** A label/value pair used in detail rails. */
-export function DetailRow({ label, children, className, ...props }: React.ComponentProps<"div"> & { label: React.ReactNode }) {
+export function DetailRow({
+	label,
+	children,
+	className,
+	...props
+}: React.ComponentProps<"div"> & { label: React.ReactNode }) {
 	return (
-		<div className={cn("flex items-baseline justify-between gap-4 py-1.5 text-body", className)} {...props}>
+		<div
+			className={cn(
+				"flex items-baseline justify-between gap-4 py-1.5 text-sm font-medium text-muted-foreground",
+				className,
+			)}
+			{...props}
+		>
 			<span className="text-tertiary-foreground">{label}</span>
 			<span className="text-foreground text-right">{children}</span>
 		</div>
@@ -197,9 +268,15 @@ export function DetailRow({ label, children, className, ...props }: React.Compon
 
 /** Section label used above groups in sheets and rails. */
 export function SectionLabel({ className, ...props }: React.ComponentProps<"div">) {
-	return <div className={cn("text-2xs font-medium uppercase tracking-[0.04em] text-tertiary-foreground", className)} {...props} />;
+	return (
+		<div
+			className={cn("text-2xs font-medium uppercase tracking-[0.04em] text-tertiary-foreground", className)}
+			{...props}
+		/>
+	);
 }
 
+export * from "../documents/kit";
 export * from "../layout";
 export * from "./money";
-export * from "../documents/kit";
+export * from "./time";

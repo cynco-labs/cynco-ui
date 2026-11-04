@@ -1,9 +1,9 @@
 "use client";
 
 import { ArrowBendDownLeftIcon, SpinnerGapIcon } from "@phosphor-icons/react";
-import { InputGroupButton } from "../ui/input-group";
-import { cn } from "../../lib/utils";
 import type { FormEvent, KeyboardEvent } from "react";
+import { cn } from "../../lib/utils";
+import { InputGroupButton } from "../ui/input-group";
 
 /**
  * Compact inline prompt input with submit button on the same line.
@@ -55,15 +55,11 @@ export function CompactPromptInput({
 				<InputGroupButton
 					type="submit"
 					variant="primary"
-					size="icon-sm"
+					size="icon-md"
 					aria-label={isLoading ? "Submitting" : "Submit"}
 					disabled={!value.trim() || isLoading}
 				>
-					{isLoading ? (
-						<SpinnerGapIcon className="size-4 animate-spin" />
-					) : (
-						<ArrowBendDownLeftIcon className="size-4" />
-					)}
+					{isLoading ? <SpinnerGapIcon className="size-4 animate-spin" /> : <ArrowBendDownLeftIcon className="size-4" />}
 				</InputGroupButton>
 			</div>
 		</form>

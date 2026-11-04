@@ -9,17 +9,17 @@ import { BalanceSheetReport } from "@cynco-labs/ui";
 ## Usage
 
 ```tsx
-import { useState } from "react";
 import {
-	BalanceSheetReport,
-	DocumentBrandProvider,
-	GroupedTabButton,
 	type BalanceSheetData,
+	BalanceSheetReport,
 	type DocBrand,
 	type DocLayout,
 	type DocLocale,
+	DocumentBrandProvider,
+	GroupedTabButton,
 } from "@cynco-labs/ui";
 import type { ReactNode } from "react";
+import { useState } from "react";
 
 const BRAND: DocBrand = {
 	company: {
@@ -36,10 +36,7 @@ const BRAND: DocBrand = {
 	footerNote: "Thank you for your business.",
 };
 
-function Shell(p: {
-	render: (x: string) => ReactNode;
-	extra?: { options: { value: string; label: string }[] };
-}) {
+function Shell(p: { render: (x: string) => ReactNode; extra?: { options: { value: string; label: string }[] } }) {
 	const [l, setL] = useState<DocLayout>("minimal"),
 		[g, setG] = useState<DocLocale>("en"),
 		[x, setX] = useState(p.extra ? p.extra.options[0].value : "");
@@ -67,12 +64,7 @@ function Shell(p: {
 					]}
 				/>
 				{p.extra ? (
-					<GroupedTabButton
-						className="w-[230px]"
-						value={x}
-						onValueChange={setX}
-						options={p.extra.options}
-					/>
+					<GroupedTabButton className="w-[230px]" value={x} onValueChange={setX} options={p.extra.options} />
 				) : null}
 			</div>
 			<DocumentBrandProvider brand={Object.assign({}, BRAND, { layout: l, locale: g })}>
@@ -88,8 +80,7 @@ const DATA: BalanceSheetData = {
 	columns: [{ label: "31 Oct 2026" }, { label: "31 Dec 2025", sublabel: "RM · audited" }],
 	preparedBy: "Aisyah Rahman, Finance Manager",
 	preparedOn: "2026-11-01",
-	notes:
-		"Comparative figures as at 31 December 2025 are taken from the audited financial statements.",
+	notes: "Comparative figures as at 31 December 2025 are taken from the audited financial statements.",
 	nonCurrentAssets: [
 		{ label: "Property, plant and equipment", values: ["1284600.00", "1326400.00"], note: "3" },
 		{ label: "Right-of-use assets", values: ["186000.00", "214000.00"], note: "4" },
@@ -155,4 +146,4 @@ report: BalanceSheetData — period (kind 'asAt'), columns, codes?, nonCurrentAs
 
 Note references print in a Note column when any line carries one. All three layouts and EN / BM / EN+BM; A4; header repeats when printed.
 
-Category: Documents. Source: `packages/ui/src/documents/reports.tsx`.
+Category: Documents. Source: `packages/ui/src/documents/reports.tsx:838-878`.

@@ -9,8 +9,8 @@ import { Alert } from "@cynco-labs/ui";
 ## Usage
 
 ```tsx
-import { CheckCircleIcon, InfoIcon, WarningCircleIcon, WarningIcon } from "@phosphor-icons/react";
 import { Alert, AlertDescription, AlertTitle } from "@cynco-labs/ui";
+import { CheckCircleIcon, InfoIcon, WarningCircleIcon, WarningIcon } from "@phosphor-icons/react";
 
 export default function AlertDemo() {
 	return (
@@ -58,4 +58,4 @@ Page- or section-level messages that stay visible.
 
 Tinted at 4% fill and 15% border; text stays `foreground` at 80%. Tone hues come from Tailwind (sky, emerald, amber, red), not tokens.
 
-Category: Components · Feedback. Source: `packages/ui/src/base/components/ui/alert.tsx`.
+Category: Components · Feedback. Source: `packages/ui/src/base/components/ui/alert.tsx:23-33`.

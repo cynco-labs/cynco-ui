@@ -124,6 +124,6 @@ rows ({accountId, accountCode, accountName, accountType?, debit?, credit?}); opt
 
 ## Notes
 
-Zero Dr/Cr cells stay blank, totals get an accountant's double rule, codes use text-tiny-id. Responsive: DataList tray table from 36rem of container width, one card per account below (blank Dr/Cr show an em dash there); built on SectionPanel + DataList.
+Zero Dr/Cr cells stay blank, totals get an accountant's double rule, codes use `font-mono text-2xs`. Responsive: DataList tray table from 36rem of container width, one card per account below (blank Dr/Cr show an em dash there); built on SectionPanel + DataList.
 
-Category: Accounting · Reports. Source: `packages/ui/src/accounting/reports.tsx`.
+Category: Accounting · Reports. Source: `packages/ui/src/accounting/reports/trial-balance.tsx:52-193`.

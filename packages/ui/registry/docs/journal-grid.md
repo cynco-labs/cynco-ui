@@ -9,9 +9,9 @@ import { JournalGrid } from "@cynco-labs/ui";
 ## Usage
 
 ```tsx
-import { useState } from "react";
-import { Button, JournalGrid, Kbd, type JournalGridLine } from "@cynco-labs/ui";
+import { Button, JournalGrid, type JournalGridLine, Kbd } from "@cynco-labs/ui";
 import type { ReactNode } from "react";
+import { useState } from "react";
 
 function Hint(p: { children: ReactNode }) {
 	return <p className="text-xs text-tertiary-foreground">{p.children}</p>;
@@ -100,9 +100,7 @@ export default function JournalGridDemo() {
 		<div className="flex flex-col gap-2">
 			<div className="flex flex-wrap items-center justify-between gap-2">
 				<div className="min-w-0">
-					<div className="text-sm font-semibold text-foreground">
-						JV-2026-1031 · October payroll accrual
-					</div>
+					<div className="text-sm font-semibold text-foreground">JV-2026-1031 · October payroll accrual</div>
 					<Hint>
 						{"Try: Tab through a line, "}
 						{K("alt+b")}
@@ -144,11 +142,9 @@ export default function JournalGridDemo() {
 				</div>
 			</div>
 			<div
-				className={
-					(narrow
-						? "w-full max-w-[340px] rounded-xl border border-dashed border-border p-2 "
-						: "") + "max-h-[490px] overflow-y-auto pb-1"
-				}
+				className={`${
+					narrow ? "w-full max-w-[340px] rounded-xl border border-dashed border-border p-2 " : ""
+				}max-h-[490px] overflow-y-auto pb-1`}
 			>
 				{grid}
 			</div>
@@ -174,8 +170,21 @@ lines / defaultLines ({ id, accountId?, description?, debit?, credit? } with dec
 - `showShortcuts?`: `boolean`. Show the keyboard legend under the footer. Default true. Default `true`.
 - Also accepts `ComponentProps<"div">`.
 
+## Accessibility
+
+| Key | Does |
+| --- | --- |
+| Tab | Moves to the next cell and wraps to the next line, and leaves the grid past the last cell. |
+| Enter | Moves down the same column, and adds a line when already on the last one. |
+| Arrow Up / Arrow Down | Move between lines in the same column. |
+| ⌘Enter / Ctrl+Enter | Adds a line below the current one. |
+| ⌘Backspace / Ctrl+Backspace | Deletes the line, or clears it when the entry is already at its minimum. |
+| Alt+B | Fills the figure that balances the entry on the current line. |
+
+Each line is a role="group" labelled "Line n" inside a group labelled "Journal lines", and every cell carries its own aria-label such as "Line 2 debit". An sr-only polite region reports what the keys did, for example "Line 3 added", "Line 2 deleted", "Negative figure moved to credit" or "Filled RM 1,200.00 credit to balance". The balance summary is itself aria-live="polite", so Balanced or Out by is announced without moving focus, and each line's delete button is out of the tab order with a label naming its line.
+
 ## Notes
 
 Keys: Tab / Shift+Tab move across cells and wrap to the next/previous line (and leave the grid past the ends); Enter moves down and adds a line on the last one; Shift+Enter up; ↑ ↓ change line in the same column unless the account list is open; mod+Enter adds a line below; mod+Backspace deletes the line (clears it at the minimum); Alt+B, or “=” then Enter in an amount cell, fills the figure that balances the entry; a Debit clears that line's Credit and vice versa, and a negative figure flips sides. Account cell: type a code or name, ↑ ↓ and Enter/Tab to pick, Alt+↓/F4 opens, Esc closes. Totals via sumAmounts; StatusChip shows Balanced / Out by RM x. Responsive: a grid on containers ≥ 36rem, a card per line below that (Debit and Credit side by side, each ≥ 6rem); the footer is sticky to the nearest scroll container.
 
-Category: Productivity. Source: `packages/ui/src/productivity/entry.tsx`.
+Category: Productivity. Source: `packages/ui/src/productivity/entry/journal-grid.tsx:73-396`.

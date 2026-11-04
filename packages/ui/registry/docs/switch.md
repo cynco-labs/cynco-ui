@@ -9,8 +9,8 @@ import { Switch } from "@cynco-labs/ui";
 ## Usage
 
 ```tsx
-import { useState } from "react";
 import { Label, Switch, SwitchSizeProvider } from "@cynco-labs/ui";
+import { useState } from "react";
 
 export default function SwitchDemo() {
 	const [s, setS] = useState(true);
@@ -50,8 +50,17 @@ Settings that take effect immediately.
 - `thumbClassName?`: `string`
 - Also accepts `SwitchPrimitive.Root.Props`.
 
+## Accessibility
+
+| Key | Does |
+| --- | --- |
+| Enter | Toggles the switch. |
+| ⌘Enter / Ctrl+Enter | Stops the toggle so the chord reaches a sheet-level submit shortcut instead. |
+
+Nothing in the component names the switch, so pair it with a Label or pass aria-label. The thumb holds no text and exists only to draw the state, which the Base UI switch owns and exposes through data-checked and data-unchecked.
+
 ## Notes
 
 Thumb uses `switch-thumb-on` when on.
 
-Category: Components · Selection. Source: `packages/ui/src/base/components/ui/switch.tsx`.
+Category: Components · Selection. Source: `packages/ui/src/base/components/ui/switch.tsx:27-67`.

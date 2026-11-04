@@ -1,18 +1,14 @@
 "use client";
 
-import { useTableContext } from "./table-context";
-import { MotionTbody, useTableFadeIn } from "./table-motion";
-import {
-	isRowButtonKeyPress,
-	TableRowCells,
-	TableSkeletonRows,
-} from "./table-row-cells";
-import { TableCell, TableRow } from "../ui/table";
-import { cn } from "../../lib/utils";
 import type { Row } from "@tanstack/react-table";
 import type { VirtualItem } from "@tanstack/react-virtual";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { memo, useCallback, useMemo, useRef } from "react";
+import { cn } from "../../lib/utils";
+import { TableCell, TableRow } from "../ui/table";
+import { useTableContext } from "./table-context";
+import { MotionTbody, useTableFadeIn } from "./table-motion";
+import { isRowButtonKeyPress, TableRowCells, TableSkeletonRows } from "./table-row-cells";
 
 const DEFAULT_ROW_HEIGHT = 40;
 const SKELETON_ROW_BORDER_PX = 1;
@@ -74,7 +70,7 @@ const VirtualRowInner = <T,>({
 			className={cn(
 				"text-tertiary-foreground transition-none h-10 relative border-b last:border-b-0",
 				rowClassName,
-				isSelected ? "z-100" : "hover:bg-interactive-secondary-hover",
+				isSelected ? "z-sticky" : "hover:bg-interactive-secondary-hover",
 				(isRowClickable || rowHref) && "cursor-pointer",
 			)}
 			onClick={handleClick}
@@ -141,8 +137,7 @@ export function TableBodyVirtualized() {
 	if (!isLoading) hasLoadedRef.current = true;
 
 	const hasRows = rows.length > 0;
-	const showSkeleton =
-		isLoading || !!isTransitioning || (!hasRows && !hasLoadedRef.current);
+	const showSkeleton = isLoading || !!isTransitioning || (!hasRows && !hasLoadedRef.current);
 
 	// Don't initialize virtualizer until scroll container is ready
 	// This prevents incorrect virtual item calculations on initial render
@@ -164,9 +159,7 @@ export function TableBodyVirtualized() {
 	// Memoize padding calculations
 	const { paddingTop, paddingBottom } = useMemo(() => {
 		const top = virtualRows[0]?.start ?? 0;
-		const bottom =
-			virtualizer.getTotalSize() -
-			(virtualRows[virtualRows.length - 1]?.end ?? 0);
+		const bottom = virtualizer.getTotalSize() - (virtualRows[virtualRows.length - 1]?.end ?? 0);
 		return { paddingTop: top, paddingBottom: bottom };
 	}, [virtualRows, virtualizer]);
 
@@ -214,10 +207,7 @@ export function TableBodyVirtualized() {
 	} else if (containerPx > 0) {
 		skeletonRowCount = Math.max(
 			1,
-			Math.ceil(
-				(containerPx + SKELETON_ROW_BORDER_PX) /
-					(rowHeight + SKELETON_ROW_BORDER_PX),
-			),
+			Math.ceil((containerPx + SKELETON_ROW_BORDER_PX) / (rowHeight + SKELETON_ROW_BORDER_PX)),
 		);
 	} else {
 		skeletonRowCount = Math.max(lastRowCountRef.current, UNMEASURED_ROWS);
@@ -225,11 +215,7 @@ export function TableBodyVirtualized() {
 
 	if (showSkeleton) {
 		return (
-			<MotionTbody
-				key="skeleton"
-				{...fadeIn}
-				className="divide-y bg-interactive-secondary"
-			>
+			<MotionTbody data-slot="table-body" key="skeleton" {...fadeIn} className="divide-y bg-interactive-secondary">
 				<TableSkeletonRows
 					columns={columns}
 					rowCount={skeletonRowCount}
@@ -243,12 +229,9 @@ export function TableBodyVirtualized() {
 
 	if (!hasRows) {
 		return (
-			<MotionTbody key="empty" {...fadeIn}>
+			<MotionTbody data-slot="table-body" key="empty" {...fadeIn}>
 				<TableRow className="hover:bg-transparent dark:hover:bg-transparent">
-					<TableCell
-						className="h-10 text-center py-0"
-						colSpan={spannedColumnCount}
-					>
+					<TableCell className="h-10 text-center py-0" colSpan={spannedColumnCount}>
 						<div className="text-subtle text-xs text-center w-full h-full items-center justify-center flex">
 							{emptyStateChildren || emptyStateText}
 						</div>
@@ -260,14 +243,9 @@ export function TableBodyVirtualized() {
 
 	if (useFallbackRender) {
 		return (
-			<MotionTbody
-				key="content"
-				{...fadeIn}
-				className="bg-interactive-secondary"
-			>
+			<MotionTbody data-slot="table-body" key="content" {...fadeIn} className="bg-interactive-secondary">
 				{rows.map((row, index) => {
-					const isSelected =
-						selectedItemId === (row.original as { id?: string }).id;
+					const isSelected = selectedItemId === (row.original as { id?: string }).id;
 					const rowHref = getRowHref?.(row.original);
 
 					return (
@@ -293,25 +271,18 @@ export function TableBodyVirtualized() {
 	}
 
 	return (
-		<MotionTbody
-			key="content"
-			{...fadeIn}
-			className="bg-interactive-secondary"
-		>
+		<MotionTbody data-slot="table-body" key="content" {...fadeIn} className="bg-interactive-secondary">
 			{/* Spacers stand in for off-screen rows; aria-rowindex/rowcount carry the real positions. */}
 			{paddingTop > 0 && (
+				// biome-ignore lint/a11y/noAriaHiddenOnFocusable: a spacer row holds no content and takes no focus.
 				<tr aria-hidden="true" style={{ height: paddingTop }}>
-					<td
-						colSpan={spannedColumnCount}
-						style={{ padding: 0, border: "none" }}
-					/>
+					<td colSpan={spannedColumnCount} style={{ padding: 0, border: "none" }} />
 				</tr>
 			)}
 
 			{virtualRows.map((virtualRow) => {
 				const row = rows[virtualRow.index];
-				const isSelected =
-					selectedItemId === (row.original as { id?: string }).id;
+				const isSelected = selectedItemId === (row.original as { id?: string }).id;
 				const rowHref = getRowHref?.(row.original);
 
 				return (
@@ -334,11 +305,9 @@ export function TableBodyVirtualized() {
 			})}
 
 			{paddingBottom > 0 && (
+				// biome-ignore lint/a11y/noAriaHiddenOnFocusable: a spacer row holds no content and takes no focus.
 				<tr aria-hidden="true" style={{ height: paddingBottom }}>
-					<td
-						colSpan={spannedColumnCount}
-						style={{ padding: 0, border: "none" }}
-					/>
+					<td colSpan={spannedColumnCount} style={{ padding: 0, border: "none" }} />
 				</tr>
 			)}
 		</MotionTbody>

@@ -50,6 +50,6 @@ title, entryNumber?, status? (draft|pending_approval|approved|posted|reversed|ca
 
 ## Notes
 
-Entry number in text-tiny-id. Approval-required entries show "Save & Submit for Approval". Responsive: Actions sit in an ActionBar that wraps under the title on narrow containers.
+Entry number in `font-mono text-2xs`. Approval-required entries show "Save & Submit for Approval". Responsive: Actions sit in an ActionBar that wraps under the title on narrow containers.
 
-Category: Accounting · Ledger. Source: `packages/ui/src/accounting/ledger.tsx`.
+Category: Accounting · Ledger. Source: `packages/ui/src/accounting/ledger/journal-entry.tsx:81-144`.

@@ -15,7 +15,7 @@ export default function PartyTimelineDemo() {
 	return (
 		<div className="max-w-[620px]">
 			<PartyTimeline
-				role="customer"
+				party="customer"
 				events={[
 					{
 						id: "e1",
@@ -23,7 +23,7 @@ export default function PartyTimelineDemo() {
 						date: "2026-10-28",
 						title: "DuitNow transfer",
 						reference: "INV-2026-0142",
-						amount: -8500,
+						amount: "-8500.00",
 						status: "completed",
 					},
 					{
@@ -33,7 +33,7 @@ export default function PartyTimelineDemo() {
 						title: "INV-2026-0156",
 						reference: "PO-MESRA-3381",
 						dueDate: "2026-11-20",
-						amount: 12480.5,
+						amount: "12480.50",
 						status: "finalized",
 					},
 					{
@@ -42,9 +42,9 @@ export default function PartyTimelineDemo() {
 						date: "2026-10-06",
 						title: "INV-2026-0149",
 						dueDate: "2026-11-05",
-						amount: 3450,
+						amount: "3450.00",
 						currency: "SGD",
-						baseAmount: 11316.0,
+						baseAmount: "11316.00",
 						status: "finalized",
 					},
 					{
@@ -54,7 +54,7 @@ export default function PartyTimelineDemo() {
 						title: "INV-2026-0131",
 						reference: "PO-MESRA-3302",
 						dueDate: "2026-10-15",
-						amount: 6680,
+						amount: "6680.00",
 						status: "overdue",
 						overdue: true,
 					},
@@ -63,7 +63,7 @@ export default function PartyTimelineDemo() {
 						kind: "bank",
 						date: "2026-09-09",
 						title: "Maybank · IBG MESRA SDN BHD",
-						amount: -4200,
+						amount: "-4200.00",
 					},
 					{
 						id: "e6",
@@ -71,7 +71,7 @@ export default function PartyTimelineDemo() {
 						date: "2026-09-02",
 						title: "Cheque 004512",
 						reference: "INV-2026-0117",
-						amount: -6000,
+						amount: "-6000.00",
 						status: "completed",
 					},
 				]}
@@ -87,10 +87,10 @@ Activity tab of customer and vendor pages.
 
 ## Props
 
-events [{kind, date, title, reference, status, dueDate, overdue, amount, currency, baseAmount}], role, currency; className and native div props.
+events [{kind, date, title, reference, status, dueDate, overdue, amount, currency, baseAmount}], party, currency; className and native div props.
 
-- `role`: `"customer" | "vendor"`
 - `events`: `PartyEvent[]`
+- `party`: `"customer" | "vendor"`
 - `currency?`: `string`. Default `"MYR"`.
 - Also accepts `ComponentProps<"div">`.
 
@@ -98,4 +98,4 @@ events [{kind, date, title, reference, status, dueDate, overdue, amount, currenc
 
 Responsive by container: below a 28rem container the day joins the detail line and titles wrap to two lines.
 
-Category: Accounting · Expenses & parties. Source: `packages/ui/src/accounting/parties.tsx`.
+Category: Accounting · Expenses & parties. Source: `packages/ui/src/accounting/parties/party-timeline.tsx:52-173`.

@@ -1,5 +1,5 @@
-import { useState } from "react";
 import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from "@cynco-labs/ui";
+import { useState } from "react";
 
 export default function InputOTPDemo() {
 	const [s, setS] = useState("3141");

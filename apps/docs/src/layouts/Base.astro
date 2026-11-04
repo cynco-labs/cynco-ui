@@ -9,7 +9,12 @@ interface Props {
 	mdHref?: string;
 	bodyClass?: string;
 }
-const { title, description = "Cynco UI: the design system for accounting and ERP interfaces.", mdHref, bodyClass = "" } = Astro.props;
+const {
+	title,
+	description = "Cynco UI: the design system for accounting and ERP interfaces.",
+	mdHref,
+	bodyClass = "",
+} = Astro.props;
 const fullTitle = title === "Cynco UI" ? "Cynco UI" : `${title} · Cynco UI`;
 const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : undefined;
 ---

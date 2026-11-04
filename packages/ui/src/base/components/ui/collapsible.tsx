@@ -1,67 +1,50 @@
 import { Collapsible as CollapsiblePrimitive } from "@base-ui/react/collapsible";
-import * as React from "react";
+import { renderProp } from "../../lib/render";
 
-function Collapsible({
-	asChild,
-	children,
-	...props
-}: CollapsiblePrimitive.Root.Props & { asChild?: boolean }) {
-	if (asChild && React.isValidElement(children)) {
-		return (
-			<CollapsiblePrimitive.Root
-				data-slot="collapsible"
-				render={children}
-				{...props}
-			/>
-		);
-	}
+function Collapsible({ asChild, children, render, ...props }: CollapsiblePrimitive.Root.Props & { asChild?: boolean }) {
+	const element = renderProp(asChild, children, render);
 	return (
-		<CollapsiblePrimitive.Root data-slot="collapsible" {...props}>
-			{children}
-		</CollapsiblePrimitive.Root>
+		<CollapsiblePrimitive.Root
+			data-slot="collapsible"
+			render={element}
+			{...props}
+			{...(element === children ? {} : { children })}
+		/>
 	);
 }
 
 function CollapsibleTrigger({
 	asChild,
 	children,
+	render,
 	...props
 }: CollapsiblePrimitive.Trigger.Props & { asChild?: boolean }) {
-	if (asChild && React.isValidElement(children)) {
-		return (
-			<CollapsiblePrimitive.Trigger
-				data-slot="collapsible-trigger"
-				render={children}
-				{...props}
-			/>
-		);
-	}
+	const element = renderProp(asChild, children, render);
 	return (
-		<CollapsiblePrimitive.Trigger data-slot="collapsible-trigger" {...props}>
-			{children}
-		</CollapsiblePrimitive.Trigger>
+		<CollapsiblePrimitive.Trigger
+			data-slot="collapsible-trigger"
+			render={element}
+			{...props}
+			{...(element === children ? {} : { children })}
+		/>
 	);
 }
 
 function CollapsibleContent({
 	asChild,
 	children,
+	render,
 	...props
 }: CollapsiblePrimitive.Panel.Props & { asChild?: boolean }) {
-	if (asChild && React.isValidElement(children)) {
-		return (
-			<CollapsiblePrimitive.Panel
-				data-slot="collapsible-content"
-				render={children}
-				{...props}
-			/>
-		);
-	}
+	const element = renderProp(asChild, children, render);
 	return (
-		<CollapsiblePrimitive.Panel data-slot="collapsible-content" {...props}>
-			{children}
-		</CollapsiblePrimitive.Panel>
+		<CollapsiblePrimitive.Panel
+			data-slot="collapsible-content"
+			render={element}
+			{...props}
+			{...(element === children ? {} : { children })}
+		/>
 	);
 }
 
-export { Collapsible, CollapsibleTrigger, CollapsibleContent };
+export { Collapsible, CollapsibleContent, CollapsibleTrigger };

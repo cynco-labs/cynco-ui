@@ -16,13 +16,13 @@ export default function PartyOverviewHeaderDemo() {
 		<PartyOverviewHeader
 			onStatement={() => {}}
 			onCreate={() => {}}
-			role="customer"
+			party="customer"
 			name="Kedai Runcit Mesra Sdn Bhd"
-			balance={48250.4}
-			overdue={12680}
+			balance={"48250.40"}
+			overdue={"12680.00"}
 			overdueSince="2026-08-15"
 			openCount={7}
-			trendTotal={186420.75}
+			trendTotal={"186420.75"}
 			paymentTerms="Net 30"
 			category="Retail"
 			since="2024-03-11"
@@ -37,14 +37,14 @@ Customer and vendor party pages (CustomerPartyPage / VendorPartyPage).
 
 ## Props
 
-role, name, isActive, balance, overdue, overdueSince, openCount, trendTotal, paymentTerms, category, since, currency, tab, onTabChange; className and native div props.
+party, name, isActive, balance, overdue, overdueSince, openCount, trendTotal, paymentTerms, category, since, currency, tab / defaultTab / onTabChange; className and native div props.
 
-- `role`: `"customer" | "vendor"`
+- `party`: `"customer" | "vendor"`
 - `name`: `string`
-- `balance`: `number`. Subledger balance: positive = they owe you (customer) / you owe them (vendor).
-- `overdue`: `number`
+- `balance`: `Amount`. Subledger balance: positive = they owe you (customer) / you owe them (vendor).
+- `overdue`: `Amount`
 - `openCount`: `number`
-- `trendTotal`: `number`. Billed (customer) or spend (vendor), trailing 12 months.
+- `trendTotal`: `Amount`. Billed (customer) or spend (vendor), trailing 12 months.
 - `isActive?`: `boolean`. Default `true`.
 - `overdueSince?`: `string | null`. YYYY-MM-DD of the oldest overdue item.
 - `paymentTerms?`: `string | null`
@@ -62,4 +62,4 @@ role, name, isActive, balance, overdue, overdueSince, openCount, trendTotal, pay
 
 Responsive by container: KPIs are a StatGrid (four-up from 48rem, wrapping below); tabs scroll sideways in a ScrollRow.
 
-Category: Accounting · Expenses & parties. Source: `packages/ui/src/accounting/parties.tsx`.
+Category: Accounting · Expenses & parties. Source: `packages/ui/src/accounting/parties/party-overview.tsx:46-156`.

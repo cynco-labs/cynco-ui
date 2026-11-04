@@ -9,17 +9,17 @@ import { CashFlowReport } from "@cynco-labs/ui";
 ## Usage
 
 ```tsx
-import * as React from "react";
-import { useState } from "react";
 import {
+	type CashFlowData,
 	CashFlowReport,
-	DocumentBrandProvider,
-	GroupedTabButton,
 	type DocBrand,
 	type DocLayout,
 	type DocLocale,
-	type CashFlowData,
+	DocumentBrandProvider,
+	GroupedTabButton,
 } from "@cynco-labs/ui";
+import type * as React from "react";
+import { useState } from "react";
 
 const BRAND: DocBrand = {
 	company: {
@@ -65,18 +65,9 @@ function Shell({ extra, render }: ShellProps) {
 						{ value: "en-ms", label: "EN+BM" },
 					]}
 				/>
-				{extra ? (
-					<GroupedTabButton
-						className="w-[230px]"
-						value={x}
-						onValueChange={setX}
-						options={extra.options}
-					/>
-				) : null}
+				{extra ? <GroupedTabButton className="w-[230px]" value={x} onValueChange={setX} options={extra.options} /> : null}
 			</div>
-			<DocumentBrandProvider brand={Object.assign({}, BRAND, { layout: l, locale: g })}>
-				{render(x)}
-			</DocumentBrandProvider>
+			<DocumentBrandProvider brand={Object.assign({}, BRAND, { layout: l, locale: g })}>{render(x)}</DocumentBrandProvider>
 		</div>
 	);
 }
@@ -156,4 +147,4 @@ report: CashFlowData — period, columns, profitBeforeTax, adjustments[], operat
 
 All layouts and locales; A4; header repeats when printed.
 
-Category: Documents. Source: `packages/ui/src/documents/reports.tsx`.
+Category: Documents. Source: `packages/ui/src/documents/reports.tsx:1184-1228`.

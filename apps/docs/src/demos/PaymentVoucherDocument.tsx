@@ -1,9 +1,9 @@
 import {
-	DocumentBrandProvider,
-	PaymentVoucherDocument,
 	type DocLayout,
 	type DocLocale,
+	DocumentBrandProvider,
 	type PaymentVoucherData,
+	PaymentVoucherDocument,
 } from "@cynco-labs/ui";
 
 const BRAND = {
@@ -35,7 +35,8 @@ const PV: PaymentVoucherData = {
 		accountName: "Nusantara Office Solutions Sdn Bhd",
 		accountNumber: "8008 4417 3925",
 	},
-	memo: "Office equipment lease, stationery and furniture for the KL office (September – October 2026 bills), net of credit note CN-NOS-0127.",
+	memo:
+		"Office equipment lease, stationery and furniture for the KL office (September – October 2026 bills), net of credit note CN-NOS-0127.",
 	lines: [
 		{
 			reference: "BILL-NOS-4471",
@@ -105,7 +106,10 @@ export const controls = {
 export default function PaymentVoucherDocumentDemo({
 	layout = "minimal",
 	locale = "en",
-}: { layout?: DocLayout; locale?: DocLocale } = {}) {
+}: {
+	layout?: DocLayout;
+	locale?: DocLocale;
+} = {}) {
 	return (
 		<DocumentBrandProvider brand={{ ...BRAND, layout, locale }}>
 			<PaymentVoucherDocument voucher={PV} />

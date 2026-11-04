@@ -229,51 +229,24 @@
 	"Button": {
 		"props": [
 			{
-				"name": "variant",
-				"type": "\"primary\" | \"secondary\" | \"skeleton\" | \"muted\" | \"destructive\" | \"dotted\"",
-				"required": false,
-				"default": "\"primary\""
-			},
-			{
-				"name": "size",
-				"type": "\"sm\" | \"default\" | \"mini\" | \"icon\"",
-				"required": false,
-				"default": "\"default\""
-			},
-			{
 				"name": "asChild",
 				"type": "boolean",
 				"required": false,
-				"default": "false"
+				"default": "false",
+				"description": "Radix compatibility: render the single child element instead of a `<button>`."
 			},
 			{
 				"name": "isLoading",
 				"type": "boolean",
 				"required": false,
-				"default": "false"
-			},
-			{
-				"name": "transition",
-				"type": "boolean",
-				"required": false,
-				"default": "false"
-			},
-			{
-				"name": "disableActive",
-				"type": "boolean",
-				"required": false,
-				"default": "true"
-			},
-			{
-				"name": "hide",
-				"type": "boolean",
-				"required": false,
-				"default": "false"
+				"default": "false",
+				"description": "Swaps the label for a spinner and disables the button, while the label stays its accessible name."
 			},
 			{
 				"name": "render",
 				"type": "ReactElement",
-				"required": false
+				"required": false,
+				"description": "The element to render instead of a `<button>` (Base UI)."
 			},
 			{
 				"name": "focusableWhenDisabled",
@@ -281,6 +254,18 @@
 				"required": false,
 				"default": "false",
 				"description": "Keep the button in the tab order while disabled (Base UI). Set automatically while `isLoading`."
+			},
+			{
+				"name": "variant",
+				"type": "\"primary\" | \"secondary\" | \"skeleton\" | \"muted\" | \"destructive\" | \"dotted\"",
+				"required": false,
+				"default": "\"primary\""
+			},
+			{
+				"name": "size",
+				"type": "\"sm\" | \"md\" | \"icon\"",
+				"required": false,
+				"default": "\"md\""
 			}
 		],
 		"inherits": [
@@ -303,86 +288,51 @@
 	"IconButton": {
 		"props": [
 			{
-				"name": "variant",
-				"type": "\"primary\" | \"secondary\" | \"skeleton\" | \"muted\" | \"destructive\" | \"dotted\"",
-				"required": false,
-				"default": "\"primary\""
-			},
-			{
-				"name": "size",
-				"type": "\"sm\" | \"default\" | \"mini\" | \"icon\"",
-				"required": false,
-				"default": "\"default\""
-			},
-			{
 				"name": "icon",
 				"type": "ReactNode",
 				"required": false
 			},
 			{
-				"name": "asChild",
-				"type": "boolean",
-				"required": false,
-				"default": "false"
-			},
-			{
-				"name": "isLoading",
-				"type": "boolean",
-				"required": false
-			},
-			{
-				"name": "transition",
-				"type": "boolean",
-				"required": false
-			},
-			{
-				"name": "disableActive",
-				"type": "boolean",
-				"required": false
-			},
-			{
-				"name": "hide",
-				"type": "boolean",
-				"required": false
-			},
-			{
-				"name": "render",
-				"type": "ReactElement",
-				"required": false
-			},
-			{
-				"name": "focusableWhenDisabled",
-				"type": "boolean",
-				"required": false,
-				"description": "Keep the button in the tab order while disabled (Base UI). Set automatically while `isLoading`."
-			},
-			{
-				"name": "iconOrientation",
-				"type": "\"center\" | \"left\" | \"right\"",
-				"required": false,
-				"default": "\"left\""
-			},
-			{
 				"name": "rightIcon",
 				"type": "ReactNode",
 				"required": false
-			}
-		],
-		"inherits": [
-			"ComponentProps<\"button\">"
-		]
-	},
-	"IconTooltipButton": {
-		"props": [
+			},
 			{
 				"name": "tooltip",
-				"type": "string",
-				"required": true
+				"type": "ReactNode",
+				"required": false,
+				"description": "A hint on hover and focus. On an icon-only button it also names the button when no `aria-label` is given."
 			},
 			{
-				"name": "icon",
-				"type": "ReactNode",
-				"required": true
+				"name": "tooltipSide",
+				"type": "\"top\" | \"bottom\" | \"left\" | \"right\"",
+				"required": false,
+				"description": "Which side the tooltip opens on."
+			},
+			{
+				"name": "asChild",
+				"type": "boolean",
+				"required": false,
+				"default": "false",
+				"description": "Radix compatibility: render the single child element instead of a `<button>`."
+			},
+			{
+				"name": "isLoading",
+				"type": "boolean",
+				"required": false,
+				"description": "Swaps the label for a spinner and disables the button, while the label stays its accessible name."
+			},
+			{
+				"name": "render",
+				"type": "ReactElement",
+				"required": false,
+				"description": "The element to render instead of a `<button>` (Base UI)."
+			},
+			{
+				"name": "focusableWhenDisabled",
+				"type": "boolean",
+				"required": false,
+				"description": "Keep the button in the tab order while disabled (Base UI). Set automatically while `isLoading`."
 			},
 			{
 				"name": "variant",
@@ -392,56 +342,15 @@
 			},
 			{
 				"name": "size",
-				"type": "\"sm\" | \"default\" | \"mini\" | \"icon\"",
+				"type": "\"sm\" | \"md\" | \"icon\"",
 				"required": false,
-				"default": "\"default\""
-			},
-			{
-				"name": "asChild",
-				"type": "boolean",
-				"required": false
-			},
-			{
-				"name": "isLoading",
-				"type": "boolean",
-				"required": false
-			},
-			{
-				"name": "transition",
-				"type": "boolean",
-				"required": false
-			},
-			{
-				"name": "disableActive",
-				"type": "boolean",
-				"required": false
-			},
-			{
-				"name": "hide",
-				"type": "boolean",
-				"required": false
-			},
-			{
-				"name": "render",
-				"type": "ReactElement",
-				"required": false
-			},
-			{
-				"name": "focusableWhenDisabled",
-				"type": "boolean",
-				"required": false,
-				"description": "Keep the button in the tab order while disabled (Base UI). Set automatically while `isLoading`."
+				"default": "\"md\""
 			},
 			{
 				"name": "iconOrientation",
 				"type": "\"center\" | \"left\" | \"right\"",
 				"required": false,
 				"default": "\"left\""
-			},
-			{
-				"name": "rightIcon",
-				"type": "ReactNode",
-				"required": false
 			}
 		],
 		"inherits": [
@@ -468,7 +377,8 @@
 			{
 				"name": "isLoading",
 				"type": "boolean",
-				"required": false
+				"required": false,
+				"description": "Swaps the label for a spinner and disables the button, while the label stays its accessible name."
 			},
 			{
 				"name": "variant",
@@ -479,27 +389,14 @@
 			{
 				"name": "asChild",
 				"type": "boolean",
-				"required": false
-			},
-			{
-				"name": "transition",
-				"type": "boolean",
-				"required": false
-			},
-			{
-				"name": "disableActive",
-				"type": "boolean",
-				"required": false
-			},
-			{
-				"name": "hide",
-				"type": "boolean",
-				"required": false
+				"required": false,
+				"description": "Radix compatibility: render the single child element instead of a `<button>`."
 			},
 			{
 				"name": "render",
 				"type": "ReactElement",
-				"required": false
+				"required": false,
+				"description": "The element to render instead of a `<button>` (Base UI)."
 			},
 			{
 				"name": "focusableWhenDisabled",
@@ -509,9 +406,9 @@
 			},
 			{
 				"name": "size",
-				"type": "\"sm\" | \"default\" | \"mini\" | \"icon\"",
+				"type": "\"sm\" | \"md\" | \"icon\"",
 				"required": false,
-				"default": "\"default\""
+				"default": "\"md\""
 			}
 		],
 		"inherits": [
@@ -521,6 +418,30 @@
 	"ToolbarButton": {
 		"props": [
 			{
+				"name": "asChild",
+				"type": "boolean",
+				"required": false,
+				"description": "Radix compatibility: render the single child element instead of a `<button>`."
+			},
+			{
+				"name": "isLoading",
+				"type": "boolean",
+				"required": false,
+				"description": "Swaps the label for a spinner and disables the button, while the label stays its accessible name."
+			},
+			{
+				"name": "render",
+				"type": "ReactElement",
+				"required": false,
+				"description": "The element to render instead of a `<button>` (Base UI)."
+			},
+			{
+				"name": "focusableWhenDisabled",
+				"type": "boolean",
+				"required": false,
+				"description": "Keep the button in the tab order while disabled (Base UI). Set automatically while `isLoading`."
+			},
+			{
 				"name": "variant",
 				"type": "\"primary\" | \"secondary\" | \"skeleton\" | \"muted\" | \"destructive\" | \"dotted\"",
 				"required": false,
@@ -528,45 +449,9 @@
 			},
 			{
 				"name": "size",
-				"type": "\"sm\" | \"default\" | \"mini\" | \"icon\"",
+				"type": "\"sm\" | \"md\" | \"icon\"",
 				"required": false,
-				"default": "\"default\""
-			},
-			{
-				"name": "asChild",
-				"type": "boolean",
-				"required": false
-			},
-			{
-				"name": "isLoading",
-				"type": "boolean",
-				"required": false
-			},
-			{
-				"name": "transition",
-				"type": "boolean",
-				"required": false
-			},
-			{
-				"name": "disableActive",
-				"type": "boolean",
-				"required": false
-			},
-			{
-				"name": "hide",
-				"type": "boolean",
-				"required": false
-			},
-			{
-				"name": "render",
-				"type": "ReactElement",
-				"required": false
-			},
-			{
-				"name": "focusableWhenDisabled",
-				"type": "boolean",
-				"required": false,
-				"description": "Keep the button in the tab order while disabled (Base UI). Set automatically while `isLoading`."
+				"default": "\"md\""
 			}
 		],
 		"inherits": [
@@ -578,71 +463,52 @@
 			{
 				"name": "text",
 				"type": "string",
-				"required": true
+				"required": true,
+				"description": "The string put on the clipboard."
+			},
+			{
+				"name": "variant",
+				"type": "\"text\" | \"icon\" | \"inline\"",
+				"required": false,
+				"default": "\"text\"",
+				"description": "`text` is a labelled chip, `icon` is the glyph alone, and `inline` is mono text whose glyph appears on hover, focus and every touch screen."
 			},
 			{
 				"name": "side",
 				"type": "\"top\" | \"bottom\" | \"left\" | \"right\"",
 				"required": false,
-				"default": "\"right\""
+				"default": "\"right\"",
+				"description": "Which side the \"Copied!\" tooltip opens on."
+			},
+			{
+				"name": "size",
+				"type": "\"sm\" | \"md\" | \"icon\"",
+				"required": false,
+				"default": "\"md\""
 			},
 			{
 				"name": "iconOrientation",
-				"type": "\"left\" | \"right\"",
+				"type": "\"center\" | \"left\" | \"right\"",
 				"required": false,
-				"default": "\"right\""
-			},
-			{
-				"name": "innerClassName",
-				"type": "string",
-				"required": false,
-				"default": "\"\""
-			},
-			{
-				"name": "iconClassName",
-				"type": "string",
-				"required": false,
-				"description": "Classes applied to the copy icon button (MiniCopyButton only). Overrides the default hover-reveal."
-			},
-			{
-				"name": "icon",
-				"type": "ReactNode",
-				"required": false
-			},
-			{
-				"name": "rightIcon",
-				"type": "ReactNode",
-				"required": false
-			},
-			{
-				"name": "asChild",
-				"type": "boolean",
-				"required": false
+				"default": "\"left\""
 			},
 			{
 				"name": "isLoading",
 				"type": "boolean",
-				"required": false
+				"required": false,
+				"description": "Swaps the label for a spinner and disables the button, while the label stays its accessible name."
 			},
 			{
-				"name": "transition",
+				"name": "asChild",
 				"type": "boolean",
-				"required": false
-			},
-			{
-				"name": "disableActive",
-				"type": "boolean",
-				"required": false
-			},
-			{
-				"name": "hide",
-				"type": "boolean",
-				"required": false
+				"required": false,
+				"description": "Radix compatibility: render the single child element instead of a `<button>`."
 			},
 			{
 				"name": "render",
 				"type": "ReactElement",
-				"required": false
+				"required": false,
+				"description": "The element to render instead of a `<button>` (Base UI)."
 			},
 			{
 				"name": "focusableWhenDisabled",
@@ -651,47 +517,20 @@
 				"description": "Keep the button in the tab order while disabled (Base UI). Set automatically while `isLoading`."
 			},
 			{
-				"name": "variant",
-				"type": "\"primary\" | \"secondary\" | \"skeleton\" | \"muted\" | \"destructive\" | \"dotted\"",
-				"required": false,
-				"default": "\"primary\""
+				"name": "rightIcon",
+				"type": "ReactNode",
+				"required": false
 			},
 			{
-				"name": "size",
-				"type": "\"sm\" | \"default\" | \"mini\" | \"icon\"",
+				"name": "tooltipSide",
+				"type": "\"top\" | \"bottom\" | \"left\" | \"right\"",
 				"required": false,
-				"default": "\"default\""
+				"description": "Which side the tooltip opens on."
 			}
 		],
 		"inherits": [
 			"ComponentProps<\"button\">"
 		]
-	},
-	"CopyTextButton": {
-		"props": [
-			{
-				"name": "text",
-				"type": "string",
-				"required": true
-			},
-			{
-				"name": "copySize",
-				"type": "number",
-				"required": false
-			},
-			{
-				"name": "variant",
-				"type": "string",
-				"required": false,
-				"default": "\"secondary\""
-			},
-			{
-				"name": "icon",
-				"type": "ReactNode",
-				"required": false
-			}
-		],
-		"inherits": []
 	},
 	"InlineAction": {
 		"props": [
@@ -802,28 +641,6 @@
 			"ComponentProps<\"textarea\">"
 		]
 	},
-	"LabelInput": {
-		"props": [
-			{
-				"name": "label",
-				"type": "string | ReactElement<typeof HTMLSpanElement>",
-				"required": true
-			},
-			{
-				"name": "placeholder",
-				"type": "string",
-				"required": true
-			},
-			{
-				"name": "description",
-				"type": "string",
-				"required": false
-			}
-		],
-		"inherits": [
-			"ComponentProps<\"input\">"
-		]
-	},
 	"TagInput": {
 		"props": [
 			{
@@ -917,7 +734,8 @@
 			}
 		],
 		"inherits": [
-			"ComponentProps<\"button\">"
+			"ComponentProps<\"button\">",
+			"ComponentProps<\"div\">"
 		]
 	},
 	"DateInputUnix": {
@@ -1082,6 +900,12 @@
 				"required": true
 			},
 			{
+				"name": "disabled",
+				"type": "boolean",
+				"required": false,
+				"default": "false"
+			},
+			{
 				"name": "value",
 				"type": "string | null",
 				"required": false,
@@ -1144,12 +968,6 @@
 				"required": false,
 				"default": "\"No results found\"",
 				"description": "`null` renders no empty state at all — the search input stands alone."
-			},
-			{
-				"name": "disabled",
-				"type": "boolean",
-				"required": false,
-				"default": "false"
 			},
 			{
 				"name": "triggerClassName",
@@ -1236,30 +1054,6 @@
 			"CheckboxPrimitive.Root.Props"
 		]
 	},
-	"TextCheckbox": {
-		"props": [
-			{
-				"name": "children",
-				"type": "ReactNode",
-				"required": true
-			},
-			{
-				"name": "size",
-				"type": "\"sm\" | \"md\" | \"lg\"",
-				"required": false
-			},
-			{
-				"name": "disabled",
-				"type": "boolean",
-				"required": false,
-				"default": "false",
-				"description": "Whether the component should ignore user interaction."
-			}
-		],
-		"inherits": [
-			"CheckboxPrimitive.Root.Props"
-		]
-	},
 	"AreaCheckbox": {
 		"props": [
 			{
@@ -1293,13 +1087,8 @@
 			{
 				"name": "disabledReason",
 				"type": "string",
-				"required": false
-			},
-			{
-				"name": "hide",
-				"type": "boolean",
 				"required": false,
-				"default": "false"
+				"description": "Disables the choice and says why, on a tooltip and to screen readers."
 			},
 			{
 				"name": "description",
@@ -1311,14 +1100,25 @@
 			"ComponentProps<\"div\">"
 		]
 	},
-	"IconCheckbox": {
+	"ToggleButton": {
 		"props": [
 			{
-				"name": "defaultChecked",
+				"name": "pressed",
+				"type": "boolean",
+				"required": false,
+				"description": "Controlled pressed state."
+			},
+			{
+				"name": "defaultPressed",
 				"type": "boolean",
 				"required": false,
 				"default": "false",
-				"description": "Initial state for uncontrolled use."
+				"description": "Initial pressed state for uncontrolled use."
+			},
+			{
+				"name": "onPressedChange",
+				"type": "(pressed: boolean) => void",
+				"required": false
 			},
 			{
 				"name": "variant",
@@ -1328,7 +1128,7 @@
 			},
 			{
 				"name": "size",
-				"type": "\"sm\" | \"default\" | \"mini\" | \"icon\"",
+				"type": "\"sm\" | \"md\" | \"icon\"",
 				"required": false,
 				"default": "\"sm\""
 			},
@@ -1338,36 +1138,28 @@
 				"required": false
 			},
 			{
-				"name": "asChild",
-				"type": "boolean",
+				"name": "iconOrientation",
+				"type": "\"center\" | \"left\" | \"right\"",
 				"required": false,
-				"default": "false"
+				"default": "\"center\""
 			},
 			{
 				"name": "isLoading",
 				"type": "boolean",
-				"required": false
+				"required": false,
+				"description": "Swaps the label for a spinner and disables the button, while the label stays its accessible name."
 			},
 			{
-				"name": "transition",
-				"type": "boolean",
-				"required": false
-			},
-			{
-				"name": "disableActive",
-				"type": "boolean",
-				"required": false
-			},
-			{
-				"name": "hide",
+				"name": "asChild",
 				"type": "boolean",
 				"required": false,
-				"default": "false"
+				"description": "Radix compatibility: render the single child element instead of a `<button>`."
 			},
 			{
 				"name": "render",
 				"type": "ReactElement",
-				"required": false
+				"required": false,
+				"description": "The element to render instead of a `<button>` (Base UI)."
 			},
 			{
 				"name": "focusableWhenDisabled",
@@ -1376,20 +1168,21 @@
 				"description": "Keep the button in the tab order while disabled (Base UI). Set automatically while `isLoading`."
 			},
 			{
-				"name": "iconOrientation",
-				"type": "\"left\" | \"center\" | \"right\"",
+				"name": "tooltip",
+				"type": "ReactNode",
 				"required": false,
-				"default": "\"center\""
+				"description": "A hint on hover and focus. On an icon-only button it also names the button when no `aria-label` is given."
 			},
 			{
-				"name": "checked",
-				"type": "boolean",
+				"name": "rightIcon",
+				"type": "ReactNode",
 				"required": false
 			},
 			{
-				"name": "onCheckedChange",
-				"type": "(checked: boolean) => void",
-				"required": false
+				"name": "tooltipSide",
+				"type": "\"top\" | \"bottom\" | \"left\" | \"right\"",
+				"required": false,
+				"description": "Which side the tooltip opens on."
 			}
 		],
 		"inherits": [
@@ -1431,7 +1224,9 @@
 				"required": false
 			}
 		],
-		"inherits": []
+		"inherits": [
+			"ComponentProps<\"label\">"
+		]
 	},
 	"Switch": {
 		"props": [
@@ -1534,7 +1329,8 @@
 			{
 				"name": "enabled",
 				"type": "boolean",
-				"required": true
+				"required": true,
+				"description": "When false the child renders alone, with no trigger and no popup."
 			},
 			{
 				"name": "content",
@@ -1544,25 +1340,14 @@
 			{
 				"name": "children",
 				"type": "ReactElement",
-				"required": true
-			},
-			{
-				"name": "contentClassName",
-				"type": "string",
-				"required": false
+				"required": true,
+				"description": "The element the tooltip describes; it becomes the trigger."
 			}
 		],
-		"inherits": []
-	},
-	"SheetCloseButton": {
-		"props": [
-			{
-				"name": "onClose",
-				"type": "() => void",
-				"required": true
-			}
-		],
-		"inherits": []
+		"inherits": [
+			"TooltipPrimitive.Popup.Props",
+			"TooltipPrimitive.Positioner.Props"
+		]
 	},
 	"SheetBackdrop": {
 		"props": [
@@ -1583,7 +1368,9 @@
 				"default": "SHEET_BACKDROP_Z_INDEX"
 			}
 		],
-		"inherits": []
+		"inherits": [
+			"ComponentProps<typeof motion.div>"
+		]
 	},
 	"Tabs": {
 		"props": [],
@@ -1705,9 +1492,9 @@
 			},
 			{
 				"name": "size",
-				"type": "\"sm\" | \"default\"",
+				"type": "\"sm\" | \"md\"",
 				"required": false,
-				"default": "\"default\""
+				"default": "\"md\""
 			},
 			{
 				"name": "asChild",
@@ -1730,9 +1517,9 @@
 			},
 			{
 				"name": "size",
-				"type": "\"sm\" | \"default\"",
+				"type": "\"sm\" | \"md\"",
 				"required": false,
-				"default": "\"default\""
+				"default": "\"md\""
 			},
 			{
 				"name": "asChild",
@@ -1747,26 +1534,26 @@
 	"IconBadge": {
 		"props": [
 			{
+				"name": "icon",
+				"type": "ReactNode",
+				"required": false
+			},
+			{
+				"name": "rightIcon",
+				"type": "ReactNode",
+				"required": false
+			},
+			{
 				"name": "variant",
 				"type": "\"default\" | \"muted\"",
 				"required": false,
 				"default": "\"muted\""
 			},
 			{
-				"name": "icon",
-				"type": "ReactNode",
-				"required": false
-			},
-			{
 				"name": "asChild",
 				"type": "boolean",
 				"required": false,
 				"default": "false"
-			},
-			{
-				"name": "rightIcon",
-				"type": "ReactNode",
-				"required": false
 			},
 			{
 				"name": "position",
@@ -1961,54 +1748,30 @@
 		]
 	},
 	"Label": {
-		"props": [],
-		"inherits": [
-			"ComponentProps<\"label\">"
-		]
-	},
-	"FormLabel": {
 		"props": [
 			{
-				"name": "disabled",
-				"type": "boolean",
-				"required": false,
-				"description": "Dims the label to match a disabled control."
-			}
-		],
-		"inherits": [
-			"ComponentProps<\"label\">"
-		]
-	},
-	"FieldLabel": {
-		"props": [
-			{
-				"name": "description",
-				"type": "string",
-				"required": false,
-				"description": "Hint under the label. Rendered outside the `<label>`, so it never joins the control's name."
-			},
-			{
-				"name": "descriptionId",
-				"type": "string",
-				"required": false,
-				"description": "Id for the description, so the control can point `aria-describedby` at it."
-			},
-			{
-				"name": "empty",
+				"name": "required",
 				"type": "boolean",
 				"required": false,
 				"default": "false",
-				"description": "Render an aria-hidden spacer the height of a label, to align fields that have none."
-			},
-			{
-				"name": "tooltip",
-				"type": "string",
-				"required": false,
-				"description": "Info tooltip beside the description (or the label, without one). Kept outside the `<label>`."
+				"description": "Marks the control as required: an asterisk for sighted readers, the word for everyone else."
 			}
 		],
 		"inherits": [
 			"ComponentProps<\"label\">"
+		]
+	},
+	"Field": {
+		"props": [
+			{
+				"name": "invalid",
+				"type": "boolean",
+				"required": false,
+				"default": "false"
+			}
+		],
+		"inherits": [
+			"ComponentProps<\"div\">"
 		]
 	},
 	"PageHeader": {
@@ -2333,7 +2096,9 @@
 				"description": "Render in place (a card on the page) instead of as a ⌘K dialog."
 			}
 		],
-		"inherits": []
+		"inherits": [
+			"ComponentProps<\"div\">"
+		]
 	},
 	"ShortcutsDialog": {
 		"props": [
@@ -2371,9 +2136,21 @@
 				"type": "string",
 				"required": false,
 				"default": "\"Keyboard shortcuts\""
+			},
+			{
+				"name": "showCloseButton",
+				"type": "boolean",
+				"required": false
+			},
+			{
+				"name": "overlayClassName",
+				"type": "string",
+				"required": false
 			}
 		],
-		"inherits": []
+		"inherits": [
+			"DialogPrimitive.Popup.Props"
+		]
 	},
 	"SavedViewsBar": {
 		"props": [
@@ -2627,39 +2404,27 @@
 			},
 			{
 				"name": "size",
-				"type": "\"sm\" | \"default\" | \"mini\" | \"icon\"",
+				"type": "\"sm\" | \"md\" | \"icon\"",
 				"required": false,
-				"default": "\"default\""
-			},
-			{
-				"name": "asChild",
-				"type": "boolean",
-				"required": false
+				"default": "\"md\""
 			},
 			{
 				"name": "isLoading",
 				"type": "boolean",
-				"required": false
+				"required": false,
+				"description": "Swaps the label for a spinner and disables the button, while the label stays its accessible name."
 			},
 			{
-				"name": "transition",
+				"name": "asChild",
 				"type": "boolean",
-				"required": false
-			},
-			{
-				"name": "disableActive",
-				"type": "boolean",
-				"required": false
-			},
-			{
-				"name": "hide",
-				"type": "boolean",
-				"required": false
+				"required": false,
+				"description": "Radix compatibility: render the single child element instead of a `<button>`."
 			},
 			{
 				"name": "render",
 				"type": "ReactElement",
-				"required": false
+				"required": false,
+				"description": "The element to render instead of a `<button>` (Base UI)."
 			},
 			{
 				"name": "focusableWhenDisabled",
@@ -3019,12 +2784,6 @@
 				"required": false,
 				"default": "\"a4\"",
 				"description": "A4, A5, or an 80mm thermal roll (\"receipt\")."
-			},
-			{
-				"name": "monochrome",
-				"type": "boolean",
-				"required": false,
-				"description": "Print in ink only (thermal printers are monochrome). Default: true for `size=\"receipt\"`."
 			}
 		],
 		"inherits": [
@@ -3584,17 +3343,19 @@
 				"name": "selectedIds",
 				"type": "string[]",
 				"required": false,
-				"default": "[]"
+				"description": "The ticked rows. Pass it to control the selection."
 			},
 			{
-				"name": "onToggleRow",
-				"type": "(id: string) => void",
-				"required": false
+				"name": "defaultSelectedIds",
+				"type": "string[]",
+				"required": false,
+				"description": "The rows ticked to begin with when the selection is uncontrolled."
 			},
 			{
-				"name": "onToggleAll",
-				"type": "() => void",
-				"required": false
+				"name": "onSelectionChange",
+				"type": "(ids: string[]) => void",
+				"required": false,
+				"description": "The whole new selection, every time it changes."
 			},
 			{
 				"name": "sortField",
@@ -3661,7 +3422,7 @@
 			},
 			{
 				"name": "estimatedProfit",
-				"type": "{ amount: number; percent: number; health: NonNullable<SalesLineItem[\"margin\"]> }",
+				"type": "{ amount: Amount; percent: number; health: NonNullable<SalesLineItem[\"margin\"]> }",
 				"required": false,
 				"description": "Document-level estimated profit line under the total."
 			},
@@ -3702,7 +3463,7 @@
 		"props": [
 			{
 				"name": "stats",
-				"type": "{ totalValue: number; paidValue: number; pendingValue: number; overdueValue: number; overdueCount: number } | null",
+				"type": "{ totalValue: Amount; paidValue: Amount; pendingValue: Amount; overdueValue: Amount; overdueCount: number } | null",
 				"required": true,
 				"description": "null when the tenant-wide stats could not load: tiles show \"—\"."
 			},
@@ -3765,10 +3526,21 @@
 				"required": false
 			},
 			{
+				"name": "open",
+				"type": "boolean",
+				"required": false,
+				"description": "Whether the breakdown is expanded. Pass it to control the rail."
+			},
+			{
 				"name": "defaultOpen",
 				"type": "boolean",
 				"required": false,
 				"default": "false"
+			},
+			{
+				"name": "onOpenChange",
+				"type": "(open: boolean) => void",
+				"required": false
 			}
 		],
 		"inherits": [
@@ -3790,7 +3562,7 @@
 			},
 			{
 				"name": "onAction",
-				"type": "(label: string) => void",
+				"type": "(action: InvoiceAction) => void",
 				"required": false
 			}
 		],
@@ -3802,7 +3574,7 @@
 		"props": [
 			{
 				"name": "invoice",
-				"type": "{ invoiceNumber: string; customerName: string; total: number; currency?: string; paidAmount?: number }",
+				"type": "{ invoiceNumber: string; customerName: string; total: Amount; currency?: string; paidAmount?: Amount }",
 				"required": true
 			},
 			{
@@ -3833,7 +3605,19 @@
 			},
 			{
 				"name": "paymentMethod",
-				"type": "string",
+				"type": "\"card\" | \"other\" | \"bank_transfer\" | \"cash\" | \"cheque\" | \"e_wallet\"",
+				"required": false,
+				"description": "The chosen payment method. Pass it to control the chips."
+			},
+			{
+				"name": "defaultPaymentMethod",
+				"type": "\"card\" | \"other\" | \"bank_transfer\" | \"cash\" | \"cheque\" | \"e_wallet\"",
+				"required": false,
+				"default": "\"bank_transfer\""
+			},
+			{
+				"name": "onPaymentMethodChange",
+				"type": "(method: PaymentMethod) => void",
 				"required": false
 			},
 			{
@@ -3844,12 +3628,36 @@
 			},
 			{
 				"name": "bankAccount",
-				"type": "string",
+				"type": "string | null",
+				"required": false,
+				"description": "The account code the payment lands in, or null for none chosen. Pass it to control the select."
+			},
+			{
+				"name": "defaultBankAccount",
+				"type": "string | null",
+				"required": false,
+				"default": "null"
+			},
+			{
+				"name": "onBankAccountChange",
+				"type": "(accountCode: string | null) => void",
 				"required": false
 			},
 			{
 				"name": "note",
 				"type": "string",
+				"required": false,
+				"description": "The note on the payment. Pass it to control the field."
+			},
+			{
+				"name": "defaultNote",
+				"type": "string",
+				"required": false,
+				"default": "\"\""
+			},
+			{
+				"name": "onNoteChange",
+				"type": "(note: string) => void",
 				"required": false
 			},
 			{
@@ -3866,7 +3674,7 @@
 			},
 			{
 				"name": "onConfirm",
-				"type": "(p: { method: string; bankAccount: string; note: string }) => void",
+				"type": "(p: { method: PaymentMethod; bankAccount: string | null; note: string }) => void",
 				"required": false
 			}
 		],
@@ -3966,9 +3774,10 @@
 				"required": true
 			},
 			{
-				"name": "onOpen",
-				"type": "(id: string) => void",
-				"required": false
+				"name": "onRowClick",
+				"type": "(note: SalesNoteRow) => void",
+				"required": false,
+				"description": "Called with the whole note when its row is opened; omit to leave rows inert."
 			},
 			{
 				"name": "onRowAction",
@@ -3994,8 +3803,8 @@
 				"required": false
 			},
 			{
-				"name": "onOpen",
-				"type": "(id: string) => void",
+				"name": "onRowClick",
+				"type": "(quotation: SalesQuotation) => void",
 				"required": false
 			}
 		],
@@ -4027,8 +3836,8 @@
 				"required": false
 			},
 			{
-				"name": "onOpen",
-				"type": "(id: string) => void",
+				"name": "onRowClick",
+				"type": "(quotation: SalesQuotation) => void",
 				"required": false
 			}
 		],
@@ -4040,7 +3849,7 @@
 		"props": [
 			{
 				"name": "stats",
-				"type": "{ totalQuotedAmount: number; currency?: string; sentCount: number; acceptedCount: number; conversionRate: number }",
+				"type": "{ totalQuotedAmount: Amount; currency?: string; sentCount: number; acceptedCount: number; conversionRate: number }",
 				"required": true
 			}
 		],
@@ -4218,8 +4027,21 @@
 				"description": "Initial selection for uncontrolled use."
 			},
 			{
+				"name": "open",
+				"type": "boolean",
+				"required": false,
+				"description": "Controlled popup state."
+			},
+			{
 				"name": "defaultOpen",
 				"type": "boolean",
+				"required": false,
+				"default": "false",
+				"description": "Whether the popup starts open, for uncontrolled use."
+			},
+			{
+				"name": "onOpenChange",
+				"type": "(open: boolean) => void",
 				"required": false
 			},
 			{
@@ -4315,6 +4137,18 @@
 				"type": "string",
 				"required": false,
 				"default": "\"MYR\""
+			},
+			{
+				"name": "totalDebit",
+				"type": "Amount",
+				"required": false,
+				"description": "The entry's posted debit total. Omit it and the table adds the lines, which a draft wants and a posted entry does not."
+			},
+			{
+				"name": "totalCredit",
+				"type": "Amount",
+				"required": false,
+				"description": "The entry's posted credit total, on the same terms as `totalDebit`."
 			}
 		],
 		"inherits": [
@@ -4363,8 +4197,20 @@
 				"default": "\"MYR\""
 			},
 			{
+				"name": "expandedIds",
+				"type": "string[]",
+				"required": false,
+				"description": "Controlled set of expanded node ids."
+			},
+			{
 				"name": "defaultExpandedIds",
 				"type": "string[]",
+				"required": false,
+				"description": "Which nodes start expanded for uncontrolled use; the top level by default."
+			},
+			{
+				"name": "onExpandedChange",
+				"type": "(ids: string[]) => void",
 				"required": false
 			},
 			{
@@ -4404,9 +4250,9 @@
 			},
 			{
 				"name": "currentBalance",
-				"type": "number",
+				"type": "Amount",
 				"required": false,
-				"default": "0"
+				"default": "\"0.00\""
 			},
 			{
 				"name": "transactionCount",
@@ -4427,13 +4273,26 @@
 			},
 			{
 				"name": "transactions",
-				"type": "{ id: string; date: string; description: string; type: \"debit\" | \"credit\"; amount: number; source?: string }[]",
+				"type": "{ id: string; date: string; description: string; type: \"debit\" | \"credit\"; amount: Amount; source?: string }[]",
 				"required": false,
 				"default": "[]"
 			},
 			{
+				"name": "editing",
+				"type": "boolean",
+				"required": false,
+				"description": "Controlled edit form."
+			},
+			{
 				"name": "defaultEditing",
 				"type": "boolean",
+				"required": false,
+				"default": "false",
+				"description": "Whether the edit form starts open, for uncontrolled use."
+			},
+			{
+				"name": "onEditingChange",
+				"type": "(editing: boolean) => void",
 				"required": false
 			},
 			{
@@ -4473,8 +4332,14 @@
 			},
 			{
 				"name": "openingBalance",
-				"type": "number",
+				"type": "Amount",
 				"required": false
+			},
+			{
+				"name": "closingBalance",
+				"type": "Amount",
+				"required": false,
+				"description": "The account's posted closing balance. Omit it and the footer shows the last row's running balance, which is right for a full register and wrong for one page of a paged one."
 			},
 			{
 				"name": "openingDate",
@@ -4506,12 +4371,12 @@
 			},
 			{
 				"name": "tieOut",
-				"type": "{ status: \"tied\"; statementClosing: number } | { status: \"off\"; difference: number } | { status: \"none\"; basis: \"statement\" | \"unverified\" }",
+				"type": "{ status: \"tied\"; statementClosing: Amount } | { status: \"off\"; difference: Amount } | { status: \"none\"; basis: \"statement\" | \"unverified\" }",
 				"required": true
 			},
 			{
 				"name": "bookBalance",
-				"type": "number",
+				"type": "Amount",
 				"required": true
 			},
 			{
@@ -4521,17 +4386,17 @@
 			},
 			{
 				"name": "credits",
-				"type": "number",
+				"type": "Amount",
 				"required": true
 			},
 			{
 				"name": "debits",
-				"type": "number",
+				"type": "Amount",
 				"required": true
 			},
 			{
 				"name": "statement",
-				"type": "{ date: string; balance: number; unreconciledDifference: number } | null",
+				"type": "{ date: string; balance: Amount; unreconciledDifference: Amount } | null",
 				"required": false
 			},
 			{
@@ -4618,6 +4483,23 @@
 				"required": true
 			},
 			{
+				"name": "notes",
+				"type": "Record<string, string>",
+				"required": false,
+				"description": "Controlled attention-card notes, keyed by `CloseAttentionCard.key`."
+			},
+			{
+				"name": "defaultNotes",
+				"type": "Record<string, string>",
+				"required": false,
+				"description": "Initial notes for uncontrolled use."
+			},
+			{
+				"name": "onNotesChange",
+				"type": "(notes: Record<string, string>) => void",
+				"required": false
+			},
+			{
 				"name": "runningTask",
 				"type": "\"depreciation\" | \"recognition\" | \"fxRevaluation\" | null",
 				"required": false
@@ -4676,12 +4558,12 @@
 		"props": [
 			{
 				"name": "debit",
-				"type": "number",
+				"type": "Amount",
 				"required": true
 			},
 			{
 				"name": "credit",
-				"type": "number",
+				"type": "Amount",
 				"required": true
 			},
 			{
@@ -4709,7 +4591,7 @@
 			},
 			{
 				"name": "maxAmount",
-				"type": "number",
+				"type": "Amount",
 				"required": false
 			},
 			{
@@ -4824,11 +4706,10 @@
 				"name": "defaultSelectedIds",
 				"type": "string[]",
 				"required": false,
-				"default": "[]",
 				"description": "Initially ticked row ids when uncontrolled."
 			},
 			{
-				"name": "onSelectedChange",
+				"name": "onSelectionChange",
 				"type": "(ids: string[]) => void",
 				"required": false,
 				"description": "Called with the new ids when a row is ticked or unticked."
@@ -4893,6 +4774,18 @@
 				"type": "boolean",
 				"required": false,
 				"default": "false"
+			},
+			{
+				"name": "tabCell",
+				"type": "\"select\" | \"amount\" | \"detail\" | \"category\" | null",
+				"required": false,
+				"description": "Set by `BankFeedList`: the row becomes a `role=\"row\"` whose cells take roving focus, and this is the one cell of this row that is tabbable (`null` when the tab stop is on another row). Omit it for a row outside a grid, which then carries no grid markup."
+			},
+			{
+				"name": "onCellFocus",
+				"type": "(cell: BankFeedCell) => void",
+				"required": false,
+				"description": "Called when focus lands anywhere in one of the row's cells."
 			}
 		],
 		"inherits": [
@@ -4931,6 +4824,12 @@
 				"name": "onPick",
 				"type": "() => void",
 				"required": false
+			},
+			{
+				"name": "controlTabIndex",
+				"type": "number",
+				"required": false,
+				"description": "`tabIndex` for the cell's own buttons, not its root. `BankFeedList` sets -1 so its grid stays one tab stop."
 			}
 		],
 		"inherits": [
@@ -5096,12 +4995,21 @@
 			{
 				"name": "activeKey",
 				"type": "string | null",
-				"required": false
+				"required": false,
+				"description": "The row the feed is filtered to, as `accountCode|type` (controlled); `null` for none."
 			},
 			{
-				"name": "onSelect",
+				"name": "defaultActiveKey",
+				"type": "string | null",
+				"required": false,
+				"default": "null",
+				"description": "The row filtered to on first render, when uncontrolled."
+			},
+			{
+				"name": "onActiveKeyChange",
 				"type": "(key: string | null) => void",
-				"required": false
+				"required": false,
+				"description": "Called with the new active row, or `null` when the active one is clicked again."
 			}
 		],
 		"inherits": [
@@ -5329,11 +5237,6 @@
 				"required": true
 			},
 			{
-				"name": "selected",
-				"type": "string | null",
-				"required": true
-			},
-			{
 				"name": "yearLabel",
 				"type": "string",
 				"required": true,
@@ -5343,6 +5246,18 @@
 				"name": "accountName",
 				"type": "string",
 				"required": true
+			},
+			{
+				"name": "selected",
+				"type": "string | null",
+				"required": false,
+				"description": "The month shown as selected, as \"2026-03\", or `null` for none (controlled)."
+			},
+			{
+				"name": "defaultSelected",
+				"type": "string | null",
+				"required": false,
+				"description": "The month selected before the user picks one. Default none."
 			},
 			{
 				"name": "calendarMonths",
@@ -5369,10 +5284,10 @@
 				"description": "Called when the user clicks the Next year button."
 			},
 			{
-				"name": "onMonthSelect",
+				"name": "onSelectedChange",
 				"type": "(period: string | null) => void",
 				"required": false,
-				"description": "Called when the user selects or deselects a month cell."
+				"description": "Called when the user selects a month cell, or `null` when they deselect it."
 			}
 		],
 		"inherits": [
@@ -5650,7 +5565,7 @@
 			},
 			{
 				"name": "totals",
-				"type": "{ assets: number; liabilities: number; equity: number }",
+				"type": "{ assets: Amount; liabilities: Amount; equity: Amount }",
 				"required": true,
 				"description": "Tiles + balance check."
 			},
@@ -5831,7 +5746,7 @@
 			},
 			{
 				"name": "columns",
-				"type": "2 | 5 | 3 | 4",
+				"type": "2 | 3 | 4 | 5",
 				"required": false,
 				"default": "4",
 				"description": "Kept for compatibility; tiles auto-fit the container (min 9rem each)."
@@ -5884,6 +5799,12 @@
 				"required": true
 			},
 			{
+				"name": "totals",
+				"type": "AgingBucket",
+				"required": false,
+				"description": "The report's posted band totals. Omit them and the rows are added, which `limit` then under-counts."
+			},
+			{
 				"name": "dso",
 				"type": "number | null",
 				"required": false
@@ -5933,10 +5854,23 @@
 				"default": "true"
 			},
 			{
+				"name": "range",
+				"type": "\"3\" | \"6\"",
+				"required": false,
+				"description": "Controlled window: how many trailing months the chart shows."
+			},
+			{
 				"name": "defaultRange",
 				"type": "\"3\" | \"6\"",
 				"required": false,
-				"default": "\"6\""
+				"default": "\"6\"",
+				"description": "Initial window for uncontrolled use."
+			},
+			{
+				"name": "onRangeChange",
+				"type": "(range: CashFlowRange) => void",
+				"required": false,
+				"description": "Called when the user switches the window."
 			},
 			{
 				"name": "onConnectBank",
@@ -5953,7 +5887,7 @@
 		"props": [
 			{
 				"name": "cash",
-				"type": "number | null",
+				"type": "Amount | null",
 				"required": true
 			},
 			{
@@ -5975,7 +5909,7 @@
 			},
 			{
 				"name": "trail",
-				"type": "{ label: string; cash: number }[]",
+				"type": "{ label: string; cash: Amount }[]",
 				"required": false,
 				"description": "Implied month-end cash, oldest → newest."
 			},
@@ -6041,12 +5975,20 @@
 			{
 				"name": "selected",
 				"type": "boolean",
-				"required": false
+				"required": false,
+				"description": "Whether the card's checkbox is ticked (controlled)."
 			},
 			{
-				"name": "onToggle",
-				"type": "(id: string) => void",
-				"required": false
+				"name": "defaultSelected",
+				"type": "boolean",
+				"required": false,
+				"description": "Initial tick state when uncontrolled."
+			},
+			{
+				"name": "onSelectedChange",
+				"type": "(selected: boolean) => void",
+				"required": false,
+				"description": "Called when the checkbox is toggled. Passing any of the three selection props shows the checkbox."
 			},
 			{
 				"name": "someSelected",
@@ -6056,7 +5998,7 @@
 			},
 			{
 				"name": "onAction",
-				"type": "(bill: CyncoBill, action: string) => void",
+				"type": "(bill: CyncoBill, action: BillAction) => void",
 				"required": false
 			}
 		],
@@ -6073,7 +6015,7 @@
 			},
 			{
 				"name": "columns",
-				"type": "(\"paid\" | \"in_review\" | \"pending_approval\" | \"awaiting_payment\" | \"scheduled\")[]",
+				"type": "BillsBoardColumn[]",
 				"required": false,
 				"description": "Columns to show, in board order (default: all five)."
 			},
@@ -6083,8 +6025,13 @@
 				"required": false
 			},
 			{
-				"name": "onToggleBill",
-				"type": "(id: string) => void",
+				"name": "defaultSelectedIds",
+				"type": "string[]",
+				"required": false
+			},
+			{
+				"name": "onSelectionChange",
+				"type": "(ids: string[]) => void",
 				"required": false
 			},
 			{
@@ -6162,7 +6109,7 @@
 			},
 			{
 				"name": "duplicateBill",
-				"type": "{ vendorName: string | null; billNumber?: string | null; totalAmount?: number; currency?: string } | null",
+				"type": "{ vendorName: string | null; billNumber?: string | null; totalAmount?: Amount; currency?: string } | null",
 				"required": false
 			},
 			{
@@ -6187,7 +6134,7 @@
 			},
 			{
 				"name": "unusedCredit",
-				"type": "{ amount: number; currency?: string } | null",
+				"type": "{ amount: Amount; currency?: string } | null",
 				"required": false,
 				"description": "Vendor credits in the bill's currency (cynco ApplyVendorCreditPanel)."
 			},
@@ -6220,20 +6167,31 @@
 				"required": false
 			},
 			{
-				"name": "onSelectedChange",
-				"type": "(ids: string[]) => void",
+				"name": "defaultSelectedIds",
+				"type": "string[]",
 				"required": false
 			},
 			{
-				"name": "defaultSelectedIds",
-				"type": "string[]",
+				"name": "onSelectionChange",
+				"type": "(ids: string[]) => void",
 				"required": false
 			},
 			{
 				"name": "scheduledDate",
 				"type": "string",
 				"required": false,
-				"description": "YYYY-MM-DD; defaults to `today`."
+				"description": "YYYY-MM-DD the run is scheduled for (controlled)."
+			},
+			{
+				"name": "defaultScheduledDate",
+				"type": "string",
+				"required": false,
+				"description": "YYYY-MM-DD the run starts on when uncontrolled; defaults to `today`."
+			},
+			{
+				"name": "onScheduledDateChange",
+				"type": "(date: string) => void",
+				"required": false
 			},
 			{
 				"name": "today",
@@ -6287,10 +6245,22 @@
 				"default": "\"MYR\""
 			},
 			{
+				"name": "open",
+				"type": "boolean",
+				"required": false,
+				"description": "Whether the sheet is open (controlled)."
+			},
+			{
 				"name": "defaultOpen",
 				"type": "boolean",
 				"required": false,
-				"default": "false"
+				"default": "false",
+				"description": "Whether the sheet starts open when uncontrolled."
+			},
+			{
+				"name": "onOpenChange",
+				"type": "(open: boolean) => void",
+				"required": false
 			},
 			{
 				"name": "defaultDate",
@@ -6305,7 +6275,7 @@
 			},
 			{
 				"name": "onSubmit",
-				"type": "(data: { paymentDate: string; paymentAmount: string; paymentMethod?: string; paymentReference?: string; bankAccountId: string; notes?: string }) => void",
+				"type": "(data: { paymentDate: string; paymentAmount: string; /** `null` when the method was left unspecified. */ paymentMethod: PaymentMethod | null; paymentReference?: string; bankAccountId: string; notes?: string }) => void",
 				"required": false
 			},
 			{
@@ -6370,7 +6340,7 @@
 	"PartyOverviewHeader": {
 		"props": [
 			{
-				"name": "role",
+				"name": "party",
 				"type": "\"customer\" | \"vendor\"",
 				"required": true
 			},
@@ -6381,13 +6351,13 @@
 			},
 			{
 				"name": "balance",
-				"type": "number",
+				"type": "Amount",
 				"required": true,
 				"description": "Subledger balance: positive = they owe you (customer) / you owe them (vendor)."
 			},
 			{
 				"name": "overdue",
-				"type": "number",
+				"type": "Amount",
 				"required": true
 			},
 			{
@@ -6397,7 +6367,7 @@
 			},
 			{
 				"name": "trendTotal",
-				"type": "number",
+				"type": "Amount",
 				"required": true,
 				"description": "Billed (customer) or spend (vendor), trailing 12 months."
 			},
@@ -6473,19 +6443,19 @@
 	"PartyRail": {
 		"props": [
 			{
-				"name": "role",
+				"name": "party",
 				"type": "\"customer\" | \"vendor\"",
 				"required": true
 			},
 			{
 				"name": "ledgerBalance",
-				"type": "number",
+				"type": "Amount",
 				"required": true,
 				"description": "Subledger balance (ground truth)."
 			},
 			{
 				"name": "openItemsTotal",
-				"type": "number",
+				"type": "Amount",
 				"required": true,
 				"description": "Sum of open bills / invoices — ties out against the ledger."
 			},
@@ -6502,13 +6472,13 @@
 			},
 			{
 				"name": "trend",
-				"type": "Array<{ month: string; total: number }>",
+				"type": "Array<{ month: string; total: Amount }>",
 				"required": false,
 				"description": "Last 12 months: { month: \"2026-10\", total }."
 			},
 			{
 				"name": "credits",
-				"type": "Array<{ currency: string; amount: number; count: number }>",
+				"type": "Array<{ currency: string; amount: Amount; count: number }>",
 				"required": false,
 				"description": "Unused credit notes per currency (customers only)."
 			},
@@ -6555,13 +6525,13 @@
 	"PartyTimeline": {
 		"props": [
 			{
-				"name": "role",
-				"type": "\"customer\" | \"vendor\"",
+				"name": "events",
+				"type": "PartyEvent[]",
 				"required": true
 			},
 			{
-				"name": "events",
-				"type": "PartyEvent[]",
+				"name": "party",
+				"type": "\"customer\" | \"vendor\"",
 				"required": true
 			},
 			{
@@ -6606,13 +6576,13 @@
 				"required": false
 			},
 			{
-				"name": "onSelectedChange",
-				"type": "(ids: string[]) => void",
+				"name": "defaultSelectedIds",
+				"type": "string[]",
 				"required": false
 			},
 			{
-				"name": "defaultSelectedIds",
-				"type": "string[]",
+				"name": "onSelectionChange",
+				"type": "(ids: string[]) => void",
 				"required": false
 			},
 			{
@@ -6625,6 +6595,12 @@
 				"name": "onRowClick",
 				"type": "(row: CyncoCustomerRow) => void",
 				"required": false
+			},
+			{
+				"name": "onAction",
+				"type": "(row: CyncoCustomerRow, action: CustomerAction) => void",
+				"required": false,
+				"description": "Called when a row menu item is chosen. The id is the contract, not the wording on it."
 			}
 		],
 		"inherits": [
@@ -6644,13 +6620,13 @@
 				"required": false
 			},
 			{
-				"name": "onSelectedChange",
-				"type": "(ids: string[]) => void",
+				"name": "defaultSelectedIds",
+				"type": "string[]",
 				"required": false
 			},
 			{
-				"name": "defaultSelectedIds",
-				"type": "string[]",
+				"name": "onSelectionChange",
+				"type": "(ids: string[]) => void",
 				"required": false
 			},
 			{
@@ -6663,6 +6639,12 @@
 				"name": "onRowClick",
 				"type": "(row: CyncoVendorRow) => void",
 				"required": false
+			},
+			{
+				"name": "onAction",
+				"type": "(row: CyncoVendorRow, action: VendorAction) => void",
+				"required": false,
+				"description": "Called when a row menu item is chosen. The id is the contract, not the wording on it."
 			}
 		],
 		"inherits": [
@@ -6719,7 +6701,7 @@
 			},
 			{
 				"name": "balanceDue",
-				"type": "number",
+				"type": "Amount",
 				"required": false,
 				"description": "Shown on the last page in single-currency mode."
 			},
@@ -6764,12 +6746,12 @@
 			},
 			{
 				"name": "totalDue",
-				"type": "number",
+				"type": "Num",
 				"required": true
 			},
 			{
 				"name": "totalPaid",
-				"type": "number",
+				"type": "Num",
 				"required": true
 			},
 			{
@@ -6900,10 +6882,22 @@
 				"required": false
 			},
 			{
+				"name": "tab",
+				"type": "string",
+				"required": false,
+				"description": "Controlled open tab."
+			},
+			{
 				"name": "defaultTab",
 				"type": "string",
 				"required": false,
-				"default": "\"overview\""
+				"default": "\"overview\"",
+				"description": "Tab open on first render when uncontrolled."
+			},
+			{
+				"name": "onTabChange",
+				"type": "(tab: string) => void",
+				"required": false
 			}
 		],
 		"inherits": [
@@ -6920,7 +6914,8 @@
 			{
 				"name": "onOpenJournal",
 				"type": "(journalEntryId: string) => void",
-				"required": false
+				"required": false,
+				"description": "Opens the journal entry a posted row was recorded in — a different record from the row itself, reached from the Posted chip, so it is not the list's row-open callback."
 			}
 		],
 		"inherits": [
@@ -6947,19 +6942,20 @@
 				"default": "{}"
 			},
 			{
-				"name": "selectedItems",
+				"name": "selectedIds",
 				"type": "string[]",
 				"required": false,
-				"default": "[]"
+				"description": "Controlled ticked rows."
 			},
 			{
-				"name": "onToggle",
-				"type": "(id: string) => void",
-				"required": false
+				"name": "defaultSelectedIds",
+				"type": "string[]",
+				"required": false,
+				"description": "Ticked rows on first render when uncontrolled."
 			},
 			{
-				"name": "onToggleAll",
-				"type": "(all: boolean) => void",
+				"name": "onSelectionChange",
+				"type": "(ids: string[]) => void",
 				"required": false
 			}
 		],
@@ -6971,7 +6967,7 @@
 		"props": [
 			{
 				"name": "stats",
-				"type": "{ avgProfitMargin: number | null; avgRevenuePerItem: number | null; highestEarningItem: { name: string; revenue: number } | null; mostSoldItem: { name: string; quantity: number } | null }",
+				"type": "{ avgProfitMargin: number | null; avgRevenuePerItem: Num; highestEarningItem: { name: string; revenue: Num } | null; mostSoldItem: { name: string; quantity: number } | null }",
 				"required": true
 			},
 			{
@@ -7069,7 +7065,7 @@
 				"description": "Initial lines for uncontrolled use."
 			},
 			{
-				"name": "onChange",
+				"name": "onLineItemsChange",
 				"type": "(items: POLine[]) => void",
 				"required": false
 			},
@@ -7087,7 +7083,7 @@
 			},
 			{
 				"name": "taxAmount",
-				"type": "number",
+				"type": "Amount",
 				"required": false
 			}
 		],
@@ -7099,7 +7095,7 @@
 		"props": [
 			{
 				"name": "bills",
-				"type": "{ id: string; billNumber: string | null; status: string | null; totalAmount: Num; currency?: string | null; issueDate: string | null }[]",
+				"type": "LinkedBill[]",
 				"required": true
 			},
 			{
@@ -7109,8 +7105,8 @@
 				"default": "\"MYR\""
 			},
 			{
-				"name": "onOpen",
-				"type": "(id: string) => void",
+				"name": "onRowClick",
+				"type": "(bill: LinkedBill) => void",
 				"required": false
 			}
 		],
@@ -7160,8 +7156,8 @@
 				"default": "true"
 			},
 			{
-				"name": "onOpen",
-				"type": "(id: string) => void",
+				"name": "onRowClick",
+				"type": "(payslip: PayslipData) => void",
 				"required": false
 			}
 		],
@@ -7216,6 +7212,23 @@
 				"type": "string",
 				"required": false,
 				"description": "Where to raise the correcting credit note; links the \"window has passed\" message."
+			},
+			{
+				"name": "environment",
+				"type": "\"sandbox\" | \"production\"",
+				"required": false,
+				"description": "Controlled environment whose filing the card shows."
+			},
+			{
+				"name": "defaultEnvironment",
+				"type": "\"sandbox\" | \"production\"",
+				"required": false,
+				"description": "Environment shown on first render when uncontrolled. Defaults to the first credentialled one."
+			},
+			{
+				"name": "onEnvironmentChange",
+				"type": "(environment: EnvName) => void",
+				"required": false
 			},
 			{
 				"name": "onSubmit",
@@ -7654,39 +7667,27 @@
 			},
 			{
 				"name": "size",
-				"type": "\"sm\" | \"default\" | \"mini\" | \"icon\"",
+				"type": "\"sm\" | \"md\" | \"icon\"",
 				"required": false,
 				"default": "\"sm\""
 			},
 			{
-				"name": "asChild",
-				"type": "boolean",
-				"required": false
-			},
-			{
 				"name": "isLoading",
 				"type": "boolean",
-				"required": false
+				"required": false,
+				"description": "Swaps the label for a spinner and disables the button, while the label stays its accessible name."
 			},
 			{
-				"name": "transition",
+				"name": "asChild",
 				"type": "boolean",
-				"required": false
-			},
-			{
-				"name": "disableActive",
-				"type": "boolean",
-				"required": false
-			},
-			{
-				"name": "hide",
-				"type": "boolean",
-				"required": false
+				"required": false,
+				"description": "Radix compatibility: render the single child element instead of a `<button>`."
 			},
 			{
 				"name": "render",
 				"type": "ReactElement",
-				"required": false
+				"required": false,
+				"description": "The element to render instead of a `<button>` (Base UI)."
 			},
 			{
 				"name": "focusableWhenDisabled",

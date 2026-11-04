@@ -11,31 +11,6 @@ import { BankFeedRow } from "@cynco-labs/ui";
 ```tsx
 import { BankFeedRow, type BankFeedTransaction } from "@cynco-labs/ui";
 
-const MATCH_INV = {
-	id: "m1",
-	targetLabel: "Invoice · TechNova Solutions Sdn Bhd",
-	targetReference: "INV-2026-0142",
-	confidence: 0.94,
-	status: "proposed",
-	evidence: [
-		"Amount equal (RM 12,720.00)",
-		"Reference INV-2026-0142 in description",
-		"Paid 2 days after due date",
-	],
-	consequence:
-		"Accepting records the receipt against INV-2026-0142 and marks it Paid. The line posts to 1200-001 Trade Receivables instead of a revenue account.",
-};
-
-const MATCH_BILL = {
-	id: "m2",
-	targetLabel: "Bill · Tenaga Nasional Berhad",
-	targetReference: "BILL-2026-0088",
-	confidence: 0.81,
-	status: "proposed",
-	evidence: ["Amount equal (RM 1,184.30)", "Payee matches supplier", "Within 3 days of bill date"],
-	consequence: "Accepting settles BILL-2026-0088 and posts the line to 2100-001 Trade Payables.",
-};
-
 export default function BankFeedRowDemo() {
 	const rows: BankFeedTransaction[] = [
 		{
@@ -131,10 +106,12 @@ tx (BankFeedTransaction: payeeName, description, reference, type, amount, status
 - `onSelectedChange?`: `(selected: boolean) => void`. Called when the checkbox is toggled by click or Space.
 - `onRestore?`: `(tx: BankFeedTransaction) => void`. Called from an excluded line's Restore button; omit to hide it.
 - `showAccount?`: `boolean`. Default `false`.
+- `tabCell?`: `"select" | "amount" | "detail" | "category" | null`. Set by `BankFeedList`: the row becomes a `role="row"` whose cells take roving focus, and this is the one cell of this row that is tabbable (`null` when the tab stop is on another row). Omit it for a row outside a grid, which then carries no grid markup.
+- `onCellFocus?`: `(cell: BankFeedCell) => void`. Called when focus lands anywhere in one of the row's cells.
 - Also accepts `ComponentProps<"div">`.
 
 ## Notes
 
 Responsive by container: below 32rem the payee wraps to two lines, flags wrap, the category drops under the text and the amount stays top right.
 
-Category: Accounting · Banking. Source: `packages/ui/src/accounting/banking.tsx`.
+Category: Accounting · Banking. Source: `packages/ui/src/accounting/banking/feed-row.tsx:68-250`.

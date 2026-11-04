@@ -27,15 +27,15 @@ Right rail of the invoice detail page.
 
 ## Props
 
-status, emailSent, onAction(label); className and native section props.
+status, emailSent, onAction(action) where action is an InvoiceAction id such as "mark_paid", never the label on screen; className and native section props.
 
 - `status`: `string`
 - `emailSent?`: `boolean`. Default `false`.
-- `onAction?`: `(label: string) => void`
+- `onAction?`: `(action: InvoiceAction) => void`
 - Also accepts `ComponentProps<"section">`.
 
 ## Notes
 
 Responsive: Built on the SectionPanel primitive.
 
-Category: Accounting · Sales. Source: `packages/ui/src/accounting/sales.tsx`.
+Category: Accounting · Sales. Source: `packages/ui/src/accounting/sales/invoice-actions.tsx:77-107`.

@@ -9,15 +9,7 @@ import { Edge } from "@cynco-labs/ui/ai";
 ## Usage
 
 ```tsx
-import {
-	Canvas,
-	Edge,
-	Node,
-	NodeContent,
-	NodeDescription,
-	NodeHeader,
-	NodeTitle,
-} from "@cynco-labs/ui/ai";
+import { Canvas, Edge, Node, NodeContent, NodeDescription, NodeHeader, NodeTitle } from "@cynco-labs/ui/ai";
 
 const NT = {
 	card: (p: { data: { title: string; sub: string; body: string } }) => (
@@ -26,7 +18,7 @@ const NT = {
 				<NodeTitle>{p.data.title}</NodeTitle>
 				<NodeDescription>{p.data.sub}</NodeDescription>
 			</NodeHeader>
-			<NodeContent className="text-body">{p.data.body}</NodeContent>
+			<NodeContent className="text-sm font-medium text-muted-foreground">{p.data.body}</NodeContent>
 		</Node>
 	),
 };
@@ -79,4 +71,4 @@ Register as `edgeTypes={{animated: Edge.Animated, temporary: Edge.Temporary}}` a
 
 Stroke uses `ring`.
 
-Category: AI. Source: `packages/ui/src/base/components/ai-elements/edge.tsx`.
+Category: AI. Source: `packages/ui/src/base/components/ai-elements/edge.tsx:126-129`.

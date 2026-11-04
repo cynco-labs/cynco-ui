@@ -1,10 +1,10 @@
-import { KeyValueList, formatCurrency } from "@cynco-labs/ui";
+import { formatCurrency, KeyValueList } from "@cynco-labs/ui";
 
 const items = [
-	{ label: "Subtotal", value: formatCurrency(12000) },
-	{ label: "Discount (5%)", value: "−" + formatCurrency(600), negative: true },
-	{ label: "SST (8%)", value: formatCurrency(912) },
-	{ label: "Total", value: formatCurrency(12312), strong: true },
+	{ label: "Subtotal", value: formatCurrency("12000.00") },
+	{ label: "Discount (5%)", value: `−${formatCurrency("600.00")}`, negative: true },
+	{ label: "SST (8%)", value: formatCurrency("912.00") },
+	{ label: "Total", value: formatCurrency("12312.00"), strong: true },
 ];
 
 export default function KeyValueListDemo() {

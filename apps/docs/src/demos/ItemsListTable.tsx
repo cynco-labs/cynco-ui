@@ -1,17 +1,12 @@
-import { useState } from "react";
 import { ItemsListTable } from "@cynco-labs/ui";
+import { useState } from "react";
 
 export default function ItemsListTableDemo() {
-	const [s, setS] = useState(["i3"]);
+	const [selected, setSelected] = useState(["i3"]);
 	return (
 		<ItemsListTable
-			selectedItems={s}
-			onToggle={(id) => {
-				setS(s.indexOf(id) >= 0 ? s.filter((x) => x !== id) : s.concat([id]));
-			}}
-			onToggleAll={(all) => {
-				setS(all ? ["i1", "i2", "i3", "i4", "i5"] : []);
-			}}
+			selectedIds={selected}
+			onSelectionChange={setSelected}
 			items={[
 				{
 					id: "i1",

@@ -1,7 +1,8 @@
 ---
 import { Code } from "astro:components";
 import { SEG, SEG_GROUP } from "../lib/classes";
-import { isToggle, type Controls } from "../lib/controls";
+import { type Controls, isToggle, matrixControl } from "../lib/controls";
+import type { ComponentSource } from "../lib/source";
 
 interface Props {
 	slug: string;
@@ -10,10 +11,13 @@ interface Props {
 	minHeight: number;
 	/** Playground controls the demo declares (`export const controls`). */
 	controls?: Controls;
+	/** The component's own lines in packages/ui/src, for the Source tab. */
+	componentSource?: ComponentSource | null;
 }
-const { slug, name, source, minHeight, controls } = Astro.props;
+const { slug, name, source, minHeight, controls, componentSource } = Astro.props;
 const h = Math.max(120, Math.min(minHeight + 16, 1400));
 const controlEntries = Object.entries(controls ?? {});
+const matrix = matrixControl(controls);
 ---
 
 <div class="cy-preview not-prose overflow-hidden rounded-xl border border-border bg-card" data-slug={slug} data-min={h} data-controls={controls ? JSON.stringify(controls) : undefined}>
@@ -21,7 +25,9 @@ const controlEntries = Object.entries(controls ?? {});
 		<div class={SEG_GROUP} role="tablist" aria-label={`${name} example`}>
 			<button type="button" role="tab" class={SEG} data-tab="preview" aria-selected="true">Preview</button>
 			<button type="button" role="tab" class={SEG} data-tab="code" aria-selected="false" tabindex="-1">Code</button>
+			{componentSource && <button type="button" role="tab" class={SEG} data-tab="source" aria-selected="false" tabindex="-1">Source</button>}
 		</div>
+		<div class="flex items-center gap-1.5">
 		<div class="flex items-center gap-1.5" data-preview-tools>
 			<button type="button" class:list={[SEG, "hidden sm:inline-flex"]} data-inspect aria-pressed="false" title="Hover the demo to see sizes, padding and type">
 				<svg class="size-3.5" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M232 128a104 104 0 0 1-96 103.69V216a8 8 0 0 0-16 0v15.69A104 104 0 0 1 24.31 136H40a8 8 0 0 0 0-16H24.31A104 104 0 0 1 120 24.31V40a8 8 0 0 0 16 0V24.31A104 104 0 0 1 231.69 120H216a8 8 0 0 0 0 16h15.69Z" opacity=".2"></path><path d="M240 120h-8.37A104.16 104.16 0 0 0 136 24.37V16a8 8 0 0 0-16 0v8.37A104.16 104.16 0 0 0 24.37 120H16a8 8 0 0 0 0 16h8.37A104.16 104.16 0 0 0 120 231.63V240a8 8 0 0 0 16 0v-8.37A104.16 104.16 0 0 0 231.63 136H240a8 8 0 0 0 0-16Zm-104 95.54V208a8 8 0 0 0-16 0v7.54A88.17 88.17 0 0 1 40.46 136H48a8 8 0 0 0 0-16h-7.54A88.17 88.17 0 0 1 120 40.46V48a8 8 0 0 0 16 0v-7.54A88.17 88.17 0 0 1 215.54 120H208a8 8 0 0 0 0 16h7.54A88.17 88.17 0 0 1 136 215.54ZM128 88a40 40 0 1 0 40 40 40 40 0 0 0-40-40Zm0 64a24 24 0 1 1 24-24 24 24 0 0 1-24 24Z"></path></svg>
@@ -56,10 +62,26 @@ const controlEntries = Object.entries(controls ?? {});
 				<svg class="size-3.5" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M224 104a8 8 0 0 1-16 0V59.32l-66.33 66.34a8 8 0 0 1-11.32-11.32L196.68 48H152a8 8 0 0 1 0-16h64a8 8 0 0 1 8 8Zm-40 24a8 8 0 0 0-8 8v72H48V80h72a8 8 0 0 0 0-16H48a16 16 0 0 0-16 16v128a16 16 0 0 0 16 16h128a16 16 0 0 0 16-16v-72a8 8 0 0 0-8-8Z"></path></svg>
 			</a>
 		</div>
-		<button type="button" data-copy class="hidden h-7 items-center gap-1.5 rounded-md px-2.5 text-[12.5px] font-medium text-tertiary-foreground hover:bg-muted hover:text-foreground">
-			<svg class="size-3.5" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M216 32H88a8 8 0 0 0-8 8v40H40a8 8 0 0 0-8 8v128a8 8 0 0 0 8 8h128a8 8 0 0 0 8-8v-40h40a8 8 0 0 0 8-8V40a8 8 0 0 0-8-8Zm-56 176H48V96h112Zm48-48h-32V88a8 8 0 0 0-8-8H96V48h112Z"></path></svg>
-			<span>Copy</span>
-		</button>
+			<div data-code-tools class="hidden items-center gap-0.5">
+				{componentSource && (
+					<a
+						data-source-link
+						href={componentSource.url}
+						target="_blank"
+						rel="noopener"
+						class="hidden h-7 items-center gap-1.5 rounded-md px-2.5 text-sm font-medium text-tertiary-foreground hover:bg-muted hover:text-foreground"
+						title={componentSource.label}
+					>
+						<svg class="size-3.5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.65.5.5 5.65.5 12a11.5 11.5 0 0 0 7.86 10.92c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.52-1.33-1.28-1.69-1.28-1.69-1.05-.71.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.68 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.83 1.19 3.09 0 4.41-2.69 5.38-5.26 5.67.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z"></path></svg>
+						GitHub
+					</a>
+				)}
+				<button type="button" data-copy class="inline-flex h-7 items-center gap-1.5 rounded-md px-2.5 text-sm font-medium text-tertiary-foreground hover:bg-muted hover:text-foreground">
+					<svg class="size-3.5" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M216 32H88a8 8 0 0 0-8 8v40H40a8 8 0 0 0-8 8v128a8 8 0 0 0 8 8h128a8 8 0 0 0 8-8v-40h40a8 8 0 0 0 8-8V40a8 8 0 0 0-8-8Zm-56 176H48V96h112Zm48-48h-32V88a8 8 0 0 0-8-8H96V48h112Z"></path></svg>
+					<span>Copy</span>
+				</button>
+			</div>
+		</div>
 	</div>
 	<div data-panel="preview" class="cy-stage bg-background transition-colors">
 		<div class="mx-auto transition-[max-width] duration-200" data-frame-wrap style="max-width:100%">
@@ -81,7 +103,7 @@ const controlEntries = Object.entries(controls ?? {});
 						</button>
 					) : (
 						<div class="flex items-center gap-2" role="group" aria-label={c.label}>
-							<span class="text-[12.5px] text-tertiary-foreground">{c.label}</span>
+							<span class="text-sm text-tertiary-foreground">{c.label}</span>
 							<div class={SEG_GROUP}>
 								{c.options.map((o) => (
 									<button type="button" class={SEG} data-control={key} data-value={o.value} aria-pressed={String(o.value === c.default)}>
@@ -92,14 +114,41 @@ const controlEntries = Object.entries(controls ?? {});
 						</div>
 					),
 				)}
-				<div class="ml-auto flex items-center gap-1" data-controls-actions hidden>
-					<button type="button" data-controls-link class="inline-flex h-7 items-center rounded-md px-2 text-[12.5px] font-medium text-tertiary-foreground hover:bg-muted hover:text-foreground" title="Copy a link to this page with these values">
+				<div class="ml-auto hidden items-center gap-1" data-controls-actions>
+					<button type="button" data-controls-link class="inline-flex h-7 items-center rounded-md px-2 text-sm font-medium text-tertiary-foreground hover:bg-muted hover:text-foreground" title="Copy a link to this page with these values">
 						Copy link
 					</button>
-					<button type="button" data-controls-reset class="inline-flex h-7 items-center rounded-md px-2 text-[12.5px] font-medium text-tertiary-foreground hover:bg-muted hover:text-foreground">
+					<button type="button" data-controls-reset class="inline-flex h-7 items-center rounded-md px-2 text-sm font-medium text-tertiary-foreground hover:bg-muted hover:text-foreground">
 						Reset
 					</button>
 				</div>
+			</div>
+		)
+	}
+	{
+		matrix && (
+			<div data-matrix-panel class="border-t border-border">
+				<div class="flex flex-wrap items-center justify-between gap-2 px-3 py-2">
+					<p class="text-sm text-tertiary-foreground">
+						Every {matrix.control.label.toLowerCase()}, side by side
+					</p>
+					<a
+						href={`/matrix/${slug}`}
+						target="_blank"
+						rel="noopener"
+						class="inline-flex h-7 items-center rounded-md px-2 text-sm font-medium text-tertiary-foreground hover:bg-muted hover:text-foreground"
+					>
+						Open in a new tab
+					</a>
+				</div>
+				<iframe
+					data-matrix-frame
+					title={`${name}: every ${matrix.control.label.toLowerCase()}`}
+					src={`/matrix/${slug}`}
+					class="block w-full border-0 bg-background"
+					style="height:240px"
+					loading="lazy"
+				/>
 			</div>
 		)
 	}
@@ -107,6 +156,26 @@ const controlEntries = Object.entries(controls ?? {});
 		<Code code={source} lang="tsx" themes={{ light: "github-light", dark: "github-dark" }} defaultColor={false} />
 		<textarea hidden data-source>{source}</textarea>
 	</div>
+	{
+		componentSource && (
+			<div data-panel="source" hidden class="bg-card">
+				<div class="flex items-center justify-between gap-2 border-b border-border px-3.5 py-1.5">
+					<code class="truncate font-mono text-xs text-subtle">{componentSource.label}</code>
+				</div>
+				<div class="cy-source relative">
+					<div data-source-body class="code-plain cy-source-clip">
+						<Code code={componentSource.code} lang="tsx" themes={{ light: "github-light", dark: "github-dark" }} defaultColor={false} />
+					</div>
+					<div data-source-more hidden class="cy-source-fade absolute inset-x-0 bottom-0 pb-2.5 pt-10 text-center">
+						<button type="button" data-source-expand class="inline-flex items-center rounded-md border border-border bg-background px-2.5 py-1 text-sm font-medium text-tertiary-foreground hover:text-foreground" aria-expanded="false">
+							Show all {componentSource.lines} lines
+						</button>
+					</div>
+				</div>
+				<textarea hidden data-source>{componentSource.code}</textarea>
+			</div>
+		)
+	}
 </div>
 
 <script>
@@ -130,10 +199,14 @@ const controlEntries = Object.entries(controls ?? {});
 			for (const b of el.querySelectorAll<HTMLButtonElement>("[data-theme-choice]")) b.setAttribute("aria-pressed", String(b.dataset.themeChoice === theme));
 			stage.classList.toggle("dark", theme === "dark");
 		};
+		const matrixFrame = el.querySelector<HTMLIFrameElement>("[data-matrix-frame]");
+		const matrixPanel = el.querySelector<HTMLElement>("[data-matrix-panel]");
 		const applyTheme = () => {
 			setThemeButtons();
-			iframe.contentWindow?.postMessage({ type: "cynco-demo-theme", theme }, "*");
+			for (const f of [iframe, matrixFrame])
+				f?.contentWindow?.postMessage({ type: "cynco-demo-theme", theme }, "*");
 		};
+		matrixFrame?.addEventListener("load", applyTheme);
 		// The frame starts loading with the HTML and boots from the same stored theme; this covers a pinned choice.
 		iframe.addEventListener("load", applyTheme);
 		applyTheme();
@@ -180,7 +253,9 @@ const controlEntries = Object.entries(controls ?? {});
 					const v = values[b.dataset.control!];
 					b.setAttribute("aria-pressed", String(typeof v === "boolean" ? v : v === b.dataset.value));
 				}
-				actions.hidden = Object.keys(overrides).length === 0;
+				const set = Object.keys(overrides).length > 0;
+				actions.classList.toggle("hidden", !set);
+				actions.classList.toggle("flex", set);
 				const query = controlsToQuery(controls, overrides, new URLSearchParams(location.search)).toString();
 				history.replaceState(history.state, "", `${location.pathname}${query ? `?${query}` : ""}${location.hash}`);
 			};
@@ -206,6 +281,10 @@ const controlEntries = Object.entries(controls ?? {});
 		}
 
 		window.addEventListener("message", (e) => {
+			if (matrixFrame && e.source === matrixFrame.contentWindow) {
+				if (e.data?.type === "cynco-demo-size") matrixFrame.style.height = `${Math.min(e.data.height, 6000)}px`;
+				return;
+			}
 			if (e.source !== iframe.contentWindow) return;
 			if (e.data?.type === "cynco-demo-size") iframe.style.height = `${Math.max(min, Math.min(e.data.height, 2400))}px`;
 			if (e.data?.type === "cynco-demo-ready") {
@@ -215,7 +294,23 @@ const controlEntries = Object.entries(controls ?? {});
 		});
 
 		const tools = el.querySelector<HTMLElement>("[data-preview-tools]")!;
+		const codeTools = el.querySelector<HTMLElement>("[data-code-tools]")!;
 		const copy = el.querySelector<HTMLButtonElement>("[data-copy]")!;
+		const sourceLink = el.querySelector<HTMLAnchorElement>("[data-source-link]");
+
+		// The source is clipped to about forty lines; the control only appears when there is more.
+		const body = el.querySelector<HTMLElement>("[data-source-body]");
+		const more = el.querySelector<HTMLElement>("[data-source-more]");
+		const expand = el.querySelector<HTMLButtonElement>("[data-source-expand]");
+		const measureSource = () => {
+			if (body && more && expand?.getAttribute("aria-expanded") !== "true")
+				more.hidden = body.scrollHeight <= body.clientHeight;
+		};
+		expand?.addEventListener("click", () => {
+			body?.classList.remove("cy-source-clip");
+			expand.setAttribute("aria-expanded", "true");
+			if (more) more.hidden = true;
+		});
 		const tabs = [...el.querySelectorAll<HTMLButtonElement>("[data-tab]")];
 		for (const tab of tabs) {
 			// APG tabs: the selected tab is the group's only Tab stop; arrows, Home and End move and select.
@@ -229,27 +324,40 @@ const controlEntries = Object.entries(controls ?? {});
 				tabs[next].focus();
 			});
 			tab.addEventListener("click", () => {
-				const code = tab.dataset.tab === "code";
+				const which = tab.dataset.tab;
+				const preview = which === "preview";
 				for (const t of tabs) {
 					t.setAttribute("aria-selected", String(t === tab));
 					t.tabIndex = t === tab ? 0 : -1;
 				}
-				el.querySelector<HTMLElement>('[data-panel="preview"]')!.hidden = code;
-				el.querySelector<HTMLElement>('[data-panel="code"]')!.hidden = !code;
-				tools.classList.toggle("hidden", code);
-				tools.classList.toggle("flex", !code);
-				if (panel) panel.hidden = code;
-				copy.classList.toggle("hidden", !code);
-				copy.classList.toggle("inline-flex", code);
+				for (const p of el.querySelectorAll<HTMLElement>("[data-panel]")) p.hidden = p.dataset.panel !== which;
+				tools.classList.toggle("hidden", !preview);
+				tools.classList.toggle("flex", preview);
+				if (panel) panel.hidden = !preview;
+				if (matrixPanel) matrixPanel.hidden = !preview;
+				codeTools.classList.toggle("hidden", preview);
+				codeTools.classList.toggle("flex", !preview);
+				sourceLink?.classList.toggle("hidden", which !== "source");
+				sourceLink?.classList.toggle("inline-flex", which === "source");
+				if (which === "source") measureSource();
 			});
 		}
 		copy.addEventListener("click", async () => {
-			await copyWithFeedback(copy.querySelector("span")!, el.querySelector<HTMLTextAreaElement>("[data-source]")!.value);
+			const text = el.querySelector<HTMLTextAreaElement>("[data-panel]:not([hidden]) [data-source]")?.value ?? "";
+			await copyWithFeedback(copy.querySelector("span")!, text);
 		});
 	}
 </script>
 
 <style>
+	/* About forty lines of the component, measured from the code block's own line height. */
+	.cy-source-clip {
+		max-height: calc(40 * 1.7 * 12.5px);
+		overflow: hidden;
+	}
+	.cy-source-fade {
+		background: linear-gradient(to bottom, transparent, var(--card) 60%);
+	}
 	.cy-phone {
 		border-left: 1px solid var(--border);
 		border-right: 1px solid var(--border);

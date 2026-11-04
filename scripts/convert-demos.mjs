@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 /**
  * One-time migration tool: converts the legacy createElement previews (`Name: [group, height, code]`)
  * into readable TSX demos in apps/docs/src/demos/<Name>.tsx and seeds packages/ui/registry/meta.json.
@@ -12,7 +13,6 @@
  * hand-edited after conversion: they are the source of truth from then on.
  */
 import { createRequire, register } from "node:module";
-import { existsSync, mkdirSync, readFileSync, writeFileSync, readdirSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
@@ -48,9 +48,32 @@ register(
 );
 const MAIN = new Set(Object.keys(await import(pathToFileURL(join(ROOT, "packages/ui/dist/index.js")).href)));
 const AI = new Set(Object.keys(await import(pathToFileURL(join(ROOT, "packages/ui/dist/ai.js")).href)));
-const TANSTACK = new Set(["useReactTable", "getCoreRowModel", "getSortedRowModel", "getPaginationRowModel", "flexRender"]);
-const REACT_HOOKS = new Set(["useState", "useEffect", "useRef", "useMemo", "useCallback", "useReducer", "useLayoutEffect", "useId", "Fragment"]);
-const SOURCE_ORDER = ["react", "@phosphor-icons/react", "recharts", "@tanstack/react-table", "@cynco-labs/ui", "@cynco-labs/ui/ai"];
+const TANSTACK = new Set([
+	"useReactTable",
+	"getCoreRowModel",
+	"getSortedRowModel",
+	"getPaginationRowModel",
+	"flexRender",
+]);
+const REACT_HOOKS = new Set([
+	"useState",
+	"useEffect",
+	"useRef",
+	"useMemo",
+	"useCallback",
+	"useReducer",
+	"useLayoutEffect",
+	"useId",
+	"Fragment",
+]);
+const SOURCE_ORDER = [
+	"react",
+	"@phosphor-icons/react",
+	"recharts",
+	"@tanstack/react-table",
+	"@cynco-labs/ui",
+	"@cynco-labs/ui/ai",
+];
 const ALIAS_PREFIX = { recharts: "Recharts", "@phosphor-icons/react": "Ph", "@tanstack/react-table": "Tanstack" };
 
 function libSource(name) {
@@ -164,7 +187,7 @@ async function convert(name, code) {
 			(imports.has(l) && imports.get(l).source !== source) ||
 			(reserved.has(l) && reserved.get(l) !== source);
 		if (clash()) l = (ALIAS_PREFIX[source] ?? "UI") + imported;
-		while (clash()) l = "_" + l;
+		while (clash()) l = `_${l}`;
 		imports.set(l, { source, imported });
 		return l;
 	}
@@ -184,7 +207,8 @@ async function convert(name, code) {
 				if (decl.node.declarations.length === 1) decl.remove();
 				else p.remove();
 			} else {
-				for (const ref of b.referencePaths) ref.replaceWith(t.identifier(local(libSource(init.property.name), init.property.name)));
+				for (const ref of b.referencePaths)
+					ref.replaceWith(t.identifier(local(libSource(init.property.name), init.property.name)));
 				const decl = p.parentPath;
 				if (decl.node.declarations.length === 1) decl.remove();
 				else p.remove();
@@ -200,18 +224,42 @@ async function convert(name, code) {
 				if (computed || !t.isIdentifier(property)) return;
 				const prop = property.name;
 				// A.Icons.X / A.Recharts.X
-				if (t.isMemberExpression(object) && t.isIdentifier(object.object, { name: "A" }) && t.isIdentifier(object.property)) {
-					if (object.property.name === "Icons") { p.replaceWith(t.identifier(local("@phosphor-icons/react", prop))); return; }
-					if (object.property.name === "Recharts") { p.replaceWith(t.identifier(local("recharts", prop))); return; }
+				if (
+					t.isMemberExpression(object) &&
+					t.isIdentifier(object.object, { name: "A" }) &&
+					t.isIdentifier(object.property)
+				) {
+					if (object.property.name === "Icons") {
+						p.replaceWith(t.identifier(local("@phosphor-icons/react", prop)));
+						return;
+					}
+					if (object.property.name === "Recharts") {
+						p.replaceWith(t.identifier(local("recharts", prop)));
+						return;
+					}
 				}
 				if (t.isIdentifier(object)) {
 					const o = object.name;
-					if (o === "I" && !p.scope.hasBinding("I")) { p.replaceWith(t.identifier(local("@phosphor-icons/react", prop))); return; }
-					if (nsAlias.get(o) === "Icons") { p.replaceWith(t.identifier(local("@phosphor-icons/react", prop))); return; }
-					if (nsAlias.get(o) === "Recharts") { p.replaceWith(t.identifier(local("recharts", prop))); return; }
-					if (o === "React" && REACT_HOOKS.has(prop)) { p.replaceWith(t.identifier(local("react", prop))); return; }
-					if (o === "A" && prop !== "Icons" && prop !== "Recharts" && !p.scope.hasBinding("A"))
-						{ p.replaceWith(t.identifier(local(libSource(prop), prop))); return; }
+					if (o === "I" && !p.scope.hasBinding("I")) {
+						p.replaceWith(t.identifier(local("@phosphor-icons/react", prop)));
+						return;
+					}
+					if (nsAlias.get(o) === "Icons") {
+						p.replaceWith(t.identifier(local("@phosphor-icons/react", prop)));
+						return;
+					}
+					if (nsAlias.get(o) === "Recharts") {
+						p.replaceWith(t.identifier(local("recharts", prop)));
+						return;
+					}
+					if (o === "React" && REACT_HOOKS.has(prop)) {
+						p.replaceWith(t.identifier(local("react", prop)));
+						return;
+					}
+					if (o === "A" && prop !== "Icons" && prop !== "Recharts" && !p.scope.hasBinding("A")) {
+						p.replaceWith(t.identifier(local(libSource(prop), prop)));
+						return;
+					}
 				}
 			},
 		},
@@ -224,7 +272,11 @@ async function convert(name, code) {
 				}
 				if (t.isIdentifier(callee, { name: "row" }) && !p.scope.hasBinding("row")) {
 					p.replaceWith(
-						element(t.jsxIdentifier("div"), [t.jsxAttribute(t.jsxIdentifier("className"), t.stringLiteral("flex flex-wrap items-center gap-2"))], a),
+						element(
+							t.jsxIdentifier("div"),
+							[t.jsxAttribute(t.jsxIdentifier("className"), t.stringLiteral("flex flex-wrap items-center gap-2"))],
+							a,
+						),
 					);
 					return;
 				}
@@ -237,7 +289,10 @@ async function convert(name, code) {
 				}
 				// Fragment
 				if (t.isIdentifier(type) && imports.get(type.name)?.imported === "Fragment" && (!props || t.isNullLiteral(props))) {
-					{ p.replaceWith(t.jsxFragment(t.jsxOpeningFragment(), t.jsxClosingFragment(), children.map(toChild).filter(Boolean))); return; }
+					p.replaceWith(
+						t.jsxFragment(t.jsxOpeningFragment(), t.jsxClosingFragment(), children.map(toChild).filter(Boolean)),
+					);
+					return;
 				}
 				let nameNode = null;
 				if (t.isStringLiteral(type)) nameNode = t.jsxIdentifier(type.value);
@@ -259,13 +314,21 @@ async function convert(name, code) {
 		},
 		VariableDeclarator(p) {
 			const { id, init } = p.node;
-			if (!t.isIdentifier(id) || !t.isCallExpression(init) || !t.isIdentifier(init.callee) || imports.get(init.callee.name)?.imported !== "useState") return;
+			if (
+				!t.isIdentifier(id) ||
+				!t.isCallExpression(init) ||
+				!t.isIdentifier(init.callee) ||
+				imports.get(init.callee.name)?.imported !== "useState"
+			)
+				return;
 			const b = p.scope.getBinding(id.name);
 			if (!b || b.constantViolations.length) return;
 			const refs = b.referencePaths;
 			const idx = (r) => {
 				const m = r.parentPath;
-				return m.isMemberExpression({ object: r.node, computed: true }) && t.isNumericLiteral(m.node.property) ? m.node.property.value : -1;
+				return m.isMemberExpression({ object: r.node, computed: true }) && t.isNumericLiteral(m.node.property)
+					? m.node.property.value
+					: -1;
 			};
 			if (!refs.every((r) => idx(r) === 0 || idx(r) === 1)) return;
 			// names: `var c=S(0), n=c[0], setN=c[1]` keeps n/setN; otherwise value/setter from the state name
@@ -284,8 +347,8 @@ async function convert(name, code) {
 			}
 			const base = id.name;
 			const cap = base[0].toUpperCase() + base.slice(1);
-			names = [names[0] ?? base, names[1] ?? "set" + cap];
-			if (!names[0].length || (names[1] !== "set" + cap ? false : p.scope.hasBinding(names[1]))) return;
+			names = [names[0] ?? base, names[1] ?? `set${cap}`];
+			if (!names[0].length || (names[1] !== `set${cap}` ? false : p.scope.hasBinding(names[1]))) return;
 			for (const d of aliasDecls) d.remove();
 			for (const r of refs) {
 				if (r.parentPath.removed || !r.parentPath.node) continue;
@@ -299,7 +362,8 @@ async function convert(name, code) {
 			exit(p) {
 				if (p.node.id || p.node.generator || usesThisOrArguments(p)) return;
 				let body = p.node.body;
-				if (body.body.length === 1 && t.isReturnStatement(body.body[0]) && body.body[0].argument) body = body.body[0].argument;
+				if (body.body.length === 1 && t.isReturnStatement(body.body[0]) && body.body[0].argument)
+					body = body.body[0].argument;
 				const arrow = t.arrowFunctionExpression(p.node.params, body, p.node.async);
 				p.replaceWith(arrow);
 			},
@@ -324,7 +388,8 @@ async function convert(name, code) {
 					if (!b || b.constantViolations.length) constant = false;
 				}
 			}
-			if (p.parentPath.isForStatement() || p.parentPath.isForXStatement()) constant = p.parentPath.isForXStatement() && constant;
+			if (p.parentPath.isForStatement() || p.parentPath.isForXStatement())
+				constant = p.parentPath.isForXStatement() && constant;
 			p.node.kind = constant ? "const" : "let";
 		},
 	});
@@ -345,7 +410,11 @@ async function convert(name, code) {
 	// leftovers that the runtime used to provide
 	traverse(ast, {
 		Identifier(p) {
-			if (["h", "A", "I", "S", "row", "React", "ReactDOM"].includes(p.node.name) && p.isReferencedIdentifier() && !p.scope.hasBinding(p.node.name))
+			if (
+				["h", "A", "I", "S", "row", "React", "ReactDOM"].includes(p.node.name) &&
+				p.isReferencedIdentifier() &&
+				!p.scope.hasBinding(p.node.name)
+			)
 				problems.push(`free reference to ${p.node.name}`);
 		},
 	});

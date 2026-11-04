@@ -5,15 +5,15 @@ export default function PaginationDemo() {
 		<Pagination>
 			<PaginationContent>
 				<PaginationItem>
-					<Button variant="secondary" size="mini">
+					<Button variant="secondary" size="sm">
 						Previous
 					</Button>
 				</PaginationItem>
 				<PaginationItem>
-					<span className="text-body px-2">Page 2 of 8</span>
+					<span className="text-sm font-medium text-muted-foreground px-2">Page 2 of 8</span>
 				</PaginationItem>
 				<PaginationItem>
-					<Button variant="secondary" size="mini">
+					<Button variant="secondary" size="sm">
 						Next
 					</Button>
 				</PaginationItem>

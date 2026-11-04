@@ -54,15 +54,17 @@ Fixed asset detail page.
 
 ## Props
 
-`asset` (the cynco LoaderData asset fields); optional `schedule` for the Depreciation tab, `defaultTab`; optional `className` and native div props on the root.
+`asset` (the cynco LoaderData asset fields); optional `schedule` for the Depreciation tab, `tab` / `defaultTab` / `onTabChange`; optional `className` and native div props on the root.
 
 - `asset`: `FixedAssetData`
 - `schedule?`: `AssetDepreciationEntry[]`
-- `defaultTab?`: `string`. Default `"overview"`.
+- `tab?`: `string`. Controlled open tab.
+- `defaultTab?`: `string`. Tab open on first render when uncontrolled. Default `"overview"`.
+- `onTabChange?`: `(tab: string) => void`
 - Also accepts `ComponentProps<"div">`.
 
 ## Notes
 
 The Capital allowances and Revaluations tabs are placeholders in the demo.
 
-Category: Accounting · Tax, assets & operations. Source: `packages/ui/src/accounting/operations.tsx`.
+Category: Accounting · Tax, assets & operations. Source: `packages/ui/src/accounting/operations/fixed-assets.tsx:98-254`.

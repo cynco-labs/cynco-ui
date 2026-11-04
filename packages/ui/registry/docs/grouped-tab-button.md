@@ -9,8 +9,8 @@ import { GroupedTabButton } from "@cynco-labs/ui";
 ## Usage
 
 ```tsx
-import { useState } from "react";
 import { GroupedTabButton } from "@cynco-labs/ui";
+import { useState } from "react";
 
 export default function GroupedTabButtonDemo() {
 	const [s, setS] = useState("month");
@@ -49,4 +49,4 @@ Switching a small set of mutually exclusive modes (period, chart range).
 
 Fills its container width; constrain the parent.
 
-Category: Components · Actions. Source: `packages/ui/src/base/components/general/grouped-tab-button.tsx`.
+Category: Components · Actions. Source: `packages/ui/src/base/components/general/grouped-tab-button.tsx:22-70`.

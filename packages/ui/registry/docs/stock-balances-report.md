@@ -84,4 +84,4 @@ Inventory workspace balances and reports.
 
 Balances table, per-item balance status and a reconciliation strip in one panel. Responsive: DataList for balances; the reconciliation strip wraps.
 
-Category: Accounting · Tax, assets & operations. Source: `packages/ui/src/accounting/operations.tsx`.
+Category: Accounting · Tax, assets & operations. Source: `packages/ui/src/accounting/operations/inventory.tsx:125-212`.

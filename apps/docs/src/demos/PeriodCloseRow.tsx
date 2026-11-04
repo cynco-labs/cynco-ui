@@ -9,8 +9,8 @@ export default function PeriodCloseRowDemo() {
 					fiscalStatus: "open",
 					accountCount: 64,
 					transactionCount: 412,
-					totalDebit: 1284560,
-					totalCredit: 1284560,
+					totalDebit: "1284560.00",
+					totalCredit: "1284560.00",
 				}}
 			/>
 			<PeriodCloseRow
@@ -19,8 +19,8 @@ export default function PeriodCloseRowDemo() {
 					fiscalStatus: "closed",
 					accountCount: 61,
 					transactionCount: 388,
-					totalDebit: 1102340.5,
-					totalCredit: 1102340.5,
+					totalDebit: "1102340.50",
+					totalCredit: "1102340.50",
 				}}
 			/>
 			<PeriodCloseRow
@@ -29,8 +29,8 @@ export default function PeriodCloseRowDemo() {
 					fiscalStatus: "locked",
 					accountCount: 58,
 					transactionCount: 351,
-					totalDebit: 984220.1,
-					totalCredit: 984220.1,
+					totalDebit: "984220.10",
+					totalCredit: "984220.10",
 				}}
 			/>
 			<PeriodCloseRow
@@ -40,8 +40,8 @@ export default function PeriodCloseRowDemo() {
 					fiscalStatus: "locked",
 					accountCount: 57,
 					transactionCount: 1,
-					totalDebit: 1,
-					totalCredit: 1,
+					totalDebit: "1.00",
+					totalCredit: "1.00",
 				}}
 			/>
 		</div>

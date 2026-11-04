@@ -50,7 +50,7 @@ Invoice and credit/debit note detail sidebars (NoteEInvoiceCard).
 
 ## Props
 
-`credentialEnvironments` (sandbox|production), `byEnvironment` {status, documentUuid, longId, validatedAt, rejectionRequestedAt, rejectionReason, validationErrors, unconfirmed, withinCancelWindow}; optional `documentLabel`, `hasCorrection`, `onSubmit`, `onCancel`, `onCheck`; optional `className` and native div props on the root.
+`credentialEnvironments` (sandbox|production), `byEnvironment` {status, documentUuid, longId, validatedAt, rejectionRequestedAt, rejectionReason, validationErrors, unconfirmed, withinCancelWindow}; optional `environment` / `defaultEnvironment` / `onEnvironmentChange`, `documentLabel`, `hasCorrection`, `onSubmit`, `onCancel`, `onCheck`; optional `className` and native div props on the root.
 
 - `credentialEnvironments`: `EnvName[]`
 - `byEnvironment`: `Partial<Record<EnvName, EInvoiceEnvStatus>>`
@@ -58,6 +58,9 @@ Invoice and credit/debit note detail sidebars (NoteEInvoiceCard).
 - `hasCorrection?`: `boolean`. Default `true`.
 - `credentialsHref?`: `string`. Where MyInvois credentials are set up; links the "not configured" message.
 - `correctionHref?`: `string`. Where to raise the correcting credit note; links the "window has passed" message.
+- `environment?`: `"sandbox" | "production"`. Controlled environment whose filing the card shows.
+- `defaultEnvironment?`: `"sandbox" | "production"`. Environment shown on first render when uncontrolled. Defaults to the first credentialled one.
+- `onEnvironmentChange?`: `(environment: EnvName) => void`
 - `onSubmit?`: `(env: EnvName) => void`
 - `onCancel?`: `(env: EnvName, reason: string) => void`
 - `onCheck?`: `(env: EnvName) => void`
@@ -67,4 +70,4 @@ Invoice and credit/debit note detail sidebars (NoteEInvoiceCard).
 
 Fetcher, retry hold and portal-settle flow are left to the caller. Validation stamp from templates/EInvoiceValidationBlock (QR omitted). Responsive by container: controls in a wrapping ActionBar; UUID and long ID break instead of overflowing.
 
-Category: Accounting · Tax, assets & operations. Source: `packages/ui/src/accounting/operations.tsx`.
+Category: Accounting · Tax, assets & operations. Source: `packages/ui/src/accounting/operations/einvoice.tsx:70-341`.

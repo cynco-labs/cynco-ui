@@ -1,4 +1,5 @@
-const escape = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+const escapeHtml = (s: string) =>
+	s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
 /** Minimal inline Markdown for registry copy: `code`, **bold**, *em*, and paragraphs on blank lines. */
 export function inlineMd(text: string): string {
@@ -6,8 +7,9 @@ export function inlineMd(text: string): string {
 		.split(/\n\s*\n/)
 		.map((p) => {
 			const parts = p.split(/(`[^`]+`)/g).map((part) => {
-				if (part.startsWith("`") && part.endsWith("`") && part.length > 1) return `<code>${escape(part.slice(1, -1))}</code>`;
-				return escape(part)
+				if (part.startsWith("`") && part.endsWith("`") && part.length > 1)
+					return `<code>${escapeHtml(part.slice(1, -1))}</code>`;
+				return escapeHtml(part)
 					.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
 					.replace(/(^|[\s(])\*([^*\s][^*]*)\*/g, "$1<em>$2</em>");
 			});

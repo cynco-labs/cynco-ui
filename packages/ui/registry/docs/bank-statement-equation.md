@@ -16,10 +16,10 @@ export default function BankStatementEquationDemo() {
 		<div className="flex flex-col gap-5">
 			<BankStatementEquation
 				statement={{
-					openingBalance: 58210.35,
-					closingBalance: 61942.1,
-					totalCredits: 31400,
-					totalDebits: 27668.25,
+					openingBalance: "58210.35",
+					closingBalance: "61942.10",
+					totalCredits: "31400.00",
+					totalDebits: "27668.25",
 					creditLines: 18,
 					debitLines: 64,
 				}}
@@ -29,10 +29,10 @@ export default function BankStatementEquationDemo() {
 				chainValid={false}
 				brokenRows={[3, 16]}
 				statement={{
-					openingBalance: 12400,
-					closingBalance: 9811.2,
-					totalCredits: 4200,
-					totalDebits: 6588.8,
+					openingBalance: "12400.00",
+					closingBalance: "9811.20",
+					totalCredits: "4200.00",
+					totalDebits: "6588.80",
 					creditLines: 1,
 					debitLines: 22,
 				}}
@@ -41,9 +41,9 @@ export default function BankStatementEquationDemo() {
 				size="sm"
 				statement={{
 					openingBalance: null,
-					closingBalance: 20500,
-					totalCredits: 8200,
-					totalDebits: 3100,
+					closingBalance: "20500.00",
+					totalCredits: "8200.00",
+					totalDebits: "3100.00",
 					creditLines: 5,
 					debitLines: 9,
 				}}
@@ -72,4 +72,4 @@ statement {openingBalance, closingBalance, totalCredits, totalDebits, creditLine
 
 Built on BankBalanceEquation; the warning line uses an amber StatusChipIcon instead of warning-coloured text. Inherits the equation's wrapping; no overflow at 320px.
 
-Category: Accounting · Banking. Source: `packages/ui/src/accounting/banking.tsx`.
+Category: Accounting · Banking. Source: `packages/ui/src/accounting/banking/balance-equation.tsx:232-298`.

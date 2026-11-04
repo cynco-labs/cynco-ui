@@ -1,7 +1,7 @@
 "use client";
 
-import { cn } from "../../lib/utils";
 import { type ComponentProps, useId } from "react";
+import { cn } from "../../lib/utils";
 
 /** Fill and glyph colours come from the status tokens; dark themes swap the glyph to a dark ink there. */
 export const STATUS_TONES = {
@@ -43,14 +43,12 @@ const ICON_GLYPH_SCALE = 11 / 256;
 
 /** Phosphor fill icons (256×256) knocked out of a solid tile; stroke glyphs blur at this size. */
 const ICON_GLYPHS = {
-	toggle:
-		"M176,56H80a72,72,0,0,0,0,144h96a72,72,0,0,0,0-144Zm0,112a40,40,0,1,1,40-40A40,40,0,0,1,176,168Z",
+	toggle: "M176,56H80a72,72,0,0,0,0,144h96a72,72,0,0,0,0-144Zm0,112a40,40,0,1,1,40-40A40,40,0,0,1,176,168Z",
 	battery:
 		"M152,96v64a8,8,0,0,1-8,8H48a8,8,0,0,1-8-8V96a8,8,0,0,1,8-8h96A8,8,0,0,1,152,96Zm72-16v96a24,24,0,0,1-24,24H32A24,24,0,0,1,8,176V80A24,24,0,0,1,32,56H200A24,24,0,0,1,224,80Zm-16,0a8,8,0,0,0-8-8H32a8,8,0,0,0-8,8v96a8,8,0,0,0,8,8H200a8,8,0,0,0,8-8Zm40,8a8,8,0,0,0-8,8v64a8,8,0,0,0,16,0V96A8,8,0,0,0,248,88Z",
 	ticket:
 		"M232,104a8,8,0,0,0,8-8V64a16,16,0,0,0-16-16H32A16,16,0,0,0,16,64V96a8,8,0,0,0,8,8,24,24,0,0,1,0,48,8,8,0,0,0-8,8v32a16,16,0,0,0,16,16H224a16,16,0,0,0,16-16V160a8,8,0,0,0-8-8,24,24,0,0,1,0-48ZM32,167.2a40,40,0,0,0,0-78.4V64H88V192H32Z",
-	calendar:
-		"M48 72h160v40H48zM48 112h24v96H48zM184 112h24v96h-24zM48 184h160v24H48zM72 32h24v48H72zM160 32h24v48h-24z",
+	calendar: "M48 72h160v40H48zM48 112h24v96H48zM184 112h24v96h-24zM48 184h160v24H48zM72 32h24v48H72zM160 32h24v48h-24z",
 	coins:
 		"M184,89.57V84c0-25.08-37.83-44-88-44S8,58.92,8,84v40c0,20.89,26.25,37.49,64,42.46V172c0,25.08,37.83,44,88,44s88-18.92,88-44V132C248,111.3,222.58,94.68,184,89.57ZM56,146.87C36.41,141.4,24,132.39,24,124V109.93c8.16,5.78,19.09,10.44,32,13.57Zm80-23.37c12.91-3.13,23.84-7.79,32-13.57V124c0,8.39-12.41,17.4-32,22.87Zm-16,71.37C100.41,189.4,88,180.39,88,172v-4.17c2.63.1,5.29.17,8,.17,3.88,0,7.67-.13,11.39-.35A121.92,121.92,0,0,0,120,171.41Zm0-44.62A163,163,0,0,1,96,152a163,163,0,0,1-24-1.75V126.46A183.74,183.74,0,0,0,96,128a183.74,183.74,0,0,0,24-1.54Zm64,48a165.45,165.45,0,0,1-48,0V174.4a179.48,179.48,0,0,0,24,1.6,183.74,183.74,0,0,0,24-1.54ZM232,172c0,8.39-12.41,17.4-32,22.87V171.5c12.91-3.13,23.84-7.79,32-13.57Z",
 	tag: "M243.31,136,144,36.69A15.86,15.86,0,0,0,132.69,32H40a8,8,0,0,0-8,8v92.69A15.86,15.86,0,0,0,36.69,144L136,243.31a16,16,0,0,0,22.63,0l84.68-84.68a16,16,0,0,0,0-22.63ZM84,96A12,12,0,1,1,96,84,12,12,0,0,1,84,96Z",
@@ -75,8 +73,7 @@ const ICON_GLYPHS = {
 		"M232,64a32,32,0,1,0-40,31v17a8,8,0,0,1-8,8H96a23.84,23.84,0,0,0-8,1.38V95a32,32,0,1,0-16,0v66a32,32,0,1,0,16,0V144a8,8,0,0,1,8-8h88a24,24,0,0,0,24-24V95A32.06,32.06,0,0,0,232,64ZM64,64A16,16,0,1,1,80,80,16,16,0,0,1,64,64ZM96,192a16,16,0,1,1-16-16A16,16,0,0,1,96,192Z",
 };
 
-const isIconGlyph = (glyph: StatusGlyph): glyph is keyof typeof ICON_GLYPHS =>
-	glyph in ICON_GLYPHS;
+const isIconGlyph = (glyph: StatusGlyph): glyph is keyof typeof ICON_GLYPHS => glyph in ICON_GLYPHS;
 
 const GLYPH_DASHES: Partial<Record<keyof typeof STATUS_GLYPHS, string>> = {
 	spinner: "12 8",
@@ -108,19 +105,9 @@ function IconGlyphTile({
 		>
 			<mask id={maskId}>
 				<rect width="16" height="16" fill="white" />
-				<path
-					d={ICON_GLYPHS[glyph]}
-					fill="black"
-					transform={`translate(2.5 2.5) scale(${ICON_GLYPH_SCALE})`}
-				/>
+				<path d={ICON_GLYPHS[glyph]} fill="black" transform={`translate(2.5 2.5) scale(${ICON_GLYPH_SCALE})`} />
 			</mask>
-			<rect
-				width="16"
-				height="16"
-				rx="4.5"
-				fill="currentColor"
-				mask={`url(#${maskId})`}
-			/>
+			<rect width="16" height="16" rx="4.5" fill="currentColor" mask={`url(#${maskId})`} />
 		</svg>
 	);
 }
@@ -155,10 +142,7 @@ export function StatusChipIcon({
 				strokeLinecap="round"
 				strokeLinejoin="round"
 				strokeDasharray={GLYPH_DASHES[glyph]}
-				className={cn(
-					glyph === "spinner" &&
-						"origin-center animate-spin [transform-box:fill-box]",
-				)}
+				className={cn(glyph === "spinner" && "origin-center animate-spin [transform-box:fill-box]")}
 			/>
 		</svg>
 	);
@@ -172,27 +156,19 @@ export function StatusRing({
 	tone,
 	fraction,
 	className,
-}: {
-	tone: StatusTone;
-	fraction: number;
-	className?: string;
-}) {
+	...props
+}: React.ComponentProps<"svg"> & { tone: StatusTone; fraction: number }) {
 	return (
 		<svg
+			data-slot="status-ring"
 			aria-hidden="true"
 			width="16"
 			height="16"
 			viewBox="0 0 16 16"
 			className={cn("shrink-0", STATUS_TONES[tone], className)}
+			{...props}
 		>
-			<circle
-				cx="8"
-				cy="8"
-				r={RING_RADIUS}
-				fill="none"
-				strokeWidth="2.5"
-				className="stroke-foreground/10"
-			/>
+			<circle cx="8" cy="8" r={RING_RADIUS} fill="none" strokeWidth="2.5" className="stroke-foreground/10" />
 			<circle
 				cx="8"
 				cy="8"
@@ -223,6 +199,7 @@ export function StatusChip({
 }) {
 	return (
 		<span
+			data-slot="status-chip"
 			className={cn(
 				"inline-flex h-[22px] min-w-0 max-w-full items-center gap-1.5 rounded-md border border-foreground/6 bg-foreground/4 pr-[7px] pl-1 text-xs leading-4 font-medium tracking-[-0.005em] whitespace-nowrap text-foreground",
 				!glyph && "pl-[7px]",
@@ -234,11 +211,7 @@ export function StatusChip({
 			{...props}
 		>
 			{glyph && <StatusChipIcon tone={tone ?? "neutral"} glyph={glyph} />}
-			{typeof children === "string" ? (
-				<span className="min-w-0 truncate">{children}</span>
-			) : (
-				children
-			)}
+			{typeof children === "string" ? <span className="min-w-0 truncate">{children}</span> : children}
 		</span>
 	);
 }

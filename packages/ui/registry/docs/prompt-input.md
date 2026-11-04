@@ -9,7 +9,6 @@ import { PromptInput } from "@cynco-labs/ui/ai";
 ## Usage
 
 ```tsx
-import { PlusIcon } from "@phosphor-icons/react";
 import {
 	PromptInput,
 	PromptInputBody,
@@ -19,6 +18,7 @@ import {
 	PromptInputTextarea,
 	PromptInputTools,
 } from "@cynco-labs/ui/ai";
+import { PlusIcon } from "@phosphor-icons/react";
 
 export default function PromptInputDemo() {
 	return (
@@ -59,4 +59,4 @@ The main chat input.
 - `onError?`: `(err: { code: "max_files" | "max_file_size" | "accept"; message: string }) => void`
 - Also accepts `HTMLAttributes<HTMLFormElement>`.
 
-Category: AI. Source: `packages/ui/src/base/components/ai-elements/prompt-input.tsx`.
+Category: AI. Source: `packages/ui/src/base/components/ai-elements/prompt-input.tsx:379-762`.

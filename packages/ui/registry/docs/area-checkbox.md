@@ -9,8 +9,8 @@ import { AreaCheckbox } from "@cynco-labs/ui";
 ## Usage
 
 ```tsx
-import { useState } from "react";
 import { AreaCheckbox } from "@cynco-labs/ui";
+import { useState } from "react";
 
 export default function AreaCheckboxDemo() {
 	const [s, setS] = useState(true);
@@ -33,16 +33,15 @@ Opt-in settings that need explanation (rounding, auto-numbering).
 
 ## Props
 
-`title`, `checked`, `onCheckedChange`; optional `description`, `disabled` + `disabledReason` (tooltip), `children` (shown when checked).
+`title`, `checked` / `defaultChecked`, `onCheckedChange`; optional `description`, `disabled` + `disabledReason` (tooltip), `children` (revealed when checked), `className` and any div props.
 
 - `title`: `string`
 - `checked?`: `boolean`
 - `defaultChecked?`: `boolean`. Initial state for uncontrolled use. Default `false`.
 - `onCheckedChange?`: `(checked: boolean) => void`
 - `disabled?`: `boolean`. Default `false`.
-- `disabledReason?`: `string`
-- `hide?`: `boolean`. Default `false`.
+- `disabledReason?`: `string`. Disables the choice and says why, on a tooltip and to screen readers.
 - `description?`: `string`
 - Also accepts `ComponentProps<"div">`.
 
-Category: Components · Selection. Source: `packages/ui/src/base/components/general/area-checkbox.tsx`.
+Category: Components · Selection. Source: `packages/ui/src/base/components/general/area-checkbox.tsx:24-97`.

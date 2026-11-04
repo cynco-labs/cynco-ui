@@ -9,8 +9,8 @@ import { SearchableSelect } from "@cynco-labs/ui";
 ## Usage
 
 ```tsx
-import { useState } from "react";
 import { SearchableSelect } from "@cynco-labs/ui";
+import { useState } from "react";
 
 const opts = [
 	{ id: "1000-001", name: "1000-001 · Cash in hand" },
@@ -50,6 +50,7 @@ Choosing an account, item or customer from a long or remote list.
 - `options`: `T[]`
 - `getOptionValue`: `(option: T) => string`
 - `getOptionLabel`: `(option: T) => string`
+- `disabled?`: `boolean`. Default `false`.
 - `value?`: `string | null`. Controlled selection; null for none.
 - `defaultValue?`: `string | null`. Initial selection for uncontrolled use. Default `null`.
 - `onValueChange?`: `(value: string) => void`
@@ -61,7 +62,6 @@ Choosing an account, item or customer from a long or remote list.
 - `searchable?`: `boolean`. Default `false`.
 - `searchPlaceholder?`: `string`. Default `"Search..."`.
 - `emptyText?`: `ReactNode | null`. `null` renders no empty state at all — the search input stands alone. Default `"No results found"`.
-- `disabled?`: `boolean`. Default `false`.
 - `triggerClassName?`: `string`
 - `contentClassName?`: `string`
 - `defaultOpen?`: `boolean`. Default `false`.
@@ -75,8 +75,12 @@ Choosing an account, item or customer from a long or remote list.
 - `isLoading?`: `boolean`. Default `false`.
 - Also accepts `ComponentProps<"button">`.
 
+## Accessibility
+
+The default trigger is a plain button that forwards id, aria-label, aria-labelledby, aria-describedby and aria-invalid from props, and sets no aria-expanded of its own because PopoverTrigger supplies that and aria-haspopup="dialog". The popup is labelled with the placeholder, and the search box is named by passing searchPlaceholder as the Command label, since cmdk always renders that label element and leaves the input unnamed without it. Each row carries aria-current for the chosen value, because cmdk's aria-selected tracks only the highlighted row.
+
 ## Notes
 
 `emptyText={null}` hides the empty state.
 
-Category: Components · Inputs. Source: `packages/ui/src/base/components/general/searchable-select.tsx`.
+Category: Components · Inputs. Source: `packages/ui/src/base/components/general/searchable-select.tsx:62-240`.

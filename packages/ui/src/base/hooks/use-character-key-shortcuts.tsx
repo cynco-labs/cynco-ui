@@ -153,12 +153,32 @@ export function isCharacterKeyShortcut(keys: string | string[]): boolean {
 	);
 }
 
-
 /** Library key names → the UI Events key values aria-keyshortcuts expects. */
 const ARIA_KEY: Record<string, string> = {
-	ctrl: "Control", control: "Control", cmd: "Meta", command: "Meta", meta: "Meta", alt: "Alt", option: "Alt", shift: "Shift",
-	esc: "Escape", escape: "Escape", enter: "Enter", return: "Enter", tab: "Tab", space: "Space", backspace: "Backspace", delete: "Delete",
-	up: "ArrowUp", down: "ArrowDown", left: "ArrowLeft", right: "ArrowRight", home: "Home", end: "End", pageup: "PageUp", pagedown: "PageDown",
+	ctrl: "Control",
+	control: "Control",
+	cmd: "Meta",
+	command: "Meta",
+	meta: "Meta",
+	alt: "Alt",
+	option: "Alt",
+	shift: "Shift",
+	esc: "Escape",
+	escape: "Escape",
+	enter: "Enter",
+	return: "Enter",
+	tab: "Tab",
+	space: "Space",
+	backspace: "Backspace",
+	delete: "Delete",
+	up: "ArrowUp",
+	down: "ArrowDown",
+	left: "ArrowLeft",
+	right: "ArrowRight",
+	home: "Home",
+	end: "End",
+	pageup: "PageUp",
+	pagedown: "PageDown",
 };
 
 /**

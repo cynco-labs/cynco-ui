@@ -33,11 +33,15 @@ Explaining why a control is disabled.
 
 ## Props
 
-`enabled`, `content`, one element child.
+`enabled`, `content`, one element child, plus any TooltipContent props (`className`, `side`, `align`).
 
-- `enabled`: `boolean`
+- `enabled`: `boolean`. When false the child renders alone, with no trigger and no popup.
 - `content`: `ReactNode`
-- `children`: `ReactElement`
-- `contentClassName?`: `string`
+- `children`: `ReactElement`. The element the tooltip describes; it becomes the trigger.
+- Also accepts `TooltipPrimitive.Popup.Props`, `TooltipPrimitive.Positioner.Props`.
 
-Category: Components · Overlays. Source: `packages/ui/src/base/components/general/conditional-tooltip.tsx`.
+## Notes
+
+It renders no element of its own, so `className` and the rest go to the popup.
+
+Category: Components · Overlays. Source: `packages/ui/src/base/components/general/conditional-tooltip.tsx:13-28`.

@@ -1,6 +1,6 @@
 import type { APIRoute, GetStaticPaths } from "astro";
-import { registry } from "../../lib/registry";
 import { readUi } from "../../lib/paths";
+import { registry } from "../../lib/registry";
 
 export const getStaticPaths: GetStaticPaths = () => registry.map((c) => ({ params: { slug: c.slug } }));
 

@@ -1,10 +1,10 @@
 import {
-	DocumentBrandProvider,
-	TaxInvoiceDocument,
 	type DocBrand,
 	type DocLayout,
 	type DocLocale,
+	DocumentBrandProvider,
 	type TaxInvoiceData,
+	TaxInvoiceDocument,
 } from "@cynco-labs/ui";
 
 const BRAND: DocBrand = {
@@ -35,10 +35,7 @@ const NUSA = {
 
 const NUSA_SITE = {
 	name: "Nusantara Logistik Bhd — Warehouse B",
-	address: [
-		"Lot 12A, Jalan Sungai Puloh, Kawasan Perindustrian Sungai Puloh",
-		"42100 Klang, Selangor",
-	],
+	address: ["Lot 12A, Jalan Sungai Puloh, Kawasan Perindustrian Sungai Puloh", "42100 Klang, Selangor"],
 	attention: "En. Hafiz Zainal, Facilities",
 	phone: "+60 12-334 8821",
 };

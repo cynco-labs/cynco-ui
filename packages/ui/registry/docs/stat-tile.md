@@ -9,16 +9,16 @@ import { StatTile } from "@cynco-labs/ui";
 ## Usage
 
 ```tsx
-import { StatGrid, StatTile, formatCurrency } from "@cynco-labs/ui";
+import { formatCurrency, StatGrid, StatTile } from "@cynco-labs/ui";
 
 function Tiles() {
 	return (
 		<StatGrid min="sm">
-			<StatTile label="Sales" value={formatCurrency(184520.75)} tone="green" sub="October 2026" />
-			<StatTile label="Pending" value={formatCurrency(46890.35)} tone="blue" />
+			<StatTile label="Sales" value={formatCurrency("184520.75")} tone="green" sub="October 2026" />
+			<StatTile label="Pending" value={formatCurrency("46890.35")} tone="blue" />
 			<StatTile
 				label="Overdue"
-				value={formatCurrency(11320)}
+				value={formatCurrency("11320.00")}
 				tone="red"
 				negative
 				badge={<span className="text-xs text-error-text">3 invoices</span>}
@@ -62,4 +62,4 @@ StatTile: label, value, optional unit, sub, badge, tone (green | blue | red | or
 
 The value wraps only between words (after "RM"), never mid-number, and never truncates; it steps up a size once the tile is 13rem wide.
 
-Category: Layout · Primitives. Source: `packages/ui/src/layout/index.tsx`.
+Category: Layout · Primitives. Source: `packages/ui/src/layout/stats.tsx:92-133`.

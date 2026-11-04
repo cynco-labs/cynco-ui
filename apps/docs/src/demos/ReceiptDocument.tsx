@@ -1,10 +1,10 @@
 import {
-	DocumentBrandProvider,
-	ReceiptDocument,
 	type DocBrand,
 	type DocLayout,
 	type DocLocale,
+	DocumentBrandProvider,
 	type ReceiptData,
+	ReceiptDocument,
 } from "@cynco-labs/ui";
 
 const BRAND: DocBrand = {
@@ -53,9 +53,7 @@ const CASH: ReceiptData = {
 	},
 	payment: { method: "cash" },
 	amountReceived: "1284.40",
-	allocations: [
-		{ number: "INV-2026-0151", date: "2026-10-29", invoiceAmount: "1284.42", applied: "1284.42" },
-	],
+	allocations: [{ number: "INV-2026-0151", date: "2026-10-29", invoiceAmount: "1284.42", applied: "1284.42" }],
 	totals: [
 		{ label: "totalDue", value: "1284.42" },
 		{ label: "rounding", value: "-0.02", kind: "rounding" },

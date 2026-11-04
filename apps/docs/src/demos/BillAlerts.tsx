@@ -8,11 +8,11 @@ export default function BillAlertsDemo() {
 				duplicateBill={{
 					vendorName: "Grand Office Supplies",
 					billNumber: "GOS-55102",
-					totalAmount: 612.3,
+					totalAmount: "612.30",
 				}}
 				status="rejected"
 				rejectionNotes="SST charged at 10% — vendor is not SST-registered. Ask for a corrected invoice."
-				unusedCredit={{ amount: 450, currency: "MYR" }}
+				unusedCredit={{ amount: "450.00", currency: "MYR" }}
 				vendorLoadError
 				lineItemsCorrupted
 			/>

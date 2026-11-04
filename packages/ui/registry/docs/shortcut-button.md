@@ -43,19 +43,16 @@ Sheet and dialog submit actions (`metaShortcut="enter"` → ⌘/Ctrl ↵) and pa
 - `children`: `ReactNode`
 - `metaShortcut?`: `string`
 - `singleShortcut?`: `string`
-- `isLoading?`: `boolean`
+- `isLoading?`: `boolean`. Swaps the label for a spinner and disables the button, while the label stays its accessible name.
 - `variant?`: `"primary" | "secondary"`. Default `"primary"`.
-- `asChild?`: `boolean`
-- `transition?`: `boolean`
-- `disableActive?`: `boolean`
-- `hide?`: `boolean`
-- `render?`: `ReactElement`
+- `asChild?`: `boolean`. Radix compatibility: render the single child element instead of a `<button>`.
+- `render?`: `ReactElement`. The element to render instead of a `<button>` (Base UI).
 - `focusableWhenDisabled?`: `boolean`. Keep the button in the tab order while disabled (Base UI). Set automatically while `isLoading`.
-- `size?`: `"sm" | "default" | "mini" | "icon"`. Default `"default"`.
+- `size?`: `"sm" | "md" | "icon"`. Default `"md"`.
 - Also accepts `ComponentProps<"button">`.
 
 ## Notes
 
 The shortcut is registered while mounted; the keycap renders inside the button. A bare-letter `singleShortcut` never fires while typing in a field and follows the user's single-key shortcuts switch (WCAG 2.1.4, `useCharacterKeyShortcuts`, set in ShortcutsDialog): when it is off the key stops firing and the keycap and aria-keyshortcuts are dropped. ⌘/Ctrl chords and named keys like Escape always work. The shortcut triggers a real click, so `onClick` and form submit behave exactly as a mouse click.
 
-Category: Components · Actions. Source: `packages/ui/src/base/components/general/shortcut-button.tsx`.
+Category: Components · Actions. Source: `packages/ui/src/base/components/general/shortcut-button.tsx:11-109`.

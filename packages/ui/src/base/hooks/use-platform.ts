@@ -7,4 +7,9 @@ import { isMacPlatform } from "../lib/utils";
 // hydrated markup always matches the server HTML; React then re-renders with the real value.
 const noSubscribe = () => () => {};
 export const useIsMac = () => useSyncExternalStore(noSubscribe, isMacPlatform, () => false);
-export const useIsClient = () => useSyncExternalStore(noSubscribe, () => true, () => false);
+export const useIsClient = () =>
+	useSyncExternalStore(
+		noSubscribe,
+		() => true,
+		() => false,
+	);

@@ -17,10 +17,10 @@ export default function PanelDemo() {
 		<div style={{ height: 180 }} className="rounded-lg border">
 			<Canvas nodes={[]} edges={[]}>
 				<Panel position="top-left">
-					<span className="text-body px-1">Workflow · draft</span>
+					<span className="text-sm font-medium text-muted-foreground px-1">Workflow · draft</span>
 				</Panel>
 				<Panel position="top-right">
-					<Button variant="primary" size="mini">
+					<Button variant="primary" size="sm">
 						Publish
 					</Button>
 				</Panel>
@@ -38,4 +38,4 @@ Canvas titles, run buttons, legends.
 
 `position` (`top-left` … `bottom-right`), children.
 
-Category: AI. Source: `packages/ui/src/base/components/ai-elements/panel.tsx`.
+Category: AI. Source: `packages/ui/src/base/components/ai-elements/panel.tsx:7-9`.

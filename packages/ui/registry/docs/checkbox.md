@@ -9,8 +9,8 @@ import { Checkbox } from "@cynco-labs/ui";
 ## Usage
 
 ```tsx
-import { useState } from "react";
 import { Checkbox, Label } from "@cynco-labs/ui";
+import { useState } from "react";
 
 export default function CheckboxDemo() {
 	const [s, setS] = useState(true);
@@ -53,4 +53,13 @@ Boolean options in lists and tables; use Switch for settings that apply immediat
 - `disabled?`: `boolean`. Whether the component should ignore user interaction. Default `false`.
 - Also accepts `CheckboxPrimitive.Root.Props`.
 
-Category: Components · Selection. Source: `packages/ui/src/base/components/ui/checkbox.tsx`.
+## Accessibility
+
+| Key | Does |
+| --- | --- |
+| Enter | Toggles the checkbox, unless it is disabled. |
+| ⌘Enter / Ctrl+Enter | Leaves the checkbox untouched so the chord reaches a sheet-level or form-level submit shortcut. |
+
+The control carries no label of its own, so pair it with a Label or pass aria-label. The invalid treatment is keyed on aria-invalid, which you set and the component never sets for you.
+
+Category: Components · Selection. Source: `packages/ui/src/base/components/ui/checkbox.tsx:12-65`.

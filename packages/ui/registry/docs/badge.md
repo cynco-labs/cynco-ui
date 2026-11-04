@@ -34,7 +34,7 @@ Counts and neutral labels. Use StatusChip for states.
 `variant` (`default` · `muted` · `secondary`), `size` (`default` · `sm`), children.
 
 - `variant?`: `"default" | "secondary" | "muted"`. Default `"default"`.
-- `size?`: `"sm" | "default"`. Default `"default"`.
+- `size?`: `"sm" | "md"`. Default `"md"`.
 - `asChild?`: `boolean`. Default `false`.
 - Also accepts `useRender.ComponentProps<"span">`.
 
@@ -42,4 +42,4 @@ Counts and neutral labels. Use StatusChip for states.
 
 Prefer `muted`; `default` is the zinc pill.
 
-Category: Components · Data display. Source: `packages/ui/src/base/components/ui/badge.tsx`.
+Category: Components · Data display. Source: `packages/ui/src/base/components/ui/badge.tsx:36-55`.

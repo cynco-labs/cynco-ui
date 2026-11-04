@@ -77,4 +77,4 @@ Showing how much of the model's context window is used.
 
 Cost uses tokenlens model prices.
 
-Category: AI. Source: `packages/ui/src/base/components/ai-elements/context.tsx`.
+Category: AI. Source: `packages/ui/src/base/components/ai-elements/context.tsx:44-55`.

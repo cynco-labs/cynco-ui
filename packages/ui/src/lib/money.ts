@@ -6,7 +6,7 @@
  * everything here is BigInt at a fixed 6-decimal working scale, rounded half-up to 2 decimals at the end.
  */
 
-import { SCALE as W, fixed, roundToSen } from "./decimal";
+import { fixed, roundToSen, SCALE as W } from "./decimal";
 
 const WORK = 6; // working decimals inside expressions
 
@@ -39,7 +39,25 @@ export function sumAmounts(values: ReadonlyArray<Amount | null | undefined>): `$
 	return fromSen(values.reduce<bigint>((t, v) => t + toSen(v), 0n));
 }
 
-export type ParsedAmount = { ok: true; value: string; isExpression: boolean; error?: undefined } | { ok: false; error: string; value?: undefined; isExpression?: undefined };
+/** The amount with its sign flipped, exact: negateAmount("1234.50") → "-1234.50". */
+export function negateAmount(amount: Amount | null | undefined): `${number}` {
+	return fromSen(-toSen(amount));
+}
+
+/** The amount's magnitude, exact: absAmount("-1234.50") → "1234.50". */
+export function absAmount(amount: Amount | null | undefined): `${number}` {
+	const sen = toSen(amount);
+	return fromSen(sen < 0n ? -sen : sen);
+}
+
+/** a − b, exact: subtractAmounts("1000.00", "0.10") → "999.90". */
+export function subtractAmounts(a: Amount | null | undefined, b: Amount | null | undefined): `${number}` {
+	return fromSen(toSen(a) - toSen(b));
+}
+
+export type ParsedAmount =
+	| { ok: true; value: string; isExpression: boolean; error?: undefined }
+	| { ok: false; error: string; value?: undefined; isExpression?: undefined };
 
 /**
  * What an accountant types → an exact 2-decimal string.
@@ -48,17 +66,21 @@ export type ParsedAmount = { ok: true; value: string; isExpression: boolean; err
  * Empty → { ok: true, value: "" }.
  */
 export function parseAmount(input: string): ParsedAmount {
-	let s = input.trim().replace(/^RM\s*/i, "").replace(/,/g, "").replace(/\s+/g, "");
+	let s = input
+		.trim()
+		.replace(/^RM\s*/i, "")
+		.replace(/,/g, "")
+		.replace(/\s+/g, "");
 	if (s === "") return { ok: true, value: "", isExpression: false };
 	if (s.startsWith("=")) s = s.slice(1);
 	// Accounting brackets around a plain number mean negative.
 	const bracket = /^\((\d*\.?\d+[km]?)\)$/i.exec(s);
-	if (bracket) s = "-" + bracket[1];
+	if (bracket) s = `-${bracket[1]}`;
 	const isExpression = /[+*/()x×]|.-/.test(s);
 	try {
 		const p = new Parser(s);
 		const v = p.expr();
-		if (!p.done()) throw new Error("Unexpected “" + s.slice(p.i) + "”");
+		if (!p.done()) throw new Error(`Unexpected “${s.slice(p.i)}”`);
 		return { ok: true, value: fromSen(roundToSen(v)), isExpression };
 	} catch (e) {
 		return { ok: false, error: e instanceof Error ? e.message : "Not a number" };
@@ -114,7 +136,7 @@ class Parser {
 			return v;
 		}
 		const m = /^(\d*\.?\d+|\d+\.)([kKmM]?)/.exec(this.s.slice(this.i));
-		if (!m) throw new Error(this.done() ? "Incomplete" : "Unexpected “" + (c ?? "") + "”");
+		if (!m) throw new Error(this.done() ? "Incomplete" : `Unexpected “${c ?? ""}”`);
 		this.i += m[0].length;
 		const [whole, frac = ""] = m[1].split(".");
 		let v = BigInt(whole || "0") * W + BigInt((frac + "0".repeat(WORK)).slice(0, WORK) || "0");

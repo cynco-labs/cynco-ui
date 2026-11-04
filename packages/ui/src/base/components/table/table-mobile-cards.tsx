@@ -1,20 +1,17 @@
 "use client";
 
-import {
-	type TableLinkComponent,
-	useTableContext,
-} from "./table-context";
-import { CONTROL_COLUMNS } from "./table-row-cells";
-import { Skeleton } from "../ui/skeleton";
-import { cn } from "../../lib/utils";
 import type { Cell, Row } from "@tanstack/react-table";
 import { flexRender } from "@tanstack/react-table";
+import { cn } from "../../lib/utils";
+import { Skeleton } from "../ui/skeleton";
+import { type TableLinkComponent, useTableContext } from "./table-context";
+import { CONTROL_COLUMNS } from "./table-row-cells";
 
 const SKELETON_CARD_COUNT = 3;
 
 const NON_TITLE_COLUMNS = new Set(["actions", "select", "scope"]);
 
-export function TableMobileCards() {
+export function TableMobileCards({ className, ...props }: Omit<React.ComponentProps<"div">, "children">) {
 	const {
 		table,
 		isLoading,
@@ -33,9 +30,10 @@ export function TableMobileCards() {
 	if (showSkeleton && !rows.length) {
 		return (
 			// Placeholder cards carry no data; TableContent announces the loading state.
-			<div aria-hidden="true" className="flex flex-col gap-2.5">
+			<div data-slot="table-mobile-cards" aria-hidden="true" className={cn("flex flex-col gap-2.5", className)} {...props}>
 				{Array.from({ length: SKELETON_CARD_COUNT }).map((_, cardIndex) => (
 					<div
+						// biome-ignore lint/suspicious/noArrayIndexKey: a fixed-length placeholder list that never reorders.
 						key={`skeleton-card-${cardIndex}`}
 						className="rounded-xl border bg-interactive-secondary p-4 flex flex-col gap-3"
 					>
@@ -52,21 +50,25 @@ export function TableMobileCards() {
 
 	if (!rows.length) {
 		return (
-			<div className="rounded-xl border border-dashed bg-interactive-secondary dark:bg-transparent p-6 text-center text-subtle text-xs">
+			<div
+				data-slot="table-mobile-cards"
+				className={cn(
+					"rounded-xl border border-dashed bg-interactive-secondary dark:bg-transparent p-6 text-center text-subtle text-xs",
+					className,
+				)}
+				{...props}
+			>
 				{emptyStateChildren || emptyStateText}
 			</div>
 		);
 	}
 
 	return (
-		<div className="flex flex-col gap-2.5">
+		<div data-slot="table-mobile-cards" className={cn("flex flex-col gap-2.5", className)} {...props}>
 			{rows.map((row) => (
 				<MobileCard
 					key={row.id}
-					isSelected={
-						selectedItemId != null &&
-						selectedItemId === (row.original as { id?: string }).id
-					}
+					isSelected={selectedItemId != null && selectedItemId === (row.original as { id?: string }).id}
 					linkComponent={linkComponent}
 					onRowClick={onRowClick}
 					row={row}
@@ -91,9 +93,7 @@ function MobileCard<T>({
 	linkComponent?: TableLinkComponent;
 }) {
 	const cells = row.getVisibleCells();
-	const titleCell = cells.find(
-		(cell) => !NON_TITLE_COLUMNS.has(cell.column.id),
-	);
+	const titleCell = cells.find((cell) => !NON_TITLE_COLUMNS.has(cell.column.id));
 	const actionsCell = cells.find((cell) => cell.column.id === "actions");
 	const detailCells = cells.filter(
 		(cell) =>
@@ -109,9 +109,7 @@ function MobileCard<T>({
 		interactive && "cursor-pointer",
 	);
 
-	const title =
-		titleCell &&
-		flexRender(titleCell.column.columnDef.cell, titleCell.getContext());
+	const title = titleCell && flexRender(titleCell.column.columnDef.cell, titleCell.getContext());
 
 	// The title is the card's one link or button; its ::after stretches over the card so
 	// the whole card stays clickable without nesting the actions control inside it.
@@ -148,15 +146,10 @@ function MobileCard<T>({
 	return (
 		<div className={cardClassName}>
 			<div className="flex items-center justify-between gap-3">
-				<div className="min-w-0 flex-1 text-foreground font-medium text-md truncate">
-					{titleTarget}
-				</div>
+				<div className="min-w-0 flex-1 text-foreground font-medium text-md truncate">{titleTarget}</div>
 				{actionsCell && (
 					<div className="relative z-10 shrink-0 -mr-1.5 -my-1">
-						{flexRender(
-							actionsCell.column.columnDef.cell,
-							actionsCell.getContext(),
-						)}
+						{flexRender(actionsCell.column.columnDef.cell, actionsCell.getContext())}
 					</div>
 				)}
 			</div>
@@ -189,12 +182,8 @@ function CardDetailRow<T>({ cell }: { cell: Cell<T, unknown> }) {
 
 	return (
 		<div className="flex items-baseline justify-between gap-4 text-sm">
-			<dt className="text-tertiary-foreground shrink-0">
-				{typeof header === "string" ? header : null}
-			</dt>
-			<dd className="text-foreground text-right min-w-0 truncate">
-				{cellContent}
-			</dd>
+			<dt className="text-tertiary-foreground shrink-0">{typeof header === "string" ? header : null}</dt>
+			<dd className="text-foreground text-right min-w-0 truncate">{cellContent}</dd>
 		</div>
 	);
 }

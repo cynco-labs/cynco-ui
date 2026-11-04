@@ -1,5 +1,5 @@
-import { useState } from "react";
 import { DateInputUnix } from "@cynco-labs/ui";
+import { useState } from "react";
 
 export default function DateInputUnixDemo() {
 	const [s, setS] = useState<number | null>(1798761600000);

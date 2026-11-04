@@ -1,5 +1,5 @@
-import { PencilSimpleIcon, PlusIcon } from "@phosphor-icons/react";
 import { InlineAction } from "@cynco-labs/ui";
+import { PencilSimpleIcon, PlusIcon } from "@phosphor-icons/react";
 
 export default function InlineActionDemo() {
 	return (

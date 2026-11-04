@@ -19,12 +19,12 @@ export default function CashRunwayPositionDemo() {
 				accounts={3}
 				runwayMonths={4.6}
 				trail={[
-					{ label: "May", cash: 121400 },
-					{ label: "Jun", cash: 117700 },
-					{ label: "Jul", cash: 133300 },
-					{ label: "Aug", cash: 146800 },
-					{ label: "Sep", cash: 165620 },
-					{ label: "Oct", cash: 184520 },
+					{ label: "May", cash: "121400.00" },
+					{ label: "Jun", cash: "117700.00" },
+					{ label: "Jul", cash: "133300.00" },
+					{ label: "Aug", cash: "146800.00" },
+					{ label: "Sep", cash: "165620.00" },
+					{ label: "Oct", cash: "184520.00" },
 				]}
 			/>
 		</div>
@@ -40,11 +40,11 @@ Top of Cynco numbers panel, answering 'how much cash, how long does it last'.
 
 cash, runwayMonths (null when unknown); optional accounts, cashPositive, trail [{label, cash}], currency; plus className and native element props (spread on the root).
 
-- `cash`: `number | null`
+- `cash`: `Amount | null`
 - `runwayMonths`: `number | null`. Months at the last 3 months' burn; null when it can't be computed.
 - `accounts?`: `number | null`
 - `cashPositive?`: `boolean`. No burn to divide by — earns a full bar.
-- `trail?`: `{ label: string; cash: number }[]`. Implied month-end cash, oldest → newest.
+- `trail?`: `{ label: string; cash: Amount }[]`. Implied month-end cash, oldest → newest.
 - `currency?`: `string`. Default `"MYR"`.
 - Also accepts `ComponentProps<"section">`.
 
@@ -52,4 +52,4 @@ cash, runwayMonths (null when unknown); optional accounts, cashPositive, trail [
 
 Responsive: runway block drops under the cash figure below 28rem; trail caption moves under the chart.
 
-Category: Accounting · Reports. Source: `packages/ui/src/accounting/reports.tsx`.
+Category: Accounting · Reports. Source: `packages/ui/src/accounting/reports/cash-runway.tsx:18-113`.

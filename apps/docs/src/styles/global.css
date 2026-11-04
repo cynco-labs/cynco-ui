@@ -16,6 +16,10 @@
 
 @theme {
 	--font-serif: "Geist Serif", "Times New Roman", Times, serif;
+
+	/* The home page wordmark, the one size above the library's scale. Nothing else uses these. */
+	--text-hero-sm: 44px;
+	--text-hero: 56px;
 }
 
 /* ------------------------------------------------------------------ site chrome */

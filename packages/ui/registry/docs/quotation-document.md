@@ -10,12 +10,12 @@ import { QuotationDocument } from "@cynco-labs/ui";
 
 ```tsx
 import {
-	DocumentBrandProvider,
-	QuotationDocument,
 	type DocBrand,
 	type DocLayout,
 	type DocLocale,
+	DocumentBrandProvider,
 	type QuotationData,
+	QuotationDocument,
 } from "@cynco-labs/ui";
 
 const BRAND: DocBrand = {
@@ -46,10 +46,7 @@ const NUSA = {
 
 const NUSA_SITE = {
 	name: "Nusantara Logistik Bhd — Warehouse B",
-	address: [
-		"Lot 12A, Jalan Sungai Puloh, Kawasan Perindustrian Sungai Puloh",
-		"42100 Klang, Selangor",
-	],
+	address: ["Lot 12A, Jalan Sungai Puloh, Kawasan Perindustrian Sungai Puloh", "42100 Klang, Selangor"],
 	attention: "En. Hafiz Zainal, Facilities",
 	phone: "+60 12-334 8821",
 };
@@ -194,7 +191,10 @@ export const controls = {
 export default function QuotationDocumentDemo({
 	layout = "minimal",
 	locale = "en",
-}: { layout?: DocLayout; locale?: DocLocale } = {}) {
+}: {
+	layout?: DocLayout;
+	locale?: DocLocale;
+} = {}) {
 	return (
 		<DocumentBrandProvider brand={{ ...BRAND, layout, locale }}>
 			<QuotationDocument quotation={QUO} />
@@ -226,4 +226,4 @@ quotation: QuotationData { number, status, date, validUntil, reference?, terms?,
 
 Layouts minimal / classic / modern in black ink only, any font, locales en / ms / en-ms (bilingual labels stacked or slashed). Money is printed exactly as given (decimal strings); nothing is recomputed. Print: named @page with page numbers, table headers repeat, rows and the totals/sign-off blocks avoid splitting; isolate (default true) prints only the sheet. Section subtotals print as given; optional items are listed in their own group marked 'Not included in the total'. A list of T&Cs prints numbered in two columns. Both sign-off columns use AcceptanceBlock so their lines align; the customer side has a company-stamp box.
 
-Category: Documents. Source: `packages/ui/src/documents/sales.tsx`.
+Category: Documents. Source: `packages/ui/src/documents/sales.tsx:584-599`.

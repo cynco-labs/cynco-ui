@@ -22,7 +22,7 @@ export default function QuotationBoardColumnDemo() {
 						id: "1",
 						quotationNumber: "QT-2026-0088",
 						customerName: "Syarikat Maju Jaya Sdn Bhd",
-						totalAmount: 18600,
+						totalAmount: "18600.00",
 						status: "sent",
 						createdAt: "2026-10-27",
 					},
@@ -30,7 +30,7 @@ export default function QuotationBoardColumnDemo() {
 						id: "2",
 						quotationNumber: "QT-2026-0087",
 						customerName: "Tropika Kopi Enterprise",
-						totalAmount: 4280,
+						totalAmount: "4280.00",
 						status: "viewed",
 						createdAt: "2026-10-29",
 					},
@@ -38,7 +38,7 @@ export default function QuotationBoardColumnDemo() {
 						id: "3",
 						quotationNumber: "QT-2026-0084",
 						customerName: "Nusantara Logistik Bhd",
-						totalAmount: 52000,
+						totalAmount: "52000.00",
 						status: "sent",
 						createdAt: "2026-10-12",
 					},
@@ -52,7 +52,7 @@ export default function QuotationBoardColumnDemo() {
 						id: "4",
 						quotationNumber: "QT-2026-0085",
 						customerName: "Bayu Dental Clinic",
-						totalAmount: 7450,
+						totalAmount: "7450.00",
 						status: "accepted",
 						createdAt: "2026-10-14",
 					},
@@ -60,7 +60,7 @@ export default function QuotationBoardColumnDemo() {
 						id: "5",
 						quotationNumber: "QT-2026-0080",
 						customerName: "Cahaya Print Services",
-						totalAmount: 3120,
+						totalAmount: "3120.00",
 						status: "converted",
 						createdAt: "2026-09-30",
 					},
@@ -78,17 +78,17 @@ Board view of the Quotations page, with four columns side by side.
 
 ## Props
 
-column ('draft' | 'active' | 'accepted' | 'terminal'), quotations, currency, now, onOpen; className and native section props.
+column ('draft' | 'active' | 'accepted' | 'terminal'), quotations, currency, now, onRowClick(quotation); className and native section props.
 
 - `column`: `"terminal" | "draft" | "active" | "accepted"`
 - `quotations`: `SalesQuotation[]`
 - `currency?`: `string`. Default `"MYR"`.
 - `now?`: `string`
-- `onOpen?`: `(id: string) => void`
+- `onRowClick?`: `(quotation: SalesQuotation) => void`
 - Also accepts `ComponentProps<"section">`.
 
 ## Notes
 
-Responsive: Fluid width (no fixed minimum): lay the columns out in an auto-fit grid or a ScrollRow.
+The cards are one tab stop: arrow keys move between them, Home and End jump to the first and last, Enter opens the focused one. Responsive: Fluid width (no fixed minimum): lay the columns out in an auto-fit grid or a ScrollRow.
 
-Category: Accounting · Sales. Source: `packages/ui/src/accounting/sales.tsx`.
+Category: Accounting · Sales. Source: `packages/ui/src/accounting/sales/quotations.tsx:90-192`.

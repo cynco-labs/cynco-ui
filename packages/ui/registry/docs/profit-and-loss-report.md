@@ -9,17 +9,17 @@ import { ProfitAndLossReport } from "@cynco-labs/ui";
 ## Usage
 
 ```tsx
-import * as React from "react";
-import { useState } from "react";
 import {
-	DocumentBrandProvider,
-	GroupedTabButton,
-	ProfitAndLossReport,
 	type DocBrand,
 	type DocLayout,
 	type DocLocale,
+	DocumentBrandProvider,
+	GroupedTabButton,
 	type ProfitAndLossData,
+	ProfitAndLossReport,
 } from "@cynco-labs/ui";
+import type * as React from "react";
+import { useState } from "react";
 
 const BRAND: DocBrand = {
 	company: {
@@ -65,18 +65,9 @@ function Shell({ extra, render }: ShellProps) {
 						{ value: "en-ms", label: "EN+BM" },
 					]}
 				/>
-				{extra ? (
-					<GroupedTabButton
-						className="w-[230px]"
-						value={x}
-						onValueChange={setX}
-						options={extra.options}
-					/>
-				) : null}
+				{extra ? <GroupedTabButton className="w-[230px]" value={x} onValueChange={setX} options={extra.options} /> : null}
 			</div>
-			<DocumentBrandProvider brand={Object.assign({}, BRAND, { layout: l, locale: g })}>
-				{render(x)}
-			</DocumentBrandProvider>
+			<DocumentBrandProvider brand={Object.assign({}, BRAND, { layout: l, locale: g })}>{render(x)}</DocumentBrandProvider>
 		</div>
 	);
 }
@@ -364,4 +355,4 @@ report: ProfitAndLossData — period {kind, end, start?, months?}, basis?, curre
 
 Built from ReportHeader + StatementTable + ReportFooter on the kit's DocumentPage. Minimal / classic / modern in black ink only, any font, EN / BM / EN+BM (row and column labels stacked bilingually). Costs are passed as negative figures and print in brackets; every total and variance is printed as given, never recomputed. Gross/operating/pre-tax/net labels switch to 'loss' when the given figure is negative. A4 by default; the column header repeats on each printed page, totals avoid starting a page.
 
-Category: Documents. Source: `packages/ui/src/documents/reports.tsx`.
+Category: Documents. Source: `packages/ui/src/documents/reports.tsx:766-812`.

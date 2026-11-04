@@ -24,9 +24,9 @@ export default function CoaAccountPanelDemo() {
 			balanceHistory={[
 				{
 					period: "2026-10",
-					periodDebit: 96420.0,
-					periodCredit: 42885.6,
-					closingBalance: 248315.4,
+					periodDebit: "96420.00",
+					periodCredit: "42885.60",
+					closingBalance: "248315.40",
 				},
 			]}
 			transactions={[
@@ -35,7 +35,7 @@ export default function CoaAccountPanelDemo() {
 					date: "2026-10-28",
 					description: "Receipt INV-2026-0142",
 					type: "debit",
-					amount: 12720.0,
+					amount: "12720.00",
 					source: "Bank feed",
 				},
 			]}

@@ -9,12 +9,7 @@ import { PurchaseOrderDocument } from "@cynco-labs/ui";
 ## Usage
 
 ```tsx
-import {
-	type DocLayout,
-	type DocLocale,
-	DocumentBrandProvider,
-	PurchaseOrderDocument,
-} from "@cynco-labs/ui";
+import { type DocLayout, type DocLocale, DocumentBrandProvider, PurchaseOrderDocument } from "@cynco-labs/ui";
 
 const BRAND = {
 	company: {
@@ -182,4 +177,4 @@ order: PurchaseOrderData { number, date, requiredBy?, terms?, quotationRef?, req
 
 Minimal / classic / modern in black ink only, any font, en / ms / en-ms (bilingual), all from the DocumentBrandProvider. Lines and totals are printed exactly as given (posted values; no maths in the component). Delivery instructions, T&C and notes sit beside the totals so a typical order fits one A4 in modern/minimal English; classic + bilingual flows to a second page with headers repeated and signatures kept together. Footer omits the 'no signature required' notice because the PO is signed. Tax labels accept {en, ms}. Pass acceptedBy (or true) for a vendor acknowledgement line.
 
-Category: Documents. Source: `packages/ui/src/documents/operations.tsx`.
+Category: Documents. Source: `packages/ui/src/documents/operations.tsx:346-359`.

@@ -1,9 +1,4 @@
-import {
-	DocumentBrandProvider,
-	StatementOfAccountDocument,
-	type DocLayout,
-	type DocLocale,
-} from "@cynco-labs/ui";
+import { type DocLayout, type DocLocale, DocumentBrandProvider, StatementOfAccountDocument } from "@cynco-labs/ui";
 
 const BRAND = {
 	company: {
@@ -164,8 +159,7 @@ const SOA = {
 		accountNumber: "3197 5520 14",
 		reference: "C-0147",
 	},
-	notes:
-		"RM 420.00 from INV-2026-1188 (August) is now over 60 days. Please settle to avoid a hold on deliveries.",
+	notes: "RM 420.00 from INV-2026-1188 (August) is now over 60 days. Please settle to avoid a hold on deliveries.",
 };
 
 export const controls = {

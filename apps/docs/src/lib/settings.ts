@@ -1,5 +1,16 @@
 import type { Density, DocLocale } from "@cynco-labs/ui";
-import { ACCENTS, DEFAULT_ACCENT, DEFAULT_RADIUS, RADII, RADIUS_ORDER, isAccent, isAccentPreset, themeCss, type Accent, type Radius } from "./theme";
+import {
+	ACCENTS,
+	type Accent,
+	DEFAULT_ACCENT,
+	DEFAULT_RADIUS,
+	isAccent,
+	isAccentPreset,
+	RADII,
+	RADIUS_ORDER,
+	type Radius,
+	themeCss,
+} from "./theme";
 
 /**
  * Site-wide settings that every demo on the site follows: the inline demos on the home page, and the
@@ -75,7 +86,13 @@ export const SETTINGS = [DEFS.preset, DEFS.radius, DEFS.density, DEFS.locale] as
 
 export const ACCENT_SHORTCUT = "a";
 
-export const DEFAULT_SETTINGS: SiteSettings = { preset: "default", accent: DEFAULT_ACCENT, radius: DEFAULT_RADIUS, density: "default", locale: "en" };
+export const DEFAULT_SETTINGS: SiteSettings = {
+	preset: "default",
+	accent: DEFAULT_ACCENT,
+	radius: DEFAULT_RADIUS,
+	density: "default",
+	locale: "en",
+};
 
 export const SETTINGS_KEY = "cynco-docs-settings";
 /** The theme CSS from the last write, so the boot script paints it before any module loads. */
@@ -177,9 +194,16 @@ const accentName = (a: Accent) => (isAccentPreset(a) ? ACCENTS[a].label : a.toUp
 /** The setup steps the CSS can't carry, one line each. */
 function setupSteps(s: SiteSettings): string[] {
 	const steps: string[] = [];
-	if (s.preset === "modern") steps.push('Add `preset-modern` to the classes on <html> (with `dark` for dark mode, or `data-theme="modern"` / `"modern-dark"`).');
-	if (s.density !== "default") steps.push(`Wrap the app in \`<DensityProvider density="${s.density}">\` from @cynco-labs/ui.`);
-	if (s.locale !== "en") steps.push(`Set \`locale: "${s.locale}"\` in the \`DocumentBrandProvider\` brand, so documents print in ${s.locale === "ms" ? "Bahasa Melayu" : "English and Bahasa Melayu"}.`);
+	if (s.preset === "modern")
+		steps.push(
+			'Add `preset-modern` to the classes on <html> (with `dark` for dark mode, or `data-theme="modern"` / `"modern-dark"`).',
+		);
+	if (s.density !== "default")
+		steps.push(`Wrap the app in \`<DensityProvider density="${s.density}">\` from @cynco-labs/ui.`);
+	if (s.locale !== "en")
+		steps.push(
+			`Set \`locale: "${s.locale}"\` in the \`DocumentBrandProvider\` brand, so documents print in ${s.locale === "ms" ? "Bahasa Melayu" : "English and Bahasa Melayu"}.`,
+		);
 	return steps;
 }
 
@@ -187,8 +211,14 @@ function setupSteps(s: SiteSettings): string[] {
 export function themeSnippet(s: SiteSettings): string {
 	const css = themeCss(s);
 	const steps = setupSteps(s);
-	if (!css && !steps.length) return '/* Cynco UI with its default theme: @import "@cynco-labs/ui/theme.css" is all it needs. */\n';
-	const choice = [s.accent !== DEFAULT_ACCENT && `${accentName(s.accent)} accent`, s.radius !== DEFAULT_RADIUS && `${RADII[s.radius].label} radius`].filter(Boolean).join(", ");
+	if (!css && !steps.length)
+		return '/* Cynco UI with its default theme: @import "@cynco-labs/ui/theme.css" is all it needs. */\n';
+	const choice = [
+		s.accent !== DEFAULT_ACCENT && `${accentName(s.accent)} accent`,
+		s.radius !== DEFAULT_RADIUS && `${RADII[s.radius].label} radius`,
+	]
+		.filter(Boolean)
+		.join(", ");
 	return [
 		`/* Cynco UI theme${choice ? `: ${choice}` : ""}. Paste after @import "@cynco-labs/ui/theme.css". */`,
 		...steps.map((l) => `/* ${l} */`),

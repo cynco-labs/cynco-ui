@@ -12,8 +12,7 @@ export default function ReceiptExtractionProgressDemo() {
 				<ReceiptExtractionProgress
 					view={{
 						kind: "failed",
-						message:
-							"This looks like a scanned image with no readable text. Fill in the details manually.",
+						message: "This looks like a scanned image with no readable text. Fill in the details manually.",
 						retryable: false,
 					}}
 				/>

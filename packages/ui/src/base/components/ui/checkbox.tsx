@@ -1,8 +1,8 @@
 "use client";
 
+import { Checkbox as CheckboxPrimitive } from "@base-ui/react/checkbox";
 import { CheckIcon } from "@phosphor-icons/react";
 import { cn, hasSubmitShortcutModifier } from "../../lib/utils";
-import { Checkbox as CheckboxPrimitive } from "@base-ui/react/checkbox";
 
 interface CheckboxProps extends CheckboxPrimitive.Root.Props {
 	size?: "sm" | "md" | "lg";
@@ -58,13 +58,7 @@ function Checkbox({
 				data-slot="checkbox-indicator"
 				className="flex items-center justify-center text-current transition-none"
 			>
-				<CheckIcon
-					className={cn(
-						size === "sm" && "size-2.5",
-						size === "md" && "size-3",
-						size === "lg" && "size-3.5",
-					)}
-				/>
+				<CheckIcon className={cn(size === "sm" && "size-2.5", size === "md" && "size-3", size === "lg" && "size-3.5")} />
 			</CheckboxPrimitive.Indicator>
 		</CheckboxPrimitive.Root>
 	);

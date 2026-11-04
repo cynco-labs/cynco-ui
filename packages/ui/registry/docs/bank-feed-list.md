@@ -9,7 +9,7 @@ import { BankFeedList } from "@cynco-labs/ui";
 ## Usage
 
 ```tsx
-import { type BankFeedDay, type BankMatch, BankFeedList } from "@cynco-labs/ui";
+import { type BankFeedDay, BankFeedList, type BankMatch } from "@cynco-labs/ui";
 
 const MATCH_INV: BankMatch = {
 	id: "m1",
@@ -17,23 +17,9 @@ const MATCH_INV: BankMatch = {
 	targetReference: "INV-2026-0142",
 	confidence: 0.94,
 	status: "proposed",
-	evidence: [
-		"Amount equal (RM 12,720.00)",
-		"Reference INV-2026-0142 in description",
-		"Paid 2 days after due date",
-	],
+	evidence: ["Amount equal (RM 12,720.00)", "Reference INV-2026-0142 in description", "Paid 2 days after due date"],
 	consequence:
 		"Accepting records the receipt against INV-2026-0142 and marks it Paid. The line posts to 1200-001 Trade Receivables instead of a revenue account.",
-};
-
-const MATCH_BILL: BankMatch = {
-	id: "m2",
-	targetLabel: "Bill · Tenaga Nasional Berhad",
-	targetReference: "BILL-2026-0088",
-	confidence: 0.81,
-	status: "proposed",
-	evidence: ["Amount equal (RM 1,184.30)", "Payee matches supplier", "Within 3 days of bill date"],
-	consequence: "Accepting settles BILL-2026-0088 and posts the line to 2100-001 Trade Payables.",
 };
 
 const MBB = { name: "Maybank Current", color: "#E5A21F" },
@@ -42,7 +28,7 @@ const MBB = { name: "Maybank Current", color: "#E5A21F" },
 const DAYS: BankFeedDay[] = [
 	{
 		date: "2026-10-29",
-		net: { amount: 11535.7 },
+		net: { amount: "11535.70" },
 		rows: [
 			{
 				id: "t1",
@@ -114,15 +100,7 @@ const DAYS: BankFeedDay[] = [
 ];
 
 export default function BankFeedListDemo() {
-	return (
-		<BankFeedList
-			onRestore={() => {}}
-			days={DAYS}
-			total={248}
-			showAccount
-			defaultSelectedIds={["t2"]}
-		/>
-	);
+	return <BankFeedList onRestore={() => {}} days={DAYS} total={248} showAccount defaultSelectedIds={["t2"]} />;
 }
 ```
 
@@ -132,7 +110,7 @@ The main Banking feed for one account or all accounts.
 
 ## Props
 
-days [{date, net?, rows: BankFeedTransaction[]}], total, statusLabel, search, showAccount, selectedIds / defaultSelectedIds / onSelectedChange, postAll (money summary when filtered to To post), className and native props (spread on the root).
+days [{date, net?, rows: BankFeedTransaction[]}], total, statusLabel, search, showAccount, selectedIds / defaultSelectedIds / onSelectionChange, postAll (money summary when filtered to To post), className and native props (spread on the root).
 
 - `days`: `BankFeedDay[]`
 - `total`: `number`
@@ -144,8 +122,8 @@ days [{date, net?, rows: BankFeedTransaction[]}], total, statusLabel, search, sh
 - `onStatusChange?`: `(status: BankFeedStatus | "all") => void`. Called when the user changes the status filter.
 - `showAccount?`: `boolean`. Default `true`.
 - `selectedIds?`: `string[]`. Ids of the ticked rows (controlled).
-- `defaultSelectedIds?`: `string[]`. Initially ticked row ids when uncontrolled. Default `[]`.
-- `onSelectedChange?`: `(ids: string[]) => void`. Called with the new ids when a row is ticked or unticked.
+- `defaultSelectedIds?`: `string[]`. Initially ticked row ids when uncontrolled.
+- `onSelectionChange?`: `(ids: string[]) => void`. Called with the new ids when a row is ticked or unticked.
 - `postAll?`: `string`. "RM 4,210.00 in · RM 1,180.40 out" shown on Post all; omit to hide the button.
 - `onPostAll?`: `() => void`. Called when the user clicks "Post all".
 - `onRestore?`: `(tx: BankFeedTransaction) => void`. Called from an excluded line's Restore button; omit to hide it.
@@ -153,6 +131,6 @@ days [{date, net?, rows: BankFeedTransaction[]}], total, statusLabel, search, sh
 
 ## Notes
 
-Responsive by container: toolbar wraps (ActionBar), rows switch to the narrow FeedRow layout.
+Each day's rows are an ARIA grid: the list is one tab stop, arrow keys move down the feed across day boundaries and across a row's cells, Home and End reach the first and last row, and Enter or Space works the focused cell's control. Responsive by container: toolbar wraps (ActionBar), rows switch to the narrow FeedRow layout.
 
-Category: Accounting · Banking. Source: `packages/ui/src/accounting/banking.tsx`.
+Category: Accounting · Banking. Source: `packages/ui/src/accounting/banking/feed-list.tsx:44-265`.

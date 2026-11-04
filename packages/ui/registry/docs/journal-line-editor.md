@@ -9,7 +9,7 @@ import { JournalLineEditor } from "@cynco-labs/ui";
 ## Usage
 
 ```tsx
-import { type LedgerPickerAccount, JournalLineEditor } from "@cynco-labs/ui";
+import { JournalLineEditor, type LedgerPickerAccount } from "@cynco-labs/ui";
 
 const ACCTS: LedgerPickerAccount[] = [
 	{
@@ -210,4 +210,4 @@ lines [{ key, accountId?, accountCode?, accountName?, description?, debitAmount?
 
 An AI-suggested but unconfirmed account (code with no id) shows a dashed border and an amber warning glyph. Remove is a skeleton icon button, disabled at two lines (double-entry minimum).
 
-Category: Accounting · Ledger. Source: `packages/ui/src/accounting/ledger.tsx`.
+Category: Accounting · Ledger. Source: `packages/ui/src/accounting/ledger/journal-lines.tsx:71-268`.

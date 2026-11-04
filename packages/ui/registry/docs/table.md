@@ -43,7 +43,7 @@ export default function TableDemo() {
 
 ## Use
 
-Small static tables. For data lists use DataTable.
+A small static table you write by hand. For a list of records driven by data, use `DataList`; for a TanStack-powered list page with sorting, selection and pagination, use `DataTable`.
 
 ## Props
 
@@ -52,4 +52,4 @@ Native table element props; `flexibleTableColumns` on `Table`.
 - `flexibleTableColumns?`: `boolean`
 - Also accepts `ComponentProps<"table">`.
 
-Category: Components · Data display. Source: `packages/ui/src/base/components/table/index.tsx`.
+Category: Components · Data display. Source: `packages/ui/src/base/components/ui/table.tsx:4-18`.

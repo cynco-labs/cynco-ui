@@ -2,9 +2,7 @@ import { BankBalanceEquation } from "@cynco-labs/ui";
 import type { ReactNode } from "react";
 
 export default function BankBalanceEquationDemo() {
-	const sec = (t: ReactNode) => (
-		<div className="text-tiny uppercase tracking-[0.04em] text-tertiary-foreground">{t}</div>
-	);
+	const sec = (t: ReactNode) => <div className="text-2xs uppercase tracking-[0.04em] text-tertiary-foreground">{t}</div>;
 	return (
 		<div className="flex flex-col gap-4">
 			{sec("Ties")}

@@ -34,8 +34,12 @@ Naming icon-only controls and clarifying terms.
 - `delayDuration?`: `number`
 - Also accepts `TooltipPrimitive.Root.Props`.
 
+## Accessibility
+
+The tooltip adds no aria of its own, so the trigger still needs its own accessible name. The provider's delay defaults to 0, and a Tooltip rendered outside a provider wraps itself in one.
+
 ## Notes
 
 Keep it to one line.
 
-Category: Components · Overlays. Source: `packages/ui/src/base/components/ui/tooltip.tsx`.
+Category: Components · Overlays. Source: `packages/ui/src/base/components/ui/tooltip.tsx:25-49`.

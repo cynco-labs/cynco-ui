@@ -1,0 +1,37 @@
+---
+import { KBD } from "../lib/classes";
+import type { KeyRow } from "../lib/registry";
+
+interface Props {
+	rows: KeyRow[];
+}
+const { rows } = Astro.props;
+---
+
+<div class="not-prose overflow-x-auto rounded-xl border border-border">
+	<table class="w-full min-w-[28rem] border-collapse text-left text-sm">
+		<thead>
+			<tr class="border-b border-border bg-card text-xs text-subtle">
+				<th scope="col" class="w-[13rem] px-3.5 py-2 font-medium">Key</th>
+				<th scope="col" class="px-3.5 py-2 font-medium">Does</th>
+			</tr>
+		</thead>
+		<tbody>
+			{
+				rows.map((row) => (
+					<tr class="border-b border-border align-top last:border-b-0">
+						<td class="px-3.5 py-2.5">
+							{row.keys.split(/\s*\/\s*|,\s*/).map((key, i) => (
+								<>
+									{i > 0 && <span class="mx-1 text-subtle">/</span>}
+									<kbd class={KBD}>{key}</kbd>
+								</>
+							))}
+						</td>
+						<td class="px-3.5 py-2.5 leading-relaxed text-tertiary-foreground">{row.does}</td>
+					</tr>
+				))
+			}
+		</tbody>
+	</table>
+</div>

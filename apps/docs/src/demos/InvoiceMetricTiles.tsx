@@ -5,10 +5,10 @@ export default function InvoiceMetricTilesDemo() {
 		<InvoiceMetricTiles
 			currency="MYR"
 			stats={{
-				totalValue: 184520.75,
-				paidValue: 126310.4,
-				pendingValue: 46890.35,
-				overdueValue: 11320,
+				totalValue: "184520.75",
+				paidValue: "126310.40",
+				pendingValue: "46890.35",
+				overdueValue: "11320.00",
 				overdueCount: 3,
 			}}
 			onShowOverdue={() => {}}

@@ -18,7 +18,7 @@ const NT = {
 				<NodeTitle>{p.data.title}</NodeTitle>
 				<NodeDescription>{p.data.sub}</NodeDescription>
 			</NodeHeader>
-			<NodeContent className="text-body">{p.data.body}</NodeContent>
+			<NodeContent className="text-sm font-medium text-muted-foreground">{p.data.body}</NodeContent>
 		</Node>
 	),
 };
@@ -52,7 +52,7 @@ export default function CanvasDemo() {
 			<Canvas nodes={nodes} edges={edges} nodeTypes={NT} edgeTypes={ET} fitView>
 				<Controls />
 				<Panel position="top-right">
-					<Button variant="secondary" size="mini">
+					<Button variant="secondary" size="sm">
 						Run
 					</Button>
 				</Panel>

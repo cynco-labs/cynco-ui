@@ -47,4 +47,4 @@ export default function OpenInDemo() {
 - `query`: `string`
 - Also accepts `MenuPrimitive.Root.Props`.
 
-Category: AI. Source: `packages/ui/src/base/components/ai-elements/open-in-chat.tsx`.
+Category: AI. Source: `packages/ui/src/base/components/ai-elements/open-in-chat.tsx:172-176`.

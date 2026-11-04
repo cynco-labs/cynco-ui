@@ -117,7 +117,11 @@ describe("isDecimalString", () => {
 
 describe("journalTotals", () => {
 	test("sums debits and credits exactly and reports the difference", () => {
-		expect(journalTotals([{ debit: "0.10" }, { debit: 0.2 }, { credit: "0.30" }, { credit: "" }])).toEqual({ debit: "0.30", credit: "0.30", difference: "0.00" });
+		expect(journalTotals([{ debit: "0.10" }, { debit: 0.2 }, { credit: "0.30" }, { credit: "" }])).toEqual({
+			debit: "0.30",
+			credit: "0.30",
+			difference: "0.00",
+		});
 		expect(journalTotals([{ debit: "100" }, { credit: "99.99" }]).difference).toBe("0.01");
 	});
 });

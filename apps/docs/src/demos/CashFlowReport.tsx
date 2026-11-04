@@ -1,14 +1,14 @@
-import * as React from "react";
-import { useState } from "react";
 import {
+	type CashFlowData,
 	CashFlowReport,
-	DocumentBrandProvider,
-	GroupedTabButton,
 	type DocBrand,
 	type DocLayout,
 	type DocLocale,
-	type CashFlowData,
+	DocumentBrandProvider,
+	GroupedTabButton,
 } from "@cynco-labs/ui";
+import type * as React from "react";
+import { useState } from "react";
 
 const BRAND: DocBrand = {
 	company: {
@@ -54,18 +54,9 @@ function Shell({ extra, render }: ShellProps) {
 						{ value: "en-ms", label: "EN+BM" },
 					]}
 				/>
-				{extra ? (
-					<GroupedTabButton
-						className="w-[230px]"
-						value={x}
-						onValueChange={setX}
-						options={extra.options}
-					/>
-				) : null}
+				{extra ? <GroupedTabButton className="w-[230px]" value={x} onValueChange={setX} options={extra.options} /> : null}
 			</div>
-			<DocumentBrandProvider brand={Object.assign({}, BRAND, { layout: l, locale: g })}>
-				{render(x)}
-			</DocumentBrandProvider>
+			<DocumentBrandProvider brand={Object.assign({}, BRAND, { layout: l, locale: g })}>{render(x)}</DocumentBrandProvider>
 		</div>
 	);
 }

@@ -82,10 +82,12 @@ lines [{ id, lineNumber, accountCode, accountName, accountType, debitAmount, cre
 
 - `lines`: `JournalPostedLine[]`
 - `currency?`: `string`. Default `"MYR"`.
+- `totalDebit?`: `Amount`. The entry's posted debit total. Omit it and the table adds the lines, which a draft wants and a posted entry does not.
+- `totalCredit?`: `Amount`. The entry's posted credit total, on the same terms as `totalDebit`.
 - Also accepts `ComponentProps<"section">`.
 
 ## Notes
 
 The Balanced / Unbalanced state is a StatusChip in the header. Empty sides are blank and totals are formatted with formatCurrency. Responsive: built on DataList: a tray table on wide containers, stacked line cards (account, Dr/Cr amount, description) below 36rem.
 
-Category: Accounting · Ledger. Source: `packages/ui/src/accounting/ledger.tsx`.
+Category: Accounting · Ledger. Source: `packages/ui/src/accounting/ledger/journal-lines.tsx:301-396`.

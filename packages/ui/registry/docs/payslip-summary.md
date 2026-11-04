@@ -83,6 +83,6 @@ Payslip drawer or detail on a payroll run.
 
 ## Notes
 
-Responsive by container: StatGrid tiles wrap; pay lines and contributions sit side by side from 42rem.
+Responsive by container: StatGrid tiles wrap; pay lines and contributions sit side by side from 42rem; the contributions are a DataList on the library's tray surface.
 
-Category: Accounting · Tax, assets & operations. Source: `packages/ui/src/accounting/operations.tsx`.
+Category: Accounting · Tax, assets & operations. Source: `packages/ui/src/accounting/operations/payroll.tsx:60-179`.

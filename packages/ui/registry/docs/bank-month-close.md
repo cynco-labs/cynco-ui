@@ -77,4 +77,4 @@ monthName, state, signedOffLabel, standing ('none' | 'holds' | 'stale'), staleNo
 
 Single column that fits any width; place it in an aside or stack it under the proof.
 
-Category: Accounting · Banking. Source: `packages/ui/src/accounting/banking.tsx`.
+Category: Accounting · Banking. Source: `packages/ui/src/accounting/banking/month-close.tsx:28-171`.

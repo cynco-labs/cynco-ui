@@ -1,10 +1,9 @@
-import { useState } from "react";
 import {
 	CommandPalette,
-	CommandPaletteTrigger,
-	Kbd,
 	type CommandPaletteItem,
 	type CommandPaletteRecord,
+	CommandPaletteTrigger,
+	Kbd,
 } from "@cynco-labs/ui";
 import {
 	BankIcon,
@@ -23,6 +22,7 @@ import {
 	UserIcon,
 	UserPlusIcon,
 } from "@phosphor-icons/react";
+import { useState } from "react";
 
 // Your app's places, create actions and commands. `shortcut` shows a keycap; route in onSelect.
 const items = [
@@ -220,9 +220,7 @@ export default function CommandPaletteDemo() {
 		<div className="flex flex-col gap-3">
 			<div className="flex flex-wrap items-center gap-3 rounded-xl border border-border bg-card px-3 py-2">
 				<span className="text-sm font-semibold text-foreground">Cynco</span>
-				{sandbox && (
-					<span className="rounded-md bg-active-primary px-1.5 text-xs text-primary">Sandbox</span>
-				)}
+				{sandbox && <span className="rounded-md bg-active-primary px-1.5 text-xs text-primary">Sandbox</span>}
 				<CommandPaletteTrigger
 					onClick={() => {
 						setOpen(true);
@@ -239,13 +237,7 @@ export default function CommandPaletteDemo() {
 					<span className="text-foreground">{last}</span>
 				</span>
 			</p>
-			<CommandPalette
-				open={open}
-				onOpenChange={setOpen}
-				items={items}
-				recent={recent}
-				onSelect={onSelect}
-			/>
+			<CommandPalette open={open} onOpenChange={setOpen} items={items} recent={recent} onSelect={onSelect} />
 			<div className="text-xs font-medium text-tertiary-foreground">
 				Inline (inline prop) — same palette embedded in a page
 			</div>

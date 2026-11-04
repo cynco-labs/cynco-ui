@@ -11,9 +11,9 @@ export default function BankLedgerHeaderDemo() {
 				currency: "MYR",
 			}}
 			month="2026-10"
-			tieOut={{ status: "off", difference: -1240.0 }}
-			bookBalance={198465.0}
-			statement={{ date: "2026-10-28", balance: 197225.0, unreconciledDifference: -1240.0 }}
+			tieOut={{ status: "off", difference: "-1240.00" }}
+			bookBalance={"198465.00"}
+			statement={{ date: "2026-10-28", balance: "197225.00", unreconciledDifference: "-1240.00" }}
 			notCounted={[
 				{
 					label: "2 USD lines not counted",
@@ -21,8 +21,8 @@ export default function BankLedgerHeaderDemo() {
 				},
 			]}
 			transactionCount={48}
-			credits={96420.0}
-			debits={80355.0}
+			credits={"96420.00"}
+			debits={"80355.00"}
 			canNext={false}
 		/>
 	);

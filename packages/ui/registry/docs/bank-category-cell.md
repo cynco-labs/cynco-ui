@@ -9,14 +9,14 @@ import { BankCategoryCell } from "@cynco-labs/ui";
 ## Usage
 
 ```tsx
-import type { ReactNode } from "react";
 import { BankCategoryCell } from "@cynco-labs/ui";
+import type { ReactNode } from "react";
 
 export default function BankCategoryCellDemo() {
 	function line(label: string, el: ReactNode) {
 		return (
 			<div className="flex items-center gap-4">
-				<span className="w-28 text-tiny text-tertiary-foreground">{label}</span>
+				<span className="w-28 text-2xs text-tertiary-foreground">{label}</span>
 				{el}
 			</div>
 		);
@@ -25,20 +25,11 @@ export default function BankCategoryCellDemo() {
 		<div className="flex flex-col gap-2.5">
 			{line(
 				"Suggested",
-				<BankCategoryCell
-					status="imported"
-					suggestion={{ accountName: "Professional Fees", confidence: 0.88 }}
-				/>,
+				<BankCategoryCell status="imported" suggestion={{ accountName: "Professional Fees", confidence: 0.88 }} />,
 			)}
-			{line(
-				"Confirmed",
-				<BankCategoryCell status="categorized" category="6300 Rental of Premises" />,
-			)}
+			{line("Confirmed", <BankCategoryCell status="categorized" category="6300 Rental of Premises" />)}
 			{line("Unassigned", <BankCategoryCell status="imported" />)}
-			{line(
-				"Locked (posted)",
-				<BankCategoryCell status="posted" category="6120 EPF Contributions" />,
-			)}
+			{line("Locked (posted)", <BankCategoryCell status="posted" category="6120 EPF Contributions" />)}
 			{line("Picking", <BankCategoryCell status="imported" picking />)}
 		</div>
 	);
@@ -59,10 +50,11 @@ status, category, suggestion {accountName, accountCode?, confidence}, picking, o
 - `picking?`: `boolean`. Default `false`.
 - `onAccept?`: `() => void`
 - `onPick?`: `() => void`
+- `controlTabIndex?`: `number`. `tabIndex` for the cell's own buttons, not its root. `BankFeedList` sets -1 so its grid stays one tab stop.
 - Also accepts `ComponentProps<"span">`.
 
 ## Notes
 
 All states are Buttons (secondary / dotted / skeleton) inside a span root.
 
-Category: Accounting · Banking. Source: `packages/ui/src/accounting/banking.tsx`.
+Category: Accounting · Banking. Source: `packages/ui/src/accounting/banking/category-cell.tsx:15-136`.

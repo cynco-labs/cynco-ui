@@ -1,17 +1,17 @@
-import { useState } from "react";
-import { ArrowSquareOutIcon, CopyIcon, CreditCardIcon, TrashIcon } from "@phosphor-icons/react";
 import {
 	BulkActionBar,
 	Checkbox,
-	DataList,
 	type DataColumn,
+	DataList,
 	DocStatus,
-	INVOICE_STATUS,
-	Money,
 	formatCurrency,
 	formatDate,
+	INVOICE_STATUS,
+	Money,
 	sumAmounts,
 } from "@cynco-labs/ui";
+import { ArrowSquareOutIcon, CopyIcon, CreditCardIcon, TrashIcon } from "@phosphor-icons/react";
+import { useState } from "react";
 
 const INV = [
 	{
@@ -116,14 +116,7 @@ export default function BulkActionBarDemo() {
 	function run(verb: string) {
 		return () => {
 			setLog(
-				verb +
-					" " +
-					picked.length +
-					" invoice" +
-					(picked.length === 1 ? "" : "s") +
-					" (" +
-					formatCurrency(total) +
-					")",
+				verb + " " + picked.length + " invoice" + (picked.length === 1 ? "" : "s") + " (" + formatCurrency(total) + ")",
 			);
 		};
 	}
@@ -197,7 +190,7 @@ export default function BulkActionBarDemo() {
 							onCheckedChange={(v) => {
 								setSel(v ? sel.concat(r.id) : sel.filter((x) => x !== r.id));
 							}}
-							aria-label={"Select " + r.no}
+							aria-label={`Select ${r.no}`}
 						/>
 					)}
 					isRowSelected={(r) => sel.indexOf(r.id) >= 0}

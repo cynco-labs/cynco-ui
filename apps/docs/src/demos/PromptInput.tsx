@@ -1,4 +1,3 @@
-import { PlusIcon } from "@phosphor-icons/react";
 import {
 	PromptInput,
 	PromptInputBody,
@@ -8,6 +7,7 @@ import {
 	PromptInputTextarea,
 	PromptInputTools,
 } from "@cynco-labs/ui/ai";
+import { PlusIcon } from "@phosphor-icons/react";
 
 export default function PromptInputDemo() {
 	return (

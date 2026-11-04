@@ -9,9 +9,9 @@ import { DataTable } from "@cynco-labs/ui";
 ## Usage
 
 ```tsx
-import { ReceiptIcon } from "@phosphor-icons/react";
-import { getCoreRowModel, useReactTable, type CellContext } from "@tanstack/react-table";
 import { Button, DataTable, StatusChip } from "@cynco-labs/ui";
+import { ReceiptIcon } from "@phosphor-icons/react";
+import { type CellContext, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 
 const tone = { Paid: "green", Sent: "blue", Overdue: "amber" } as const;
 
@@ -34,7 +34,7 @@ const columns = [
 		accessorKey: "id",
 		header: "Invoice",
 		cell: (c: CellContext<Row, string>) => (
-			<span className="text-tiny-id text-tertiary-foreground">{c.getValue()}</span>
+			<span className="font-mono text-2xs font-medium text-tertiary-foreground">{c.getValue()}</span>
 		),
 	},
 	{ accessorKey: "amount", header: "Amount" },
@@ -64,9 +64,7 @@ export default function DataTableDemo() {
 					</DataTable.Actions>
 				</div>
 			</DataTable.Toolbar>
-			<DataTable.Provider
-				config={{ table, numberOfColumns: columns.length, isLoading: false, rowClassName: "h-10" }}
-			>
+			<DataTable.Provider config={{ table, numberOfColumns: columns.length, isLoading: false, rowClassName: "h-10" }}>
 				<DataTable.Container>
 					<DataTable.Content>
 						<DataTable.Header />
@@ -81,14 +79,23 @@ export default function DataTableDemo() {
 
 ## Use
 
-Every list page (invoices, customers, items).
+A list page whose rows come from a TanStack table: invoices, customers, items. For a list you declare as columns and rows, without a table instance, use `DataList`; for a handful of static rows, use the `Table` primitives.
 
 ## Props
 
-A TanStack `table` instance (`useReactTable` + `getCoreRowModel` from `@tanstack/react-table`) passed via `DataTable.Provider config={{table, numberOfColumns, isLoading}}`; compose `Toolbar` › `Heading` + `Actions`, then `Container` › `Content` › `Header` + `Body`. Optional `onRowClick`, `getRowHref` + `linkComponent`, `enableSelection`, `virtualization`.
+A TanStack `table` instance (`useReactTable` + `getCoreRowModel` from `@tanstack/react-table`) passed via `DataTable.Provider config={{table, numberOfColumns, isLoading}}`; compose `Toolbar` › `Heading` + `Actions`, then `Container` › `Content` › `Header` + `Body`, with `Pagination` on the tray or `Footer` inside the table. Optional `onRowClick`, `getRowHref` + `linkComponent`, `enableSelection`, `virtualization`.
+
+## Accessibility
+
+| Key | Does |
+| --- | --- |
+| Tab | Reaches the first cell of each row, which is a link when getRowHref is set and a button when the row is clickable. |
+| Enter / Space | Activate that row target, and run the double-click action when the row has no single-click one. |
+
+Table.Content names the table through aria-label or aria-labelledby, marks it aria-busy while loading, and keeps a polite live region that reports "Loading…", the empty-state text, or the row count. A sortable header is a button inside a th that carries aria-sort, and the caret icons are aria-hidden. The select-all box is labelled "Select all rows" and each row's box is named after that row's first text value so the labels stay distinct, while skeleton rows are aria-hidden.
 
 ## Notes
 
-Exported as `DataTable` so it does not clash with the `Table` primitive. Surfaces use the `table-*` tokens.
+Exported as `DataTable` so it does not clash with the `Table` primitive. `Pagination` pages the table instance by default and a cursor-paged result when you pass `cursor`; `Footer` is the same bar inside the table's own `<tfoot>`. Surfaces use the `table-*` tokens. Set `mobileCards` to swap rows for cards once the table's own container is under 640px.
 
-Category: Components · Data display. Source: `packages/ui/src/base/components/table/index.tsx`.
+Category: Components · Data display. Source: `packages/ui/src/base/components/table/index.tsx:18-38`.

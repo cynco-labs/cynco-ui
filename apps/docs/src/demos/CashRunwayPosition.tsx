@@ -8,12 +8,12 @@ export default function CashRunwayPositionDemo() {
 				accounts={3}
 				runwayMonths={4.6}
 				trail={[
-					{ label: "May", cash: 121400 },
-					{ label: "Jun", cash: 117700 },
-					{ label: "Jul", cash: 133300 },
-					{ label: "Aug", cash: 146800 },
-					{ label: "Sep", cash: 165620 },
-					{ label: "Oct", cash: 184520 },
+					{ label: "May", cash: "121400.00" },
+					{ label: "Jun", cash: "117700.00" },
+					{ label: "Jul", cash: "133300.00" },
+					{ label: "Aug", cash: "146800.00" },
+					{ label: "Sep", cash: "165620.00" },
+					{ label: "Oct", cash: "184520.00" },
 				]}
 			/>
 		</div>

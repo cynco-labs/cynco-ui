@@ -31,9 +31,9 @@ export default function CardDemo() {
 					<Badge variant="muted">Primary</Badge>
 				</CardAction>
 			</CardHeader>
-			<CardContent className="text-body">RM 84,215.40 · 14 lines to review</CardContent>
+			<CardContent className="text-sm font-medium text-muted-foreground">RM 84,215.40 · 14 lines to review</CardContent>
 			<CardFooter>
-				<Button variant="secondary" size="mini">
+				<Button variant="secondary" size="sm">
 					Review lines
 				</Button>
 			</CardFooter>
@@ -54,4 +54,4 @@ Grouping related content on a page.
 
 Radius `rounded-xl`, 1px `border`, `shadow-sm`.
 
-Category: Components · Data display. Source: `packages/ui/src/base/components/ui/card.tsx`.
+Category: Components · Data display. Source: `packages/ui/src/base/components/ui/card.tsx:4-12`.

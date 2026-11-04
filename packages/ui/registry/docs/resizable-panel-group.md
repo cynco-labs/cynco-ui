@@ -13,16 +13,13 @@ import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@cynco-lab
 
 export default function ResizablePanelGroupDemo() {
 	return (
-		<ResizablePanelGroup
-			orientation="horizontal"
-			className="max-w-[480px] rounded-lg border min-h-[120px]"
-		>
+		<ResizablePanelGroup orientation="horizontal" className="max-w-[480px] rounded-lg border min-h-[120px]">
 			<ResizablePanel defaultSize="40%">
-				<div className="p-3 text-body">Accounts</div>
+				<div className="p-3 text-sm font-medium text-muted-foreground">Accounts</div>
 			</ResizablePanel>
 			<ResizableHandle withHandle />
 			<ResizablePanel defaultSize="60%">
-				<div className="p-3 text-body">Editor</div>
+				<div className="p-3 text-sm font-medium text-muted-foreground">Editor</div>
 			</ResizablePanel>
 		</ResizablePanelGroup>
 	);
@@ -37,4 +34,4 @@ Editor layouts with a sidebar and canvas.
 
 `orientation`, `ResizablePanel defaultSize`, `ResizableHandle withHandle`.
 
-Category: Components · Layout. Source: `packages/ui/src/base/components/ui/resizable.tsx`.
+Category: Components · Layout. Source: `packages/ui/src/base/components/ui/resizable.tsx:6-14`.

@@ -9,8 +9,8 @@ import { InvoiceFilterChips } from "@cynco-labs/ui";
 ## Usage
 
 ```tsx
-import { useState } from "react";
 import { InvoiceFilterChips } from "@cynco-labs/ui";
+import { useState } from "react";
 
 export default function InvoiceFilterChipsDemo() {
 	const [s, setS] = useState([
@@ -51,4 +51,4 @@ chips ({key, label, value}), onRemove(key), onClearAll; className and native div
 
 Responsive: Built on ActionBar, so the chips wrap.
 
-Category: Accounting · Sales. Source: `packages/ui/src/accounting/sales.tsx`.
+Category: Accounting · Sales. Source: `packages/ui/src/accounting/sales/invoice-list.tsx:383-408`.

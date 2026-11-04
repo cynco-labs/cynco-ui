@@ -1,14 +1,6 @@
 import { BankCloseStateChip } from "@cynco-labs/ui";
 
-const STATES = [
-	"closed",
-	"ready",
-	"needs_work",
-	"no_statement",
-	"covered",
-	"in_progress",
-	"future",
-] as const;
+const STATES = ["closed", "ready", "needs_work", "no_statement", "covered", "in_progress", "future"] as const;
 
 export default function BankCloseStateChipDemo() {
 	return (

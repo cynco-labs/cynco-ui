@@ -1,5 +1,5 @@
-import { cn } from "../../lib/utils";
 import { ArrowUpRightIcon, FlaskIcon } from "@phosphor-icons/react/ssr";
+import { cn } from "../../lib/utils";
 
 export function SandboxBanner({
 	children,
@@ -16,7 +16,10 @@ export function SandboxBanner({
 	color?: string;
 }) {
 	return (
-		<div className="pointer-events-none z-50 flex justify-center sm:absolute sm:inset-x-0 sm:top-0">
+		<div
+			data-slot="sandbox-banner"
+			className="pointer-events-none z-50 flex justify-center sm:absolute sm:inset-x-0 sm:top-0"
+		>
 			<div
 				className={cn(
 					"pointer-events-auto flex h-[26px] items-center gap-2.5 rounded-b-lg bg-sandbox pr-1 pb-0.5 pl-2.5 text-sandbox-foreground",
@@ -26,12 +29,8 @@ export function SandboxBanner({
 				{...props}
 			>
 				<div className="flex items-center gap-1.5">
-					{icon ?? (
-						<FlaskIcon aria-hidden="true" className="size-3" weight="fill" />
-					)}
-					<span className="max-w-48 truncate font-semibold text-xs">
-						{label}
-					</span>
+					{icon ?? <FlaskIcon aria-hidden="true" className="size-3" weight="fill" />}
+					<span className="max-w-48 truncate font-semibold text-xs">{label}</span>
 				</div>
 				{children}
 			</div>
@@ -39,13 +38,10 @@ export function SandboxBanner({
 	);
 }
 
-export function SandboxBannerAction({
-	children,
-	className,
-	...props
-}: React.ComponentProps<"button">) {
+export function SandboxBannerAction({ children, className, ...props }: React.ComponentProps<"button">) {
 	return (
 		<button
+			data-slot="sandbox-banner-action"
 			type="button"
 			className={cn(
 				"flex h-[18px] cursor-pointer items-center gap-1 rounded-[5px] bg-sandbox-foreground/15 pr-1.5 pl-[7px] font-medium text-2xs outline-none",

@@ -41,7 +41,7 @@ export default function StatusChipDemo() {
 				<StatusChipIcon tone="green" glyph="coins" />
 				<StatusChipIcon tone="orange" glyph="ticket" />
 				<StatusRing tone="blue" fraction={0.66} />
-				<span className="text-body-secondary">StatusChipIcon · StatusRing</span>
+				<span className="text-sm text-subtle">StatusChipIcon · StatusRing</span>
 			</div>
 		</div>
 	);
@@ -61,8 +61,12 @@ Invoice, payment and filing states in tables and headers.
 - `dashed?`: `boolean`. Default `false`.
 - Also accepts `ComponentProps<"span">`.
 
+## Accessibility
+
+The chip is a plain span whose text is its accessible name, and the status square is an aria-hidden SVG, so the state is never carried by colour or by the glyph alone. A string child is also set as the title attribute, which gives the full wording back when the label truncates. The chip has no role or live region of its own, so a status that changes in place needs one on whatever holds it.
+
 ## Notes
 
 Never colour the label — the square carries the state, and every state has a glyph and a word, so it never relies on hue. Tone hexes are fixed in the component (e.g. green #30a46c, blue #3e8bd9, red #e5484d, amber #e5a21f), not tokens.
 
-Category: Components · Data display. Source: `packages/ui/src/base/components/general/status-chip.tsx`.
+Category: Components · Data display. Source: `packages/ui/src/base/components/general/status-chip.tsx:187-217`.

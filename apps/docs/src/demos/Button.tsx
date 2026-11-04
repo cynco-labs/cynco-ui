@@ -1,26 +1,36 @@
-import { DotsThreeIcon, PlusIcon } from "@phosphor-icons/react";
-import { Button } from "@cynco-labs/ui";
+import { Button, type ButtonProps } from "@cynco-labs/ui";
+import { CircleIcon, DotsThreeIcon, FilePlusIcon, PlusIcon, TrashIcon, XIcon } from "@phosphor-icons/react";
+import type { ReactNode } from "react";
 
 export const controls = {
 	size: {
 		label: "Size",
 		options: [
-			{ value: "default", label: "Default" },
+			{ value: "md", label: "Medium" },
 			{ value: "sm", label: "Small" },
-			{ value: "mini", label: "Mini" },
+			{ value: "icon", label: "Icon" },
 		],
-		default: "default",
+		default: "md",
 	},
 	isLoading: { label: "Loading", default: false },
 	disabled: { label: "Disabled", default: false },
 };
 
+const VARIANTS: { variant: ButtonProps["variant"]; label: string; icon: ReactNode }[] = [
+	{ variant: "primary", label: "Create invoice", icon: <FilePlusIcon size={14} /> },
+	{ variant: "secondary", label: "Cancel", icon: <XIcon size={14} /> },
+	{ variant: "muted", label: "Muted", icon: <CircleIcon size={14} /> },
+	{ variant: "skeleton", label: "Skeleton", icon: <DotsThreeIcon size={14} weight="bold" /> },
+	{ variant: "destructive", label: "Delete", icon: <TrashIcon size={14} /> },
+	{ variant: "dotted", label: "Add item", icon: <PlusIcon size={14} /> },
+];
+
 export default function ButtonDemo({
-	size = "default",
+	size = "md",
 	isLoading = false,
 	disabled = false,
 }: {
-	size?: "default" | "sm" | "mini" | "icon";
+	size?: "md" | "sm" | "icon";
 	isLoading?: boolean;
 	disabled?: boolean;
 }) {
@@ -28,25 +38,19 @@ export default function ButtonDemo({
 	return (
 		<div className="flex flex-col gap-3">
 			<div className="flex flex-wrap items-center gap-2">
-				<Button variant="primary" {...state}>
-					Create invoice
-				</Button>
-				<Button variant="secondary" {...state}>
-					Cancel
-				</Button>
-				<Button variant="muted" {...state}>
-					Muted
-				</Button>
-				<Button variant="skeleton" {...state}>
-					Skeleton
-				</Button>
-				<Button variant="destructive" {...state}>
-					Delete
-				</Button>
-				<Button variant="dotted" {...state}>
-					<PlusIcon size={14} />
-					Add item
-				</Button>
+				{VARIANTS.map(({ variant, label, icon }) =>
+					// At `icon` size there is only room for the glyph, so the label becomes the accessible name.
+					size === "icon" ? (
+						<Button aria-label={label} key={label} variant={variant} {...state}>
+							{icon}
+						</Button>
+					) : (
+						<Button key={label} variant={variant} {...state}>
+							{variant === "dotted" && icon}
+							{label}
+						</Button>
+					),
+				)}
 			</div>
 			<div className="flex flex-wrap items-center gap-2">
 				<Button variant="secondary" size="icon" aria-label="More actions" disabled={disabled}>

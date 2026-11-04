@@ -78,6 +78,7 @@ asOf, rows [{id, name, invoices?, current, days1to30, days31to60, days61to90, ov
 
 - `asOf`: `string`. "31 Oct 2026".
 - `rows`: `AgingCustomerRow[]`
+- `totals?`: `AgingBucket`. The report's posted band totals. Omit them and the rows are added, which `limit` then under-counts.
 - `dso?`: `number | null`
 - `limit?`: `number`. Show only the top N debtors (by total).
 - `currency?`: `string`. Default `"MYR"`.
@@ -88,4 +89,4 @@ asOf, rows [{id, name, invoices?, current, days1to30, days31to60, days61to90, ov
 
 Responsive: StatGrid summary; DataList table from 42rem, a card per customer (bands as label/value lines, total at right) below; totals are the last row.
 
-Category: Accounting · Reports. Source: `packages/ui/src/accounting/reports.tsx`.
+Category: Accounting · Reports. Source: `packages/ui/src/accounting/reports/aging.tsx:182-321`.

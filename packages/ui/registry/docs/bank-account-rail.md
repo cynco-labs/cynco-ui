@@ -90,4 +90,4 @@ accounts [{id, accountName, accountType, balance, currency, institution, counts,
 
 Fills its container (constrain it, e.g. max-w-60, when used as a side rail).
 
-Category: Accounting · Banking. Source: `packages/ui/src/accounting/banking.tsx`.
+Category: Accounting · Banking. Source: `packages/ui/src/accounting/banking/account-rail.tsx:206-378`.

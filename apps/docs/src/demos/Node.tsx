@@ -1,13 +1,5 @@
 import { Badge } from "@cynco-labs/ui";
-import {
-	Node,
-	NodeAction,
-	NodeContent,
-	NodeDescription,
-	NodeFooter,
-	NodeHeader,
-	NodeTitle,
-} from "@cynco-labs/ui/ai";
+import { Node, NodeAction, NodeContent, NodeDescription, NodeFooter, NodeHeader, NodeTitle } from "@cynco-labs/ui/ai";
 
 export default function NodeDemo() {
 	return (
@@ -20,10 +12,10 @@ export default function NodeDemo() {
 						<Badge variant="muted">step 2</Badge>
 					</NodeAction>
 				</NodeHeader>
-				<NodeContent className="text-body">
+				<NodeContent className="text-sm font-medium text-muted-foreground">
 					Proposes the invoice this receipt settles, with its evidence.
 				</NodeContent>
-				<NodeFooter className="text-body-secondary">12 ms</NodeFooter>
+				<NodeFooter className="text-sm text-subtle">12 ms</NodeFooter>
 			</Node>
 		</div>
 	);

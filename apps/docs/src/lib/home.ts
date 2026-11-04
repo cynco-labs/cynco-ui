@@ -1,5 +1,5 @@
-import { CATEGORIES, byCategory, registry } from "./registry";
 import { GUIDES } from "./nav";
+import { byCategory, CATEGORIES, registry } from "./registry";
 
 /**
  * Live demos on the home page, in grid order. At three columns the grid is 7 rows with no holes:
@@ -22,12 +22,32 @@ export const SHOWCASE: { name: string; size: "small" | "wide" | "large"; right?:
 ];
 
 export const PRINCIPLES = [
-	{ title: "Quiet by default", body: "Neutral surfaces and four steps of text. One blue does the pointing; colour appears only when it carries meaning." },
-	{ title: "Dense, not cramped", body: "13px type, 28px controls and tight rows, so a ledger or a bank feed fits on one screen without feeling crowded." },
-	{ title: "Responsive to its container", body: "Components use container queries, so the same list works in a page, a side sheet and on a phone." },
-	{ title: "Money is exact", body: "Amounts are decimal strings, maths is done in sen, figures are tabular and right-aligned and never truncate." },
-	{ title: "Keyboard first", body: "Spreadsheet-fast journal entry, ⌘K everywhere, visible shortcuts and Undo instead of “Are you sure?”." },
-	{ title: "Black ink on paper", body: "Invoices, statements and reports print in black ink at real paper sizes, in English, Malay or both." },
+	{
+		title: "Quiet by default",
+		body:
+			"Neutral surfaces and four steps of text. One blue does the pointing; colour appears only when it carries meaning.",
+	},
+	{
+		title: "Dense, not cramped",
+		body:
+			"13px type, 28px controls and tight rows, so a ledger or a bank feed fits on one screen without feeling crowded.",
+	},
+	{
+		title: "Responsive to its container",
+		body: "Components use container queries, so the same list works in a page, a side sheet and on a phone.",
+	},
+	{
+		title: "Money is exact",
+		body: "Amounts are decimal strings, maths is done in sen, figures are tabular and right-aligned and never truncate.",
+	},
+	{
+		title: "Keyboard first",
+		body: "Spreadsheet-fast journal entry, ⌘K everywhere, visible shortcuts and Undo instead of “Are you sure?”.",
+	},
+	{
+		title: "Black ink on paper",
+		body: "Invoices, statements and reports print in black ink at real paper sizes, in English, Malay or both.",
+	},
 ];
 
 export function homeMarkdown() {
@@ -47,7 +67,10 @@ export function homeMarkdown() {
 		"",
 		`## Components (${registry.length})`,
 		"",
-		...CATEGORIES.map((c) => `- **${c.name}** (${byCategory(c.name).length}): ${c.blurb} See [/components#${c.name.toLowerCase()}](/components.md).`),
+		...CATEGORIES.map(
+			(c) =>
+				`- **${c.name}** (${byCategory(c.name).length}): ${c.blurb} See [/components#${c.name.toLowerCase()}](/components.md).`,
+		),
 		"",
 		"## Principles",
 		"",
@@ -55,7 +78,9 @@ export function homeMarkdown() {
 		"",
 		"## Guides",
 		"",
-		...GUIDES.flatMap((g) => g.items.filter((i) => i.href !== "/").map((i) => `- [${i.label}](${i.href}.md): ${i.description}`)),
+		...GUIDES.flatMap((g) =>
+			g.items.filter((i) => i.href !== "/").map((i) => `- [${i.label}](${i.href}.md): ${i.description}`),
+		),
 		"",
 	];
 	return l.join("\n");

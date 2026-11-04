@@ -9,18 +9,9 @@ import { InlineEditCell } from "@cynco-labs/ui";
 ## Usage
 
 ```tsx
-import { useState } from "react";
+import { type DataColumn, DataList, formatDate, InlineEditCell, Kbd, Money, sumAmounts, toSen } from "@cynco-labs/ui";
 import type React from "react";
-import {
-	type DataColumn,
-	DataList,
-	InlineEditCell,
-	Kbd,
-	Money,
-	formatDate,
-	sumAmounts,
-	toSen,
-} from "@cynco-labs/ui";
+import { useState } from "react";
 
 function Hint({ children }: { children: React.ReactNode }) {
 	return <p className="text-xs text-tertiary-foreground">{children}</p>;
@@ -68,8 +59,7 @@ export default function InlineEditCellDemo() {
 		return (v: string) =>
 			wait(700).then(() => {
 				if (field === "desc" && !v) throw new Error("Description can’t be empty");
-				if (field === "amount" && toSen(v) > toSen("5000"))
-					throw new Error("Over your claim limit of RM 5,000.00");
+				if (field === "amount" && toSen(v) > toSen("5000")) throw new Error("Over your claim limit of RM 5,000.00");
 				setRows((prev) =>
 					prev.map((r) => {
 						if (r.id !== id) return r;
@@ -84,7 +74,7 @@ export default function InlineEditCellDemo() {
 			header: "Claim",
 			mobile: "meta",
 			nowrap: true,
-			cell: (r) => <span className="text-tiny-id text-muted-foreground">{r.ref}</span>,
+			cell: (r) => <span className="font-mono text-2xs font-medium text-muted-foreground">{r.ref}</span>,
 		},
 		{ key: "date", header: "Date", mobile: "meta", nowrap: true, cell: (r) => formatDate(r.date) },
 		{
@@ -96,7 +86,7 @@ export default function InlineEditCellDemo() {
 				<InlineEditCell
 					value={r.desc}
 					onSave={save(r.id, "desc")}
-					aria-label={"Description for " + r.ref}
+					aria-label={`Description for ${r.ref}`}
 					placeholder="Add a description"
 				/>
 			),
@@ -113,7 +103,7 @@ export default function InlineEditCellDemo() {
 					currency="MYR"
 					value={r.amount}
 					onSave={save(r.id, "amount")}
-					aria-label={"Amount for " + r.ref}
+					aria-label={`Amount for ${r.ref}`}
 				/>
 			),
 		},
@@ -144,9 +134,7 @@ export default function InlineEditCellDemo() {
 				{" cancels. Try an amount over 5,000 or an empty description to see a rejected save."}
 			</Hint>
 			{list()}
-			<div className="w-full max-w-[340px] rounded-xl border border-dashed border-border p-2">
-				{list()}
-			</div>
+			<div className="w-full max-w-[340px] rounded-xl border border-dashed border-border p-2">{list()}</div>
 		</div>
 	);
 }
@@ -173,4 +161,4 @@ value, onSave(value) => void | Promise<void> (reject with an Error to revert and
 
 Keyboard: the cell is a button (visible focus ring, pencil on hover/focus); Enter, Space, F2 or click starts editing; Enter saves and returns focus to the cell; Tab or blur saves and moves on; Esc cancels. Amount mode uses AmountInput, so formulas work and an invalid figure stays in edit mode. Status (Saving… / Saved / error) is announced through aria-live; the saved tick fades after 1.6s. Fills its cell, so it follows DataList's table / stacked layouts.
 
-Category: Productivity. Source: `packages/ui/src/productivity/entry.tsx`.
+Category: Productivity. Source: `packages/ui/src/productivity/entry/inline-edit-cell.tsx:28-240`.

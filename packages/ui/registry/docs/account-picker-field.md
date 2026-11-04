@@ -152,13 +152,15 @@ Wherever a single GL account is chosen: journal lines, bank categorisation, defa
 
 ## Props
 
-accounts [{ id, accountCode, accountName, accountType, normalBalance }], recentIds?, selectedId?, defaultOpen?, label?, onSelect?, onCreate?(query), className? (merged on the root) and native props.
+accounts [{ id, accountCode, accountName, accountType, normalBalance }], recentIds?, selectedId?, open? / defaultOpen? / onOpenChange?, label?, onSelect?, onCreate?(query), className? (merged on the root) and native props.
 
 - `accounts`: `LedgerPickerAccount[]`
 - `recentIds?`: `string[]`
 - `selectedId?`: `string`. Controlled selection.
 - `defaultSelectedId?`: `string`. Initial selection for uncontrolled use.
-- `defaultOpen?`: `boolean`
+- `open?`: `boolean`. Controlled popup state.
+- `defaultOpen?`: `boolean`. Whether the popup starts open, for uncontrolled use. Default `false`.
+- `onOpenChange?`: `(open: boolean) => void`
 - `label?`: `string`
 - `onSelect?`: `(a: LedgerPickerAccount) => void`
 - `onCreate?`: `(query: string) => void`
@@ -168,4 +170,4 @@ accounts [{ id, accountCode, accountName, accountType, normalBalance }], recentI
 
 Keeps the "Create new account" / Create “query” sentinel row. No fetching: the consumer passes the accounts. Responsive: The popup follows the trigger width (min 18rem, max the viewport).
 
-Category: Accounting · Ledger. Source: `packages/ui/src/accounting/ledger.tsx`.
+Category: Accounting · Ledger. Source: `packages/ui/src/accounting/ledger/journal-entry.tsx:163-222`.

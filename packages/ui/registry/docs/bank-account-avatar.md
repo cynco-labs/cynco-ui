@@ -78,4 +78,4 @@ account {accountName, accountType, institution? {name, shortName, primaryColor}}
 
 Size via the size prop; colour and size styles are data-driven.
 
-Category: Accounting · Banking. Source: `packages/ui/src/accounting/banking.tsx`.
+Category: Accounting · Banking. Source: `packages/ui/src/accounting/banking/account-rail.tsx:70-122`.

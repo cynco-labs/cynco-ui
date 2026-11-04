@@ -13,7 +13,7 @@ import { BetaBadge } from "@cynco-labs/ui";
 
 export default function BetaBadgeDemo() {
 	return (
-		<div className="flex items-center gap-2 text-main">
+		<div className="flex items-center gap-2 text-lg font-semibold text-foreground">
 			E-invoicing
 			<BetaBadge />
 		</div>
@@ -30,8 +30,8 @@ Next to the title of a feature in beta.
 Optional `className`.
 
 - `variant?`: `"default" | "secondary" | "muted"`. Default `"default"`.
-- `size?`: `"sm" | "default"`. Default `"default"`.
+- `size?`: `"sm" | "md"`. Default `"md"`.
 - `asChild?`: `boolean`
 - Also accepts `useRender.ComponentProps<"span">`.
 
-Category: Components · Data display. Source: `packages/ui/src/base/components/general/beta-badge.tsx`.
+Category: Components · Data display. Source: `packages/ui/src/base/components/general/beta-badge.tsx:4-14`.

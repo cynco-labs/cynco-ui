@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { CoinsIcon, CreditCardIcon, LightningIcon } from "@phosphor-icons/react";
 import { PanelButton } from "@cynco-labs/ui";
+import { CoinsIcon, CreditCardIcon, LightningIcon } from "@phosphor-icons/react";
+import { useState } from "react";
 
 export default function PanelButtonDemo() {
 	const [s, setS] = useState(0);

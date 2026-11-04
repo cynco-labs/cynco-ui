@@ -35,9 +35,9 @@ export default function CoaAccountPanelDemo() {
 			balanceHistory={[
 				{
 					period: "2026-10",
-					periodDebit: 96420.0,
-					periodCredit: 42885.6,
-					closingBalance: 248315.4,
+					periodDebit: "96420.00",
+					periodCredit: "42885.60",
+					closingBalance: "248315.40",
 				},
 			]}
 			transactions={[
@@ -46,7 +46,7 @@ export default function CoaAccountPanelDemo() {
 					date: "2026-10-28",
 					description: "Receipt INV-2026-0142",
 					type: "debit",
-					amount: 12720.0,
+					amount: "12720.00",
 					source: "Bank feed",
 				},
 			]}
@@ -61,16 +61,18 @@ Right-hand panel of the Chart of Accounts page.
 
 ## Props
 
-account { accountCode, accountName, accountType, normalBalance, isActive, description?, isSystemAccount?, isBankAccount?, isCashAccount?, isRetainedEarnings?, taxRelated?, currency?, isMonetary?, mappingKeywords? }, currency?, currentBalance, transactionCount, lastTransactionAt?, balanceHistory [{ period, periodDebit, periodCredit, closingBalance }], transactions [{ id, date, description, type, amount, source? }], defaultEditing?, onClose?, className? (merged on the root) and native props.
+account { accountCode, accountName, accountType, normalBalance, isActive, description?, isSystemAccount?, isBankAccount?, isCashAccount?, isRetainedEarnings?, taxRelated?, currency?, isMonetary?, mappingKeywords? }, currency?, currentBalance, transactionCount, lastTransactionAt?, balanceHistory [{ period, periodDebit, periodCredit, closingBalance }], transactions [{ id, date, description, type, amount, source? }], editing? / defaultEditing? / onEditingChange?, onActiveChange?, onClose?, className? (merged on the root) and native props.
 
 - `account`: `CoaPanelAccount`
 - `currency?`: `string`. Default `"MYR"`.
-- `currentBalance?`: `number`. Default `0`.
+- `currentBalance?`: `Amount`. Default `"0.00"`.
 - `transactionCount?`: `number`. Default `0`.
 - `lastTransactionAt?`: `string | null`
 - `balanceHistory?`: `BalanceHistoryRow[]`. Default `[]`.
-- `transactions?`: `{ id: string; date: string; description: string; type: "debit" | "credit"; amount: number; source?: string }[]`. Default `[]`.
-- `defaultEditing?`: `boolean`
+- `transactions?`: `{ id: string; date: string; description: string; type: "debit" | "credit"; amount: Amount; source?: string }[]`. Default `[]`.
+- `editing?`: `boolean`. Controlled edit form.
+- `defaultEditing?`: `boolean`. Whether the edit form starts open, for uncontrolled use. Default `false`.
+- `onEditingChange?`: `(editing: boolean) => void`
 - `onClose?`: `() => void`
 - `onActiveChange?`: `(active: boolean) => void`. Called from Activate / Deactivate with the new state; omit to hide the button. The panel shows `account.isActive`.
 - Also accepts `ComponentProps<"aside">`.
@@ -79,4 +81,4 @@ account { accountCode, accountName, accountType, normalBalance, isActive, descri
 
 Balance tile is a StatTile on bg-interactive-secondary. Flags and keywords use Badge variant="muted". Responsive: Fills its container (no fixed width); balance tile is a StatTile and balance history a DataList that stacks inside a narrow panel.
 
-Category: Accounting · Ledger. Source: `packages/ui/src/accounting/ledger.tsx`.
+Category: Accounting · Ledger. Source: `packages/ui/src/accounting/ledger/coa-panel.tsx:103-342`.

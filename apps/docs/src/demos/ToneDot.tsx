@@ -1,4 +1,4 @@
-import { ToneDot, type StatusTone } from "@cynco-labs/ui";
+import { type StatusTone, ToneDot } from "@cynco-labs/ui";
 
 const tones: StatusTone[] = ["green", "blue", "amber", "orange", "red", "purple", "neutral"];
 

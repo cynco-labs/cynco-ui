@@ -1,20 +1,13 @@
 "use client";
 
-import {
-	type TableLinkComponent,
-	useTableContext,
-} from "./table-context";
-import { Checkbox } from "../ui/checkbox";
-import { Skeleton } from "../ui/skeleton";
-import {
-	TableBody as ShadcnTableBody,
-	TableCell,
-	TableRow,
-} from "../ui/table";
-import { cn } from "../../lib/utils";
 import type { Row } from "@tanstack/react-table";
 import { flexRender } from "@tanstack/react-table";
-import { type CSSProperties, memo, type MouseEvent, type ReactNode } from "react";
+import { type CSSProperties, type MouseEvent, memo, type ReactNode } from "react";
+import { cn } from "../../lib/utils";
+import { Checkbox } from "../ui/checkbox";
+import { Skeleton } from "../ui/skeleton";
+import { TableBody as ShadcnTableBody, TableCell, TableRow } from "../ui/table";
+import { type TableLinkComponent, useTableContext } from "./table-context";
 
 interface TableRowCellsProps<T> {
 	row: Row<T>;
@@ -36,9 +29,7 @@ export const isRowButtonKeyPress = (event: MouseEvent) =>
 
 /** Names the row checkbox after the row's first text value, so each one is distinct. */
 function getRowSelectLabel<T>(row: Row<T>): string {
-	const titleCell = row
-		.getVisibleCells()
-		.find((cell) => !CONTROL_COLUMNS.has(cell.column.id));
+	const titleCell = row.getVisibleCells().find((cell) => !CONTROL_COLUMNS.has(cell.column.id));
 	const value = titleCell?.getValue();
 	if ((typeof value === "string" && value.trim()) || typeof value === "number") {
 		return `Select ${value}`;
@@ -93,10 +84,7 @@ function TableRowCellsInner<T>({
 				</TableCell>
 			)}
 			{visibleCells.map((cell, cellIndex) => {
-				const cellContent = flexRender(
-					cell.column.columnDef.cell,
-					cell.getContext(),
-				);
+				const cellContent = flexRender(cell.column.columnDef.cell, cell.getContext());
 				const cellStyle = getColumnWidthStyle({
 					size: cell.column.getSize(),
 					flexible: flexibleTableColumns,
@@ -124,19 +112,11 @@ function TableRowCellsInner<T>({
 						style={cellStyle}
 					>
 						{hasLink && rowHref ? (
-							<CellLink
-								className={targetClassName}
-								href={rowHref}
-								linkComponent={LinkComponent}
-							>
+							<CellLink className={targetClassName} href={rowHref} linkComponent={LinkComponent}>
 								{cellContent}
 							</CellLink>
 						) : hasRowButton ? (
-							<button
-								className={cn(targetClassName, "text-left cursor-pointer")}
-								data-row-button=""
-								type="button"
-							>
+							<button className={cn(targetClassName, "text-left cursor-pointer")} data-row-button="" type="button">
 								{cellContent}
 							</button>
 						) : (
@@ -149,22 +129,19 @@ function TableRowCellsInner<T>({
 	);
 }
 
-export const TableRowCells = memo(
-	TableRowCellsInner,
-	(prevProps, nextProps) => {
-		return (
-			prevProps.row.id === nextProps.row.id &&
-			prevProps.row.original === nextProps.row.original &&
-			prevProps.row.getIsSelected() === nextProps.row.getIsSelected() &&
-			prevProps.isExpanded === nextProps.isExpanded &&
-			prevProps.rowHref === nextProps.rowHref &&
-			prevProps.isRowClickable === nextProps.isRowClickable &&
-			prevProps.enableSelection === nextProps.enableSelection &&
-			prevProps.flexibleTableColumns === nextProps.flexibleTableColumns &&
-			prevProps.visibleColumnKey === nextProps.visibleColumnKey
-		);
-	},
-) as typeof TableRowCellsInner;
+export const TableRowCells = memo(TableRowCellsInner, (prevProps, nextProps) => {
+	return (
+		prevProps.row.id === nextProps.row.id &&
+		prevProps.row.original === nextProps.row.original &&
+		prevProps.row.getIsSelected() === nextProps.row.getIsSelected() &&
+		prevProps.isExpanded === nextProps.isExpanded &&
+		prevProps.rowHref === nextProps.rowHref &&
+		prevProps.isRowClickable === nextProps.isRowClickable &&
+		prevProps.enableSelection === nextProps.enableSelection &&
+		prevProps.flexibleTableColumns === nextProps.flexibleTableColumns &&
+		prevProps.visibleColumnKey === nextProps.visibleColumnKey
+	);
+}) as typeof TableRowCellsInner;
 
 const SKELETON_WIDTHS = ["w-3/5", "w-1/2", "w-2/3", "w-2/5", "w-3/4", "w-1/2"];
 
@@ -209,11 +186,9 @@ export function TableSkeletonRows({
 	const skeletonRows = Array.from({ length: rowCount }).map((_, rowIndex) => (
 		<TableRow
 			aria-hidden="true"
+			// biome-ignore lint/suspicious/noArrayIndexKey: a fixed-length placeholder list that never reorders.
 			key={`skeleton-${rowIndex}`}
-			className={cn(
-				"h-10 hover:bg-transparent dark:hover:bg-transparent",
-				rowClassName,
-			)}
+			className={cn("h-10 hover:bg-transparent dark:hover:bg-transparent", rowClassName)}
 		>
 			{columns.map((col, colIndex) => {
 				const meta = col.skeleton;
@@ -224,31 +199,22 @@ export function TableSkeletonRows({
 				});
 
 				if (meta?.hidden) {
-					return (
-						<TableCell
-							key={`skeleton-${col.id}-${rowIndex}`}
-							style={cellStyle}
-						/>
-					);
+					// biome-ignore lint/suspicious/noArrayIndexKey: the column id makes the key unique; the row index only orders it.
+					return <TableCell key={`skeleton-${col.id}-${rowIndex}`} style={cellStyle} />;
 				}
 
-				const widthClass =
-					SKELETON_WIDTHS[(colIndex * 3 + rowIndex) % SKELETON_WIDTHS.length];
+				const widthClass = SKELETON_WIDTHS[(colIndex * 3 + rowIndex) % SKELETON_WIDTHS.length];
 
-				const skeletonContent =
-					typeof meta?.skeleton === "function"
-						? meta.skeleton(rowIndex)
-						: meta?.skeleton;
+				const skeletonContent = typeof meta?.skeleton === "function" ? meta.skeleton(rowIndex) : meta?.skeleton;
 
 				return (
 					<TableCell
+						// biome-ignore lint/suspicious/noArrayIndexKey: the column id makes the key unique; the row index only orders it.
 						key={`skeleton-${col.id}-${rowIndex}`}
 						className={cn("px-2", colIndex === 0 && "pl-4")}
 						style={cellStyle}
 					>
-						{skeletonContent ?? (
-							<Skeleton className={cn("h-3.5 rounded-sm", widthClass)} />
-						)}
+						{skeletonContent ?? <Skeleton className={cn("h-3.5 rounded-sm", widthClass)} />}
 					</TableCell>
 				);
 			})}
@@ -257,9 +223,5 @@ export function TableSkeletonRows({
 
 	if (asFragment) return <>{skeletonRows}</>;
 
-	return (
-		<ShadcnTableBody className="divide-y bg-interactive-secondary">
-			{skeletonRows}
-		</ShadcnTableBody>
-	);
+	return <ShadcnTableBody className="divide-y bg-interactive-secondary">{skeletonRows}</ShadcnTableBody>;
 }

@@ -1,13 +1,15 @@
 ---
 import { Code } from "astro:components";
-import Docs from "../../layouts/Docs.astro";
 import ComponentPreview from "../../components/ComponentPreview.astro";
+import KeyTable from "../../components/KeyTable.astro";
 import PropsTable from "../../components/PropsTable.astro";
-import { registry } from "../../lib/registry";
+import Docs from "../../layouts/Docs.astro";
+import type { Controls } from "../../lib/controls";
 import { inlineMd, sourceUrl } from "../../lib/inline-md";
 import { neighbours } from "../../lib/nav";
 import { componentPrompt } from "../../lib/prompt";
-import type { Controls } from "../../lib/controls";
+import { registry } from "../../lib/registry";
+import { componentSource } from "../../lib/source";
 
 const sources = import.meta.glob<string>("../../demos/*.tsx", { query: "?raw", import: "default", eager: true });
 const demos = import.meta.glob<{ controls?: Controls }>("../../demos/*.tsx", { eager: true });
@@ -20,15 +22,21 @@ const source = sources[`../../demos/${entry.name}.tsx`] ?? "";
 const controls = demos[`../../demos/${entry.name}.tsx`]?.controls;
 const importLine = `import { ${entry.name} } from "${entry.importFrom}";`;
 const table = entry.props?.props.length ? entry.props : null;
+const ownSource = componentSource(entry);
 const sections = [
 	{ id: "use", title: "Use", body: entry.use },
 	{ id: "props", title: "Props", body: entry.provide },
+	{ id: "accessibility", title: "Accessibility", body: entry.a11y?.screenReader ?? "" },
 	{ id: "notes", title: "Notes", body: entry.notes },
 ].filter((s) => s.body || (s.id === "props" && table));
-const headings = [{ depth: 2, slug: "example", text: "Example" }, ...sections.map((s) => ({ depth: 2, slug: s.id, text: s.title }))];
+const headings = [
+	{ depth: 2, slug: "example", text: "Example" },
+	...sections.map((s) => ({ depth: 2, slug: s.id, text: s.title })),
+];
 const crumbs = entry.group && entry.group !== entry.category ? `${entry.category} · ${entry.group}` : entry.category;
 const { prev, next } = neighbours(`/components/${entry.slug}`);
-const arrow = "inline-flex size-7 items-center justify-center rounded-md text-tertiary-foreground hover:bg-muted hover:text-foreground";
+const arrow =
+	"inline-flex size-7 items-center justify-center rounded-md text-tertiary-foreground hover:bg-muted hover:text-foreground";
 ---
 
 <Docs
@@ -40,7 +48,7 @@ const arrow = "inline-flex size-7 items-center justify-center rounded-md text-te
 >
 	<article>
 		<div class="flex items-center justify-between gap-3">
-			<p class="text-[13px] font-medium text-subtle">
+			<p class="text-sm font-medium text-subtle">
 				<a href={`/components#${entry.category.toLowerCase()}`} class="hover:text-foreground">{crumbs}</a>
 			</p>
 			<nav class="-my-1 flex items-center gap-0.5" aria-label="Previous and next component">
@@ -56,8 +64,8 @@ const arrow = "inline-flex size-7 items-center justify-center rounded-md text-te
 				)}
 			</nav>
 		</div>
-		<h1 class="mt-2 text-[26px] font-semibold leading-tight tracking-[-0.02em] text-foreground sm:text-[30px]" set:html={entry.name.replace(/([a-z])([A-Z])/g, "$1<wbr>$2")} />
-		<div class="mt-3 max-w-[42rem] text-[16px] leading-relaxed text-tertiary-foreground [&_code]:font-mono [&_code]:text-[0.88em] [&_code]:text-foreground" set:html={inlineMd(entry.summary)} />
+		<h1 class="mt-2 text-display font-semibold leading-tight tracking-[-0.02em] text-foreground" set:html={entry.name.replace(/([a-z])([A-Z])/g, "$1<wbr>$2")} />
+		<div class="mt-3 max-w-[42rem] text-lg leading-relaxed text-tertiary-foreground [&_code]:font-mono [&_code]:text-[0.88em] [&_code]:text-foreground" set:html={inlineMd(entry.summary)} />
 
 		<div class="mt-6 flex flex-wrap items-stretch gap-2">
 			<div class="group/imp relative min-w-0 flex-1 basis-[20rem]">
@@ -79,7 +87,7 @@ const arrow = "inline-flex size-7 items-center justify-center rounded-md text-te
 				data-with-theme
 				data-copy-label="Copied"
 				title="Install steps, import, props, an example and the house rules, for a coding agent"
-				class="inline-flex h-auto min-h-10 items-center gap-2 rounded-lg border border-border bg-interactive-secondary px-3.5 text-[13px] font-medium text-foreground transition-colors hover:bg-interactive-secondary-hover"
+				class="inline-flex h-auto min-h-10 items-center gap-2 rounded-lg border border-border bg-interactive-secondary px-3.5 text-sm font-medium text-foreground transition-colors hover:bg-interactive-secondary-hover"
 			>
 				<svg class="size-3.5" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M216 32H88a8 8 0 0 0-8 8v40H40a8 8 0 0 0-8 8v128a8 8 0 0 0 8 8h128a8 8 0 0 0 8-8v-40h40a8 8 0 0 0 8-8V40a8 8 0 0 0-8-8Zm-56 176H48V96h112Zm48-48h-32V88a8 8 0 0 0-8-8H96V48h112Z"></path></svg>
 				<span>Copy prompt</span>
@@ -88,7 +96,7 @@ const arrow = "inline-flex size-7 items-center justify-center rounded-md text-te
 
 		<h2 id="example" class="sr-only">Example</h2>
 		<div class="mt-8">
-			<ComponentPreview slug={entry.slug} name={entry.name} source={source} minHeight={entry.height} controls={controls} />
+			<ComponentPreview slug={entry.slug} name={entry.name} source={source} minHeight={entry.height} controls={controls} componentSource={ownSource} />
 		</div>
 
 		<div class="prose mt-2">
@@ -96,6 +104,7 @@ const arrow = "inline-flex size-7 items-center justify-center rounded-md text-te
 				sections.map((s) => (
 					<>
 						<h2 id={s.id}>{s.title}</h2>
+						{s.id === "accessibility" && entry.a11y && entry.a11y.keys.length > 0 && <KeyTable rows={entry.a11y.keys} />}
 						{s.body && <Fragment set:html={inlineMd(s.body)} />}
 						{s.id === "props" && table && <PropsTable table={table} />}
 					</>
@@ -103,8 +112,8 @@ const arrow = "inline-flex size-7 items-center justify-center rounded-md text-te
 			}
 		</div>
 
-		<p class="mt-10 flex flex-wrap items-center gap-x-4 gap-y-1 text-[13px] text-subtle">
-			<a class="hover:text-foreground" href={sourceUrl(entry.sourcePath)} rel="noopener">Source</a>
+		<p class="mt-10 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-subtle">
+			<a class="hover:text-foreground" href={ownSource?.url ?? sourceUrl(entry.sourcePath)} rel="noopener">Source on GitHub</a>
 			<a class="hover:text-foreground" href={sourceUrl(entry.demoPath)} rel="noopener">Demo source</a>
 			<a class="hover:text-foreground" href={`/components/${entry.slug}.md`}>Markdown</a>
 		</p>

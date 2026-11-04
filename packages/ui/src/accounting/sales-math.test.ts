@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { buildSalesTotals, salesLineAmount, type SalesLineItem } from "./sales-math";
+import { buildSalesTotals, type SalesLineItem, salesLineAmount } from "./sales-math";
 
 const line = (patch: Partial<SalesLineItem>): SalesLineItem => ({ name: "Item", quantity: 1, price: "0", ...patch });
 
@@ -16,7 +16,9 @@ describe("salesLineAmount", () => {
 	});
 
 	test("uses the tax codes it is given", () => {
-		expect(salesLineAmount(line({ price: "100", taxCode: "gst" }), [{ value: "gst", label: "GST 9%", rate: 9 }])).toBe("109.00");
+		expect(salesLineAmount(line({ price: "100", taxCode: "gst" }), [{ value: "gst", label: "GST 9%", rate: 9 }])).toBe(
+			"109.00",
+		);
 	});
 });
 
@@ -29,7 +31,15 @@ describe("buildSalesTotals", () => {
 	});
 
 	test("totals are exact and every row says what it is", () => {
-		const rows = buildSalesTotals({ subtotal: 0.1, discount: "0.03", taxes: [{ label: "SST 8%", amount: 0.2 }, { label: "Zero", amount: 0 }], deposit: "1.00" });
+		const rows = buildSalesTotals({
+			subtotal: 0.1,
+			discount: "0.03",
+			taxes: [
+				{ label: "SST 8%", amount: 0.2 },
+				{ label: "Zero", amount: 0 },
+			],
+			deposit: "1.00",
+		});
 		expect(rows.map((r) => [r.kind, r.value, r.negative ?? false])).toEqual([
 			["subtotal", "0.10", false],
 			["discount", "0.03", true],

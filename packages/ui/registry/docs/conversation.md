@@ -27,9 +27,7 @@ export default function ConversationDemo() {
 				</Message>
 				<Message from="assistant">
 					<MessageContent>
-						<MessageResponse>
-							**Nusantara Logistik Bhd** owes RM 48,210.00, of which RM 12,720.00 is overdue.
-						</MessageResponse>
+						<MessageResponse>**Nusantara Logistik Bhd** owes RM 48,210.00, of which RM 12,720.00 is overdue.</MessageResponse>
 					</MessageContent>
 				</Message>
 				<Message from="user">
@@ -50,4 +48,4 @@ The chat transcript.
 
 `ConversationContent` with Messages; `ConversationEmptyState` (`title`, `description`, `icon`); `ConversationScrollButton`.
 
-Category: AI. Source: `packages/ui/src/base/components/ai-elements/conversation.tsx`.
+Category: AI. Source: `packages/ui/src/base/components/ai-elements/conversation.tsx:86-109`.

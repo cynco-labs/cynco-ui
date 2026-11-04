@@ -1,179 +1,123 @@
 /* eslint-disable react-refresh/only-export-components */
 
-import { SmallSpinner } from "../general/small-spinner";
-import { cn } from "../../lib/utils";
 import { Button as ButtonPrimitive } from "@base-ui/react/button";
 import { cva, type VariantProps } from "class-variance-authority";
-import * as React from "react";
+import type * as React from "react";
+import { renderProp } from "../../lib/render";
+import { cn } from "../../lib/utils";
+import { SmallSpinner } from "../general/small-spinner";
+
+/** The diagonal sheen on a primary button: one `after:` layer, deepened in dark where the fill is lighter. */
+const PRIMARY_SHEEN =
+	"after:content-[''] after:absolute after:inset-0 after:z-[1] after:pointer-events-none after:bg-[linear-gradient(135deg,color-mix(in_oklch,var(--background)_10%,transparent)_10%,transparent_65%,color-mix(in_oklch,var(--background)_10%,transparent)_100%)] dark:after:bg-[linear-gradient(135deg,color-mix(in_oklch,var(--background)_28%,transparent)_10%,color-mix(in_oklch,var(--background)_20%,transparent)_65%,color-mix(in_oklch,var(--background)_28%,transparent)_100%)]";
 
 const buttonVariants = cva(
-	`relative inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm disabled:pointer-events-none disabled:opacity-50 data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-ring cursor-pointer
-  rounded-lg group/btn transition-colors  w-fit transform-gpu
-  `,
+	"group/btn relative inline-flex w-fit shrink-0 transform-gpu cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm outline-none transition-[background-color,border-color,box-shadow,color] duration-100 focus-ring disabled:pointer-events-none disabled:opacity-50 data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
 	{
 		variants: {
 			variant: {
-				primary: `
-				!text-primary-foreground
-				bg-primary
-				hover:bg-primary/90
-				relative overflow-hidden
-				border
-				border-primary
-				before:content-[''] before:absolute before:inset-0 before:z-[1] before:pointer-events-none
-				dark:hover:before:bg-background/25 dark:before:bg-background/20 dark:hover:before:bg-background/25
-				after:content-[''] after:absolute after:inset-0 after:z-[1] after:pointer-events-none
-				after:bg-[linear-gradient(135deg,color-mix(in_oklch,var(--background)_10%,transparent)_10%,transparent_65%,color-mix(in_oklch,var(--background)_10%,transparent)_100%)]
-				shadow-sm
-				`,
-
-				secondary: `bg-interactive-secondary border border-border hover:bg-interactive-secondary-hover btn-secondary-shadow
-				focus-visible:bg-active-primary focus-visible:border-primary text-foreground
-				`,
-
-				skeleton: `border border-transparent hover:text-primary!
-				 focus-visible:border-primary
-				active:bg-interactive-secondary-hover active:border-primary`,
-
-				muted: `bg-muted hover:bg-interactive-secondary-hover border border-transparent
-				 focus-visible:border-primary hover:interactive-secondary-hover
-				active:bg-interactive-secondary-hover
-				`,
-
-				destructive: `bg-destructive !text-primary-foreground border-[1.2px] border-transparent
-					hover:bg-destructive-hover btn-destructive-shadow
-					focus-visible:border-destructive-border
-					active:border-destructive-border
-					`,
-
-				dotted: `bg-background border border-dashed border-border shadow-hairline
-					hover:border-primary hover:border-solid
-					focus-visible:border-primary focus-visible:border-solid
-					active:border-primary active:border-solid
-					`,
+				primary: cn(
+					"relative overflow-hidden border border-primary bg-primary text-primary-foreground shadow-btn-primary",
+					"hover:bg-primary/90 hover:shadow-btn-primary-hover",
+					"active:shadow-btn-primary-pressed focus-visible:shadow-btn-primary-pressed",
+					PRIMARY_SHEEN,
+				),
+				secondary: cn(
+					"border border-border bg-interactive-secondary text-foreground shadow-btn-secondary",
+					"hover:bg-interactive-secondary-hover hover:shadow-btn-secondary-hover",
+					"focus-visible:border-primary focus-visible:bg-active-primary",
+					// A secondary button that opens a menu keeps the open state visible while focus is in the popup.
+					"data-popup-open:border-primary data-popup-open:bg-interactive-secondary-hover",
+				),
+				skeleton:
+					"border border-transparent hover:text-primary focus-visible:border-primary active:border-primary active:bg-interactive-secondary-hover",
+				muted:
+					"border border-transparent bg-muted hover:bg-interactive-secondary-hover focus-visible:border-primary active:bg-interactive-secondary-hover",
+				destructive: cn(
+					"border-[1.2px] border-transparent bg-destructive text-primary-foreground shadow-btn-destructive",
+					"hover:bg-destructive-hover hover:shadow-btn-destructive-hover",
+					"focus-visible:border-destructive-border active:border-destructive-border",
+					"active:shadow-btn-destructive-pressed focus-visible:shadow-btn-destructive-pressed",
+				),
+				dotted:
+					"border border-dashed border-border bg-background shadow-hairline hover:border-solid hover:border-primary focus-visible:border-solid focus-visible:border-primary active:border-solid active:border-primary",
 			},
 			size: {
-				default: "py-1 !px-[7px] text-body h-input",
-				sm: "py-1 !px-[7px] text-tiny h-6",
-				mini: "py-1 !px-1.5 text-sm h-6",
-				icon: "p-1 h-6 text-xs",
+				/** 24px, for dense toolbars and inline rows. */
+				sm: "h-6 px-1.5 py-1",
+				/** 28px, matching an Input so a button and a field line up in a form row. */
+				md: "h-7 px-[7px] py-1",
+				/** 24px square, for a button whose whole label is its icon. */
+				icon: "size-6 p-1",
 			},
 		},
 		defaultVariants: {
 			variant: "primary",
-			size: "default",
+			size: "md",
 		},
 	},
 );
 
-export interface ButtonProps
-	extends React.ComponentProps<"button">,
-		VariantProps<typeof buttonVariants> {
+export interface ButtonProps extends React.ComponentProps<"button">, VariantProps<typeof buttonVariants> {
+	/** Radix compatibility: render the single child element instead of a `<button>`. */
 	asChild?: boolean;
+	/** Swaps the label for a spinner and disables the button, while the label stays its accessible name. */
 	isLoading?: boolean;
-	transition?: boolean;
-	disableActive?: boolean;
-	hide?: boolean;
+	/** The element to render instead of a `<button>` (Base UI). */
 	render?: React.ReactElement;
 	/** Keep the button in the tab order while disabled (Base UI). Set automatically while `isLoading`. */
 	focusableWhenDisabled?: boolean;
+	ref?: React.Ref<HTMLButtonElement>;
 }
 
-const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-	(
-		{
-			className,
-			variant,
-			size,
-			asChild = false,
-			isLoading = false,
-			transition = false,
-			disableActive = true,
-			hide = false,
-			focusableWhenDisabled = false,
-			disabled,
-			children,
-			render: renderProp,
-			...props
-		},
-		ref,
-	) => {
-		const effectiveRender =
-			asChild && React.isValidElement(children) ? children : renderProp;
+function Button({
+	className,
+	variant,
+	size,
+	asChild = false,
+	isLoading = false,
+	focusableWhenDisabled = false,
+	disabled,
+	children,
+	render,
+	...props
+}: ButtonProps) {
+	const element = renderProp(asChild, children, render);
 
-		const getDisableActiveStyles = () => {
-			if (!disableActive) return "";
-
-			switch (variant) {
-				case "primary":
-					return "";
-
-				case "secondary":
-					return "";
-
-				case "skeleton":
-					return "active:!bg-transparent active:!border-transparent focus-visible:!bg-transparent focus-visible:!border-transparent";
-
-				case "muted":
-					return "active:!bg-interactive-secondary-hover active:!border-transparent focus-visible:!bg-interactive-secondary-hover focus-visible:!border-transparent";
-
-				case "destructive":
-					return "active:!bg-destructive active:!border-transparent focus-visible:!bg-destructive focus-visible:!border-transparent";
-
-				case "dotted":
-					return "active:!bg-background active:!border-dashed active:!border-border focus-visible:!bg-background focus-visible:!border-dashed focus-visible:!border-border";
-
-				default:
-					return "";
-			}
-		};
-
-		if (hide) return null;
-
-		return (
-			<ButtonPrimitive
-				ref={ref}
-				data-slot="button"
-				render={effectiveRender}
-				className={cn(
-					buttonVariants({ variant, size, className }),
-					getDisableActiveStyles(),
-				)}
-				aria-busy={isLoading || undefined}
-				{...props}
-				// After the spread, so an explicit disabled={false} can't re-enable a loading button.
-				disabled={isLoading || disabled}
-				// A loading button keeps focus (aria-disabled, not native disabled) and announces it is busy.
-				focusableWhenDisabled={isLoading || focusableWhenDisabled}
-			>
-				{effectiveRender ? undefined : (
-					<>
-						{isLoading && (
-							<SmallSpinner
-								size={14}
-								className={cn(
-									"absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2",
-									variant === "primary" && "z-10",
-								)}
-							/>
+	return (
+		<ButtonPrimitive
+			data-slot="button"
+			render={element}
+			className={cn(buttonVariants({ variant, size, className }))}
+			aria-busy={isLoading || undefined}
+			{...props}
+			// After the spread, so an explicit disabled={false} can't re-enable a loading button.
+			disabled={isLoading || disabled}
+			// A loading button keeps focus (aria-disabled, not native disabled) and announces it is busy.
+			focusableWhenDisabled={isLoading || focusableWhenDisabled}
+		>
+			{element === children ? undefined : (
+				<>
+					{isLoading && (
+						<SmallSpinner
+							size={14}
+							className={cn("absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2", variant === "primary" && "z-10")}
+						/>
+					)}
+					<span
+						className={cn(
+							"inline-flex items-center gap-2",
+							variant === "primary" && "relative z-10",
+							// opacity, not visibility: the label stays the accessible name while the spinner shows.
+							isLoading && "opacity-0",
 						)}
-						<span
-							className={cn(
-								"inline-flex items-center gap-2",
-								variant === "primary" && "relative z-10 transition-none",
-								// opacity, not visibility: the label stays the accessible name while the spinner shows.
-								isLoading && "opacity-0",
-							)}
-						>
-							{children}
-						</span>
-					</>
-				)}
-			</ButtonPrimitive>
-		);
-	},
-);
-
-Button.displayName = "Button";
+					>
+						{children}
+					</span>
+				</>
+			)}
+		</ButtonPrimitive>
+	);
+}
 
 export { Button, buttonVariants };

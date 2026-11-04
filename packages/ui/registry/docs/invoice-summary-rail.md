@@ -9,15 +9,15 @@ import { InvoiceSummaryRail } from "@cynco-labs/ui";
 ## Usage
 
 ```tsx
-import { Button, InvoiceSummaryRail, buildSalesTotals } from "@cynco-labs/ui";
+import { Button, buildSalesTotals, InvoiceSummaryRail } from "@cynco-labs/ui";
 
 export default function InvoiceSummaryRailDemo() {
 	const rows = buildSalesTotals({
-		subtotal: 4120,
-		discount: 206,
-		discountPercent: 5,
-		taxes: [{ label: "SST (8%)", amount: 313.12 }],
-		deposit: 1000,
+		subtotal: "4120.00",
+		discount: "206.00",
+		discountPercent: "5.00",
+		taxes: [{ label: "SST (8%)", amount: "313.12" }],
+		deposit: "1000.00",
 	});
 	return (
 		<div className="flex flex-col gap-3">
@@ -46,16 +46,18 @@ Sticky footer of the invoice and quotation builders, so the amount stays visible
 
 ## Props
 
-rows (as for InvoiceTotalsPanel), currency, actions (buttons), defaultOpen; className and native div props.
+rows (as for InvoiceTotalsPanel), currency, actions (buttons), open / defaultOpen / onOpenChange; className and native div props.
 
 - `rows`: `SalesTotalRow[]`. Totals rows; empty means no line items yet.
 - `currency?`: `string`. Default `"MYR"`.
 - `actions?`: `ReactNode`
+- `open?`: `boolean`. Whether the breakdown is expanded. Pass it to control the rail.
 - `defaultOpen?`: `boolean`. Default `false`.
+- `onOpenChange?`: `(open: boolean) => void`
 - Also accepts `ComponentProps<"div">`.
 
 ## Notes
 
 The secondary figures hide through a container query when the rail is too narrow, so the total never truncates. When there are no rows, it reads 'Add a line item to see the total'. Responsive: The Subtotal/Discount/Tax figures show only from 36rem of container width, and the actions wrap under the total when space runs out.
 
-Category: Accounting · Sales. Source: `packages/ui/src/accounting/sales.tsx`.
+Category: Accounting · Sales. Source: `packages/ui/src/accounting/sales/invoice-builder.tsx:124-218`.

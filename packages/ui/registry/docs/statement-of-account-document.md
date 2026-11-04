@@ -9,12 +9,7 @@ import { StatementOfAccountDocument } from "@cynco-labs/ui";
 ## Usage
 
 ```tsx
-import {
-	DocumentBrandProvider,
-	StatementOfAccountDocument,
-	type DocLayout,
-	type DocLocale,
-} from "@cynco-labs/ui";
+import { type DocLayout, type DocLocale, DocumentBrandProvider, StatementOfAccountDocument } from "@cynco-labs/ui";
 
 const BRAND = {
 	company: {
@@ -175,8 +170,7 @@ const SOA = {
 		accountNumber: "3197 5520 14",
 		reference: "C-0147",
 	},
-	notes:
-		"RM 420.00 from INV-2026-1188 (August) is now over 60 days. Please settle to avoid a hold on deliveries.",
+	notes: "RM 420.00 from INV-2026-1188 (August) is now over 60 days. Please settle to avoid a hold on deliveries.",
 };
 
 export const controls = {
@@ -238,4 +232,4 @@ statement: StatementOfAccountData { number?, date, periodFrom, periodTo, account
 
 Running balances, aging buckets and totals are printed as given (negative balances in brackets, zero buckets as an em dash). Transaction type accepts a label key (invoice, payment, creditNote, debitNote, refund, journal), {en, ms} or text, so types translate. A 'Balance brought forward' row opens the table and a closing-balance row ends it. Multi-page: the table header repeats on every printed page, rows never split; aging, payment details, footer and the remittance slip follow the last row. Remittance slip: dashed cut line with scissors, pay-to, customer / account / statement date / reference, amount due, and a blank for the amount enclosed.
 
-Category: Documents. Source: `packages/ui/src/documents/operations.tsx`.
+Category: Documents. Source: `packages/ui/src/documents/operations.tsx:759-776`.

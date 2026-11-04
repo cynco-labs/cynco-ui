@@ -6,11 +6,7 @@ const MATCH_INV: BankMatch = {
 	targetReference: "INV-2026-0142",
 	confidence: 0.94,
 	status: "proposed",
-	evidence: [
-		"Amount equal (RM 12,720.00)",
-		"Reference INV-2026-0142 in description",
-		"Paid 2 days after due date",
-	],
+	evidence: ["Amount equal (RM 12,720.00)", "Reference INV-2026-0142 in description", "Paid 2 days after due date"],
 	consequence:
 		"Accepting records the receipt against INV-2026-0142 and marks it Paid. The line posts to 1200-001 Trade Receivables instead of a revenue account.",
 };
@@ -33,7 +29,7 @@ export default function BankMatchReviewDemo() {
 					date: "2026-10-29",
 					payee: "TechNova Solutions Sdn Bhd",
 					description: "IBG CR INV-2026-0142",
-					amount: 12720,
+					amount: "12720.00",
 					type: "credit",
 				}}
 				matches={[

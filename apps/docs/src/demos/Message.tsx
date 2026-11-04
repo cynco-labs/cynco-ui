@@ -1,11 +1,5 @@
+import { Message, MessageAction, MessageActions, MessageContent, MessageResponse } from "@cynco-labs/ui/ai";
 import { ArrowsClockwiseIcon, CopyIcon } from "@phosphor-icons/react";
-import {
-	Message,
-	MessageAction,
-	MessageActions,
-	MessageContent,
-	MessageResponse,
-} from "@cynco-labs/ui/ai";
 
 export default function MessageDemo() {
 	return (

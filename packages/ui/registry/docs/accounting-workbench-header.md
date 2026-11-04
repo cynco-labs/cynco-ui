@@ -9,8 +9,8 @@ import { AccountingWorkbenchHeader } from "@cynco-labs/ui";
 ## Usage
 
 ```tsx
-import { ArrowSquareOutIcon, PlusIcon } from "@phosphor-icons/react";
 import { AccountingWorkbenchHeader, IconButton } from "@cynco-labs/ui";
+import { ArrowSquareOutIcon, PlusIcon } from "@phosphor-icons/react";
 
 export default function AccountingWorkbenchHeaderDemo() {
 	return (
@@ -65,6 +65,6 @@ title, meta (e.g. "Company · FY2026 · 214 accounts · MYR"), actions (buttons)
 
 ## Notes
 
-A workbench title row and a StatGrid in one. Tiles are card surfaces (rounded-xl border bg-card) with text-tiny captions and text-sub tabular values; the single state dot uses the StatusChip tones; linked tiles show a hover arrow. Responsive: tiles are StatGrid/StatTile (auto-fit, values wrap instead of truncating); the action bar wraps under the title when narrow.
+A workbench title row and a StatGrid in one. Tiles are card surfaces (rounded-xl border bg-card) with `text-2xs` captions and `text-md` tabular values; the single state dot uses the StatusChip tones; linked tiles show a hover arrow. Responsive: tiles are StatGrid/StatTile (auto-fit, values wrap instead of truncating); the action bar wraps under the title when narrow.
 
-Category: Accounting · Ledger. Source: `packages/ui/src/accounting/ledger.tsx`.
+Category: Accounting · Ledger. Source: `packages/ui/src/accounting/ledger/workbench-header.tsx:37-104`.

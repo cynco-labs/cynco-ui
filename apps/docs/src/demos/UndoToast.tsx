@@ -1,15 +1,15 @@
-import { useEffect, useState } from "react";
 import {
 	ActionBar,
 	Button,
+	type DataColumn,
 	DataList,
 	DocStatus,
 	INVOICE_STATUS,
 	Money,
 	UndoToastProvider,
 	useUndoToast,
-	type DataColumn,
 } from "@cynco-labs/ui";
+import { useEffect, useState } from "react";
 
 const START = [
 	{
@@ -42,12 +42,17 @@ const START = [
 	},
 ];
 
+let logId = 0;
+
 function Demo() {
 	const toast = useUndoToast();
 	const [rows, setRows] = useState(START);
 	const [pending, setPending] = useState<string[]>([]);
 	const [log, setLog] = useState([
-		"Try: Void → Undo (or Ctrl/⌘+Z) · hover pauses the countdown · F8 focuses the toast, Esc dismisses",
+		{
+			id: ++logId,
+			text: "Try: Void → Undo (or Ctrl/⌘+Z) · hover pauses the countdown · F8 focuses the toast, Esc dismisses",
+		},
 	]);
 	function voidIds(ids: string[]) {
 		if (!ids.length) return;
@@ -61,20 +66,16 @@ function Demo() {
 						{" voided"}
 					</span>
 				) : (
-					ids.length + " invoices voided"
+					`${ids.length} invoices voided`
 				),
 			onUndo: () => {
 				setPending((ps) => ps.filter((x) => ids.indexOf(x) < 0));
-				setLog((L) => ["Undone: " + nos.join(", ") + " restored"].concat(L).slice(0, 3));
+				setLog((L) => [{ id: ++logId, text: `Undone: ${nos.join(", ")} restored` }].concat(L).slice(0, 3));
 			},
 			onCommit: () => {
 				setPending((ps) => ps.filter((x) => ids.indexOf(x) < 0));
-				setRows((rs) =>
-					rs.map((x) => (ids.indexOf(x.id) >= 0 ? Object.assign({}, x, { status: "voided" }) : x)),
-				);
-				setLog((L) =>
-					["Committed: " + nos.join(", ") + " voided on the server"].concat(L).slice(0, 3),
-				);
+				setRows((rs) => rs.map((x) => (ids.indexOf(x.id) >= 0 ? Object.assign({}, x, { status: "voided" }) : x)));
+				setLog((L) => [{ id: ++logId, text: `Committed: ${nos.join(", ")} voided on the server` }].concat(L).slice(0, 3));
 			},
 		});
 	}
@@ -125,7 +126,7 @@ function Demo() {
 						voidIds(overdue);
 					}}
 				>
-					{"Void " + overdue.length + " overdue"}
+					{`Void ${overdue.length} overdue`}
 				</Button>
 				<Button
 					variant="skeleton"
@@ -143,15 +144,13 @@ function Demo() {
 				getKey={(x) => x.id}
 				caption="Invoices"
 				dense
-				rowClassName={(x) =>
-					pending.indexOf(x.id) >= 0 ? "line-through decoration-tertiary-foreground" : undefined
-				}
+				rowClassName={(x) => (pending.indexOf(x.id) >= 0 ? "line-through decoration-tertiary-foreground" : undefined)}
 				trailing={(x) =>
 					x.status === "voided" || pending.indexOf(x.id) >= 0 ? null : (
 						<Button
 							variant="skeleton"
 							size="sm"
-							aria-label={"Void " + x.no}
+							aria-label={`Void ${x.no}`}
 							onClick={() => {
 								voidIds([x.id]);
 							}}
@@ -162,8 +161,8 @@ function Demo() {
 				}
 			/>
 			<ul className="flex flex-col gap-0.5 text-xs text-tertiary-foreground">
-				{log.map((t, i) => (
-					<li key={i + t}>{t}</li>
+				{log.map((e) => (
+					<li key={e.id}>{e.text}</li>
 				))}
 			</ul>
 		</div>

@@ -44,13 +44,7 @@ const TREE = [
 	]),
 	n("1500", "1500", "Property, Plant & Equipment", "asset", 0, [
 		n("1500-000", "1500-000", "Office Equipment", "asset", 42600),
-		n(
-			"1510-000",
-			"1510-000",
-			"Accumulated Depreciation – Office Equipment",
-			"contra_asset",
-			-14200,
-		),
+		n("1510-000", "1510-000", "Accumulated Depreciation – Office Equipment", "contra_asset", -14200),
 	]),
 	n("2000", "2000", "Current Liabilities", "liability", 0, [
 		n("2000-001", "2000-001", "Trade Payables", "liability", 58320.75),
@@ -58,9 +52,7 @@ const TREE = [
 		n("2300-001", "2300-001", "EPF Payable", "liability", 4440.0),
 		n("2400-000", "2400-000", "Director Loan (legacy)", "liability", 0, null, { isActive: false }),
 	]),
-	n("3000", "3000", "Equity", "equity", 0, [
-		n("3100-000", "3100-000", "Retained Earnings", "equity", 286400.0),
-	]),
+	n("3000", "3000", "Equity", "equity", 0, [n("3100-000", "3100-000", "Retained Earnings", "equity", 286400.0)]),
 	n("4000", "4000", "Revenue", "revenue", 0, [
 		n("4000-001", "4000-001", "Sales – Consulting Services", "revenue", 512300.0),
 	]),
@@ -84,11 +76,13 @@ The Chart of Accounts page's main list; pair with CoaAccountPanel for the select
 
 ## Props
 
-nodes [{ id, accountCode, accountName, accountType, balance?, isHeaderAccount?, isActive?, children? }], currency?, defaultExpandedIds?, selectedId?, onSelect?, className? (merged on the root) and native props.
+nodes [{ id, accountCode, accountName, accountType, balance?, isHeaderAccount?, isActive?, children? }], currency?, expandedIds? / defaultExpandedIds? / onExpandedChange?, selectedId?, onSelect?, className? (merged on the root) and native props.
 
 - `nodes`: `CoaTreeNode[]`
 - `currency?`: `string`. Default `"MYR"`.
-- `defaultExpandedIds?`: `string[]`
+- `expandedIds?`: `string[]`. Controlled set of expanded node ids.
+- `defaultExpandedIds?`: `string[]`. Which nodes start expanded for uncontrolled use; the top level by default.
+- `onExpandedChange?`: `(ids: string[]) => void`
 - `selectedId?`: `string`. Controlled selection.
 - `defaultSelectedId?`: `string`. Initial selection for uncontrolled use.
 - `onSelect?`: `(id: string) => void`
@@ -98,4 +92,4 @@ nodes [{ id, accountCode, accountName, accountType, balance?, isHeaderAccount?, 
 
 Keeps the ARIA tree (role=treeitem, aria-level/expanded/selected, Enter/Space/Arrow keys). Header accounts show "—", negatives in text-destructive, Inactive as a neutral StatusChip. Responsive: Container-responsive: below 28rem the code sits above the name, below 36rem the Type column is dropped; headers reuse the row layout so they always line up.
 
-Category: Accounting · Ledger. Source: `packages/ui/src/accounting/ledger.tsx`.
+Category: Accounting · Ledger. Source: `packages/ui/src/accounting/ledger/coa-tree.tsx:203-323`.

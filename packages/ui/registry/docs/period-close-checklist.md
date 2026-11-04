@@ -66,9 +66,12 @@ In the close-period flow before a period is closed.
 
 ## Props
 
-items [{ id, status: fail|attention|warn|pass, label, detail, task?: depreciation|recognition|fxRevaluation, unclosedPeriod?, failure?, attention?: AttentionCard[] }], runningTask?, busy?, onRunTask?, onClosePeriodFirst?, className? (merged on the root) and native props.
+items [{ id, status: fail|attention|warn|pass, label, detail, task?: depreciation|recognition|fxRevaluation, unclosedPeriod?, failure?, attention?: AttentionCard[] }], notes? / defaultNotes? / onNotesChange?, runningTask?, busy?, onRunTask?, onClosePeriodFirst?, className? (merged on the root) and native props.
 
 - `items`: `CloseCheckItem[]`
+- `notes?`: `Record<string, string>`. Controlled attention-card notes, keyed by `CloseAttentionCard.key`.
+- `defaultNotes?`: `Record<string, string>`. Initial notes for uncontrolled use.
+- `onNotesChange?`: `(notes: Record<string, string>) => void`
 - `runningTask?`: `"depreciation" | "recognition" | "fxRevaluation" | null`
 - `busy?`: `boolean`
 - `onRunTask?`: `(task: NonNullable<CloseCheckItem["task"]>) => void`
@@ -77,6 +80,6 @@ items [{ id, status: fail|attention|warn|pass, label, detail, task?: depreciatio
 
 ## Notes
 
-Passed is a disclosure with Show/Hide. Close notes are kept in local state. Responsive: Passed checks use Collapsible and go two-column from 36rem; action buttons wrap.
+Passed is a disclosure with Show/Hide. Close notes work controlled or uncontrolled (notes / defaultNotes / onNotesChange). Responsive: Passed checks use Collapsible and go two-column from 36rem; action buttons wrap.
 
-Category: Accounting · Ledger. Source: `packages/ui/src/accounting/ledger.tsx`.
+Category: Accounting · Ledger. Source: `packages/ui/src/accounting/ledger/period-close.tsx:300-430`.

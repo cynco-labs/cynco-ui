@@ -1,6 +1,6 @@
-import { cn } from "../../lib/utils";
 import { PreviewCard as PreviewCardPrimitive } from "@base-ui/react/preview-card";
-import * as React from "react";
+import { renderProp } from "../../lib/render";
+import { cn } from "../../lib/utils";
 
 function HoverCard({
 	openDelay: _openDelay,
@@ -16,21 +16,17 @@ function HoverCard({
 function HoverCardTrigger({
 	asChild,
 	children,
+	render,
 	...props
 }: PreviewCardPrimitive.Trigger.Props & { asChild?: boolean }) {
-	if (asChild && React.isValidElement(children)) {
-		return (
-			<PreviewCardPrimitive.Trigger
-				data-slot="hover-card-trigger"
-				render={children}
-				{...props}
-			/>
-		);
-	}
+	const element = renderProp(asChild, children, render);
 	return (
-		<PreviewCardPrimitive.Trigger data-slot="hover-card-trigger" {...props}>
-			{children}
-		</PreviewCardPrimitive.Trigger>
+		<PreviewCardPrimitive.Trigger
+			data-slot="hover-card-trigger"
+			render={element}
+			{...props}
+			{...(element === children ? {} : { children })}
+		/>
 	);
 }
 
@@ -40,11 +36,7 @@ function HoverCardContent({
 	sideOffset = 4,
 	side = "bottom",
 	...props
-}: PreviewCardPrimitive.Popup.Props &
-	Pick<
-		PreviewCardPrimitive.Positioner.Props,
-		"align" | "side" | "sideOffset"
-	>) {
+}: PreviewCardPrimitive.Popup.Props & Pick<PreviewCardPrimitive.Positioner.Props, "align" | "side" | "sideOffset">) {
 	return (
 		<PreviewCardPrimitive.Portal data-slot="hover-card-portal">
 			<PreviewCardPrimitive.Positioner
@@ -52,12 +44,12 @@ function HoverCardContent({
 				side={side}
 				sideOffset={sideOffset}
 				positionMethod="fixed"
-				className="isolate z-[300]"
+				className="isolate z-popover"
 			>
 				<PreviewCardPrimitive.Popup
 					data-slot="hover-card-content"
 					className={cn(
-						"bg-popover text-popover-foreground data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 w-64 origin-(--transform-origin) rounded-md border p-4 shadow-md outline-hidden",
+						"bg-overlay text-muted-foreground data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 w-64 origin-(--transform-origin) rounded-md border p-4 shadow-md outline-hidden",
 						className,
 					)}
 					{...props}
@@ -67,4 +59,4 @@ function HoverCardContent({
 	);
 }
 
-export { HoverCard, HoverCardTrigger, HoverCardContent };
+export { HoverCard, HoverCardContent, HoverCardTrigger };

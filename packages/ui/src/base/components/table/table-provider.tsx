@@ -1,9 +1,5 @@
-import {
-	TableContext,
-	toTableContextValue,
-	type TableProps,
-} from "./table-context";
 import type { ReactNode } from "react";
+import { TableContext, type TableProps, toTableContextValue } from "./table-context";
 
 interface TableProviderProps<T> {
 	children: ReactNode;
@@ -14,14 +10,8 @@ export function TableProvider<T>(props: TableProviderProps<T>) {
 	const { children, config } = props;
 
 	if (!config) {
-		return (
-			<div className="text-muted-foreground text-sm">
-				Table config is required
-			</div>
-		);
+		return <div className="text-muted-foreground text-sm">Table config is required</div>;
 	}
 
-	return (
-		<TableContext.Provider value={toTableContextValue(config)}>{children}</TableContext.Provider>
-	);
+	return <TableContext.Provider value={toTableContextValue(config)}>{children}</TableContext.Provider>;
 }

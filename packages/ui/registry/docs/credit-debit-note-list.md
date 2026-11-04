@@ -21,7 +21,7 @@ export default function CreditDebitNoteListDemo() {
 					noteNumber: "CN-2026-0018",
 					noteType: "credit",
 					customerName: "Tropika Kopi Enterprise",
-					totalAmount: 1620,
+					totalAmount: "1620.00",
 					status: "partially_applied",
 					date: "2026-10-21",
 				},
@@ -30,7 +30,7 @@ export default function CreditDebitNoteListDemo() {
 					noteNumber: "DN-2026-0007",
 					noteType: "debit",
 					customerName: "Nusantara Logistik Bhd",
-					totalAmount: 864,
+					totalAmount: "864.00",
 					status: "partially_paid",
 					date: "2026-10-18",
 				},
@@ -39,7 +39,7 @@ export default function CreditDebitNoteListDemo() {
 					noteNumber: "CN-2026-0017",
 					noteType: "credit",
 					customerName: "Bayu Dental Clinic",
-					totalAmount: 350,
+					totalAmount: "350.00",
 					status: "fully_applied",
 					date: "2026-10-09",
 				},
@@ -48,7 +48,7 @@ export default function CreditDebitNoteListDemo() {
 					noteNumber: null,
 					noteType: "credit",
 					customerName: "Kedai Runcit Pak Ali",
-					totalAmount: 48.6,
+					totalAmount: "48.60",
 					status: "draft",
 					date: "2026-10-29",
 				},
@@ -64,10 +64,10 @@ The Credit & Debit Notes page.
 
 ## Props
 
-notes ({id, noteNumber, noteType, customerName, totalAmount, currency, status, date}) and onOpen(id); className.
+notes ({id, noteNumber, noteType, customerName, totalAmount, currency, status, date}) and onRowClick(note); className.
 
 - `notes`: `SalesNoteRow[]`
-- `onOpen?`: `(id: string) => void`
+- `onRowClick?`: `(note: SalesNoteRow) => void`. Called with the whole note when its row is opened; omit to leave rows inert.
 - `onRowAction?`: `(note: SalesNoteRow) => void`. Called from a row's actions button; omit to hide the button.
 - Also accepts `ComponentProps<"div">`.
 
@@ -75,4 +75,4 @@ notes ({id, noteNumber, noteType, customerName, totalAmount, currency, status, d
 
 On the table tray, with statuses shown through DocStatus. The note type is a neutral tag with a coloured square: hue goes in the square, never the label. A draft note shows 'Draft' in place of its number. Responsive: built on DataList: a table from 48rem of container width, a stacked card per note below (note number and amount, then type and status, then customer and date).
 
-Category: Accounting · Sales. Source: `packages/ui/src/accounting/sales.tsx`.
+Category: Accounting · Sales. Source: `packages/ui/src/accounting/sales/credit-debit-notes.tsx:157-231`.

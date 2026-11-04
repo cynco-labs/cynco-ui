@@ -21,7 +21,7 @@ export default function RecurringTemplateTableDemo() {
 					customerEmail: "admin@bayudental.my",
 					frequency: "monthly",
 					nextGenerationDate: "2026-11-01",
-					totalAmount: 1890,
+					totalAmount: "1890.00",
 					totalGenerated: 14,
 					status: "active",
 				},
@@ -31,7 +31,7 @@ export default function RecurringTemplateTableDemo() {
 					customerEmail: "finance@majujaya.com.my",
 					frequency: "quarterly",
 					nextGenerationDate: "2027-01-01",
-					totalAmount: 10800,
+					totalAmount: "10800.00",
 					totalGenerated: 5,
 					status: "active",
 				},
@@ -41,7 +41,7 @@ export default function RecurringTemplateTableDemo() {
 					customerEmail: "hello@tropikakopi.my",
 					frequency: "weekly",
 					nextGenerationDate: null,
-					totalAmount: 420,
+					totalAmount: "420.00",
 					totalGenerated: 31,
 					status: "paused",
 				},
@@ -76,4 +76,4 @@ templates ({id, customerName, customerEmail, frequency, nextGenerationDate, tota
 
 Frequencies read Weekly through Annually; the lifecycle status is a DocStatus chip, with Paused on the pause glyph. Missing values show an em dash. Responsive: built on DataList: a table from 36rem of container width, stacked cards below.
 
-Category: Accounting · Sales. Source: `packages/ui/src/accounting/sales.tsx`.
+Category: Accounting · Sales. Source: `packages/ui/src/accounting/sales/recurring-invoices.tsx:41-117`.

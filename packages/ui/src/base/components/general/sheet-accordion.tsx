@@ -1,10 +1,10 @@
 "use client";
 
-import { CaretDownIcon } from "@phosphor-icons/react";
-import { Separator } from "../ui/separator";
-import { cn } from "../../lib/utils";
 import { Accordion as AccordionPrimitive } from "@base-ui/react/accordion";
+import { CaretDownIcon } from "@phosphor-icons/react";
 import type * as React from "react";
+import { cn } from "../../lib/utils";
+import { Separator } from "../ui/separator";
 
 interface SheetAccordionProps {
 	children: React.ReactNode;
@@ -60,9 +60,9 @@ function SheetAccordionItem({
 	titleClassName,
 }: SheetAccordionItemProps) {
 	return (
-		<AccordionPrimitive.Item value={value} className={cn("", className)}>
+		<AccordionPrimitive.Item data-slot="sheet-accordion-item" value={value} className={cn("", className)}>
 			<AccordionPrimitive.Header className="flex">
-				<AccordionPrimitive.Trigger className="group flex flex-1 cursor-pointer items-start justify-between gap-4 px-4 py-3 text-left transition-all outline-none focus-ring disabled:pointer-events-none disabled:opacity-50 [&[aria-expanded=true]>svg]:rotate-180">
+				<AccordionPrimitive.Trigger className="group flex flex-1 cursor-pointer items-start justify-between gap-4 px-4 py-3 text-left transition-colors outline-none focus-ring disabled:pointer-events-none disabled:opacity-50 [&[aria-expanded=true]>svg]:rotate-180">
 					{/* Phrasing content only: the trigger is a <button> inside the Header's <h3>. */}
 					<span className="flex flex-col gap-1">
 						<span
@@ -73,11 +73,9 @@ function SheetAccordionItem({
 						>
 							{title}
 						</span>
-						{description && (
-							<span className="text-body-secondary text-sm">{description}</span>
-						)}
+						{description && <span className="text-sm text-subtle text-sm">{description}</span>}
 					</span>
-					<CaretDownIcon className="text-tertiary-foreground pointer-events-none size-4 shrink-0 translate-y-0.5 transition-all duration-200 group-hover:text-foreground" />
+					<CaretDownIcon className="text-tertiary-foreground pointer-events-none size-4 shrink-0 translate-y-0.5 transition-[color,transform] duration-200 group-hover:text-foreground" />
 				</AccordionPrimitive.Trigger>
 			</AccordionPrimitive.Header>
 			<AccordionPrimitive.Panel className="data-closed:animate-accordion-up data-open:animate-accordion-down overflow-hidden">

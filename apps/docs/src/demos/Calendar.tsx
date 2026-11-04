@@ -1,5 +1,5 @@
-import { useState } from "react";
 import { Calendar } from "@cynco-labs/ui";
+import { useState } from "react";
 
 export default function CalendarDemo() {
 	const [s, setS] = useState<Date | undefined>(new Date(2026, 9, 29));

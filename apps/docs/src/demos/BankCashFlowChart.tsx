@@ -11,7 +11,7 @@ const MONTHS: [string, number, number][] = [
 
 export default function BankCashFlowChartDemo() {
 	const d = MONTHS.map(([month, credits, debits]) => ({
-		label: month + " 2026",
+		label: `${month} 2026`,
 		credits,
 		debits,
 		net: credits - debits,

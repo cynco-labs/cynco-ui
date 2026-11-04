@@ -1,7 +1,13 @@
 "use client";
 
+import { Menu as MenuPrimitive } from "@base-ui/react/menu";
+import { CheckIcon, FadersHorizontalIcon } from "@phosphor-icons/react";
+import type { Column } from "@tanstack/react-table";
+import { useMemo, useState } from "react";
+import type { ColumnGroup } from "../../hooks/use-column-visibility";
+import { overlayItemClassName, overlayItemHighlightClassName } from "../../lib/overlay-classes";
+import { cn } from "../../lib/utils";
 import { IconButton } from "../general/icon-button";
-import { useTableContext } from "./table-context";
 import { Button } from "../ui/button";
 import {
 	DropdownMenu,
@@ -12,16 +18,7 @@ import {
 	DropdownMenuSubTrigger,
 	DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import type { ColumnGroup } from "../../hooks/use-column-visibility";
-import {
-	overlayItemClassName,
-	overlayItemHighlightClassName,
-} from "../../lib/overlay-classes";
-import { cn } from "../../lib/utils";
-import { Menu as MenuPrimitive } from "@base-ui/react/menu";
-import { CheckIcon, FadersHorizontalIcon } from "@phosphor-icons/react";
-import type { Column } from "@tanstack/react-table";
-import { useMemo, useState } from "react";
+import { useTableContext } from "./table-context";
 
 function ColumnCheckboxItem<T>({ column }: { column: Column<T> }) {
 	const header = column.columnDef.header;
@@ -58,16 +55,8 @@ function ColumnCheckboxItem<T>({ column }: { column: Column<T> }) {
 	);
 }
 
-function ColumnGroupSubmenu<T>({
-	group,
-	columns,
-}: {
-	group: ColumnGroup;
-	columns: Column<T>[];
-}) {
-	const groupColumns = columns.filter((col) =>
-		group.columnIds.includes(col.id),
-	);
+function ColumnGroupSubmenu<T>({ group, columns }: { group: ColumnGroup; columns: Column<T>[] }) {
+	const groupColumns = columns.filter((col) => group.columnIds.includes(col.id));
 
 	const visibleCount = groupColumns.filter((col) => col.getIsVisible()).length;
 
@@ -78,16 +67,12 @@ function ColumnGroupSubmenu<T>({
 			<DropdownMenuSubTrigger className="flex items-center gap-2 cursor-pointer text-sm">
 				{group.label}
 				{visibleCount > 0 && (
-					<span className="text-xs text-tertiary-foreground bg-muted px-1 py-0 rounded-md">
-						{visibleCount}
-					</span>
+					<span className="text-xs text-tertiary-foreground bg-muted px-1 py-0 rounded-md">{visibleCount}</span>
 				)}
 			</DropdownMenuSubTrigger>
 			<DropdownMenuSubContent className="min-w-[200px]">
 				{groupColumns.length === 0 ? (
-					<div className="px-2 py-3 text-center text-tertiary-foreground text-sm">
-						No columns available
-					</div>
+					<div className="px-2 py-3 text-center text-tertiary-foreground text-sm">No columns available</div>
 				) : (
 					<div className="max-h-64 overflow-y-auto">
 						{groupColumns.map((column) => (
@@ -100,7 +85,7 @@ function ColumnGroupSubmenu<T>({
 	);
 }
 
-export function TableColumnVisibility() {
+export function TableColumnVisibility({ className, ...props }: React.ComponentProps<typeof Button>) {
 	const [isOpen, setIsOpen] = useState(false);
 
 	const {
@@ -124,9 +109,7 @@ export function TableColumnVisibility() {
 
 	if (!enableColumnVisibility) return null;
 
-	const allColumns = table
-		.getAllColumns()
-		.filter((column) => column.getCanHide());
+	const allColumns = table.getAllColumns().filter((column) => column.getCanHide());
 
 	const baseColumns = allColumns.filter((col) => !groupedColumnIds.has(col.id));
 
@@ -135,57 +118,43 @@ export function TableColumnVisibility() {
 			<DropdownMenuTrigger asChild>
 				{columnVisibilityInToolbar ? (
 					<IconButton
+						data-slot="table-column-visibility"
 						variant="secondary"
 						aria-label="Display"
-						className={cn(isOpen && "btn-secondary-active")}
-						icon={
-							<FadersHorizontalIcon
-								size={14}
-								className="text-tertiary-foreground"
-							/>
-						}
+						icon={<FadersHorizontalIcon size={14} className="text-tertiary-foreground" />}
+						{...props}
+						className={cn(isOpen && "border-primary bg-interactive-secondary-hover", className)}
 					>
-						<span className="hidden md:inline">Display</span>
+						<span className="hidden @md:inline">Display</span>
 					</IconButton>
 				) : (
 					<Button
+						data-slot="table-column-visibility"
 						aria-label="Display"
 						variant="skeleton"
 						size="icon"
-						className={cn(
-							"p-0 size-5 pointer-events-auto bg-card",
-							isOpen && "border-primary bg-interactive-secondary-hover",
-						)}
 						onClick={(e) => {
 							e.stopPropagation();
 						}}
+						{...props}
+						className={cn(
+							"p-0 size-5 pointer-events-auto bg-card",
+							isOpen && "border-primary bg-interactive-secondary-hover",
+							className,
+						)}
 					>
-						<FadersHorizontalIcon
-							size={14}
-							weight="bold"
-							className="text-tertiary-foreground size-3.5"
-						/>
+						<FadersHorizontalIcon size={14} weight="bold" className="text-tertiary-foreground size-3.5" />
 					</Button>
 				)}
 			</DropdownMenuTrigger>
-			<DropdownMenuContent
-				align="start"
-				side="right"
-				className="min-w-[150px] relative"
-			>
+			<DropdownMenuContent align="start" side="right" className="min-w-[150px] relative">
 				{baseColumns.map((column) => (
 					<ColumnCheckboxItem key={column.id} column={column} />
 				))}
 
-				{columnGroups.length > 0 && baseColumns.length > 0 && (
-					<DropdownMenuSeparator />
-				)}
+				{columnGroups.length > 0 && baseColumns.length > 0 && <DropdownMenuSeparator />}
 				{columnGroups.map((group) => (
-					<ColumnGroupSubmenu
-						key={group.key}
-						group={group}
-						columns={allColumns}
-					/>
+					<ColumnGroupSubmenu key={group.key} group={group} columns={allColumns} />
 				))}
 
 				{onColumnVisibilitySave && (
@@ -201,7 +170,7 @@ export function TableColumnVisibility() {
 							<div className="p-1 pt-2">
 								<Button
 									variant="primary"
-									size="mini"
+									size="sm"
 									className="w-full h-6 text-xs"
 									onClick={(e) => {
 										e.stopPropagation();

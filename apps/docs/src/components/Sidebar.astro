@@ -24,16 +24,16 @@ const isCurrent = (href: string) => (href === current ? "page" : undefined);
 					placeholder="Search"
 					autocomplete="off"
 					spellcheck="false"
-					class="h-8 w-full rounded-lg border border-border bg-interactive-secondary pl-8 pr-10 text-[13px] text-foreground outline-none placeholder:text-placeholder focus:border-input-border-focus focus-visible:outline-none focus:shadow-[var(--input-shadow-focus)] [&::-webkit-search-cancel-button]:appearance-none"
+					class="h-8 w-full rounded-lg border border-border bg-interactive-secondary pl-8 pr-10 text-sm text-foreground outline-none placeholder:text-placeholder focus:border-input-border-focus focus-visible:outline-none focus:shadow-[var(--input-shadow-focus)] [&::-webkit-search-cancel-button]:appearance-none"
 				/>
-				<kbd class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 rounded-md border border-border px-1 font-mono text-[10.5px] text-subtle">/</kbd>
+				<kbd class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 rounded-md border border-border px-1 font-mono text-2xs text-subtle">/</kbd>
 			</label>
 		</div>
 		<nav id="nav-list" class="scrollbar-quiet flex-1 overflow-y-auto px-4 pb-16 lg:pl-0 lg:pr-4">
 			{
 				GUIDES.map((g) => (
 					<div class="nav-section mt-5 first:mt-3">
-						<p class="mb-1.5 px-2.5 text-[12px] font-semibold text-foreground">{g.section}</p>
+						<p class="mb-1.5 px-2.5 text-xs font-semibold text-foreground">{g.section}</p>
 						<ul>
 							{g.items.map((item) => (
 								<li class="nav-item" data-label={item.label.toLowerCase()}>
@@ -47,7 +47,7 @@ const isCurrent = (href: string) => (href === current ? "page" : undefined);
 				))
 			}
 			<div class="nav-section mt-5">
-				<p class="mb-1.5 px-2.5 text-[12px] font-semibold text-foreground">Components</p>
+				<p class="mb-1.5 px-2.5 text-xs font-semibold text-foreground">Components</p>
 				<ul>
 					<li class="nav-item" data-label="all components overview">
 						<a class="nav-link" href="/components" aria-current={isCurrent("/components")}>Overview</a>
@@ -60,17 +60,17 @@ const isCurrent = (href: string) => (href === current ? "page" : undefined);
 					const count = cat.groups.reduce((n, g) => n + g.items.length, 0);
 					return (
 						<details class="nav-section nav-cat group/cat mt-1" open={open} data-open={open ? "" : undefined}>
-							<summary class="flex cursor-pointer select-none list-none items-center justify-between rounded-md px-2.5 py-1.5 text-[13.5px] font-medium text-muted-foreground hover:bg-muted hover:text-foreground [&::-webkit-details-marker]:hidden">
+							<summary class="flex cursor-pointer select-none list-none items-center justify-between rounded-md px-2.5 py-1.5 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground [&::-webkit-details-marker]:hidden">
 								<span>{cat.section}</span>
 								<span class="flex items-center gap-2">
-									<span class="text-[11.5px] font-normal tabular-nums text-subtle">{count}</span>
+									<span class="text-xs font-normal tabular-nums text-subtle">{count}</span>
 									<svg class="size-3 text-subtle transition-transform group-open/cat:rotate-90" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M181.66 133.66l-80 80a8 8 0 0 1-11.32-11.32L164.69 128 90.34 53.66a8 8 0 0 1 11.32-11.32l80 80a8 8 0 0 1 0 11.32Z"></path></svg>
 								</span>
 							</summary>
 							<div class="mb-2 ml-2.5 border-l border-border pl-2">
 								{cat.groups.map((g) => (
 									<div class="nav-group">
-										{cat.grouped && <p class="nav-group-title mb-0.5 mt-3 px-2.5 text-[11.5px] font-medium text-subtle">{g.group}</p>}
+										{cat.grouped && <p class="nav-group-title mb-0.5 mt-3 px-2.5 text-xs font-medium text-subtle">{g.group}</p>}
 										<ul>
 											{g.items.map((c) => (
 												<li class="nav-item" data-label={`${c.name} ${c.group}`.toLowerCase()}>
@@ -87,7 +87,7 @@ const isCurrent = (href: string) => (href === current ? "page" : undefined);
 					);
 				})
 			}
-			<p id="nav-empty" class="hidden px-2.5 pt-6 text-[13px] text-subtle">No pages match.</p>
+			<p id="nav-empty" class="hidden px-2.5 pt-6 text-sm text-subtle">No pages match.</p>
 		</nav>
 	</div>
 </aside>

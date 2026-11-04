@@ -1,5 +1,5 @@
-import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@cynco-labs/ui";
+import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
 
 const data = [
 	{ m: "May", v: 320 },

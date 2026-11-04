@@ -23,8 +23,7 @@ export default function ReceiptExtractionProgressDemo() {
 				<ReceiptExtractionProgress
 					view={{
 						kind: "failed",
-						message:
-							"This looks like a scanned image with no readable text. Fill in the details manually.",
+						message: "This looks like a scanned image with no readable text. Fill in the details manually.",
 						retryable: false,
 					}}
 				/>
@@ -57,4 +56,4 @@ view ({kind:'running', stage, detail, slow} | {kind:'timed-out'} | {kind:'done',
 
 Responsive: actions sit under the message, so it reads at any width.
 
-Category: Accounting · Expenses & parties. Source: `packages/ui/src/accounting/parties.tsx`.
+Category: Accounting · Expenses & parties. Source: `packages/ui/src/accounting/parties/receipt-extraction.tsx:42-219`.

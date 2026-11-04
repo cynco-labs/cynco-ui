@@ -1,4 +1,3 @@
-import { CopyIcon } from "@phosphor-icons/react";
 import {
 	Artifact,
 	ArtifactAction,
@@ -9,6 +8,7 @@ import {
 	ArtifactHeader,
 	ArtifactTitle,
 } from "@cynco-labs/ui/ai";
+import { CopyIcon } from "@phosphor-icons/react";
 
 export default function ArtifactDemo() {
 	return (
@@ -25,7 +25,7 @@ export default function ArtifactDemo() {
 					<ArtifactClose />
 				</ArtifactActions>
 			</ArtifactHeader>
-			<ArtifactContent className="text-body">
+			<ArtifactContent className="text-sm font-medium text-muted-foreground">
 				{"6210 Utilities, Dr 1,184.30 · 2300 Accruals, Cr 1,184.30"}
 			</ArtifactContent>
 		</Artifact>

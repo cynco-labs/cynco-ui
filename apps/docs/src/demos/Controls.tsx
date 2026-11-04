@@ -1,13 +1,4 @@
-import {
-	Canvas,
-	Controls,
-	Edge,
-	Node,
-	NodeContent,
-	NodeDescription,
-	NodeHeader,
-	NodeTitle,
-} from "@cynco-labs/ui/ai";
+import { Canvas, Controls, Edge, Node, NodeContent, NodeDescription, NodeHeader, NodeTitle } from "@cynco-labs/ui/ai";
 
 const NT = {
 	card: ({ data }: { data: { title: string; sub: string; body: string } }) => (
@@ -16,7 +7,7 @@ const NT = {
 				<NodeTitle>{data.title}</NodeTitle>
 				<NodeDescription>{data.sub}</NodeDescription>
 			</NodeHeader>
-			<NodeContent className="text-body">{data.body}</NodeContent>
+			<NodeContent className="text-sm font-medium text-muted-foreground">{data.body}</NodeContent>
 		</Node>
 	),
 };

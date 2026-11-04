@@ -13,9 +13,7 @@ import { BankBalanceEquation } from "@cynco-labs/ui";
 import type { ReactNode } from "react";
 
 export default function BankBalanceEquationDemo() {
-	const sec = (t: ReactNode) => (
-		<div className="text-tiny uppercase tracking-[0.04em] text-tertiary-foreground">{t}</div>
-	);
+	const sec = (t: ReactNode) => <div className="text-2xs uppercase tracking-[0.04em] text-tertiary-foreground">{t}</div>;
 	return (
 		<div className="flex flex-col gap-4">
 			{sec("Ties")}
@@ -77,4 +75,4 @@ terms [{label, amount (number | null unknown | undefined pending), op, hint}], r
 
 Terms wrap onto new lines; verdict chips wrap their label instead of truncating.
 
-Category: Accounting · Banking. Source: `packages/ui/src/accounting/banking.tsx`.
+Category: Accounting · Banking. Source: `packages/ui/src/accounting/banking/balance-equation.tsx:152-211`.

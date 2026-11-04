@@ -1,14 +1,6 @@
 "use client";
 
 import { CaretDownIcon, CaretLeftIcon, CaretRightIcon, CaretUpIcon } from "@phosphor-icons/react";
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "./select";
-import { cn } from "../../lib/utils";
 import { setMonth, setYear } from "date-fns";
 import type * as React from "react";
 import {
@@ -16,8 +8,11 @@ import {
 	DayPicker,
 	defaultLocale,
 	type MonthCaptionProps,
+	type RootProps,
 	useDayPicker,
 } from "react-day-picker";
+import { cn } from "../../lib/utils";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./select";
 
 const MONTHS = [
 	"January",
@@ -35,13 +30,18 @@ const MONTHS = [
 ] as const;
 
 const NAV_BUTTON =
-	"inline-flex items-center justify-center size-7 rounded-md text-tertiary-foreground hover:bg-accent hover:text-foreground transition-colors p-0 outline-none focus-ring disabled:opacity-30 disabled:pointer-events-none aria-disabled:opacity-30 aria-disabled:pointer-events-none";
+	"inline-flex items-center justify-center size-7 rounded-md text-tertiary-foreground hover:bg-interactive-secondary-hover hover:text-foreground transition-colors p-0 outline-none focus-ring disabled:opacity-30 disabled:pointer-events-none aria-disabled:opacity-30 aria-disabled:pointer-events-none";
 
 const CHEVRONS = { left: CaretLeftIcon, right: CaretRightIcon, up: CaretUpIcon, down: CaretDownIcon };
 
 function Chevron({ orientation = "left", className, size, style }: ChevronProps) {
 	const Icon = CHEVRONS[orientation];
 	return <Icon aria-hidden="true" className={cn("size-4", className)} size={size} style={style} />;
+}
+
+/** DayPicker owns the root element, so the slot goes on the component that renders it. */
+function CalendarRoot({ rootRef, ...props }: RootProps) {
+	return <div ref={rootRef} data-slot="calendar" {...props} />;
 }
 
 /** Fixed-width month and year triggers keep the popover from resizing, so the arrows never move under the cursor. */
@@ -82,7 +82,10 @@ function CalendarCaption({ calendarMonth, displayIndex: _displayIndex, id }: Mon
 					onValueChange={(v) => goToMonth(setMonth(displayMonth, Number(v)))}
 					items={MONTHS.map((name, i) => ({ value: String(i), label: name }))}
 				>
-					<SelectTrigger aria-label={monthLabel} className="h-7 w-[7.25rem] justify-between border-none shadow-none px-2 text-sm font-medium text-foreground hover:bg-accent gap-1">
+					<SelectTrigger
+						aria-label={monthLabel}
+						className="h-7 w-[7.25rem] justify-between border-none shadow-none px-2 text-sm font-medium text-foreground hover:bg-interactive-secondary-hover gap-1"
+					>
 						<SelectValue />
 					</SelectTrigger>
 					<SelectContent>
@@ -98,7 +101,10 @@ function CalendarCaption({ calendarMonth, displayIndex: _displayIndex, id }: Mon
 					value={String(displayMonth.getFullYear())}
 					onValueChange={(v) => goToMonth(setYear(displayMonth, Number(v)))}
 				>
-					<SelectTrigger aria-label={yearLabel} className="h-7 w-[4.5rem] justify-between border-none shadow-none px-2 text-sm font-medium text-foreground hover:bg-accent gap-1">
+					<SelectTrigger
+						aria-label={yearLabel}
+						className="h-7 w-[4.5rem] justify-between border-none shadow-none px-2 text-sm font-medium text-foreground hover:bg-interactive-secondary-hover gap-1"
+					>
 						<SelectValue />
 					</SelectTrigger>
 					<SelectContent>
@@ -146,9 +152,9 @@ function Calendar({
 			fixedWeeks={fixedWeeks}
 			// The dropdown caption carries its own arrows.
 			hideNavigation={hasDropdown || props.hideNavigation}
-			className={cn("relative w-fit p-3", className)}
+			className={cn("@container relative w-fit p-3", className)}
 			classNames={{
-				months: "flex flex-col sm:flex-row gap-2",
+				months: "flex flex-col @sm:flex-row gap-2",
 				month: "flex flex-col gap-4",
 				month_caption: "flex h-7 items-center justify-center",
 				caption_label: "text-sm font-medium text-foreground",
@@ -164,13 +170,15 @@ function Calendar({
 					props.mode === "range" ? "first:rounded-l-md last:rounded-r-md" : "rounded-md",
 				),
 				day_button:
-					"inline-flex items-center justify-center size-8 p-0 font-normal text-muted-foreground rounded-md cursor-pointer outline-none focus-ring hover:bg-accent hover:text-accent-foreground transition-colors",
+					"inline-flex items-center justify-center size-8 p-0 font-normal text-muted-foreground rounded-md cursor-pointer outline-none focus-ring hover:bg-interactive-secondary-hover hover:text-accent-foreground transition-colors",
 				selected:
 					"[&>button]:bg-primary [&>button]:text-primary-foreground [&>button]:hover:bg-primary [&>button]:hover:text-primary-foreground",
-				range_start: "rounded-l-md bg-accent",
-				range_end: "rounded-r-md bg-accent",
-				range_middle: "bg-accent [&>button]:!bg-transparent [&>button]:!text-accent-foreground",
-				today: "[&>button]:font-medium [&:not([aria-selected])>button]:bg-accent [&:not([aria-selected])>button]:text-accent-foreground",
+				range_start: "rounded-l-md bg-interactive-secondary-hover",
+				range_end: "rounded-r-md bg-interactive-secondary-hover",
+				range_middle:
+					"bg-interactive-secondary-hover [&>button]:bg-transparent [&>button]:hover:bg-transparent [&>button]:text-foreground [&>button]:hover:text-foreground",
+				today:
+					"[&>button]:font-medium [&:not([aria-selected])>button]:bg-interactive-secondary-hover [&:not([aria-selected])>button]:text-foreground",
 				outside: "[&:not([aria-selected])>button]:text-subtle",
 				disabled: "[&>button]:text-subtle [&>button]:opacity-50",
 				hidden: "invisible",
@@ -178,6 +186,7 @@ function Calendar({
 			}}
 			components={{
 				Chevron,
+				Root: CalendarRoot,
 				...(hasDropdown ? { MonthCaption: CalendarCaption } : {}),
 				...components,
 			}}

@@ -107,4 +107,4 @@ tx {payeeName, description, date, type, amount, suggestion}, accountName, active
 
 Active card gets border-primary/45 on bg-interactive-secondary; inactive cards sit on bg-card. Responsive by container: payee wraps to two lines and actions wrap under the suggestion when narrow.
 
-Category: Accounting · Banking. Source: `packages/ui/src/accounting/banking.tsx`.
+Category: Accounting · Banking. Source: `packages/ui/src/accounting/banking/review-card.tsx:15-148`.

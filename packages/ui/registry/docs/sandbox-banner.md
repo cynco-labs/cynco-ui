@@ -39,4 +39,4 @@ Optional `label`, `icon`, `color`; `SandboxBannerAction` children.
 
 Fill is `sandbox`; text white.
 
-Category: Components · Layout. Source: `packages/ui/src/base/components/general/sandbox-banner.tsx`.
+Category: Components · Layout. Source: `packages/ui/src/base/components/general/sandbox-banner.tsx:4-39`.

@@ -1,5 +1,5 @@
-import { CheckCircleIcon, InfoIcon, WarningCircleIcon, WarningIcon } from "@phosphor-icons/react";
 import { Alert, AlertDescription, AlertTitle } from "@cynco-labs/ui";
+import { CheckCircleIcon, InfoIcon, WarningCircleIcon, WarningIcon } from "@phosphor-icons/react";
 
 export default function AlertDemo() {
 	return (

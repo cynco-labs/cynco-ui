@@ -39,4 +39,4 @@ Under answers that searched the web or docs.
 
 Collapsible: pass `defaultOpen` to show the list.
 
-Category: AI. Source: `packages/ui/src/base/components/ai-elements/sources.tsx`.
+Category: AI. Source: `packages/ui/src/base/components/ai-elements/sources.tsx:10-12`.

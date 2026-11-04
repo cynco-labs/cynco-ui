@@ -5,9 +5,18 @@
 		"group": "Primitives",
 		"height": 700,
 		"summary": "The one way to show rows of records: Cynco UI's tray table on wide containers, one stacked card per row on narrow ones.",
-		"use": "Any list of documents, accounts, transactions or lines. Don't hand-build <table> markup in a screen; declare columns and let DataList handle layout, selection, totals and the narrow-width card view.",
+		"use": "Any list of documents, accounts, transactions or lines you can describe as columns and rows. Don't hand-build <table> markup in a screen; declare columns and let DataList handle layout, selection, totals and the narrow-width card view. When the rows come from a TanStack table instance, use `DataTable`; for a handful of static rows, use the `Table` primitives.",
 		"provide": "columns (key, header, cell, align, className, mobile: title | value | badge | meta | hidden | table | stacked, stackedAs, stackedCell, stackedLabel), rows, getKey; optional stackBelow (sm…3xl or never, default xl = 36rem of container width), column nowrap (keep IDs and dates on one line in the table), onRowClick (the primary cell, or the title when stacked, becomes the row's button; a click anywhere else on the row opens it too), column primary (the row header and button cell; default the first table column), column sortDirection (ascending | descending | none, announced as aria-sort on the header; DataList doesn't sort), isRowSelected, rowClassName, leading / leadingHeader (checkbox), trailing (row menu), totals ({label, [columnKey]: node} — a column-aligned tfoot in the table, a bold summary card when stacked), footer, empty, caption, dense / density (compact | default | comfortable; defaults from DensityProvider), stickyHeader + maxHeight (rows scroll, headers and totals stay put), className and any div props.",
-		"notes": "Responds to its own container (CSS container queries), so the same list works in a page, a side sheet and on a phone. The primary column renders as the row header (th scope=row). Rows are never focus stops themselves: with onRowClick the primary cell holds a real button (focus-ring-inset), so screen readers announce it and the row's checkbox and menu aren't nested inside a focusable row. Selection without a leading checkbox is aria-current on that button. Leading/trailing cells and any control inside a row keep their clicks; keep a clickable row's primary cell free of links and buttons."
+		"notes": "Responds to its own container (CSS container queries), so the same list works in a page, a side sheet and on a phone. The primary column renders as the row header (th scope=row). Rows are never focus stops themselves: with onRowClick the primary cell holds a real button (focus-ring-inset), so screen readers announce it and the row's checkbox and menu aren't nested inside a focusable row. Selection without a leading checkbox is aria-current on that button. Leading/trailing cells and any control inside a row keep their clicks; keep a clickable row's primary cell free of links and buttons.",
+		"a11y": {
+			"keys": [
+				{
+					"keys": "Tab",
+					"does": "Reaches the row's primary cell, which becomes a real button when onRowClick is set, and the scrolling region itself when the rows overflow it."
+				}
+			],
+			"screenReader": "The primary column renders as the row header (th scope=\"row\"), column headers are th scope=\"col\" and carry aria-sort from each column's sortDirection, and a trailing actions column gets an sr-only \"Actions\" header. A clickable row is never itself the focus stop, so its primary cell holds the button and the row's checkbox and menu are not nested inside a focusable row. Selection without a leading checkbox is reported as aria-current, and caption becomes an sr-only table caption and the label for the stacked list and for the scrollable region."
+		}
 	},
 	{
 		"name": "StatTile",
@@ -66,8 +75,21 @@
 		"height": 150,
 		"summary": "Cynco's one button: six variants on Base UI's Button, 28px tall by default.",
 		"use": "Use `primary` for the single main action of a view or sheet, `secondary` for everything else, `muted` and `skeleton` for quiet toolbar actions, `destructive` only for irreversible deletes, `dotted` for \"add another\" slots.",
-		"provide": "Children (label, optional Phosphor icon at 14px). Optional `isLoading` (shows `SmallSpinner`, keeps width), `disabled`, `size` (`default` 28px · `sm`/`mini`/`icon` 24px), `render`/`asChild` to render as a link.",
-		"notes": "Primary = `primary` fill with `primary-foreground` text, a 135° sheen and `shadow-sm`; secondary = `interactive-secondary` with `input` border and `btn-secondary-shadow`. Radius `rounded-lg` (= `radius`). One primary per surface."
+		"provide": "Children (label, optional Phosphor icon at 14px). Optional `isLoading` (shows `SmallSpinner`, keeps width), `disabled`, `size` (`md` 28px · `sm`/`icon` 24px), `render`/`asChild` to render as a link.",
+		"notes": "Primary = `primary` fill with `primary-foreground` text, a 135° sheen and `shadow-sm`; secondary = `interactive-secondary` with `input` border and `btn-secondary-shadow`. Radius `rounded-lg` (= `radius`). One primary per surface.",
+		"a11y": {
+			"keys": [
+				{
+					"keys": "Enter, Space",
+					"does": "Activates the button."
+				},
+				{
+					"keys": "Tab",
+					"does": "Reaches the button even while it is loading, because a loading button is kept focusable instead of natively disabled."
+				}
+			],
+			"screenReader": "Nothing in the component supplies an accessible name, so the label is whatever you put inside it and an icon-only button needs an aria-label of your own. While isLoading, the button carries aria-busy, is disabled, and stays focusable with aria-disabled rather than the native disabled attribute. The label is only faded to transparent behind the spinner, so it still reads as the button's name."
+		}
 	},
 	{
 		"name": "ButtonGroup",
@@ -83,21 +105,11 @@
 		"name": "IconButton",
 		"category": "Components",
 		"group": "Actions",
-		"height": 72,
-		"summary": "A Button with a leading or trailing icon slot, sized for Cynco's 14px Phosphor icons.",
-		"use": "Any action whose icon helps scanning: \"New invoice\", \"Filter\". Icon-only for compact toolbars (pair with a tooltip).",
-		"provide": "All Button props plus `icon`, `rightIcon` and `iconOrientation` (`left` · `center` · `right`).",
-		"notes": "Use `skeleton` for icon-only actions inside rows."
-	},
-	{
-		"name": "IconTooltipButton",
-		"category": "Components",
-		"group": "Actions",
-		"height": 72,
-		"summary": "An icon-only button that always carries a tooltip label.",
-		"use": "Compact toolbars and row actions where the icon alone is not self-explanatory.",
-		"provide": "`tooltip` text, `icon`, `onClick`, optional `disabled`.",
-		"notes": "Every icon-only action should use this (or IconButton + Tooltip) so it has an accessible label."
+		"height": 96,
+		"summary": "A Button with a leading or trailing icon slot, sized for Cynco's 14px Phosphor icons, and an optional tooltip.",
+		"use": "Any action whose icon helps scanning: \"New invoice\", \"Filter\". Icon-only for compact toolbars, with `tooltip` so it still has a name.",
+		"provide": "All Button props plus `icon`, `rightIcon`, `iconOrientation` (`left` · `center` · `right`), `tooltip` and `tooltipSide`.",
+		"notes": "An icon-only button with a string `tooltip` takes that text as its `aria-label` unless you pass one. Use `skeleton` for icon-only actions inside rows."
 	},
 	{
 		"name": "ShortcutButton",
@@ -123,21 +135,11 @@
 		"name": "CopyButton",
 		"category": "Components",
 		"group": "Actions",
-		"height": 96,
-		"summary": "Copy-to-clipboard buttons for IDs and keys, with a \"Copied!\" tooltip.",
-		"use": "`CopyButton` for an ID shown as a chip, `CopyIconButton` for an icon-only copy next to text, `MiniCopyButton` for inline mono IDs in tables (icon reveals on hover).",
-		"provide": "`text` to copy; `displayText` (Mini) to shorten what is shown; `side` for the tooltip.",
-		"notes": "IDs render in the mono family."
-	},
-	{
-		"name": "CopyTextButton",
-		"category": "Components",
-		"group": "Actions",
-		"height": 64,
-		"summary": "A bordered mono chip that copies its text, with a copy icon.",
-		"use": "Showing a document number or ID the user is expected to copy.",
-		"provide": "`text`, optional `children` (display), `copySize`, `icon`.",
-		"notes": ""
+		"height": 110,
+		"summary": "One copy-to-clipboard button in three shapes, each confirming with the same \"Copied!\" tooltip.",
+		"use": "`text` for an ID shown as a chip, `icon` for a glyph beside existing text, `inline` for a mono ID in a table, whose glyph appears on hover, focus and every touch screen.",
+		"provide": "`text` to copy, optional `children` to show something shorter, `variant` (`text` · `icon` · `inline`) and `side` for the tooltip.",
+		"notes": "IDs render in the mono family. Every variant announces \"Copied\" through a polite live region, so the confirmation is not only the tooltip."
 	},
 	{
 		"name": "InlineAction",
@@ -177,7 +179,7 @@
 		"summary": "The single-line text input: 28px, `interactive-secondary` fill, `input` border.",
 		"use": "Every text field. Use `variant=\"destructive\"` for validation errors, `headless` inside composite fields.",
 		"provide": "Native input props, `variant`.",
-		"notes": "Built on the form layers: `input-base` + `input-shadow-default` + `input-state-focus` (see Forms). Focus darkens the border and adds a soft 3px ring, never a coloured outline."
+		"notes": "Built on the shared input surface (border, radius, placeholder colour and focus treatment are the same ones SelectTrigger and Textarea use). Focus darkens the border and adds a soft 3px ring, never a coloured outline."
 	},
 	{
 		"name": "InputGroup",
@@ -197,7 +199,11 @@
 		"summary": "One-time-code input built on input-otp: grouped slots with an optional separator.",
 		"use": "Sign-in OTP entry.",
 		"provide": "`maxLength`, `value`, `onChange`; children `InputOTPGroup` of `InputOTPSlot index`, `InputOTPSeparator`.",
-		"notes": ""
+		"notes": "",
+		"a11y": {
+			"keys": [],
+			"screenReader": "The slots are plain divs that paint the character and a blinking fake caret; the real control is the single input rendered by the input-otp package, so aria-label, autoComplete=\"one-time-code\" and any error wiring belong on InputOTP itself. The separator carries role=\"separator\", and the whole group dims when that input is disabled."
+		}
 	},
 	{
 		"name": "Textarea",
@@ -220,16 +226,6 @@
 		"notes": ""
 	},
 	{
-		"name": "LabelInput",
-		"category": "Components",
-		"group": "Inputs",
-		"height": 100,
-		"summary": "A labelled Input with an optional description line above it.",
-		"use": "Most form fields in sheets: name, IDs, URLs.",
-		"provide": "`label`, `placeholder` (required), optional `description`, input props.",
-		"notes": "Label uses `text-form-label`; description `text-body-secondary`."
-	},
-	{
 		"name": "TagInput",
 		"category": "Components",
 		"group": "Inputs",
@@ -237,7 +233,24 @@
 		"summary": "A free-text input that turns entries into removable tags.",
 		"use": "Lists of IDs or emails typed by the user.",
 		"provide": "`value` string[], `onChange`, optional controlled `inputValue`.",
-		"notes": "Enter or comma adds a tag; Backspace on empty removes the last."
+		"notes": "Enter or comma adds a tag; Backspace on empty removes the last.",
+		"a11y": {
+			"keys": [
+				{
+					"keys": "Enter",
+					"does": "Commits what is typed as a tag."
+				},
+				{
+					"keys": "Backspace",
+					"does": "On an empty field, removes the last tag."
+				},
+				{
+					"keys": "Space",
+					"does": "Ends the word being typed and commits it as a tag."
+				}
+			],
+			"screenReader": "Tags change without focus moving, so every add and remove is announced through a role=\"status\" region that stays mounted and only swaps its text, saying \"{tag} added\" or \"{tag} removed\". A paste of several words is announced as one list. Each tag's remove button is labelled \"Remove {tag}\", and because that button unmounts on use, focus is handed back to the text field."
+		}
 	},
 	{
 		"name": "TagSelect",
@@ -246,8 +259,17 @@
 		"height": 80,
 		"summary": "A multi-select shown as removable tags in a select-style field.",
 		"use": "Choosing several known options (tags, branches, tax codes).",
-		"provide": "`value`, `onChange`, `options` [{value,label}], `placeholder`, optional `formatTag`, `renderContent`, `className` (the field box). Label it with `id` + a `<label htmlFor>` (FormLabel, FieldLabel), or `aria-label` / `aria-labelledby`; `aria-describedby` and `aria-invalid` also go on the trigger.",
-		"notes": "The trigger fills the field from behind and announces \"{n} selected\"; the tags sit beside it, not inside it, so each \"Remove {label}\" button is its own tab stop. Removing a tag moves focus to the next tag, or back to the trigger."
+		"provide": "`value`, `onChange`, `options` [{value,label}], `placeholder`, optional `formatTag`, `renderContent`, `className` (the field box) and any div props. Label it with `id` + a `Field`, or `aria-label` / `aria-labelledby`; `aria-describedby` and `aria-invalid` also go on the trigger.",
+		"notes": "The trigger fills the field from behind and announces \"{n} selected\"; the tags sit beside it, not inside it, so each \"Remove {label}\" button is its own tab stop. Removing a tag moves focus to the next tag, or back to the trigger.",
+		"a11y": {
+			"keys": [
+				{
+					"keys": "Tab",
+					"does": "Reaches the field's trigger first, then each chip's remove button as its own stop."
+				}
+			],
+			"screenReader": "While chips are showing, the trigger holds an sr-only \"{n} selected\", so the field still reports its state even though the visible chips sit beside the combobox rather than inside it. Each remove button is labelled \"Remove {label}\" and is a 24 by 24 target, with its icon aria-hidden. Removing a chip moves focus to the neighbouring chip's button, or back to the trigger when no chip is left."
+		}
 	},
 	{
 		"name": "DateInputUnix",
@@ -257,7 +279,11 @@
 		"summary": "A date (and optional time) picker whose value is a Unix timestamp in milliseconds.",
 		"use": "Due dates, schedule dates, backdating.",
 		"provide": "`unixDate` (ms or null), `setUnixDate`; optional `withTime`, `use24Hour`, `disablePastDates`, `minUnixDate`/`maxUnixDate`, `placeholder`.",
-		"notes": "Opens a Calendar in a Popover."
+		"notes": "Opens a Calendar in a Popover.",
+		"a11y": {
+			"keys": [],
+			"screenReader": "The trigger is a button that forwards id, aria-label, aria-labelledby, aria-describedby and aria-invalid, and reports open or closed through data-state. The popover is labelled \"Choose date and time\" or \"Choose date\" according to withTime. With time on, the period button names itself with the current period and the one it would switch to, for example \"AM, switch to PM\"."
+		}
 	},
 	{
 		"name": "TimePickerInput",
@@ -267,7 +293,28 @@
 		"summary": "A two-digit time segment input (hours, minutes, 12-hour) with arrow-key stepping.",
 		"use": "Composing a time picker; used inside DateInputUnix.",
 		"provide": "`picker`, `date`, `setDate`, optional `period`, focus hand-off callbacks.",
-		"notes": "Adapted from openstatusHQ/time-picker (MIT)."
+		"notes": "Adapted from openstatusHQ/time-picker (MIT).",
+		"a11y": {
+			"keys": [
+				{
+					"keys": "Arrow Up / Arrow Down",
+					"does": "Step the segment up or down by one."
+				},
+				{
+					"keys": "Arrow Left / Arrow Right",
+					"does": "Move focus to the previous or next segment."
+				},
+				{
+					"keys": "0 to 9",
+					"does": "Type the segment two digits at a time, then move focus on to the next one."
+				},
+				{
+					"keys": "Tab",
+					"does": "Leaves the segment, as do modifier chords such as paste and select all."
+				}
+			],
+			"screenReader": "Each segment is an input named for its own kind, so it is announced as \"Hours\", \"Minutes\" or \"Seconds\", and it falls back to a generated id and the picker name when the caller gives neither. The caret is hidden and every key other than Tab and modifier chords is handled by the component, so the value only changes through the arrow and digit keys. The file adds no live region, so announcing the assembled time is the surrounding control's job."
+		}
 	},
 	{
 		"name": "Calendar",
@@ -277,7 +324,11 @@
 		"summary": "Month calendar on react-day-picker 8, selected day filled with `primary`.",
 		"use": "Inside date popovers; inline when a date is the main input.",
 		"provide": "react-day-picker props: `mode`, `selected`, `onSelect`, `defaultMonth`, `disabled`.",
-		"notes": "Outside days shown by default."
+		"notes": "Outside days shown by default.",
+		"a11y": {
+			"keys": [],
+			"screenReader": "The dropdown caption renders an sr-only aria-live=\"polite\" element holding the month name, which also labels the month grid, so paging announces the new month. The previous and next buttons take their names from react-day-picker's own labelPrevious and labelNext, and the month and year selects from labelMonthDropdown and labelYearDropdown, so a localised picker stays localised. Every chevron is aria-hidden and each day button keeps its own focus ring."
+		}
 	},
 	{
 		"name": "Select",
@@ -287,7 +338,16 @@
 		"summary": "Base UI select with a 28px trigger and an `overlay` popup with check indicators.",
 		"use": "Choosing one of a short, known list (payment terms, currencies). Use SearchableSelect past ~8 options.",
 		"provide": "`value`/`defaultValue`, `onValueChange`, `items` (labels for the value display); children `SelectTrigger` › `SelectValue`, `SelectContent` › `SelectItem`.",
-		"notes": "Trigger uses `input-state-open`. `SelectItem indicator={false}` drops the checkmark."
+		"notes": "Trigger uses `input-state-open`. `SelectItem indicator={false}` drops the checkmark.",
+		"a11y": {
+			"keys": [
+				{
+					"keys": "Tab",
+					"does": "Moves focus to the trigger, which keeps its open treatment rather than its focus treatment while the popup is open, because focus has moved into the popup."
+				}
+			],
+			"screenReader": "The trigger shows the selected item's text, or the placeholder while the value is null, and takes its accessible name from you. A selected row draws a check icon unless you pass indicator false. The invalid treatment is keyed on aria-invalid so the state is announced as well as drawn."
+		}
 	},
 	{
 		"name": "SearchableSelect",
@@ -297,7 +357,11 @@
 		"summary": "A generic select with a search box, built on Popover + Command.",
 		"use": "Choosing an account, item or customer from a long or remote list.",
 		"provide": "`value`, `onValueChange`, `options`, `getOptionValue`, `getOptionLabel`; optional `renderOption`, `renderValue`, `onSearchChange` (server search), `header`/`footer`, `trigger`.",
-		"notes": "`emptyText={null}` hides the empty state."
+		"notes": "`emptyText={null}` hides the empty state.",
+		"a11y": {
+			"keys": [],
+			"screenReader": "The default trigger is a plain button that forwards id, aria-label, aria-labelledby, aria-describedby and aria-invalid from props, and sets no aria-expanded of its own because PopoverTrigger supplies that and aria-haspopup=\"dialog\". The popup is labelled with the placeholder, and the search box is named by passing searchPlaceholder as the Command label, since cmdk always renders that label element and leaves the input unnamed without it. Each row carries aria-current for the chosen value, because cmdk's aria-selected tracks only the highlighted row."
+		}
 	},
 	{
 		"name": "Checkbox",
@@ -307,17 +371,20 @@
 		"summary": "Square checkbox in three sizes, `primary` when checked.",
 		"use": "Boolean options in lists and tables; use Switch for settings that apply immediately.",
 		"provide": "`checked`/`defaultChecked`, `onCheckedChange`, `size` (`sm` · `md` · `lg`), `disabled`.",
-		"notes": ""
-	},
-	{
-		"name": "TextCheckbox",
-		"category": "Components",
-		"group": "Selection",
-		"height": 64,
-		"summary": "A Checkbox with a clickable text label.",
-		"use": "Single options in forms.",
-		"provide": "Checkbox props and the label as children.",
-		"notes": "Label uses `text-checkbox-label`; disabled uses `text-checkbox-disabled`."
+		"notes": "",
+		"a11y": {
+			"keys": [
+				{
+					"keys": "Enter",
+					"does": "Toggles the checkbox, unless it is disabled."
+				},
+				{
+					"keys": "⌘Enter / Ctrl+Enter",
+					"does": "Leaves the checkbox untouched so the chord reaches a sheet-level or form-level submit shortcut."
+				}
+			],
+			"screenReader": "The control carries no label of its own, so pair it with a Label or pass aria-label. The invalid treatment is keyed on aria-invalid, which you set and the component never sets for you."
+		}
 	},
 	{
 		"name": "AreaCheckbox",
@@ -326,18 +393,18 @@
 		"height": 120,
 		"summary": "A checkbox with a title and description, optionally revealing children when checked.",
 		"use": "Opt-in settings that need explanation (rounding, auto-numbering).",
-		"provide": "`title`, `checked`, `onCheckedChange`; optional `description`, `disabled` + `disabledReason` (tooltip), `children` (shown when checked).",
+		"provide": "`title`, `checked` / `defaultChecked`, `onCheckedChange`; optional `description`, `disabled` + `disabledReason` (tooltip), `children` (revealed when checked), `className` and any div props.",
 		"notes": ""
 	},
 	{
-		"name": "IconCheckbox",
+		"name": "ToggleButton",
 		"category": "Components",
 		"group": "Selection",
 		"height": 64,
-		"summary": "A toggle that looks like a small secondary button with an icon; checked shows the `primary` border and a check mark in its corner.",
-		"use": "Toggling views and options in toolbars and attach/cancel forms.",
-		"provide": "Button props plus `checked`, `onCheckedChange`, `icon`, `iconOrientation` (`left` with a label, `center` icon-only, which needs an `aria-label`).",
-		"notes": "Default size `sm`. State is exposed as `aria-pressed` and shown by the corner check mark, not by colour alone. The mark sits slightly outside the button, so a clipping parent (`overflow-hidden`, or the `primary` variant's own clip) hides part of it."
+		"summary": "A button that stays pressed, with a check mark in its corner while it is on.",
+		"use": "Toggling views and options in toolbars: show a chart, group rows, reveal filters.",
+		"provide": "IconButton props plus `pressed` / `defaultPressed`, `onPressedChange`, `icon` and `iconOrientation` (`left` with a label, `center` icon-only, which needs `tooltip` or `aria-label`).",
+		"notes": "It reports `aria-pressed` rather than posing as a checkbox; for a real checkbox use `Checkbox`. The corner mark means the state never rests on colour, and it sits slightly outside the button, so a clipping parent hides part of it."
 	},
 	{
 		"name": "RadioGroup",
@@ -347,7 +414,16 @@
 		"summary": "Base UI radio group; items are small circles filled with `primary`.",
 		"use": "Choosing one of 2–5 visible options.",
 		"provide": "`value`/`defaultValue`, `onValueChange`; `RadioGroupItem value` children, each wrapped in a label.",
-		"notes": "For options with descriptions use AreaRadioGroupItem."
+		"notes": "For options with descriptions use AreaRadioGroupItem.",
+		"a11y": {
+			"keys": [
+				{
+					"keys": "Tab",
+					"does": "Moves focus to a radio, which draws a 2px focus-visible outline."
+				}
+			],
+			"screenReader": "Neither the group nor its items carry a label, so you supply the group's name and each option's label. The checked state belongs to the Base UI radio and is drawn by a small filled indicator inside the control."
+		}
 	},
 	{
 		"name": "AreaRadioGroupItem",
@@ -367,7 +443,20 @@
 		"summary": "On/off switch, 36×20 (or 28×16 inside `SwitchSizeProvider size=\"sm\"`).",
 		"use": "Settings that take effect immediately.",
 		"provide": "`checked`/`defaultChecked`, `onCheckedChange`, `disabled`.",
-		"notes": "Thumb uses `switch-thumb-on` when on."
+		"notes": "Thumb uses `switch-thumb-on` when on.",
+		"a11y": {
+			"keys": [
+				{
+					"keys": "Enter",
+					"does": "Toggles the switch."
+				},
+				{
+					"keys": "⌘Enter / Ctrl+Enter",
+					"does": "Stops the toggle so the chord reaches a sheet-level submit shortcut instead."
+				}
+			],
+			"screenReader": "Nothing in the component names the switch, so pair it with a Label or pass aria-label. The thumb holds no text and exists only to draw the state, which the Base UI switch owns and exposes through data-checked and data-unchecked."
+		}
 	},
 	{
 		"name": "Dialog",
@@ -377,7 +466,16 @@
 		"summary": "Centered modal on `overlay-dialog` with `overlay-dialog-shadow`.",
 		"use": "Confirmations and short, blocking decisions. Longer forms go in a Sheet.",
 		"provide": "`open`/`onOpenChange`; `DialogContent` (`showCloseButton`), `DialogHeader` › `DialogTitle` + `DialogDescription`, `DialogFooter` with secondary then primary/destructive buttons.",
-		"notes": ""
+		"notes": "",
+		"a11y": {
+			"keys": [
+				{
+					"keys": "Tab",
+					"does": "Reaches the close button in the corner, which draws a 2px focus-visible outline."
+				}
+			],
+			"screenReader": "DialogTitle and DialogDescription are what name and describe the popup, and they work visually hidden, which is how the command palette names its own dialog. The built-in close button is icon-only and carries the sr-only text Close."
+		}
 	},
 	{
 		"name": "Sheet",
@@ -387,7 +485,20 @@
 		"summary": "A side panel for create/edit flows, sliding in from any edge.",
 		"use": "Most create and edit forms in Cynco (new customer, new item).",
 		"provide": "`open`/`onOpenChange`; `SheetContent side`, `SheetHeader` › `SheetTitle` + `SheetDescription`, body, `SheetFooter`.",
-		"notes": "Submit with a ShortcutButton (`metaShortcut=\"enter\"`)."
+		"notes": "Submit with a ShortcutButton (`metaShortcut=\"enter\"`).",
+		"a11y": {
+			"keys": [
+				{
+					"keys": "⌘Enter / Ctrl+Enter",
+					"does": "Reaches a ShortcutButton in the sheet instead of toggling a Checkbox or Switch inside it."
+				},
+				{
+					"keys": "Tab",
+					"does": "Reaches the close button in the top corner, which draws a focus-visible outline and is a 40px target on phones."
+				}
+			],
+			"screenReader": "SheetTitle and SheetDescription name and describe the panel. The close button is icon-only and carries the sr-only text Close. The sheet is portalled into document.body, or into the container an app names with SheetPortalContainerProvider or the portalContainer prop, so its place in the reading order follows that container."
+		}
 	},
 	{
 		"name": "Popover",
@@ -397,7 +508,16 @@
 		"summary": "A floating panel on `overlay` anchored to a trigger.",
 		"use": "Inline details, small forms and pickers.",
 		"provide": "`PopoverTrigger` (use `render` to supply your Button), `PopoverContent` with `align`, `side`, `sideOffset`.",
-		"notes": ""
+		"notes": "",
+		"a11y": {
+			"keys": [
+				{
+					"keys": "Esc",
+					"does": "Closes the popover, whose dismissal and focus handling belong to Base UI itself."
+				}
+			],
+			"screenReader": "The popup adds no role, aria or sr-only text of its own, so anything the popover needs named, you name. The Radix compatibility props onEscapeKeyDown, onPointerDownOutside, onOpenAutoFocus and onCloseAutoFocus are accepted and ignored, so they cannot be used to take over focus."
+		}
 	},
 	{
 		"name": "Tooltip",
@@ -407,7 +527,11 @@
 		"summary": "Short label shown on hover/focus; delay 0 by default.",
 		"use": "Naming icon-only controls and clarifying terms.",
 		"provide": "`TooltipTrigger` (with `render`) and `TooltipContent` (`side`, `align`). `Tooltip` brings its own provider.",
-		"notes": "Keep it to one line."
+		"notes": "Keep it to one line.",
+		"a11y": {
+			"keys": [],
+			"screenReader": "The tooltip adds no aria of its own, so the trigger still needs its own accessible name. The provider's delay defaults to 0, and a Tooltip rendered outside a provider wraps itself in one."
+		}
 	},
 	{
 		"name": "HoverCard",
@@ -417,7 +541,11 @@
 		"summary": "A richer hover preview (Base UI PreviewCard).",
 		"use": "Previewing a customer or invoice from a link.",
 		"provide": "`HoverCardTrigger`, `HoverCardContent` with `align`/`side`.",
-		"notes": ""
+		"notes": "",
+		"a11y": {
+			"keys": [],
+			"screenReader": "The content renders as a Base UI preview card in a portal, and the component adds no role, aria or sr-only text of its own. The Radix-style openDelay and closeDelay props are accepted and ignored."
+		}
 	},
 	{
 		"name": "DropdownMenu",
@@ -427,7 +555,20 @@
 		"summary": "Base UI menu: items with icons, shortcuts, checkbox/radio items, submenus and a destructive variant.",
 		"use": "Row actions and overflow menus.",
 		"provide": "`DropdownMenuTrigger` (with `render`), `DropdownMenuContent`, `DropdownMenuItem` (`variant`, `shortcut`, `isLoading`), `DropdownMenuGroup` › `DropdownMenuLabel`, `DropdownMenuSeparator`, `DropdownMenuSub`.",
-		"notes": "A `DropdownMenuLabel` must sit inside a `DropdownMenuGroup`. Destructive items go last, after a separator."
+		"notes": "A `DropdownMenuLabel` must sit inside a `DropdownMenuGroup`. Destructive items go last, after a separator.",
+		"a11y": {
+			"keys": [
+				{
+					"keys": "An item's shortcut key",
+					"does": "Runs that item and closes the menu, unless focus is in an input, a textarea or a contenteditable element."
+				},
+				{
+					"keys": "A to Z",
+					"does": "Falls through to the Base UI menu's own typeahead when no item shortcut matches the key."
+				}
+			],
+			"screenReader": "Focus returns to the trigger when the menu closes, which is why the Radix onCloseAutoFocus prop is accepted and ignored. Checkbox and radio items draw their state with a check icon from the Base UI indicator, and a DropdownMenuLabel only names its group when it sits inside a DropdownMenuGroup. An item that is loading or shimmering is disabled."
+		}
 	},
 	{
 		"name": "Command",
@@ -436,8 +577,12 @@
 		"height": 260,
 		"summary": "cmdk command palette: search input, grouped items, shortcuts, footer hints.",
 		"use": "The ⌘K palette (`CommandDialog`, sizes `default` · `compact`) and searchable lists inside popovers.",
-		"provide": "`CommandInput`, `CommandList` › `CommandEmpty`, `CommandGroup heading`, `CommandItem`, `CommandShortcut`, `CommandSeparator`, `CommandFooter`/`CommandHint`/`CommandKbd`.",
-		"notes": ""
+		"provide": "`CommandInput`, `CommandList` › `CommandEmpty`, `CommandGroup heading`, `CommandItem`, `CommandShortcut`, `CommandSeparator`, `CommandFooter`/`CommandHint`/`CommandKbd`. `CommandDialog` takes the dialog's `open` / `defaultOpen` / `onOpenChange` / `modal`, forwards `value`, `onValueChange`, `filter`, `shouldFilter`, `loop` and `label` to the `Command` it owns, and spreads everything else on the dialog panel.",
+		"notes": "",
+		"a11y": {
+			"keys": [],
+			"screenReader": "CommandDialog renders a DialogTitle and DialogDescription sr-only inside the popup, defaulting to Command Palette and Search for a command to run, so the dialog is named for as long as it is open. The list takes that same title as its label. CommandInput points aria-activedescendant at the option the list highlights at every moment, the first render included, so Enter never runs a row that was not read out. The search icon is aria-hidden, and so is every CommandSeparator, because cmdk would otherwise place a separator role inside the listbox."
+		}
 	},
 	{
 		"name": "InfoTooltip",
@@ -445,7 +590,7 @@
 		"group": "Overlays",
 		"height": 64,
 		"summary": "A small info icon that shows an explanatory tooltip.",
-		"use": "Next to labels whose meaning is not obvious.",
+		"use": "Next to a label whose meaning is not obvious. Inside a `Field`, pass the same text as `FieldLabel`'s `hint` instead.",
 		"provide": "Tooltip content as children; optional `side`, `align`.",
 		"notes": ""
 	},
@@ -456,18 +601,8 @@
 		"height": 64,
 		"summary": "Wraps an element in a tooltip only when `enabled`.",
 		"use": "Explaining why a control is disabled.",
-		"provide": "`enabled`, `content`, one element child.",
-		"notes": ""
-	},
-	{
-		"name": "SheetCloseButton",
-		"category": "Components",
-		"group": "Overlays",
-		"height": 64,
-		"summary": "The ✕ button positioned in a sheet's top-right corner.",
-		"use": "Custom inline sheets that do not use SheetContent's built-in close.",
-		"provide": "`onClose`.",
-		"notes": "Positions itself absolutely; the parent must be `relative`."
+		"provide": "`enabled`, `content`, one element child, plus any TooltipContent props (`className`, `side`, `align`).",
+		"notes": "It renders no element of its own, so `className` and the rest go to the popup."
 	},
 	{
 		"name": "SheetBackdrop",
@@ -487,7 +622,16 @@
 		"summary": "Base UI tabs with `default` (pill) and `underline` list variants.",
 		"use": "Switching sections of a page (`underline`) or modes inside a panel (`default`).",
 		"provide": "`Tabs value/defaultValue`, `TabsList variant`, `TabsTrigger value variant`, `TabsContent value`.",
-		"notes": "Pass the same `variant` to the list and its triggers."
+		"notes": "Pass the same `variant` to the list and its triggers.",
+		"a11y": {
+			"keys": [
+				{
+					"keys": "Tab",
+					"does": "Draws a 2px focus-visible outline on whichever trigger or panel takes focus."
+				}
+			],
+			"screenReader": "The list, triggers and panels are Base UI's tabs, so the active tab is exposed as selected and tied to its panel. The component itself only adds the active styling, keyed on data-active, and a focus ring on the panel."
+		}
 	},
 	{
 		"name": "Breadcrumb",
@@ -504,10 +648,14 @@
 		"category": "Components",
 		"group": "Navigation",
 		"height": 64,
-		"summary": "Minimal pagination containers (nav › list › item).",
-		"use": "Wrapping your own previous/next Buttons. Tables use the DataTable pagination parts.",
+		"summary": "The landmark around a set of page controls (nav › list › item).",
+		"use": "Wrapping your own previous and next Buttons. A data table uses `DataTable.Pagination`, which is built on these.",
 		"provide": "Children; `PaginationContent`, `PaginationItem`.",
-		"notes": ""
+		"notes": "",
+		"a11y": {
+			"keys": [],
+			"screenReader": "The root is a nav with aria-label \"pagination\" and its items sit in a ul and li, so the set is announced as one labelled list. The controls inside are yours, so mark the current page with aria-current=\"page\" and label icon-only previous and next buttons yourself."
+		}
 	},
 	{
 		"name": "Accordion",
@@ -517,7 +665,16 @@
 		"summary": "Base UI accordion with a chevron that rotates open.",
 		"use": "FAQs and stacked optional sections.",
 		"provide": "`defaultValue`/`value` (array), `type=\"multiple\"`; `AccordionItem value` › `AccordionTrigger` + `AccordionContent`.",
-		"notes": ""
+		"notes": "",
+		"a11y": {
+			"keys": [
+				{
+					"keys": "Enter, Space",
+					"does": "Toggles the section from its header trigger."
+				}
+			],
+			"screenReader": "Each trigger sits inside an accordion header and exposes aria-expanded, which the caret rotation is keyed on. The caret takes no pointer events and carries no label, so the trigger's own content is its accessible name."
+		}
 	},
 	{
 		"name": "SheetAccordion",
@@ -537,7 +694,11 @@
 		"summary": "Show/hide a region with a trigger.",
 		"use": "\"Advanced settings\" and similar disclosures.",
 		"provide": "`open`/`defaultOpen`, `CollapsibleTrigger` (with `render`), `CollapsibleContent`.",
-		"notes": ""
+		"notes": "",
+		"a11y": {
+			"keys": [],
+			"screenReader": "The component is a thin pass-through to the Base UI collapsible, with data-slot names on the root, trigger and panel and no aria, label or sr-only text of its own. The trigger's own content is therefore its accessible name."
+		}
 	},
 	{
 		"name": "Carousel",
@@ -587,7 +748,11 @@
 		"summary": "A neutral chip whose only colour is a small status square with a glyph.",
 		"use": "Invoice, payment and filing states in tables and headers.",
 		"provide": "`tone` (green · blue · red · orange · amber · yellow · purple · pink · fuchsia · neutral), `glyph` (check, clock, alert, x, pause, play, calendar, coins, …), `dashed` for drafts, label as children. `StatusChipIcon` is the square alone; `StatusRing` is a progress ring (`fraction` 0–1).",
-		"notes": "Never colour the label — the square carries the state, and every state has a glyph and a word, so it never relies on hue. Tone hexes are fixed in the component (e.g. green #30a46c, blue #3e8bd9, red #e5484d, amber #e5a21f), not tokens."
+		"notes": "Never colour the label — the square carries the state, and every state has a glyph and a word, so it never relies on hue. Tone hexes are fixed in the component (e.g. green #30a46c, blue #3e8bd9, red #e5484d, amber #e5a21f), not tokens.",
+		"a11y": {
+			"keys": [],
+			"screenReader": "The chip is a plain span whose text is its accessible name, and the status square is an aria-hidden SVG, so the state is never carried by colour or by the glyph alone. A string child is also set as the title attribute, which gives the full wording back when the label truncates. The chip has no role or live region of its own, so a status that changes in place needs one on whatever holds it."
+		}
 	},
 	{
 		"name": "StepBadge",
@@ -655,7 +820,7 @@
 		"group": "Data display",
 		"height": 190,
 		"summary": "Plain table primitives (table, header, row, head, cell, footer, caption).",
-		"use": "Small static tables. For data lists use DataTable.",
+		"use": "A small static table you write by hand. For a list of records driven by data, use `DataList`; for a TanStack-powered list page with sorting, selection and pagination, use `DataTable`.",
 		"provide": "Native table element props; `flexibleTableColumns` on `Table`.",
 		"notes": ""
 	},
@@ -665,9 +830,22 @@
 		"group": "Data display",
 		"height": 280,
 		"summary": "Cynco's data-table kit on TanStack Table: toolbar, heading, tray, header, body, virtualisation, pagination and column visibility.",
-		"use": "Every list page (invoices, customers, items).",
-		"provide": "A TanStack `table` instance (`useReactTable` + `getCoreRowModel` from `@tanstack/react-table`) passed via `DataTable.Provider config={{table, numberOfColumns, isLoading}}`; compose `Toolbar` › `Heading` + `Actions`, then `Container` › `Content` › `Header` + `Body`. Optional `onRowClick`, `getRowHref` + `linkComponent`, `enableSelection`, `virtualization`.",
-		"notes": "Exported as `DataTable` so it does not clash with the `Table` primitive. Surfaces use the `table-*` tokens."
+		"use": "A list page whose rows come from a TanStack table: invoices, customers, items. For a list you declare as columns and rows, without a table instance, use `DataList`; for a handful of static rows, use the `Table` primitives.",
+		"provide": "A TanStack `table` instance (`useReactTable` + `getCoreRowModel` from `@tanstack/react-table`) passed via `DataTable.Provider config={{table, numberOfColumns, isLoading}}`; compose `Toolbar` › `Heading` + `Actions`, then `Container` › `Content` › `Header` + `Body`, with `Pagination` on the tray or `Footer` inside the table. Optional `onRowClick`, `getRowHref` + `linkComponent`, `enableSelection`, `virtualization`.",
+		"notes": "Exported as `DataTable` so it does not clash with the `Table` primitive. `Pagination` pages the table instance by default and a cursor-paged result when you pass `cursor`; `Footer` is the same bar inside the table's own `<tfoot>`. Surfaces use the `table-*` tokens. Set `mobileCards` to swap rows for cards once the table's own container is under 640px.",
+		"a11y": {
+			"keys": [
+				{
+					"keys": "Tab",
+					"does": "Reaches the first cell of each row, which is a link when getRowHref is set and a button when the row is clickable."
+				},
+				{
+					"keys": "Enter / Space",
+					"does": "Activate that row target, and run the double-click action when the row has no single-click one."
+				}
+			],
+			"screenReader": "Table.Content names the table through aria-label or aria-labelledby, marks it aria-busy while loading, and keeps a polite live region that reports \"Loading…\", the empty-state text, or the row count. A sortable header is a button inside a th that carries aria-sort, and the caret icons are aria-hidden. The select-all box is labelled \"Select all rows\" and each row's box is named after that row's first text value so the labels stay distinct, while skeleton rows are aria-hidden."
+		}
 	},
 	{
 		"name": "ChartContainer",
@@ -724,40 +902,34 @@
 		"category": "Components",
 		"group": "Data display",
 		"height": 110,
-		"summary": "A code block (or inline span) with a copy button.",
-		"use": "Install commands and API keys in onboarding.",
-		"provide": "`text`; `CopyableSpan` for inline.",
+		"summary": "A code block with a copy button pinned to its corner.",
+		"use": "Install commands and multi-line snippets. For a single value inline, use `CopyButton`.",
+		"provide": "`text`, plus any div props.",
 		"notes": ""
 	},
 	{
 		"name": "Label",
 		"category": "Components",
 		"group": "Forms",
-		"height": 64,
-		"summary": "A plain form label.",
-		"use": "Labelling custom controls.",
-		"provide": "Children.",
-		"notes": ""
+		"height": 140,
+		"summary": "The one form label: a native `<label>`, with an optional required marker.",
+		"use": "Naming any control. Inside a `Field` use `FieldLabel`, which binds it to the control for you.",
+		"provide": "Children, `htmlFor` (the control's `id`) or a wrapped control, `required`, and any `<label>` props.",
+		"notes": "`required` draws an asterisk and reads \"(required)\" to screen readers. Disabled styling follows the control through `peer-disabled:`, so put the label next to the control it names."
 	},
 	{
-		"name": "FormLabel",
+		"name": "Field",
 		"category": "Components",
 		"group": "Forms",
-		"height": 80,
-		"summary": "The standard field label (a native `<label>`) in `text-form-label`, dimmed when disabled.",
-		"use": "Above inputs in sheets.",
-		"provide": "Children, `htmlFor` (the control's `id`) or a wrapped control, `disabled`, and any `<label>` props.",
-		"notes": "Pair `disabled` with the control's own `disabled`; the label only dims."
-	},
-	{
-		"name": "FieldLabel",
-		"category": "Components",
-		"group": "Forms",
-		"height": 150,
-		"summary": "A field label (a native `<label>`) with optional description and info tooltip.",
-		"use": "Fields that need a hint.",
-		"provide": "Children, `htmlFor` (the control's `id`), optional `description` + `descriptionId`, `tooltip`, `empty`, and any `<label>` props.",
-		"notes": "The description and tooltip render outside the `<label>`, so the control's name is just the label text; point the control's `aria-describedby` at `descriptionId` to read the hint with it. With a description or tooltip, `className` goes on the wrapper and `<label>` props on the label. `empty` renders an aria-hidden spacer."
+		"height": 320,
+		"summary": "A form field: label, description, control and error, with the ids wired between them.",
+		"use": "Every labelled control. It replaces hand-wiring `htmlFor`, `aria-describedby` and `aria-invalid` on each field.",
+		"provide": "`Field` (optional `invalid`) around `FieldLabel` (optional `required`, `hint`), `FieldDescription`, `FieldControl` wrapping the control, and `FieldError` while `invalid`.",
+		"notes": "`FieldControl` is what hands the control its `id`, `aria-describedby` and `aria-invalid`, so the wiring cannot be forgotten. The description and the `hint` tooltip render outside the `<label>`, so the control's accessible name stays the label text. `FieldError` pairs a warning glyph with the words, so the error never rests on colour.",
+		"a11y": {
+			"keys": [],
+			"screenReader": "FieldLabel is a native label bound to the control by id, so clicking it focuses the control and the control is named by it. FieldDescription and, while the field is invalid, FieldError are pointed at by the control's aria-describedby, and the control carries aria-invalid. `required` adds an sr-only \"(required)\" beside the asterisk. The `hint` tooltip is a real button, so keyboard focus opens it and Escape closes it."
+		}
 	},
 	{
 		"name": "PageHeader",
@@ -837,7 +1009,36 @@
 		"summary": "A keyboard-first journal line editor: searchable Account, Description, Debit and Credit cells with spreadsheet movement, auto-balance and a sticky footer showing Total Dr, Total Cr and whether the entry balances.",
 		"use": "On the journal entry create/edit screen, and anywhere else lines must balance (opening balances, accrual templates, payroll postings).",
 		"provide": "lines / defaultLines ({ id, accountId?, description?, debit?, credit? } with decimal-string amounts), onLinesChange(lines), accounts ({ id, code, name, type }), currency? (default MYR), minLines? (default 2), showShortcuts? (default true), className and native div props. Helper: journalTotals(lines) → { debit, credit, difference }.",
-		"notes": "Keys: Tab / Shift+Tab move across cells and wrap to the next/previous line (and leave the grid past the ends); Enter moves down and adds a line on the last one; Shift+Enter up; ↑ ↓ change line in the same column unless the account list is open; mod+Enter adds a line below; mod+Backspace deletes the line (clears it at the minimum); Alt+B, or “=” then Enter in an amount cell, fills the figure that balances the entry; a Debit clears that line's Credit and vice versa, and a negative figure flips sides. Account cell: type a code or name, ↑ ↓ and Enter/Tab to pick, Alt+↓/F4 opens, Esc closes. Totals via sumAmounts; StatusChip shows Balanced / Out by RM x. Responsive: a grid on containers ≥ 36rem, a card per line below that (Debit and Credit side by side, each ≥ 6rem); the footer is sticky to the nearest scroll container."
+		"notes": "Keys: Tab / Shift+Tab move across cells and wrap to the next/previous line (and leave the grid past the ends); Enter moves down and adds a line on the last one; Shift+Enter up; ↑ ↓ change line in the same column unless the account list is open; mod+Enter adds a line below; mod+Backspace deletes the line (clears it at the minimum); Alt+B, or “=” then Enter in an amount cell, fills the figure that balances the entry; a Debit clears that line's Credit and vice versa, and a negative figure flips sides. Account cell: type a code or name, ↑ ↓ and Enter/Tab to pick, Alt+↓/F4 opens, Esc closes. Totals via sumAmounts; StatusChip shows Balanced / Out by RM x. Responsive: a grid on containers ≥ 36rem, a card per line below that (Debit and Credit side by side, each ≥ 6rem); the footer is sticky to the nearest scroll container.",
+		"a11y": {
+			"keys": [
+				{
+					"keys": "Tab",
+					"does": "Moves to the next cell and wraps to the next line, and leaves the grid past the last cell."
+				},
+				{
+					"keys": "Enter",
+					"does": "Moves down the same column, and adds a line when already on the last one."
+				},
+				{
+					"keys": "Arrow Up / Arrow Down",
+					"does": "Move between lines in the same column."
+				},
+				{
+					"keys": "⌘Enter / Ctrl+Enter",
+					"does": "Adds a line below the current one."
+				},
+				{
+					"keys": "⌘Backspace / Ctrl+Backspace",
+					"does": "Deletes the line, or clears it when the entry is already at its minimum."
+				},
+				{
+					"keys": "Alt+B",
+					"does": "Fills the figure that balances the entry on the current line."
+				}
+			],
+			"screenReader": "Each line is a role=\"group\" labelled \"Line n\" inside a group labelled \"Journal lines\", and every cell carries its own aria-label such as \"Line 2 debit\". An sr-only polite region reports what the keys did, for example \"Line 3 added\", \"Line 2 deleted\", \"Negative figure moved to credit\" or \"Filled RM 1,200.00 credit to balance\". The balance summary is itself aria-live=\"polite\", so Balanced or Out by is announced without moving focus, and each line's delete button is out of the tab order with a label naming its line."
+		}
 	},
 	{
 		"name": "InlineEditCell",
@@ -856,8 +1057,33 @@
 		"height": 600,
 		"summary": "A ⌘K / Ctrl+K command palette on Cynco UI's CommandDialog: jump to any area, create documents, reopen recent records and run app actions, with fuzzy search across labels, keywords, document numbers and amounts.",
 		"use": "Mount once in the app shell and put a CommandPaletteTrigger in the header. Feed it recently opened records so accountants can type “inv 0142” or an amount like “3240” and land on the document. Use `inline` to embed the same search on a page (an empty state, a “Jump to” screen).",
-		"provide": "CommandPalette: open / defaultOpen / onOpenChange; items (CommandPaletteItem[]: id, group — “Go to” | “Create” | “Recent” | “Actions” or your own heading, label, keywords, icon, shortcut such as \"mod+k\" or \"g i\", hint, href, disabled, onSelect); recent (CommandPaletteRecord[]: id, type — invoice | quotation | bill | credit_note | customer | vendor | journal | payment | item | account, number, label, status, amount as a decimal string, currency, keywords, href, onSelect); recentLimit (default 5); onSelect(item) to route with item.href / item.id; hotkey (default \"mod+k\", false to bind your own); placeholder; inline; className. CommandPaletteTrigger: label, shortcut, className and any button props (wire onClick).",
-		"notes": "Keys: ⌘K / Ctrl+K toggles, ↑ ↓ move, Enter runs, Esc closes (clears the query when inline), a leading “>” narrows to actions. Search: every word must match a label, keyword, number or amount (prefix > word start > fuzzy subsequence; acronyms like “gl”, “pl”); groups re-rank by best match. Focus returns to whatever opened it. Rows drop status, amount, type and keycaps as the dialog narrows (container queries), so it stays one line from 320px up. Shortcut keycaps made of printable keys alone (\"?\", \"g i\") are hidden while the user has single-key shortcuts turned off; a printable-only `hotkey` is unbound then too."
+		"provide": "CommandPalette: open / defaultOpen / onOpenChange; items (CommandPaletteItem[]: id, group — “Go to” | “Create” | “Recent” | “Actions” or your own heading, label, keywords, icon, shortcut such as \"mod+k\" or \"g i\", hint, href, disabled, onSelect); recent (CommandPaletteRecord[]: id, type — invoice | quotation | bill | credit_note | customer | vendor | journal | payment | item | account, number, label, status, amount as a decimal string, currency, keywords, href, onSelect); recentLimit (default 5); onSelect(item) to route with item.href / item.id; hotkey (default \"mod+k\", false to bind your own); placeholder; inline; className and native div props, spread on the inline root or on the dialog panel. CommandPaletteTrigger: label, shortcut, className and any button props (wire onClick).",
+		"notes": "Keys: ⌘K / Ctrl+K toggles, ↑ ↓ move, Enter runs, Esc closes (clears the query when inline), a leading “>” narrows to actions. Search: every word must match a label, keyword, number or amount (prefix > word start > fuzzy subsequence; acronyms like “gl”, “pl”); groups re-rank by best match. Focus returns to whatever opened it. Rows drop status, amount, type and keycaps as the dialog narrows (container queries), so it stays one line from 320px up. Shortcut keycaps made of printable keys alone (\"?\", \"g i\") are hidden while the user has single-key shortcuts turned off; a printable-only `hotkey` is unbound then too.",
+		"a11y": {
+			"keys": [
+				{
+					"keys": "⌘K / Ctrl+K",
+					"does": "Toggles the palette, including while a text field has focus."
+				},
+				{
+					"keys": "Arrow Up / Arrow Down",
+					"does": "Move between results."
+				},
+				{
+					"keys": "Enter",
+					"does": "Runs the highlighted item."
+				},
+				{
+					"keys": "Esc",
+					"does": "Closes the dialog, or clears the query first when the palette is inline."
+				},
+				{
+					"keys": ">",
+					"does": "Typed at the start of the query, narrows the list to actions."
+				}
+			],
+			"screenReader": "The dialog carries an sr-only title and description naming the \">\" prefix, and the search box is labelled \"Search commands and records\". cmdk does not announce its own empty state, so a stable polite region reports the result count as the query changes, saying \"7 results\" or \"No results for\" the query. A hotkey made only of printable keys is left unbound while the user has single-key shortcuts turned off, and the matching keycaps are hidden with it."
+		}
 	},
 	{
 		"name": "ShortcutsDialog",
@@ -897,7 +1123,24 @@
 		"summary": "\"Do it, then offer Undo\": a toast with the message, an Undo button (⌘/Ctrl+Z), an optional countdown and late commit — the real write runs in onCommit only if nobody undoes.",
 		"use": "Mount UndoToastProvider once near the app root. On a destructive action, update the UI optimistically and call useUndoToast().show({message, onUndo, onCommit}); do the server call in onCommit. Keep real confirm dialogs only for actions that can't be held back (e.g. submitting to LHDN).",
 		"provide": "UndoToastProvider: children, max (default 3; a 4th toast commits the oldest), duration (ms, default Infinity: stays until dismissed, undone or pushed out, per WCAG 2.2.1), viewport (default true; false to place <UndoToastViewport/> yourself), position (bottom-center | bottom-right | bottom-left). useUndoToast() → {show({message, onUndo, onCommit?, duration?, undoLabel?, id?}) → id, undo(id?), dismiss(id), count}. UndoToastViewport: position, className, section props. UndoToast (the presentational item): message, onUndo, onDismiss, onExpire, duration, undoLabel, showShortcut, paused, className, li props.",
-		"notes": "Keyboard: ⌘/Ctrl+Z undoes the newest toast (left alone while typing in a field, where it is the field's own undo); F8 jumps to the newest Undo button; Esc on a focused toast dismisses (commits) it; focus returns to where it was. The countdown pauses on hover, on focus and while the tab is hidden; the stack is an aria-live=\"polite\" list. Each toast settles exactly once; anything pending commits when the provider unmounts or on pagehide. No toast library — the countdown is a CSS animation whose end commits. Width is min(24rem, viewport − 2rem); hidden in print."
+		"notes": "Keyboard: ⌘/Ctrl+Z undoes the newest toast (left alone while typing in a field, where it is the field's own undo); F8 jumps to the newest Undo button; Esc on a focused toast dismisses (commits) it; focus returns to where it was. The countdown pauses on hover, on focus and while the tab is hidden; the stack is an aria-live=\"polite\" list. Each toast settles exactly once; anything pending commits when the provider unmounts or on pagehide. No toast library — the countdown is a CSS animation whose end commits. Width is min(24rem, viewport − 2rem); hidden in print.",
+		"a11y": {
+			"keys": [
+				{
+					"keys": "⌘Z / Ctrl+Z",
+					"does": "Undoes the newest toast, unless the user is typing in a field outside the toast stack."
+				},
+				{
+					"keys": "F8",
+					"does": "Moves focus to the newest toast's Undo button."
+				},
+				{
+					"keys": "Esc",
+					"does": "Dismisses the focused toast."
+				}
+			],
+			"screenReader": "The viewport is a section labelled \"Notifications (F8)\" wrapping an ol with aria-live=\"polite\" and aria-relevant=\"additions text\", so a new toast is read out without taking focus. The Undo button carries aria-keyshortcuts for the undo chord while its keycap is aria-hidden, the dismiss button is labelled \"Dismiss\", and the countdown bar is aria-hidden. When a toast closes while focus is inside it, focus moves to the next remaining Undo button, or back to the element named by returnFocusTo."
+		}
 	},
 	{
 		"name": "DensityToggle",
@@ -1096,8 +1339,8 @@
 		"height": 470,
 		"summary": "The invoices list: Invoice #, Customer, Date, Due Date, Amount and Status, with row selection, sort headers and per-row actions.",
 		"use": "The Invoicing page's main list, above which InvoiceBulkBar appears once rows are ticked.",
-		"provide": "invoices (invoiceNumber, customerName, invoiceDate, dueDate, total, currency, status, journalEntryId, emailStatus), selectedIds, onToggleRow, onToggleAll, sortField, sortDirection, onSort, optional footer; className.",
-		"notes": "Invoice numbers use text-tiny-id in primary and amounts are right-aligned tabular-nums. Responsive: Built on DataList: a tray table from 48rem of container width, a stacked card per invoice below that (customer and amount, then status and signals, then Invoice #, Date and Due Date)."
+		"provide": "invoices (invoiceNumber, customerName, invoiceDate, dueDate, total, currency, status, journalEntryId, emailStatus), selectedIds, defaultSelectedIds, onSelectionChange, sortField, sortDirection, onSort, optional footer; className.",
+		"notes": "Invoice numbers use `font-mono text-2xs` in primary and amounts are right-aligned tabular-nums. Responsive: Built on DataList: a tray table from 48rem of container width, a stacked card per invoice below that (customer and amount, then status and signals, then Invoice #, Date and Due Date)."
 	},
 	{
 		"name": "InvoiceLineItems",
@@ -1146,7 +1389,7 @@
 		"height": 294,
 		"summary": "The always-visible total bar under the builder: Subtotal, Discount and Tax figures, a large Total and a caret that opens the full breakdown above it, plus trailing actions.",
 		"use": "Sticky footer of the invoice and quotation builders, so the amount stays visible while the preview is collapsed.",
-		"provide": "rows (as for InvoiceTotalsPanel), currency, actions (buttons), defaultOpen; className and native div props.",
+		"provide": "rows (as for InvoiceTotalsPanel), currency, actions (buttons), open / defaultOpen / onOpenChange; className and native div props.",
 		"notes": "The secondary figures hide through a container query when the rail is too narrow, so the total never truncates. When there are no rows, it reads 'Add a line item to see the total'. Responsive: The Subtotal/Discount/Tax figures show only from 36rem of container width, and the actions wrap under the total when space runs out."
 	},
 	{
@@ -1156,7 +1399,7 @@
 		"height": 298,
 		"summary": "The invoice view's Actions card, which lists only the shortcuts the status allows (Send email or reminder, Mark as paid, Download receipt, Edit, Delivery orders, Credit and debit notes).",
 		"use": "Right rail of the invoice detail page.",
-		"provide": "status, emailSent, onAction(label); className and native section props.",
+		"provide": "status, emailSent, onAction(action) where action is an InvoiceAction id such as \"mark_paid\", never the label on screen; className and native section props.",
 		"notes": "Responsive: Built on the SectionPanel primitive."
 	},
 	{
@@ -1166,7 +1409,7 @@
 		"height": 600,
 		"summary": "Records a manual payment against an invoice: a fact block (customer, invoice, amount, balance to record), payment date, payment method chips, the 'Deposited to' bank account, a note, an offline-payment warning and confirm, plus a 'Payment recorded' success state.",
 		"use": "From an invoice's Mark as paid action, for payments received offline.",
-		"provide": "open, defaultOpen, modal, onOpenChange, invoice ({invoiceNumber, customerName, total, paidAmount, currency}), paymentDate, paymentMethod, bankAccounts ({accountCode, accountName}), bankAccount, note, isSubmitting, showSuccess, onConfirm; className (merged onto the dialog panel).",
+		"provide": "open, defaultOpen, modal, onOpenChange, invoice ({invoiceNumber, customerName, total, paidAmount, currency}), paymentDate, paymentMethod / defaultPaymentMethod / onPaymentMethodChange, bankAccounts ({accountCode, accountName}), bankAccount / defaultBankAccount / onBankAccountChange, note / defaultNote / onNoteChange, isSubmitting, showSuccess, onConfirm; className (merged onto the dialog panel).",
 		"notes": "Dialog and DialogContent, with the fact block on bg-table-tray and sections divided by table-row-divider. The warning is Alert variant=\"warning\", and bank accounts show their mono account code. Confirm is the primary Button, and it is disabled with no date or when a bank account is required but not chosen. Responsive: The fact block stacks its labels above the values in a narrow dialog, the method chips wrap, and the panel scrolls within the viewport."
 	},
 	{
@@ -1197,7 +1440,7 @@
 		"summary": "A credit or debit note's totals and where its money went: Applied, Refunded and Credit left for a credit note, or Paid and Still owed for a debit note, with an optional Payments list.",
 		"use": "The credit and debit note detail page.",
 		"provide": "note ({noteType, status, subtotal, discountAmount, taxAmount, totalAmount, appliedAmount, refundAmount, remainingAmount, paidAmount, isInvoiceAmendment, currency}) and payments ({id, paymentDate, method, reference, amount}); className and native div props.",
-		"notes": "The settlement rows hide on drafts, voided notes and invoice amendments. Payments sit on a bg-table-surface list with table-row-divider, and references show in primary text-tiny-id. Responsive: rows and payments wrap rather than overlap when narrow."
+		"notes": "The settlement rows hide on drafts, voided notes and invoice amendments. Payments sit on a bg-table-surface list with table-row-divider, and references show in primary `font-mono text-2xs`. Responsive: rows and payments wrap rather than overlap when narrow."
 	},
 	{
 		"name": "CreditDebitNoteList",
@@ -1206,7 +1449,7 @@
 		"height": 492,
 		"summary": "The credit and debit notes list: Note, Type, Customer, Amount, Status, Date and a row menu.",
 		"use": "The Credit & Debit Notes page.",
-		"provide": "notes ({id, noteNumber, noteType, customerName, totalAmount, currency, status, date}) and onOpen(id); className.",
+		"provide": "notes ({id, noteNumber, noteType, customerName, totalAmount, currency, status, date}) and onRowClick(note); className.",
 		"notes": "On the table tray, with statuses shown through DocStatus. The note type is a neutral tag with a coloured square: hue goes in the square, never the label. A draft note shows 'Draft' in place of its number. Responsive: built on DataList: a table from 48rem of container width, a stacked card per note below (note number and amount, then type and status, then customer and date)."
 	},
 	{
@@ -1214,9 +1457,9 @@
 		"category": "Accounting",
 		"group": "Sales",
 		"height": 124,
-		"summary": "One quotation on the Kanban board: customer, quotation number, status, total and relative age ('3d ago', 'Yesterday').",
+		"summary": "One quotation on the Kanban board: customer, quotation number, status, total and relative age ('3h ago', '2d ago').",
 		"use": "Inside QuotationBoardColumn, or anywhere you show a quotation at a glance.",
-		"provide": "quotation ({id, quotationNumber, customerName, totalAmount, currency, status, createdAt}), now (reference date for the relative time), onOpen; className and native button props.",
+		"provide": "quotation ({id, quotationNumber, customerName, totalAmount, currency, status, createdAt}), now (reference date for the relative time), onRowClick(quotation); className and native button props.",
 		"notes": "A bg-card rounded-xl button that hovers to interactive-secondary-hover. The status is a DocStatus chip, with Converted on the refresh glyph. Responsive: the status moves under the name when the card is very narrow."
 	},
 	{
@@ -1226,8 +1469,8 @@
 		"height": 388,
 		"summary": "One Kanban column of the quotations board (Draft, Sent / Viewed, Accepted, or Rejected / Expired): icon, label and count above a tray of cards with a column Total, or an empty message.",
 		"use": "Board view of the Quotations page, with four columns side by side.",
-		"provide": "column ('draft' | 'active' | 'accepted' | 'terminal'), quotations, currency, now, onOpen; className and native section props.",
-		"notes": "Responsive: Fluid width (no fixed minimum): lay the columns out in an auto-fit grid or a ScrollRow."
+		"provide": "column ('draft' | 'active' | 'accepted' | 'terminal'), quotations, currency, now, onRowClick(quotation); className and native section props.",
+		"notes": "The cards are one tab stop: arrow keys move between them, Home and End jump to the first and last, Enter opens the focused one. Responsive: Fluid width (no fixed minimum): lay the columns out in an auto-fit grid or a ScrollRow."
 	},
 	{
 		"name": "QuotationStats",
@@ -1257,7 +1500,7 @@
 		"summary": "The slim title bar and metric strip that open every accounting workbench tab (Overview, Journal, Ledger, Periods, Opening Balances).",
 		"use": "At the top of a ledger or journal screen, to name the tab, give its quiet sub-line and show three to five at-a-glance figures.",
 		"provide": "title, meta (e.g. \"Company · FY2026 · 214 accounts · MYR\"), actions (buttons), stats [{ key, label, value, hint?, href?, status?: success|warning|danger }], className? (merged on the root) and native props.",
-		"notes": "A workbench title row and a StatGrid in one. Tiles are card surfaces (rounded-xl border bg-card) with text-tiny captions and text-sub tabular values; the single state dot uses the StatusChip tones; linked tiles show a hover arrow. Responsive: tiles are StatGrid/StatTile (auto-fit, values wrap instead of truncating); the action bar wraps under the title when narrow."
+		"notes": "A workbench title row and a StatGrid in one. Tiles are card surfaces (rounded-xl border bg-card) with `text-2xs` captions and `text-md` tabular values; the single state dot uses the StatusChip tones; linked tiles show a hover arrow. Responsive: tiles are StatGrid/StatTile (auto-fit, values wrap instead of truncating); the action bar wraps under the title when narrow."
 	},
 	{
 		"name": "JournalEntryHeader",
@@ -1267,7 +1510,7 @@
 		"summary": "The journal entry form's top bar: Back, the title with the entry number, the entry status and the From template / Save Draft / Save & Post actions.",
 		"use": "Above the journal entry editor, on both the create and edit screens.",
 		"provide": "title, entryNumber?, status? (draft|pending_approval|approved|posted|reversed|cancelled), isCreate, approvalRequired, isSaving, isPosting, onBack, onFromTemplate, onSave, onPost, className? (merged on the root) and native props.",
-		"notes": "Entry number in text-tiny-id. Approval-required entries show \"Save & Submit for Approval\". Responsive: Actions sit in an ActionBar that wraps under the title on narrow containers."
+		"notes": "Entry number in `font-mono text-2xs`. Approval-required entries show \"Save & Submit for Approval\". Responsive: Actions sit in an ActionBar that wraps under the title on narrow containers."
 	},
 	{
 		"name": "JournalLineEditor",
@@ -1286,7 +1529,7 @@
 		"height": 430,
 		"summary": "A searchable chart-of-accounts picker: recent accounts first, then one group per account type, codes in mono with the account's normal balance (DR/CR).",
 		"use": "Wherever a single GL account is chosen: journal lines, bank categorisation, default account settings.",
-		"provide": "accounts [{ id, accountCode, accountName, accountType, normalBalance }], recentIds?, selectedId?, defaultOpen?, label?, onSelect?, onCreate?(query), className? (merged on the root) and native props.",
+		"provide": "accounts [{ id, accountCode, accountName, accountType, normalBalance }], recentIds?, selectedId?, open? / defaultOpen? / onOpenChange?, label?, onSelect?, onCreate?(query), className? (merged on the root) and native props.",
 		"notes": "Keeps the \"Create new account\" / Create “query” sentinel row. No fetching: the consumer passes the accounts. Responsive: The popup follows the trigger width (min 18rem, max the viewport)."
 	},
 	{
@@ -1327,7 +1570,7 @@
 		"summary": "The Details · Memo · Activity panel beside a journal entry, with the approval/posting timeline.",
 		"use": "Right rail of the journal entry detail page.",
 		"provide": "entry { entryDate, period, currency, documentNumber?, manualReason?, vendorName?, customerName?, approvedBy?, approvedAt?, postedAt?, memo? }, statusHistory [{ id, fromStatus, toStatus, changedAt, changedBy?, notes? }], createdAt?, updatedAt?, className? (merged on the root) and native props.",
-		"notes": "A hairline-divided card (divide-y, bg-card, rounded-xl) with section-label captions. Timeline statuses are DocStatus chips and the timeline dots take StatusChip tones. Dates read \"29 Oct 2026, 16:05\"; period and reference are text-tiny-id. Responsive: fills its container (no fixed width); long values wrap."
+		"notes": "A hairline-divided card (divide-y, bg-card, rounded-xl) with section-label captions. Timeline statuses are DocStatus chips and the timeline dots take StatusChip tones. Dates read \"29 Oct 2026, 16:05\"; period and reference are `font-mono text-2xs`. Responsive: fills its container (no fixed width); long values wrap."
 	},
 	{
 		"name": "ChartOfAccountsTree",
@@ -1336,7 +1579,7 @@
 		"height": 560,
 		"summary": "The nested Chart of Accounts: expandable header accounts, category dot, mono code, name, type and balance, with inactive accounts marked.",
 		"use": "The Chart of Accounts page's main list; pair with CoaAccountPanel for the selected account.",
-		"provide": "nodes [{ id, accountCode, accountName, accountType, balance?, isHeaderAccount?, isActive?, children? }], currency?, defaultExpandedIds?, selectedId?, onSelect?, className? (merged on the root) and native props.",
+		"provide": "nodes [{ id, accountCode, accountName, accountType, balance?, isHeaderAccount?, isActive?, children? }], currency?, expandedIds? / defaultExpandedIds? / onExpandedChange?, selectedId?, onSelect?, className? (merged on the root) and native props.",
 		"notes": "Keeps the ARIA tree (role=treeitem, aria-level/expanded/selected, Enter/Space/Arrow keys). Header accounts show \"—\", negatives in text-destructive, Inactive as a neutral StatusChip. Responsive: Container-responsive: below 28rem the code sits above the name, below 36rem the Type column is dropped; headers reuse the row layout so they always line up."
 	},
 	{
@@ -1346,7 +1589,7 @@
 		"height": 600,
 		"summary": "The detail panel for a selected account: current balance, normal balance and status, flags, balance history, recent transactions and AI mapping keywords, with an inline edit form.",
 		"use": "Right-hand panel of the Chart of Accounts page.",
-		"provide": "account { accountCode, accountName, accountType, normalBalance, isActive, description?, isSystemAccount?, isBankAccount?, isCashAccount?, isRetainedEarnings?, taxRelated?, currency?, isMonetary?, mappingKeywords? }, currency?, currentBalance, transactionCount, lastTransactionAt?, balanceHistory [{ period, periodDebit, periodCredit, closingBalance }], transactions [{ id, date, description, type, amount, source? }], defaultEditing?, onClose?, className? (merged on the root) and native props.",
+		"provide": "account { accountCode, accountName, accountType, normalBalance, isActive, description?, isSystemAccount?, isBankAccount?, isCashAccount?, isRetainedEarnings?, taxRelated?, currency?, isMonetary?, mappingKeywords? }, currency?, currentBalance, transactionCount, lastTransactionAt?, balanceHistory [{ period, periodDebit, periodCredit, closingBalance }], transactions [{ id, date, description, type, amount, source? }], editing? / defaultEditing? / onEditingChange?, onActiveChange?, onClose?, className? (merged on the root) and native props.",
 		"notes": "Balance tile is a StatTile on bg-interactive-secondary. Flags and keywords use Badge variant=\"muted\". Responsive: Fills its container (no fixed width); balance tile is a StatTile and balance history a DataList that stacks inside a narrow panel."
 	},
 	{
@@ -1386,8 +1629,8 @@
 		"height": 420,
 		"summary": "The pre-close checks for a period, grouped worst first (Blocking, Needs attention, Advisories) with the fix-it actions, and the passed checks folded away.",
 		"use": "In the close-period flow before a period is closed.",
-		"provide": "items [{ id, status: fail|attention|warn|pass, label, detail, task?: depreciation|recognition|fxRevaluation, unclosedPeriod?, failure?, attention?: AttentionCard[] }], runningTask?, busy?, onRunTask?, onClosePeriodFirst?, className? (merged on the root) and native props.",
-		"notes": "Passed is a disclosure with Show/Hide. Close notes are kept in local state. Responsive: Passed checks use Collapsible and go two-column from 36rem; action buttons wrap."
+		"provide": "items [{ id, status: fail|attention|warn|pass, label, detail, task?: depreciation|recognition|fxRevaluation, unclosedPeriod?, failure?, attention?: AttentionCard[] }], notes? / defaultNotes? / onNotesChange?, runningTask?, busy?, onRunTask?, onClosePeriodFirst?, className? (merged on the root) and native props.",
+		"notes": "Passed is a disclosure with Show/Hide. Close notes work controlled or uncontrolled (notes / defaultNotes / onNotesChange). Responsive: Passed checks use Collapsible and go two-column from 36rem; action buttons wrap."
 	},
 	{
 		"name": "PeriodCloseAttentionCard",
@@ -1396,8 +1639,8 @@
 		"height": 330,
 		"summary": "A check Cynco could not verify: what is wrong, on which accounts, why it matters, links to fix it, and the closer's note for the close record.",
 		"use": "Inside a Needs attention check of the close checklist (also rendered there automatically).",
-		"provide": "card { key, title, accounts?: [{ code, name }], why, risk, fixes?: [{ label }], fallback? }, note?, onNoteChange?, className? (merged on the root) and native props.",
-		"notes": "Fix links are primary-coloured with the external-link glyph; the note is a Textarea styled with input-base. Label switches to \"Acknowledged. Note for the close record\" once a note is typed. Responsive: Text and fix links wrap at any width."
+		"provide": "card { key, title, accounts?: [{ code, name }], why, risk, fixes?: [{ label }], fallback? }, note? / defaultNote? / onNoteChange?, className? (merged on the root) and native props.",
+		"notes": "Fix links are primary-coloured with the external-link glyph; the note is a Textarea on the shared input surface. Label switches to \"Acknowledged. Note for the close record\" once a note is typed. Responsive: Text and fix links wrap at any width."
 	},
 	{
 		"name": "OpeningBalanceTotalsBar",
@@ -1416,8 +1659,8 @@
 		"height": 570,
 		"summary": "The day-grouped bank transaction stream: search, lifecycle filter, count, and per-day sections of feed rows with the day's net.",
 		"use": "The main Banking feed for one account or all accounts.",
-		"provide": "days [{date, net?, rows: BankFeedTransaction[]}], total, statusLabel, search, showAccount, selectedIds / defaultSelectedIds / onSelectedChange, postAll (money summary when filtered to To post), className and native props (spread on the root).",
-		"notes": "Responsive by container: toolbar wraps (ActionBar), rows switch to the narrow FeedRow layout."
+		"provide": "days [{date, net?, rows: BankFeedTransaction[]}], total, statusLabel, search, showAccount, selectedIds / defaultSelectedIds / onSelectionChange, postAll (money summary when filtered to To post), className and native props (spread on the root).",
+		"notes": "Each day's rows are an ARIA grid: the list is one tab stop, arrow keys move down the feed across day boundaries and across a row's cells, Home and End reach the first and last row, and Enter or Space works the focused cell's control. Responsive by container: toolbar wraps (ActionBar), rows switch to the narrow FeedRow layout."
 	},
 	{
 		"name": "BankFeedRow",
@@ -1496,7 +1739,7 @@
 		"height": 300,
 		"summary": "'Waiting to post, by account': what To post will put in the ledger per account and direction, with line counts and signed totals.",
 		"use": "Above the feed when filtered to To post, so a miscoding shows as a total on the wrong account.",
-		"provide": "totals [{accountCode, accountName, type, count, total, currency}], activeKey ('code|type'), onSelect(key | null), className and native props (spread on the root).",
+		"provide": "totals [{accountCode, accountName, type, count, total, currency}], activeKey / defaultActiveKey ('code|type'), onActiveKeyChange(key | null), className and native props (spread on the root).",
 		"notes": "Responsive: built on DataList: a tray table from 32rem, stacked rows (account and total, then direction and line count) below."
 	},
 	{
@@ -1556,7 +1799,7 @@
 		"height": 240,
 		"summary": "'Month-end close · FY 2026' with year stepping, the fiscal year as twelve month cells with state bars and open-line counts, and the selected month's heading and next step.",
 		"use": "Top of the Reconcile lens for one bank account.",
-		"provide": "months [{period 'YYYY-MM', state, openLines, missing, untied, signedOff}], selected, yearLabel, accountName, calendarMonths, selectedSummary {nextStep, signedOffLabel}, className and native props (spread on the root).",
+		"provide": "months [{period 'YYYY-MM', state, openLines, missing, untied, signedOff}], selected / defaultSelected / onSelectedChange, yearLabel, accountName, calendarMonths, selectedSummary {nextStep, signedOffLabel}, onPreviousYear, onNextYear, className and native props (spread on the root).",
 		"notes": "The strip sits in a table-tray band; the selected cell is a raised bg-table-surface tab with a primary underline; bars use var(--status-green/amber) and neutrals. Responsive by container: 12 months across from 42rem, 6 per row from 24rem, 4 per row below."
 	},
 	{
@@ -1607,7 +1850,7 @@
 		"summary": "The trial balance grid: account code and name, Debit/Credit pairs per column group, a totals row that must tie, and a Balanced/Unbalanced chip.",
 		"use": "The trial balance report in its standard, comparative (current | prior | variance) or extended (unadjusted | adjustments | adjusted) shape.",
 		"provide": "rows ({accountId, accountCode, accountName, accountType?, debit?, credit?}); optional groups [{label, muted, signed, debit(row), credit(row), totalDebit?, totalCredit?}], period, description, showType, balanced, badgeLabel, currency; plus className and native element props (spread on the root).",
-		"notes": "Zero Dr/Cr cells stay blank, totals get an accountant's double rule, codes use text-tiny-id. Responsive: DataList tray table from 36rem of container width, one card per account below (blank Dr/Cr show an em dash there); built on SectionPanel + DataList."
+		"notes": "Zero Dr/Cr cells stay blank, totals get an accountant's double rule, codes use `font-mono text-2xs`. Responsive: DataList tray table from 36rem of container width, one card per account below (blank Dr/Cr show an em dash there); built on SectionPanel + DataList."
 	},
 	{
 		"name": "ProfitLossStatement",
@@ -1657,7 +1900,7 @@
 		"summary": "Receivables and payables as aging rings — one arc per band (Current, 1–30, 31–60, 61–90, 90+), the total in the middle, a keyed legend and the overdue footnote.",
 		"use": "The Owed band of the CFO numbers panel, or any compact AR/AP aging glance.",
 		"provide": "receivables, payables ({current, days1to30, days31to60, days61to90, over90, total?} or null); optional dso, currency; plus className and native element props (spread on the root).",
-		"notes": "Band colours use the status tokens (--status-green/blue/amber/orange/red); the ring track is stroke-muted; key dots use text-tiny tertiary. Responsive: rings sit side by side from 24rem of container width, stacked below."
+		"notes": "Band colours use the status tokens (--status-green/blue/amber/orange/red); the ring track is stroke-muted; key dots use `text-2xs` tertiary. Responsive: rings sit side by side from 24rem of container width, stacked below."
 	},
 	{
 		"name": "ReceivablesAgingTable",
@@ -1676,7 +1919,7 @@
 		"height": 370,
 		"summary": "Money movement chart: inflow and outflow bars per month with net as a line, a 3M/6M range toggle and the window's net, or a connect-bank empty state.",
 		"use": "Dashboard overview cash-flow card.",
-		"provide": "points [{label, credits, debits, net}] oldest → newest; optional currency, hasActivity, defaultRange; plus className and native element props (spread on the root).",
+		"provide": "points [{label, credits, debits, net}] oldest → newest; optional currency, hasActivity, range / defaultRange / onRangeChange; plus className and native element props (spread on the root).",
 		"notes": "Responsive: SectionPanel header wraps the net figure and range toggle under the title; chart fills the width."
 	},
 	{
@@ -1716,7 +1959,7 @@
 		"height": 330,
 		"summary": "A bill as a compact card: vendor initials, vendor name, bill number, total, due date, category, Overdue/Duplicate flags, AI-extraction confidence and GL-posting indicator, with a status quick-action menu.",
 		"use": "Expense board columns and anywhere a bill is shown outside a table (set showStatus outside a status column).",
-		"provide": "bill (vendorName, billNumber, totalAmount, paidAmount, currency, dueDate, status, category, overdue, isDuplicate, postedToGl, aiConfidence), showStatus, selected / onToggle / someSelected, onAction; className and native div props.",
+		"provide": "bill (vendorName, billNumber, totalAmount, paidAmount, currency, dueDate, status, category, overdue, isDuplicate, postedToGl, aiConfidence), showStatus, selected / defaultSelected / onSelectedChange, someSelected, onAction(bill, action) where action is a BillAction id such as \"archive\", never the label on screen; className and native div props.",
 		"notes": "Selected state uses border-primary + bg-active-primary. Responsive by container: Wraps its footer and amount instead of clipping in narrow columns."
 	},
 	{
@@ -1726,8 +1969,8 @@
 		"height": 470,
 		"summary": "The bills Kanban: In Review, Pending Approval, Awaiting Payment, Scheduled and Paid columns of BillCards with counts, empty messages and a compact per-currency column total.",
 		"use": "The Expenses page board view.",
-		"provide": "bills, columns (subset of board keys, in order), selectedIds + onToggleBill, paidFilterLabel; className and native div props.",
-		"notes": "Responsive by container: columns sit side by side from a 48rem container and stack as sections (cards two-up from 36rem) below that."
+		"provide": "bills, columns (subset of board keys, in order), selectedIds / defaultSelectedIds / onSelectionChange, paidFilterLabel; className and native div props.",
+		"notes": "Each column is one tab stop: arrow keys move between its cards, Home and End jump to the first and last, Space ticks the focused one. Responsive by container: columns sit side by side from a 48rem container and stack as sections (cards two-up from 36rem) below that."
 	},
 	{
 		"name": "BillDetailHeader",
@@ -1756,7 +1999,7 @@
 		"height": 565,
 		"summary": "The pay run: Ready / Overdue / Selected metrics, a schedule date (and optional Pay from account) with Schedule selected, and a selectable table of payable bills with outstanding amounts and a total-to-pay footer.",
 		"use": "Expenses Pay runs view, choosing which approved bills to schedule.",
-		"provide": "bills, selectedIds / onSelectedChange or defaultSelectedIds, scheduledDate, today, bankAccounts (optional), onSchedule, isSubmitting; className and native div props.",
+		"provide": "bills, selectedIds / defaultSelectedIds / onSelectionChange, scheduledDate / defaultScheduledDate / onScheduledDateChange, today, bankAccounts (optional), onSchedule, isSubmitting; className and native div props.",
 		"notes": "Table primitives inside the DataTable tray: header band on bg-table-tray, rows on bg-table-surface, selected rows bg-active-primary. Only approved or awaiting-payment bills can be scheduled; the rest are counted in an amber 'N excluded' chip. A Pay from account select and a footer total sit on the tray. Responsive: built on StatGrid, ActionBar and DataList: the table becomes stacked bill cards below a 42rem container."
 	},
 	{
@@ -1766,8 +2009,8 @@
 		"height": 600,
 		"summary": "Record payment button and right-side sheet: bill total / outstanding summary, Payment Amount (validated against outstanding), date, method, Bank / Cash Account, reference and notes, with Confirm payment.",
 		"use": "Recording a full or partial payment against an approved bill.",
-		"provide": "billAmount, paidAmount, currency, bankAccounts {id, accountCode, accountName}, defaultOpen, defaultDate, disabled, onSubmit; className (trigger button), contentClassName (sheet panel).",
-		"notes": "Fields use text-form-label with Input, Select and Textarea, and a ShortcutButton (⌘/Ctrl ↵) submits, following the long-form-in-a-Sheet rule. Account codes show in mono inside the select. Responsive: the sheet goes full width on phones; the summary uses KeyValueList."
+		"provide": "billAmount, paidAmount, currency, bankAccounts {id, accountCode, accountName}, open / defaultOpen / onOpenChange, defaultDate, disabled, onSubmit; className (trigger button), contentClassName (sheet panel).",
+		"notes": "Fields use a text-sm font-medium label with Input, Select and Textarea, and a ShortcutButton (⌘/Ctrl ↵) submits, following the long-form-in-a-Sheet rule. Account codes show in mono inside the select. A payment method or bank account that was never chosen is null, not a sentinel string. Responsive: the sheet goes full width on phones; the summary uses KeyValueList."
 	},
 	{
 		"name": "ReceiptExtractionProgress",
@@ -1786,7 +2029,7 @@
 		"height": 330,
 		"summary": "Top of a customer or vendor page: breadcrumb, name with Inactive chip, Statement and New invoice/New bill actions, the four position KPIs (owes, overdue since, open items, 12-month total) and Activity / Ledger / Details tabs with the terms fact strip.",
 		"use": "Customer and vendor party pages (CustomerPartyPage / VendorPartyPage).",
-		"provide": "role, name, isActive, balance, overdue, overdueSince, openCount, trendTotal, paymentTerms, category, since, currency, tab, onTabChange; className and native div props.",
+		"provide": "party, name, isActive, balance, overdue, overdueSince, openCount, trendTotal, paymentTerms, category, since, currency, tab / defaultTab / onTabChange; className and native div props.",
 		"notes": "Responsive by container: KPIs are a StatGrid (four-up from 48rem, wrapping below); tabs scroll sideways in a ScrollRow."
 	},
 	{
@@ -1796,7 +2039,7 @@
 		"height": 600,
 		"summary": "The facts rail of a party page: available credit (customers), Position with Books tie / Needs review, the Aging stacked bar and buckets, the 12-month billed/spend bar chart and the contacts list.",
 		"use": "Right column of customer and vendor pages.",
-		"provide": "role, currency, ledgerBalance, openItemsTotal, aging {current, days1to30, days31to60, days61plus}, trend [{month, total}], credits [{currency, amount, count}], contacts [{name, role, email, phone, isPrimary}], className (e.g. grid-cols-2); className and native aside props.",
+		"provide": "party, currency, ledgerBalance, openItemsTotal, aging {current, days1to30, days31to60, days61plus}, trend [{month, total}], credits [{currency, amount, count}], contacts [{name, party, email, phone, isPrimary}], className (e.g. grid-cols-2); className and native aside props.",
 		"notes": "Responsive by container: one column as a rail, two from a 36rem container, three from 64rem."
 	},
 	{
@@ -1806,7 +2049,7 @@
 		"height": 430,
 		"summary": "The party Activity story: month-grouped invoices/bills, payments and bank lines with day, kind dot, reference, due date, status, Overdue chip and amount (with MYR equivalent for foreign documents).",
 		"use": "Activity tab of customer and vendor pages.",
-		"provide": "events [{kind, date, title, reference, status, dueDate, overdue, amount, currency, baseAmount}], role, currency; className and native div props.",
+		"provide": "events [{kind, date, title, reference, status, dueDate, overdue, amount, currency, baseAmount}], party, currency; className and native div props.",
 		"notes": "Responsive by container: below a 28rem container the day joins the detail line and titles wrap to two lines."
 	},
 	{
@@ -1826,8 +2069,8 @@
 		"height": 445,
 		"summary": "The customers list: selection, customer with initials, contact and location, Owes you (outstanding, overdue or open count, credit-limit chip), Est. margin (90d) and Next action, with row actions.",
 		"use": "Customers page list.",
-		"provide": "customers [{name, email, phone, location, isActive, currency, creditLimit, receivables {outstanding, overdue, openInvoiceCount, extraCurrencies, nextAction {label, tone}}, margin {percent, revenue, belowCostLines}}], defaultSelectedIds, marginWindowDays; selectedIds / onSelectedChange (controlled), onRowClick, className.",
-		"notes": "Responsive by container: DataList: stacked customer cards below a 42rem container, avatar hidden under 28rem."
+		"provide": "customers [{name, email, phone, location, isActive, currency, creditLimit, receivables {outstanding, overdue, openInvoiceCount, extraCurrencies, nextAction {label, tone}}, margin {percent, revenue, belowCostLines}}], marginWindowDays; selectedIds / defaultSelectedIds / onSelectionChange, onRowClick, onAction(row, action), className.",
+		"notes": "The row menu reports an action id, not the words on it: edit, manage_contacts or delete. Responsive by container: DataList: stacked customer cards below a 42rem container, avatar hidden under 28rem."
 	},
 	{
 		"name": "VendorListTable",
@@ -1836,8 +2079,8 @@
 		"height": 365,
 		"summary": "The vendors list: selection, vendor with initials and contact / category / place, You owe (with overdue or All overdue), Paid to date, Last paid and row actions.",
 		"use": "Vendors page list.",
-		"provide": "vendors [{name, email, phone, category, city, country, isActive, outstanding, overdue, totalPaid, lastPaymentDate}], defaultSelectedIds, currency; selectedIds / onSelectedChange (controlled), onRowClick, className.",
-		"notes": "Responsive by container: DataList: stacked vendor cards below a 42rem container."
+		"provide": "vendors [{name, email, phone, category, city, country, isActive, outstanding, overdue, totalPaid, lastPaymentDate}], currency; selectedIds / defaultSelectedIds / onSelectionChange, onRowClick, onAction(row, action), className.",
+		"notes": "The row menu reports an action id, not the words on it: record_payment, edit, activate, deactivate or delete. Responsive by container: DataList: stacked vendor cards below a 42rem container."
 	},
 	{
 		"name": "CustomerStatementMetrics",
@@ -1906,7 +2149,7 @@
 		"height": 579,
 		"summary": "Fixed-asset detail: name and status, KPI tiles (total cost, accumulated depreciation, NBV, qualifying expenditure), tabs, fact strip and the Asset details / Depreciation & Tax (method, useful life, CA class, IA/AA) cards, plus disposal details when disposed.",
 		"use": "Fixed asset detail page.",
-		"provide": "`asset` (the cynco LoaderData asset fields); optional `schedule` for the Depreciation tab, `defaultTab`; optional `className` and native div props on the root.",
+		"provide": "`asset` (the cynco LoaderData asset fields); optional `schedule` for the Depreciation tab, `tab` / `defaultTab` / `onTabChange`; optional `className` and native div props on the root.",
 		"notes": "The Capital allowances and Revaluations tabs are placeholders in the demo."
 	},
 	{
@@ -1926,7 +2169,7 @@
 		"height": 436,
 		"summary": "Items catalogue with selection: name and description, unit price, profit (margin % vs cost or estimated on sales), inventory on hand vs reorder point, tax rate and discount.",
 		"use": "Items page list.",
-		"provide": "`items` [{id, name, description, unitPrice, unitCost, costingMode, targetMarginPercent, trackInventory, unitOfMeasure, reorderPoint, taxRate, discountRate, isArchived}], `inventoryByItem`, `realizedByItem`; optional `selectedItems`, `onToggle`, `onToggleAll`; optional `className` and native div props on the root.",
+		"provide": "`items` [{id, name, description, unitPrice, unitCost, costingMode, targetMarginPercent, trackInventory, unitOfMeasure, reorderPoint, taxRate, discountRate, isArchived}], `inventoryByItem`, `realizedByItem`; optional `selectedIds`, `defaultSelectedIds`, `onSelectionChange`; optional `className` and native div props on the root.",
 		"notes": "Loss-making or below-target margins read in error-text; everything else stays neutral. Responsive: DataList (stacks below 42rem) with the checkbox kept as the leading cell."
 	},
 	{
@@ -1976,7 +2219,7 @@
 		"height": 317,
 		"summary": "Editable PO line items (description, qty, unit price, amount auto-calculated as qty × price) with remove, Add line item, and subtotal / SST / total.",
 		"use": "Create or edit a purchase order; `readOnly` on the PO detail.",
-		"provide": "`lineItems` [{id, description, quantity, unitPrice, amount}]; optional `onChange` (uncontrolled when omitted), `readOnly`, `currency`, `taxAmount`; optional `className` and native div props on the root.",
+		"provide": "`lineItems` [{id, description, quantity, unitPrice, amount}]; optional `defaultLineItems` and `onLineItemsChange` (uncontrolled when omitted), `readOnly`, `currency`, `taxAmount`; optional `className` and native div props on the root.",
 		"notes": "The totals block mirrors the PO's subtotal/tax/total fields."
 	},
 	{
@@ -1986,8 +2229,8 @@
 		"height": 144,
 		"summary": "Bills linked to a purchase order: bill number, issue date, amount and bill status.",
 		"use": "PO detail sidebar.",
-		"provide": "`bills` [{id, billNumber, status, totalAmount, currency, issueDate}]; optional `currency`, `onOpen(id)`; optional `className` and native div props on the root.",
-		"notes": "Responsive by container: rows wrap amount and status under the bill number when narrow."
+		"provide": "`bills` [{id, billNumber, status, totalAmount, currency, issueDate}]; optional `currency`, `onRowClick(bill)`; optional `className` and native div props on the root.",
+		"notes": "Responsive by container: built on DataList: a tray table from 36rem, a stacked card per bill below that."
 	},
 	{
 		"name": "PayslipSummary",
@@ -1997,7 +2240,7 @@
 		"summary": "One payslip: gross, statutory deductions, net pay, employer cost; pay lines (earnings and EPF/SOCSO/EIS/PCB deductions); employee and employer contributions per scheme with Unverified flags; payment state and Mark paid.",
 		"use": "Payslip drawer or detail on a payroll run.",
 		"provide": "`payslip` {employeeName, reference, gross, statutoryDeductions, otherDeductions, net, employerCost, paymentStatus, paymentReference, lines, contributions} in integer sen; optional `month`, `canMarkPaid`, `onMarkPaid(reference)`; optional `className` and native section props on the root.",
-		"notes": "Responsive by container: StatGrid tiles wrap; pay lines and contributions sit side by side from 42rem."
+		"notes": "Responsive by container: StatGrid tiles wrap; pay lines and contributions sit side by side from 42rem; the contributions are a DataList on the library's tray surface."
 	},
 	{
 		"name": "PayslipsRunTable",
@@ -2006,7 +2249,7 @@
 		"height": 391,
 		"summary": "A payroll run's payslips: employee and reference, gross, statutory, other deductions, net, employer cost and Paid/Unpaid, with run totals.",
 		"use": "Payroll run page.",
-		"provide": "`payslips` (PayslipSummary shape, sen); optional `payable` (false for correction runs), `onOpen(id)`; optional `className` and native div props on the root.",
+		"provide": "`payslips` (PayslipSummary shape, sen); optional `payable` (false for correction runs), `onRowClick(payslip)`; optional `className` and native div props on the root.",
 		"notes": "Responsive by container: DataList: table when wide, employee/net cards when narrow; totals wrap."
 	},
 	{
@@ -2026,7 +2269,7 @@
 		"height": 321,
 		"summary": "LHDN MyInvois e-invoice state for an invoice or note per environment (valid, pending validation, rejected with LHDN errors, unconfirmed, cancelled, buyer-requested rejection), the validated UUID / long ID stamp, and Submit / Cancel (72-hour window) actions.",
 		"use": "Invoice and credit/debit note detail sidebars (NoteEInvoiceCard).",
-		"provide": "`credentialEnvironments` (sandbox|production), `byEnvironment` {status, documentUuid, longId, validatedAt, rejectionRequestedAt, rejectionReason, validationErrors, unconfirmed, withinCancelWindow}; optional `documentLabel`, `hasCorrection`, `onSubmit`, `onCancel`, `onCheck`; optional `className` and native div props on the root.",
+		"provide": "`credentialEnvironments` (sandbox|production), `byEnvironment` {status, documentUuid, longId, validatedAt, rejectionRequestedAt, rejectionReason, validationErrors, unconfirmed, withinCancelWindow}; optional `environment` / `defaultEnvironment` / `onEnvironmentChange`, `documentLabel`, `hasCorrection`, `onSubmit`, `onCancel`, `onCheck`; optional `className` and native div props on the root.",
 		"notes": "Fetcher, retry hold and portal-settle flow are left to the caller. Validation stamp from templates/EInvoiceValidationBlock (QR omitted). Responsive by container: controls in a wrapping ActionBar; UUID and long ID break instead of overflowing."
 	},
 	{

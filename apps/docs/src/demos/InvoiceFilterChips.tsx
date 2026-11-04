@@ -1,5 +1,5 @@
-import { useState } from "react";
 import { InvoiceFilterChips } from "@cynco-labs/ui";
+import { useState } from "react";
 
 export default function InvoiceFilterChipsDemo() {
 	const [s, setS] = useState([

@@ -9,20 +9,20 @@ import { BulkActionBar } from "@cynco-labs/ui";
 ## Usage
 
 ```tsx
-import { useState } from "react";
-import { ArrowSquareOutIcon, CopyIcon, CreditCardIcon, TrashIcon } from "@phosphor-icons/react";
 import {
 	BulkActionBar,
 	Checkbox,
-	DataList,
 	type DataColumn,
+	DataList,
 	DocStatus,
-	INVOICE_STATUS,
-	Money,
 	formatCurrency,
 	formatDate,
+	INVOICE_STATUS,
+	Money,
 	sumAmounts,
 } from "@cynco-labs/ui";
+import { ArrowSquareOutIcon, CopyIcon, CreditCardIcon, TrashIcon } from "@phosphor-icons/react";
+import { useState } from "react";
 
 const INV = [
 	{
@@ -127,14 +127,7 @@ export default function BulkActionBarDemo() {
 	function run(verb: string) {
 		return () => {
 			setLog(
-				verb +
-					" " +
-					picked.length +
-					" invoice" +
-					(picked.length === 1 ? "" : "s") +
-					" (" +
-					formatCurrency(total) +
-					")",
+				verb + " " + picked.length + " invoice" + (picked.length === 1 ? "" : "s") + " (" + formatCurrency(total) + ")",
 			);
 		};
 	}
@@ -208,7 +201,7 @@ export default function BulkActionBarDemo() {
 							onCheckedChange={(v) => {
 								setSel(v ? sel.concat(r.id) : sel.filter((x) => x !== r.id));
 							}}
-							aria-label={"Select " + r.no}
+							aria-label={`Select ${r.no}`}
 						/>
 					)}
 					isRowSelected={(r) => sel.indexOf(r.id) >= 0}
@@ -271,4 +264,4 @@ count, onClear, actions ([{id, label, icon?, onSelect, destructive?, shortcut? (
 
 The count/total is aria-live. Responsive: one row from 48rem of container width (keycaps shown), below that the summary + Select all/Clear sit above the actions, and under 24rem the summary takes its own line; hidden in print.
 
-Category: Productivity. Source: `packages/ui/src/productivity/workflow.tsx`.
+Category: Productivity. Source: `packages/ui/src/productivity/workflow/bulk-action-bar.tsx:80-91`.

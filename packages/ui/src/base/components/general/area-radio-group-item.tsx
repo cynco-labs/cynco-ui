@@ -1,16 +1,12 @@
 "use client";
 
-import { RadioGroupItem } from "../ui/radio-group";
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipTrigger,
-} from "../ui/tooltip";
-import { cn } from "../../lib/utils";
+import type * as React from "react";
 import { useId } from "react";
+import { cn } from "../../lib/utils";
+import { RadioGroupItem } from "../ui/radio-group";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
-interface AreaRadioGroupItemProps {
-	className?: string;
+interface AreaRadioGroupItemProps extends Omit<React.ComponentProps<"label">, "children"> {
 	value: string;
 	label: string;
 	description?: string;
@@ -25,6 +21,7 @@ function AreaRadioGroupItem({
 	description,
 	disabled = false,
 	disabledReason,
+	...props
 }: AreaRadioGroupItemProps) {
 	const id = useId();
 	const reasonId = `${id}-reason`;
@@ -33,11 +30,10 @@ function AreaRadioGroupItem({
 
 	const content = (
 		<label
-			className={cn(
-				"flex items-start space-x-[6px] cursor-pointer",
-				isDisabled && "cursor-not-allowed",
-				className,
-			)}
+			htmlFor={id}
+			data-slot="area-radio-group-item"
+			className={cn("flex items-start space-x-[6px] cursor-pointer", isDisabled && "cursor-not-allowed", className)}
+			{...props}
 		>
 			<RadioGroupItem
 				value={value}
@@ -48,22 +44,16 @@ function AreaRadioGroupItem({
 			/>
 			<div className="flex-1 space-y-1">
 				<div className="flex items-center gap-2">
-					<span
-						className={cn("text-checkbox-label", isDisabled && "opacity-50")}
-					>
-						{label}
-					</span>
+					<span className={cn("text-sm font-semibold text-muted-foreground", isDisabled && "opacity-50")}>{label}</span>
 				</div>
-				{description && (
-					<p className="text-body-sec-paragraph">{description}</p>
-				)}
+				{description && <p className="text-sm font-medium text-tertiary-foreground">{description}</p>}
 			</div>
 		</label>
 	);
 
 	if (disabledReason) {
 		return (
-			<Tooltip>
+			<Tooltip data-slot="area-radio-group-item">
 				<TooltipTrigger asChild>
 					<div>{content}</div>
 				</TooltipTrigger>

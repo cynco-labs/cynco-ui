@@ -1,0 +1,68 @@
+---
+import "../styles/global.css";
+import interUrl from "@cynco-labs/ui/fonts/Inter-Variable.woff2?url";
+import SettingsBoot from "../components/SettingsBoot.astro";
+
+interface Props {
+	slug: string;
+	title: string;
+	bodyClass?: string;
+}
+const { slug, title, bodyClass } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="robots" content="noindex" />
+		<title>{title}</title>
+		<link rel="preload" href={interUrl} as="font" type="font/woff2" crossorigin />
+		<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+		<script is:inline>
+			(() => {
+				const q = new URLSearchParams(location.search).get("theme");
+				const stored = localStorage.getItem("theme");
+				const theme = q ?? (stored ? stored : matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+				document.documentElement.classList.toggle("dark", theme === "dark");
+				addEventListener("message", (e) => {
+					if (e.data && e.data.type === "cynco-demo-theme") document.documentElement.classList.toggle("dark", e.data.theme === "dark");
+				});
+			})();
+		</script>
+		<style is:global>
+			body {
+				background: var(--background);
+			}
+		</style>
+	</head>
+	<body data-slug={slug} class={bodyClass}>
+		<SettingsBoot />
+		<div id="demo-root" class="p-4 sm:p-6">
+			<slot />
+		</div>
+		<script>
+			const report = () => {
+				const root = document.getElementById("demo-root")!;
+				const height = Math.ceil(Math.max(root.getBoundingClientRect().height, document.body.scrollHeight));
+				parent.postMessage({ type: "cynco-demo-size", slug: document.body.dataset.slug, height }, "*");
+			};
+			if (parent !== window) {
+				new ResizeObserver(report).observe(document.getElementById("demo-root")!);
+				addEventListener("load", report);
+			}
+		</script>
+		<script>
+			import type { DemoInspectMessage } from "../lib/inspect";
+
+			// Loaded only once inspect is switched on, so a frame that is never inspected never pays for it.
+			let stopInspect: (() => void) | null = null;
+			addEventListener("message", async (e: MessageEvent<DemoInspectMessage>) => {
+				if (e.source !== parent || e.data?.type !== "cynco-demo-inspect") return;
+				stopInspect?.();
+				stopInspect = e.data.on ? (await import("../lib/inspect")).startInspect() : null;
+			});
+		</script>
+	</body>
+</html>

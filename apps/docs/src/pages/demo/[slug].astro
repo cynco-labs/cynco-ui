@@ -1,9 +1,7 @@
 ---
-import "../../styles/global.css";
 import type { AstroComponentFactory } from "astro/runtime/server/index.js";
-import interUrl from "@cynco-labs/ui/fonts/Inter-Variable.woff2?url";
+import DemoShell from "../../layouts/DemoShell.astro";
 import { registry } from "../../lib/registry";
-import SettingsBoot from "../../components/SettingsBoot.astro";
 
 export function getStaticPaths() {
 	return registry.map((c) => ({ params: { slug: c.slug }, props: { entry: c } }));
@@ -13,56 +11,6 @@ const islands = import.meta.glob<{ default: AstroComponentFactory }>("../../isla
 const Island = islands[`../../islands/${entry.name}.astro`].default;
 ---
 
-<!doctype html>
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<meta name="robots" content="noindex" />
-		<title>{entry.name} demo · Cynco UI</title>
-		<link rel="preload" href={interUrl} as="font" type="font/woff2" crossorigin />
-		<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-		<script is:inline>
-			(() => {
-				const q = new URLSearchParams(location.search).get("theme");
-				const stored = localStorage.getItem("theme");
-				const theme = q ?? (stored ? stored : matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
-				document.documentElement.classList.toggle("dark", theme === "dark");
-				addEventListener("message", (e) => {
-					if (e.data && e.data.type === "cynco-demo-theme") document.documentElement.classList.toggle("dark", e.data.theme === "dark");
-				});
-			})();
-		</script>
-		<style is:global>
-			body {
-				background: var(--background);
-			}
-		</style>
-	</head>
-	<body data-slug={entry.slug}>
-		<SettingsBoot />
-		<div id="demo-root" class="p-4 sm:p-6">
-			<Island />
-		</div>
-		<script>
-			import { startInspect, type DemoInspectMessage } from "../../lib/inspect";
-
-			const report = () => {
-				const root = document.getElementById("demo-root")!;
-				const height = Math.ceil(Math.max(root.getBoundingClientRect().height, document.body.scrollHeight));
-				parent.postMessage({ type: "cynco-demo-size", slug: document.body.dataset.slug, height }, "*");
-			};
-			if (parent !== window) {
-				new ResizeObserver(report).observe(document.getElementById("demo-root")!);
-				addEventListener("load", report);
-			}
-
-			let stopInspect: (() => void) | null = null;
-			addEventListener("message", (e: MessageEvent<DemoInspectMessage>) => {
-				if (e.source !== parent || e.data?.type !== "cynco-demo-inspect") return;
-				stopInspect?.();
-				stopInspect = e.data.on ? startInspect() : null;
-			});
-		</script>
-	</body>
-</html>
+<DemoShell slug={entry.slug} title={`${entry.name} demo · Cynco UI`}>
+	<Island />
+</DemoShell>

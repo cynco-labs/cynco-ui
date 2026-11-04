@@ -1,4 +1,4 @@
-import { type HealthCheck, BusinessHealthPanel } from "@cynco-labs/ui";
+import { BusinessHealthPanel, type HealthCheck } from "@cynco-labs/ui";
 
 const checks: HealthCheck[] = [
 	{

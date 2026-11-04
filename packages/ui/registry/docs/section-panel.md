@@ -9,7 +9,7 @@ import { SectionPanel } from "@cynco-labs/ui";
 ## Usage
 
 ```tsx
-import { Button, KeyValueList, SectionPanel, formatCurrency } from "@cynco-labs/ui";
+import { Button, formatCurrency, KeyValueList, SectionPanel } from "@cynco-labs/ui";
 
 function P() {
 	return (
@@ -29,7 +29,7 @@ function P() {
 				items={[
 					{ label: "Date", value: "28 Oct 2026" },
 					{ label: "Customer", value: "Syarikat Maju Jaya Sdn Bhd" },
-					{ label: "Amount", value: formatCurrency(12850), strong: true },
+					{ label: "Amount", value: formatCurrency("12850.00"), strong: true },
 				]}
 			/>
 		</SectionPanel>
@@ -66,4 +66,4 @@ title, description, actions, flush, className, children and any section props.
 
 Named SectionPanel so it never collides with the AI kit's flow-canvas Panel.
 
-Category: Layout · Primitives. Source: `packages/ui/src/layout/index.tsx`.
+Category: Layout · Primitives. Source: `packages/ui/src/layout/surfaces.tsx:28-44`.

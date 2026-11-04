@@ -1,4 +1,4 @@
-import { Button, KeyValueList, SectionPanel, formatCurrency } from "@cynco-labs/ui";
+import { Button, formatCurrency, KeyValueList, SectionPanel } from "@cynco-labs/ui";
 
 function P() {
 	return (
@@ -18,7 +18,7 @@ function P() {
 				items={[
 					{ label: "Date", value: "28 Oct 2026" },
 					{ label: "Customer", value: "Syarikat Maju Jaya Sdn Bhd" },
-					{ label: "Amount", value: formatCurrency(12850), strong: true },
+					{ label: "Amount", value: formatCurrency("12850.00"), strong: true },
 				]}
 			/>
 		</SectionPanel>

@@ -17,13 +17,13 @@ export default function OwedAgingRingsDemo() {
 			<OwedAgingRings
 				dso={38}
 				receivables={{
-					current: 64850,
-					days1to30: 18200,
-					days31to60: 7650,
-					days61to90: 3400,
-					over90: 2200,
+					current: "64850.00",
+					days1to30: "18200.00",
+					days31to60: "7650.00",
+					days61to90: "3400.00",
+					over90: "2200.00",
 				}}
-				payables={{ current: 39800, days1to30: 8940.6, days31to60: 2500, days61to90: 0, over90: 0 }}
+				payables={{ current: "39800.00", days1to30: "8940.60", days31to60: "2500.00", days61to90: "0.00", over90: "0.00" }}
 			/>
 		</div>
 	);
@@ -46,6 +46,6 @@ receivables, payables ({current, days1to30, days31to60, days61to90, over90, tota
 
 ## Notes
 
-Band colours use the status tokens (--status-green/blue/amber/orange/red); the ring track is stroke-muted; key dots use text-tiny tertiary. Responsive: rings sit side by side from 24rem of container width, stacked below.
+Band colours use the status tokens (--status-green/blue/amber/orange/red); the ring track is stroke-muted; key dots use `text-2xs` tertiary. Responsive: rings sit side by side from 24rem of container width, stacked below.
 
-Category: Accounting · Reports. Source: `packages/ui/src/accounting/reports.tsx`.
+Category: Accounting · Reports. Source: `packages/ui/src/accounting/reports/aging.tsx:139-172`.

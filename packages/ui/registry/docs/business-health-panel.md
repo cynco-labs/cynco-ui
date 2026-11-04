@@ -9,7 +9,7 @@ import { BusinessHealthPanel } from "@cynco-labs/ui";
 ## Usage
 
 ```tsx
-import { type HealthCheck, BusinessHealthPanel } from "@cynco-labs/ui";
+import { BusinessHealthPanel, type HealthCheck } from "@cynco-labs/ui";
 
 const checks: HealthCheck[] = [
 	{
@@ -80,4 +80,4 @@ checks [{id, label, detail, area, status: fail|warn|pass|na, href?}] or null (un
 
 Responsive: area tag hides below 24rem; evidence line wraps instead of truncating on narrow containers.
 
-Category: Accounting · Reports. Source: `packages/ui/src/accounting/reports.tsx`.
+Category: Accounting · Reports. Source: `packages/ui/src/accounting/reports/health-checks.tsx:56-109`.

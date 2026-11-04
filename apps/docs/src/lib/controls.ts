@@ -34,14 +34,31 @@ export const isToggle = (c: Control): c is ToggleControl => typeof c.default ===
 const FROM_SETTINGS = ["locale", "density"] as const satisfies readonly (keyof SiteSettings)[];
 
 /** Values a demo renders with: its defaults, then the site settings, then anything set by hand. */
-export function resolveControls(controls: Controls | undefined, settings: SiteSettings, overrides: ControlValues = {}): ControlValues {
+export function resolveControls(
+	controls: Controls | undefined,
+	settings: SiteSettings,
+	overrides: ControlValues = {},
+): ControlValues {
 	const values: ControlValues = {};
 	for (const [key, c] of Object.entries(controls ?? {})) {
-		const setting = (FROM_SETTINGS as readonly string[]).includes(key) ? settings[key as (typeof FROM_SETTINGS)[number]] : undefined;
-		const fromSetting = setting !== undefined && !isToggle(c) && c.options.some((o) => o.value === setting) ? setting : undefined;
+		const setting = (FROM_SETTINGS as readonly string[]).includes(key)
+			? settings[key as (typeof FROM_SETTINGS)[number]]
+			: undefined;
+		const fromSetting =
+			setting !== undefined && !isToggle(c) && c.options.some((o) => o.value === setting) ? setting : undefined;
 		values[key] = overrides[key] ?? fromSetting ?? c.default;
 	}
 	return values;
+}
+
+/**
+ * The control a variants matrix renders one cell per option of: the first select that is not driven by
+ * a site setting, because a matrix of languages or densities is a setting, not a variant.
+ */
+export function matrixControl(controls: Controls | undefined): { key: string; control: SelectControl } | null {
+	for (const [key, c] of Object.entries(controls ?? {}))
+		if (!isToggle(c) && !(FROM_SETTINGS as readonly string[]).includes(key)) return { key, control: c };
+	return null;
 }
 
 /** Message the component page posts into a demo iframe when a control changes. */
@@ -67,6 +84,7 @@ export function controlsFromQuery(controls: Controls, query: URLSearchParams): C
 export function controlsToQuery(controls: Controls, overrides: ControlValues, query: URLSearchParams): URLSearchParams {
 	const next = new URLSearchParams(query);
 	for (const key of Object.keys(controls)) next.delete(key);
-	for (const [key, v] of Object.entries(overrides)) if (key in controls) next.set(key, typeof v === "boolean" ? (v ? "1" : "0") : v);
+	for (const [key, v] of Object.entries(overrides))
+		if (key in controls) next.set(key, typeof v === "boolean" ? (v ? "1" : "0") : v);
 	return next;
 }

@@ -33,7 +33,7 @@ Inside a Needs attention check of the close checklist (also rendered there autom
 
 ## Props
 
-card { key, title, accounts?: [{ code, name }], why, risk, fixes?: [{ label }], fallback? }, note?, onNoteChange?, className? (merged on the root) and native props.
+card { key, title, accounts?: [{ code, name }], why, risk, fixes?: [{ label }], fallback? }, note? / defaultNote? / onNoteChange?, className? (merged on the root) and native props.
 
 - `card`: `CloseAttentionCard`
 - `note?`: `string`. Controlled note.
@@ -43,6 +43,6 @@ card { key, title, accounts?: [{ code, name }], why, risk, fixes?: [{ label }], 
 
 ## Notes
 
-Fix links are primary-coloured with the external-link glyph; the note is a Textarea styled with input-base. Label switches to "Acknowledged. Note for the close record" once a note is typed. Responsive: Text and fix links wrap at any width.
+Fix links are primary-coloured with the external-link glyph; the note is a Textarea on the shared input surface. Label switches to "Acknowledged. Note for the close record" once a note is typed. Responsive: Text and fix links wrap at any width.
 
-Category: Accounting · Ledger. Source: `packages/ui/src/accounting/ledger.tsx`.
+Category: Accounting · Ledger. Source: `packages/ui/src/accounting/ledger/period-close.tsx:271-285`.

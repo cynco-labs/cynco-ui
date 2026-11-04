@@ -1,5 +1,5 @@
-import { useState } from "react";
 import { PrintButton } from "@cynco-labs/ui";
+import { useState } from "react";
 
 export default function PrintButtonDemo() {
 	const [n, setN] = useState(0);
@@ -30,7 +30,7 @@ export default function PrintButtonDemo() {
 			</div>
 			<p className="text-xs text-tertiary-foreground" role="status">
 				{n
-					? "onPrint called " + n + "× (here instead of window.print())"
+					? `onPrint called ${n}× (here instead of window.print())`
 					: "Try: click, or press Ctrl/⌘+P — with onPrint set, the shortcut runs it instead of the browser dialog"}
 			</p>
 		</div>

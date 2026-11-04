@@ -1,5 +1,5 @@
-import { useState } from "react";
 import { AreaCheckbox } from "@cynco-labs/ui";
+import { useState } from "react";
 
 export default function AreaCheckboxDemo() {
 	const [s, setS] = useState(true);

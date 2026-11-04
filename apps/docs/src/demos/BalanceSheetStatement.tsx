@@ -35,7 +35,7 @@ export default function BalanceSheetStatementDemo() {
 			asAt="31 Oct 2026"
 			rows={rows}
 			showTotalsStrip={false}
-			totals={{ assets: 280820.4, liabilities: 51240.6, equity: 229579.8 }}
+			totals={{ assets: "280820.40", liabilities: "51240.60", equity: "229579.80" }}
 		/>
 	);
 }

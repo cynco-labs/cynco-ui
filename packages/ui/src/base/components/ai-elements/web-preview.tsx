@@ -1,21 +1,13 @@
 "use client";
 
 import { CaretDownIcon } from "@phosphor-icons/react";
-import { Button } from "../ui/button";
-import {
-	Collapsible,
-	CollapsibleContent,
-	CollapsibleTrigger,
-} from "../ui/collapsible";
-import { Input } from "../ui/input";
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipTrigger,
-} from "../ui/tooltip";
-import { cn } from "../../lib/utils";
 import type { ComponentProps, ReactNode } from "react";
 import { createContext, useContext, useEffect, useState } from "react";
+import { cn } from "../../lib/utils";
+import { Button } from "../ui/button";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";
+import { Input } from "../ui/input";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
 export type WebPreviewContextValue = {
 	url: string;
@@ -39,13 +31,7 @@ export type WebPreviewProps = ComponentProps<"div"> & {
 	onUrlChange?: (url: string) => void;
 };
 
-export const WebPreview = ({
-	className,
-	children,
-	defaultUrl = "",
-	onUrlChange,
-	...props
-}: WebPreviewProps) => {
+export const WebPreview = ({ className, children, defaultUrl = "", onUrlChange, ...props }: WebPreviewProps) => {
 	const [url, setUrl] = useState(defaultUrl);
 	const [consoleOpen, setConsoleOpen] = useState(false);
 
@@ -63,13 +49,7 @@ export const WebPreview = ({
 
 	return (
 		<WebPreviewContext.Provider value={contextValue}>
-			<div
-				className={cn(
-					"flex size-full flex-col rounded-lg border bg-card",
-					className,
-				)}
-				{...props}
-			>
+			<div className={cn("flex size-full flex-col rounded-lg border bg-card", className)} {...props}>
 				{children}
 			</div>
 		</WebPreviewContext.Provider>
@@ -78,15 +58,8 @@ export const WebPreview = ({
 
 export type WebPreviewNavigationProps = ComponentProps<"div">;
 
-export const WebPreviewNavigation = ({
-	className,
-	children,
-	...props
-}: WebPreviewNavigationProps) => (
-	<div
-		className={cn("flex items-center gap-1 border-b p-2", className)}
-		{...props}
-	>
+export const WebPreviewNavigation = ({ className, children, ...props }: WebPreviewNavigationProps) => (
+	<div className={cn("flex items-center gap-1 border-b p-2", className)} {...props}>
 		{children}
 	</div>
 );
@@ -124,12 +97,7 @@ export const WebPreviewNavigationButton = ({
 
 export type WebPreviewUrlProps = ComponentProps<typeof Input>;
 
-export const WebPreviewUrl = ({
-	value,
-	onChange,
-	onKeyDown,
-	...props
-}: WebPreviewUrlProps) => {
+export const WebPreviewUrl = ({ value, onChange, onKeyDown, ...props }: WebPreviewUrlProps) => {
 	const { url, setUrl } = useWebPreview();
 	const [inputValue, setInputValue] = useState(url);
 
@@ -168,12 +136,7 @@ export type WebPreviewBodyProps = ComponentProps<"iframe"> & {
 	loading?: ReactNode;
 };
 
-export const WebPreviewBody = ({
-	className,
-	loading,
-	src,
-	...props
-}: WebPreviewBodyProps) => {
+export const WebPreviewBody = ({ className, loading, src, ...props }: WebPreviewBodyProps) => {
 	const { url } = useWebPreview();
 
 	return (
@@ -198,12 +161,7 @@ export type WebPreviewConsoleProps = ComponentProps<"div"> & {
 	}>;
 };
 
-export const WebPreviewConsole = ({
-	className,
-	logs = [],
-	children,
-	...props
-}: WebPreviewConsoleProps) => {
+export const WebPreviewConsole = ({ className, logs = [], children, ...props }: WebPreviewConsoleProps) => {
 	const { consoleOpen, setConsoleOpen } = useWebPreview();
 
 	return (
@@ -219,12 +177,7 @@ export const WebPreviewConsole = ({
 					variant="skeleton"
 				>
 					Console
-					<CaretDownIcon
-						className={cn(
-							"h-4 w-4 transition-transform duration-200",
-							consoleOpen && "rotate-180",
-						)}
-					/>
+					<CaretDownIcon className={cn("h-4 w-4 transition-transform duration-200", consoleOpen && "rotate-180")} />
 				</Button>
 			</CollapsibleTrigger>
 			<CollapsibleContent
@@ -233,11 +186,8 @@ export const WebPreviewConsole = ({
 					"data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 outline-none data-[state=closed]:animate-out data-[state=open]:animate-in",
 				)}
 			>
-				{/* Focusable so keyboard users can scroll long output. */}
-				<div
-					className="max-h-48 space-y-1 overflow-y-auto outline-none focus-ring-inset"
-					tabIndex={0}
-				>
+				{/* biome-ignore lint/a11y/noNoninteractiveTabindex: a scroll container must take focus or keyboard users cannot scroll it. */}
+				<div className="max-h-48 space-y-1 overflow-y-auto outline-none focus-ring-inset" tabIndex={0}>
 					{logs.length === 0 ? (
 						<p className="text-muted-foreground">No console output</p>
 					) : (
@@ -249,15 +199,12 @@ export const WebPreviewConsole = ({
 									log.level === "warn" && "text-status-amber-text",
 									log.level === "log" && "text-foreground",
 								)}
+								// biome-ignore lint/suspicious/noArrayIndexKey: console output is append-only, so a line's position never changes.
 								key={`${log.timestamp.getTime()}-${index}`}
 							>
-								<span className="text-muted-foreground">
-									{log.timestamp.toLocaleTimeString()}
-								</span>{" "}
+								<span className="text-muted-foreground">{log.timestamp.toLocaleTimeString()}</span>{" "}
 								{/* Level as text, not only colour. */}
-								{log.level !== "log" && (
-									<span className="font-medium uppercase">{log.level} </span>
-								)}
+								{log.level !== "log" && <span className="font-medium uppercase">{log.level} </span>}
 								{log.message}
 							</div>
 						))

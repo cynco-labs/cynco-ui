@@ -29,4 +29,4 @@ Section headings inside sheets and editors.
 
 Children.
 
-Category: Components · Data display. Source: `packages/ui/src/base/components/general/section-tag.tsx`.
+Category: Components · Data display. Source: `packages/ui/src/base/components/general/section-tag.tsx:3-11`.

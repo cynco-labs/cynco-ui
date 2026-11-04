@@ -41,4 +41,4 @@ Payroll run page, after compute.
 
 Responsive by container: DataList stacks below 24rem; totals wrap.
 
-Category: Accounting · Tax, assets & operations. Source: `packages/ui/src/accounting/operations.tsx`.
+Category: Accounting · Tax, assets & operations. Source: `packages/ui/src/accounting/operations/payroll.tsx:268-333`.

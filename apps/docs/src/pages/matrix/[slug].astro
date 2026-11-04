@@ -1,0 +1,40 @@
+---
+import type { AstroComponentFactory } from "astro/runtime/server/index.js";
+import DemoShell from "../../layouts/DemoShell.astro";
+import { type Controls, matrixControl } from "../../lib/controls";
+import { registry } from "../../lib/registry";
+
+/** A demo this tall is a whole document; side by side it would only show its narrow layout. */
+const STACK_ABOVE = 320;
+
+export function getStaticPaths() {
+	// Inside, because Astro evaluates getStaticPaths in its own scope with nothing from the frontmatter.
+	const demos = import.meta.glob<{ controls?: Controls }>("../../demos/*.tsx", { eager: true });
+	return registry.flatMap((c) => {
+		const found = matrixControl(demos[`../../demos/${c.name}.tsx`]?.controls);
+		return found ? [{ params: { slug: c.slug }, props: { entry: c, key: found.key } }] : [];
+	});
+}
+const { entry, key } = Astro.props;
+const islands = import.meta.glob<{ default: AstroComponentFactory }>("../../islands/*.astro", { eager: true });
+const Island = islands[`../../islands/${entry.name}.astro`].default;
+---
+
+<style is:global>
+	.cy-matrix {
+		display: grid;
+		gap: 1.5rem 2rem;
+		grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+	}
+	body.cy-matrix-stacked .cy-matrix {
+		grid-template-columns: 1fr;
+	}
+</style>
+
+<DemoShell
+	slug={entry.slug}
+	title={`${entry.name} options · Cynco UI`}
+	bodyClass={entry.height > STACK_ABOVE ? "cy-matrix-stacked" : undefined}
+>
+	<Island matrix={key} />
+</DemoShell>

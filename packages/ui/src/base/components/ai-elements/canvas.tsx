@@ -40,19 +40,19 @@ export const Canvas = ({ children, className, ...props }: CanvasProps) => {
 	// Node focus ring and attribution styling live in theme.css (they must beat React Flow's unlayered CSS).
 	const colorMode = useSyncExternalStore(subscribeColorMode, readColorMode, () => "light" as const);
 	return (
-	<ReactFlow
-		colorMode={colorMode}
-		className={className}
-		deleteKeyCode={["Backspace", "Delete"]}
-		fitView
-		panOnDrag={false}
-		panOnScroll
-		selectionOnDrag={true}
-		zoomOnDoubleClick={false}
-		{...props}
-	>
-		<Background bgColor="var(--sidebar)" />
-		{children}
-	</ReactFlow>
+		<ReactFlow
+			colorMode={colorMode}
+			className={className}
+			deleteKeyCode={["Backspace", "Delete"]}
+			fitView
+			panOnDrag={false}
+			panOnScroll
+			selectionOnDrag={true}
+			zoomOnDoubleClick={false}
+			{...props}
+		>
+			<Background bgColor="var(--sidebar)" />
+			{children}
+		</ReactFlow>
 	);
 };

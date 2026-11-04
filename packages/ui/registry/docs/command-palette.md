@@ -9,13 +9,12 @@ import { CommandPalette } from "@cynco-labs/ui";
 ## Usage
 
 ```tsx
-import { useState } from "react";
 import {
 	CommandPalette,
-	CommandPaletteTrigger,
-	Kbd,
 	type CommandPaletteItem,
 	type CommandPaletteRecord,
+	CommandPaletteTrigger,
+	Kbd,
 } from "@cynco-labs/ui";
 import {
 	BankIcon,
@@ -34,6 +33,7 @@ import {
 	UserIcon,
 	UserPlusIcon,
 } from "@phosphor-icons/react";
+import { useState } from "react";
 
 // Your app's places, create actions and commands. `shortcut` shows a keycap; route in onSelect.
 const items = [
@@ -231,9 +231,7 @@ export default function CommandPaletteDemo() {
 		<div className="flex flex-col gap-3">
 			<div className="flex flex-wrap items-center gap-3 rounded-xl border border-border bg-card px-3 py-2">
 				<span className="text-sm font-semibold text-foreground">Cynco</span>
-				{sandbox && (
-					<span className="rounded-md bg-active-primary px-1.5 text-xs text-primary">Sandbox</span>
-				)}
+				{sandbox && <span className="rounded-md bg-active-primary px-1.5 text-xs text-primary">Sandbox</span>}
 				<CommandPaletteTrigger
 					onClick={() => {
 						setOpen(true);
@@ -250,13 +248,7 @@ export default function CommandPaletteDemo() {
 					<span className="text-foreground">{last}</span>
 				</span>
 			</p>
-			<CommandPalette
-				open={open}
-				onOpenChange={setOpen}
-				items={items}
-				recent={recent}
-				onSelect={onSelect}
-			/>
+			<CommandPalette open={open} onOpenChange={setOpen} items={items} recent={recent} onSelect={onSelect} />
 			<div className="text-xs font-medium text-tertiary-foreground">
 				Inline (inline prop) — same palette embedded in a page
 			</div>
@@ -272,7 +264,7 @@ Mount once in the app shell and put a CommandPaletteTrigger in the header. Feed 
 
 ## Props
 
-CommandPalette: open / defaultOpen / onOpenChange; items (CommandPaletteItem[]: id, group — “Go to” | “Create” | “Recent” | “Actions” or your own heading, label, keywords, icon, shortcut such as "mod+k" or "g i", hint, href, disabled, onSelect); recent (CommandPaletteRecord[]: id, type — invoice | quotation | bill | credit_note | customer | vendor | journal | payment | item | account, number, label, status, amount as a decimal string, currency, keywords, href, onSelect); recentLimit (default 5); onSelect(item) to route with item.href / item.id; hotkey (default "mod+k", false to bind your own); placeholder; inline; className. CommandPaletteTrigger: label, shortcut, className and any button props (wire onClick).
+CommandPalette: open / defaultOpen / onOpenChange; items (CommandPaletteItem[]: id, group — “Go to” | “Create” | “Recent” | “Actions” or your own heading, label, keywords, icon, shortcut such as "mod+k" or "g i", hint, href, disabled, onSelect); recent (CommandPaletteRecord[]: id, type — invoice | quotation | bill | credit_note | customer | vendor | journal | payment | item | account, number, label, status, amount as a decimal string, currency, keywords, href, onSelect); recentLimit (default 5); onSelect(item) to route with item.href / item.id; hotkey (default "mod+k", false to bind your own); placeholder; inline; className and native div props, spread on the inline root or on the dialog panel. CommandPaletteTrigger: label, shortcut, className and any button props (wire onClick).
 
 - `items`: `CommandPaletteItem[]`. Commands: places to go, things to create, actions. Route in `onSelect` with `item.href` / `item.id`.
 - `open?`: `boolean`
@@ -284,9 +276,22 @@ CommandPalette: open / defaultOpen / onOpenChange; items (CommandPaletteItem[]: 
 - `hotkey?`: `string | false | string[]`. Shortcut that toggles the palette. Default "mod+k"; `false` to bind your own. Default `"mod+k"`.
 - `placeholder?`: `string`. Default `"Search or jump to…"`.
 - `inline?`: `boolean`. Render in place (a card on the page) instead of as a ⌘K dialog. Default `false`.
+- Also accepts `ComponentProps<"div">`.
+
+## Accessibility
+
+| Key | Does |
+| --- | --- |
+| ⌘K / Ctrl+K | Toggles the palette, including while a text field has focus. |
+| Arrow Up / Arrow Down | Move between results. |
+| Enter | Runs the highlighted item. |
+| Esc | Closes the dialog, or clears the query first when the palette is inline. |
+| > | Typed at the start of the query, narrows the list to actions. |
+
+The dialog carries an sr-only title and description naming the ">" prefix, and the search box is labelled "Search commands and records". cmdk does not announce its own empty state, so a stable polite region reports the result count as the query changes, saying "7 results" or "No results for" the query. A hotkey made only of printable keys is left unbound while the user has single-key shortcuts turned off, and the matching keycaps are hidden with it.
 
 ## Notes
 
 Keys: ⌘K / Ctrl+K toggles, ↑ ↓ move, Enter runs, Esc closes (clears the query when inline), a leading “>” narrows to actions. Search: every word must match a label, keyword, number or amount (prefix > word start > fuzzy subsequence; acronyms like “gl”, “pl”); groups re-rank by best match. Focus returns to whatever opened it. Rows drop status, amount, type and keycaps as the dialog narrows (container queries), so it stays one line from 320px up. Shortcut keycaps made of printable keys alone ("?", "g i") are hidden while the user has single-key shortcuts turned off; a printable-only `hotkey` is unbound then too.
 
-Category: Productivity. Source: `packages/ui/src/productivity/navigation.tsx`.
+Category: Productivity. Source: `packages/ui/src/productivity/navigation/command-palette.tsx:181-350`.

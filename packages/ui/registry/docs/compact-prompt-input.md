@@ -9,19 +9,14 @@ import { CompactPromptInput } from "@cynco-labs/ui/ai";
 ## Usage
 
 ```tsx
-import { useState } from "react";
 import { CompactPromptInput } from "@cynco-labs/ui/ai";
+import { useState } from "react";
 
 export default function CompactPromptInputDemo() {
 	const [s, setS] = useState("");
 	return (
 		<div className="max-w-[460px]">
-			<CompactPromptInput
-				value={s}
-				onChange={setS}
-				onSubmit={() => {}}
-				placeholder="Ask about your books…"
-			/>
+			<CompactPromptInput value={s} onChange={setS} onSubmit={() => {}} placeholder="Ask about your books…" />
 		</div>
 	);
 }
@@ -41,4 +36,4 @@ Small "ask about this" boxes without attachments.
 - `placeholder?`: `string`. Default `"Describe changes..."`.
 - `isLoading?`: `boolean`
 
-Category: AI. Source: `packages/ui/src/base/components/ai-elements/compact-prompt-input.tsx`.
+Category: AI. Source: `packages/ui/src/base/components/ai-elements/compact-prompt-input.tsx:8-67`.

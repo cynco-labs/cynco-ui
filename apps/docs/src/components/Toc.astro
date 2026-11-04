@@ -12,7 +12,7 @@ const items = headings.filter((h) => h.depth === 2 || h.depth === 3);
 		{
 			items.length > 0 && (
 				<>
-					<p class="mb-2 text-[12px] font-semibold text-foreground">On this page</p>
+					<p class="mb-2 text-xs font-semibold text-foreground">On this page</p>
 					<ul class="toc space-y-0.5 border-l border-border">
 						{items.map((h) => (
 							<li>
@@ -20,7 +20,7 @@ const items = headings.filter((h) => h.depth === 2 || h.depth === 3);
 									href={`#${h.slug}`}
 									data-toc={h.slug}
 									class:list={[
-										"-ml-px block border-l border-transparent py-1 text-[13px] leading-snug text-tertiary-foreground transition-colors hover:text-foreground",
+										"-ml-px block border-l border-transparent py-1 text-sm leading-snug text-tertiary-foreground transition-colors hover:text-foreground",
 										h.depth === 3 ? "pl-6" : "pl-3",
 									]}
 								>
@@ -34,7 +34,7 @@ const items = headings.filter((h) => h.depth === 2 || h.depth === 3);
 		}
 		{
 			mdHref && (
-				<div class="mt-6 space-y-1.5 border-t border-border pt-4 text-[13px]">
+				<div class="mt-6 space-y-1.5 border-t border-border pt-4 text-sm">
 					<a href={mdHref} class="flex items-center gap-1.5 text-tertiary-foreground hover:text-foreground">
 						<svg class="size-3.5" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M213.66 82.34l-56-56A8 8 0 0 0 152 24H56a16 16 0 0 0-16 16v176a16 16 0 0 0 16 16h144a16 16 0 0 0 16-16V88a8 8 0 0 0-2.34-5.66ZM160 51.31 188.69 80H160ZM200 216H56V40h88v48a8 8 0 0 0 8 8h48v120Z"></path></svg>
 						View as Markdown

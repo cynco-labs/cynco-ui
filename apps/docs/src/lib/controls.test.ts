@@ -1,14 +1,25 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { controlsFromQuery, controlsToQuery, type Controls } from "./controls.ts";
+import { type Controls, controlsFromQuery, controlsToQuery, matrixControl } from "./controls.ts";
 
 const controls: Controls = {
-	layout: { label: "Layout", options: [{ value: "minimal", label: "Minimal" }, { value: "full", label: "Full" }], default: "minimal" },
+	layout: {
+		label: "Layout",
+		options: [
+			{ value: "minimal", label: "Minimal" },
+			{ value: "full", label: "Full" },
+		],
+		default: "minimal",
+	},
 	loading: { label: "Loading", default: false },
 };
 
 test("a playground link round-trips its values and keeps other parameters", () => {
-	const query = controlsToQuery(controls, { layout: "full", loading: true }, new URLSearchParams("theme=dark&layout=minimal"));
+	const query = controlsToQuery(
+		controls,
+		{ layout: "full", loading: true },
+		new URLSearchParams("theme=dark&layout=minimal"),
+	);
 	assert.equal(query.toString(), "theme=dark&layout=full&loading=1");
 	assert.deepEqual(controlsFromQuery(controls, query), { layout: "full", loading: true });
 });
@@ -19,4 +30,15 @@ test("unknown values and keys in the URL are ignored", () => {
 
 test("clearing the overrides removes the controls from the URL", () => {
 	assert.equal(controlsToQuery(controls, {}, new URLSearchParams("layout=full&loading=0&x=1")).toString(), "x=1");
+});
+
+test("the variants matrix takes the first select that is not a site setting", () => {
+	assert.equal(matrixControl(controls)?.key, "layout");
+	const withLocale: Controls = {
+		locale: { label: "Language", options: [{ value: "en", label: "EN" }], default: "en" },
+		variant: { label: "Invoice", options: [{ value: "sst", label: "SST" }], default: "sst" },
+	};
+	assert.equal(matrixControl(withLocale)?.key, "variant");
+	assert.equal(matrixControl({ loading: { label: "Loading", default: false } }), null);
+	assert.equal(matrixControl(undefined), null);
 });
