@@ -175,10 +175,10 @@ DocumentBrandProvider brand (company {name, registrationNo, tin, sstNo, address,
 - `size?`: `"a4" | "a4-landscape" | "a5" | "letter" | "receipt"`. Default `"a4"`.
 - `stamp?`: `"copy" | "paid" | "void" | "draft" | "overdue"`. A diagonal stamp across the page: Paid, Void, Draft, Copy, Overdue.
 - `fit?`: `"width" | "none"`. On screen: scale the sheet down to fit its container ("width") or keep 100% and scroll ("none"). Controlled; pair with `onFitChange`. Leave unset to let the zoom control switch it.
-- `defaultFit?`: `"width" | "none"`. Uncontrolled starting fit. Default "width". Default `"width"`.
+- `defaultFit?`: `"width" | "none"`. Uncontrolled starting fit. Default "width".
 - `onFitChange?`: `(fit: DocumentFit) => void`
-- `zoomControl?`: `boolean`. Show "Fit width / Actual size" above the sheet while it is scaled down. Default true. Fit-to-width cancels browser zoom, so readers need a way back to 100% to enlarge the text (WCAG 1.4.4). Hidden in print, and when `fit` is controlled without `onFitChange`. Default `true`.
-- `isolate?`: `boolean`. When printing, hide the rest of the app and print only this page. Default true. Default `true`.
+- `zoomControl?`: `boolean`. Show "Fit width / Actual size" above the sheet while it is scaled down. Default true. Fit-to-width cancels browser zoom, so readers need a way back to 100% to enlarge the text (WCAG 1.4.4). Hidden in print, and when `fit` is controlled without `onFitChange`.
+- `isolate?`: `boolean`. When printing, hide the rest of the app and print only this page. Default true.
 - Also accepts `ComponentProps<"article">`.
 
 ## Notes

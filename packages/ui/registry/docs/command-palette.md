@@ -271,9 +271,9 @@ CommandPalette: open / defaultOpen / onOpenChange; items (CommandPaletteItem[]: 
 - `defaultOpen?`: `boolean`. Default `false`.
 - `onOpenChange?`: `(open: boolean) => void`
 - `recent?`: `CommandPaletteRecord[]`. Recently opened records, newest first. Searchable by number, name, status and amount. Default `[]`.
-- `recentLimit?`: `number`. How many recent records to list before the user types. Default 5. Default `5`.
+- `recentLimit?`: `number`. How many recent records to list before the user types. Default 5.
 - `onSelect?`: `(item: CommandPaletteItem) => void`. Called for every chosen item (after the item's own onSelect), e.g. to route to `item.href`.
-- `hotkey?`: `string | false | string[]`. Shortcut that toggles the palette. Default "mod+k"; `false` to bind your own. Default `"mod+k"`.
+- `hotkey?`: `string | false | string[]`. Shortcut that toggles the palette. Default "mod+k"; `false` to bind your own.
 - `placeholder?`: `string`. Default `"Search or jump to…"`.
 - `inline?`: `boolean`. Render in place (a card on the page) instead of as a ⌘K dialog. Default `false`.
 - Also accepts `ComponentProps<"div">`.

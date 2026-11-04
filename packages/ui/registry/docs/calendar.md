@@ -42,4 +42,4 @@ The dropdown caption renders an sr-only aria-live="polite" element holding the m
 
 Outside days shown by default.
 
-Category: Components · Inputs. Source: `packages/ui/src/base/components/ui/calendar.tsx:133-196`.
+Category: Components · Inputs. Source: `packages/ui/src/base/components/ui/calendar.tsx:133-199`.

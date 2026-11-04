@@ -166,8 +166,8 @@ lines / defaultLines ({ id, accountId?, description?, debit?, credit? } with dec
 - `defaultLines?`: `JournalGridLine[]`. Uncontrolled initial lines (default: two blank lines).
 - `onLinesChange?`: `(lines: JournalGridLine[]) => void`
 - `currency?`: `string`. Default `"MYR"`.
-- `minLines?`: `number`. Fewest lines kept; deleting below this clears the line instead. Default 2 (double entry). Default `2`.
-- `showShortcuts?`: `boolean`. Show the keyboard legend under the footer. Default true. Default `true`.
+- `minLines?`: `number`. Fewest lines kept; deleting below this clears the line instead. Default 2 (double entry).
+- `showShortcuts?`: `boolean`. Show the keyboard legend under the footer. Default true.
 - Also accepts `ComponentProps<"div">`.
 
 ## Accessibility

@@ -212,7 +212,7 @@ ShortcutsDialog: open / defaultOpen / onOpenChange; sections ([{title, items: [{
 - `open?`: `boolean`
 - `defaultOpen?`: `boolean`. Default `false`.
 - `onOpenChange?`: `(open: boolean) => void`
-- `hotkey?`: `string | false | string[]`. Key that opens the sheet. Default "?" (Shift+/); `false` to bind your own. Default `"?"`.
+- `hotkey?`: `string | false | string[]`. Key that opens the sheet. Default "?" (Shift+/); `false` to bind your own.
 - `title?`: `string`. Default `"Keyboard shortcuts"`.
 - `showCloseButton?`: `boolean`
 - `overlayClassName?`: `string`

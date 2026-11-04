@@ -60,4 +60,4 @@ FieldLabel is a native label bound to the control by id, so clicking it focuses 
 
 `FieldControl` is what hands the control its `id`, `aria-describedby` and `aria-invalid`, so the wiring cannot be forgotten. The description and the `hint` tooltip render outside the `<label>`, so the control's accessible name stays the label text. `FieldError` pairs a warning glyph with the words, so the error never rests on colour.
 
-Category: Components · Forms. Source: `packages/ui/src/base/components/ui/field.tsx:24-51`.
+Category: Components · Forms. Source: `packages/ui/src/base/components/ui/field.tsx:26-56`.

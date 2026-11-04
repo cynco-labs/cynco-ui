@@ -23,6 +23,6 @@ The `/ai` entry needs its own peers: `pnpm add ai streamdown shiki use-stick-to-
 
 Themes: light by default; add `class="dark"` or `data-theme="dark" | "modern" | "modern-dark"` on a parent.
 
-CLI: `npx cynco-ui list`, `npx cynco-ui docs data-list`, `npx cynco-ui search payslip`.
+CLI: `npx cynco-ui search payslip`, `npx cynco-ui docs data-list`, `npx cynco-ui check` (your code against the rules), `npx cynco-ui skill` (installs the agent skill).
 
 Docs for every component: see the docs site, or `registry/docs/<slug>.md` in this package.

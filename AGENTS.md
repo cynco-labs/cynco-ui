@@ -35,5 +35,9 @@ Then open the component's docs page (`pnpm dev`) in light and dark, at desktop a
 
 `check:classes` reads class lists out of every `.tsx` under `packages/ui/src` and fails on hex colours, Tailwind
 palette colours, `text-[13px]`, `!important` utilities, the pre-token `text-main` scale, viewport breakpoints
-(`md:` — use `@md:`; printed documents are exempt) and `transition-all`. A genuinely justified exception goes in
+(`md:` — use `@md:`; printed documents are exempt), `transition-all`, and `@container` on a box that shrinks to its
+content (`w-fit`, `inline-flex`…), which measures zero and collapses it. A genuinely justified exception goes in
 `scripts/check-classes.allow` as `path:pattern # reason`; the reason is required and a stale entry fails the check.
+The rules themselves live in `packages/ui/bin/rules.mjs`, shared with the published `npx cynco-ui check` that apps
+run. Change a rule there and it changes for both; only the pre-token scale and the document exemption are local to
+`scripts/check-classes.mjs`.

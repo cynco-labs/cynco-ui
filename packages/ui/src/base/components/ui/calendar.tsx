@@ -152,9 +152,12 @@ function Calendar({
 			fixedWeeks={fixedWeeks}
 			// The dropdown caption carries its own arrows.
 			hideNavigation={hasDropdown || props.hideNavigation}
-			className={cn("@container relative w-fit p-3", className)}
+			// Shrinks to its days, so it cannot be its own container: `@container` measures the box's width, and a
+			// box sized by its content would measure zero. Months wrap instead of querying a width: side by side
+			// while they fit the space around the calendar, stacked once they don't, with or without a container.
+			className={cn("relative w-fit p-3", className)}
 			classNames={{
-				months: "flex flex-col @sm:flex-row gap-2",
+				months: "flex flex-wrap gap-2",
 				month: "flex flex-col gap-4",
 				month_caption: "flex h-7 items-center justify-center",
 				caption_label: "text-sm font-medium text-foreground",

@@ -107,8 +107,11 @@ Older code and older answers reach for these. They are gone; use the one on the 
 
 ## Before you finish
 
-Check the screen at a narrow width (about 360px) and in dark mode. Search the diff for hex colours,
-Tailwind palette colours (`text-blue-500`), `text-[`, viewport breakpoints (`md:` where `@md:` was
-meant), `!` important utilities, `transition-all`, `parseFloat`/`Number(` on amounts and hand-built
-`<table>`s; each is usually a rule above being broken. In this repo, `pnpm lint` and
-`pnpm check:classes` check all of that for you.
+Run `npx cynco-ui check` (or `npx cynco-ui check <paths>` for the files you touched) and fix
+what it reports. It fails on hex and Tailwind palette colours, `text-[`, `!` important utilities,
+`transition-all` and `parseFloat`/`Number(`/`.toFixed(2)` on amounts, and prints the reason for
+each rule it hits. An exception that is genuinely right goes in `cynco-ui.allow` as
+`path:pattern # reason`. The check cannot see two things, so look for them yourself: viewport
+breakpoints inside a component (`md:` where `@md:` was meant; page layouts may use `md:`) and
+hand-built `<table>`s. Then check the screen at a narrow width (about 360px) and in dark mode. In
+the Cynco UI repo itself, `pnpm lint` and `pnpm check:classes` cover this.

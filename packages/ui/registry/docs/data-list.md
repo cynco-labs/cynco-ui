@@ -131,7 +131,7 @@ columns (key, header, cell, align, className, mobile: title | value | badge | me
 - `columns`: `DataColumn<T>[]`
 - `rows`: `T[]`
 - `getKey`: `(row: T, index: number) => string`
-- `stackBelow?`: `"sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "never"`. Container width below which rows stack. Default `xl` (36rem). `never` keeps the table (it scrolls sideways). Default `"xl"`.
+- `stackBelow?`: `"sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "never"`. Container width below which rows stack. Default `xl` (36rem). `never` keeps the table (it scrolls sideways).
 - `onRowClick?`: `(row: T) => void`. Opens a row. The primary cell (table) or title (stacked) becomes a real button, so the row is reachable with Tab and announced as actionable; a click anywhere else on the row does the same.
 - `isRowSelected?`: `(row: T) => boolean`
 - `rowClassName?`: `(row: T) => string`. Extra classes per row, in both layouts (e.g. dim inactive rows).
@@ -160,4 +160,4 @@ The primary column renders as the row header (th scope="row"), column headers ar
 
 Responds to its own container (CSS container queries), so the same list works in a page, a side sheet and on a phone. The primary column renders as the row header (th scope=row). Rows are never focus stops themselves: with onRowClick the primary cell holds a real button (focus-ring-inset), so screen readers announce it and the row's checkbox and menu aren't nested inside a focusable row. Selection without a leading checkbox is aria-current on that button. Leading/trailing cells and any control inside a row keep their clicks; keep a clickable row's primary cell free of links and buttons.
 
-Category: Layout · Primitives. Source: `packages/ui/src/layout/data-list.tsx:119-452`.
+Category: Layout · Primitives. Source: `packages/ui/src/layout/data-list.tsx:119-453`.

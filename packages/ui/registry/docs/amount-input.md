@@ -84,7 +84,7 @@ value / defaultValue (decimal string, "" for empty), onValueChange(value: string
 - `defaultValue?`: `string`. Uncontrolled initial value.
 - `onValueChange?`: `(value: string) => void`. Fires with the evaluated decimal string when the figure is committed (blur or Enter) and changed.
 - `currency?`: `string`. ISO code (e.g. "MYR"): shows the symbol as a prefix and in the live result hint.
-- `allowNegative?`: `boolean`. Accept negatives ("-500", "(500)"). Default false. Default `false`.
+- `allowNegative?`: `boolean`. Accept negatives ("-500", "(500)"). Default false.
 - `invalid?`: `boolean`. Force the error styling (e.g. server-side validation).
 - `errorMessage?`: `ReactNode`. Message shown with `invalid`.
 - `messages?`: `"below" | "overlay"`. Where the hint/error appear: in flow under the field (forms) or floating over the next row (grids). Default `"below"`.

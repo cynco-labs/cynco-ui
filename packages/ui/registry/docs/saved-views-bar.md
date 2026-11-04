@@ -323,7 +323,7 @@ views / defaultViews / onViewsChange (SavedView: id, name, filters, count, share
 - `onFiltersChange?`: `(filters: SavedViewFilter[]) => void`
 - `counts?`: `Record<string, number>`. Row counts per view id (overrides `view.count`).
 - `addFilter?`: `ReactNode`. Your "Add filter" control, shown after the chips.
-- `label?`: `string`. Accessible name of the view switcher. Default "Saved views". Default `"Saved views"`.
+- `label?`: `string`. Accessible name of the view switcher. Default "Saved views".
 - Also accepts `ComponentProps<"div">`.
 
 ## Notes

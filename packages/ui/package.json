@@ -134,5 +134,26 @@
     "url": "git+https://github.com/cynco-labs/cynco-ui.git",
     "directory": "packages/ui"
   },
-  "homepage": "https://github.com/cynco-labs/cynco-ui"
+  "homepage": "https://ui.cynco.io",
+  "bugs": "https://github.com/cynco-labs/cynco-ui/issues",
+  "keywords": [
+    "react",
+    "design-system",
+    "component-library",
+    "ui",
+    "tailwindcss",
+    "base-ui",
+    "accounting",
+    "erp",
+    "invoice",
+    "bookkeeping",
+    "ledger",
+    "payroll",
+    "bank-reconciliation",
+    "financial-statements",
+    "malaysia",
+    "sst",
+    "e-invoice",
+    "myinvois"
+  ]
 }

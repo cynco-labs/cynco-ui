@@ -153,7 +153,7 @@ value, onSave(value) => void | Promise<void> (reject with an Error to revert and
 - `kind?`: `"text" | "amount"`. Default `"text"`.
 - `currency?`: `string`. For amounts: formats the read-out ("RM 1,296.00").
 - `placeholder?`: `string`
-- `allowNegative?`: `boolean`. For amounts: accept negatives. Default true. Default `true`.
+- `allowNegative?`: `boolean`. For amounts: accept negatives. Default true.
 - `disabled?`: `boolean`
 - Also accepts `ComponentProps<"div">`.
 

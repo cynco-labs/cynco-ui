@@ -65,7 +65,7 @@ onPrint?, bindShortcut? (default: true only when onPrint is set — otherwise th
 - `focusableWhenDisabled?`: `boolean`. Keep the button in the tab order while disabled (Base UI). Set automatically while `isLoading`.
 - `onPrint?`: `() => void`. Replace window.print() — e.g. download a server-rendered PDF.
 - `bindShortcut?`: `boolean`. Handle ⌘/Ctrl+P on this page. Default: only when `onPrint` is given (otherwise the browser's own print already uses the print layout).
-- `showShortcut?`: `boolean`. Show the ⌘/Ctrl+P keycap. Default true. Default `true`.
+- `showShortcut?`: `boolean`. Show the ⌘/Ctrl+P keycap. Default true.
 - Also accepts `ComponentProps<"button">`.
 
 ## Notes

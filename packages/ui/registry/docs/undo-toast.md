@@ -201,9 +201,9 @@ UndoToastProvider: children, max (default 3; a 4th toast commits the oldest), du
 - `onUndo`: `() => void`
 - `onDismiss?`: `() => void`. Close button / Esc.
 - `onExpire?`: `() => void`. The countdown ran out.
-- `duration?`: `number`. ms; 0 or Infinity = no countdown. Default Infinity (stays until dismissed). Default `Number.POSITIVE_INFINITY`.
+- `duration?`: `number`. ms; 0 or Infinity = no countdown. Default Infinity (stays until dismissed).
 - `undoLabel?`: `string`. Default `"Undo"`.
-- `showShortcut?`: `boolean`. Show the ⌘/Ctrl+Z keycap on the Undo button (the newest toast). Default true. Default `true`.
+- `showShortcut?`: `boolean`. Show the ⌘/Ctrl+Z keycap on the Undo button (the newest toast). Default true.
 - `paused?`: `boolean`. Hold the countdown (it also pauses on hover, on focus and while the tab is hidden).
 - `returnFocusTo?`: `MutableRefObject<HTMLElement | null>`. Focus target when this toast closes while focused.
 - Also accepts `ComponentProps<"li">`.

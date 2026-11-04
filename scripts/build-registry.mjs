@@ -134,7 +134,9 @@ function markdown(c, demo) {
 		if (c.provide) lines.push(c.provide, "");
 		if (c.props?.props.length) {
 			for (const p of c.props.props) {
-				const desc = [p.description, p.default ? `Default \`${p.default}\`.` : ""].filter(Boolean).join(" ");
+				// A description that already states its default ("Default false.") does not get it twice.
+				const dflt = p.default && !/\bDefault\b/.test(p.description ?? "") ? `Default \`${p.default}\`.` : "";
+				const desc = [p.description, dflt].filter(Boolean).join(" ");
 				lines.push(`- \`${p.name}${p.required ? "" : "?"}\`: \`${p.type}\`${desc ? `. ${desc}` : ""}`);
 			}
 			if (c.props.inherits.length) lines.push(`- Also accepts ${c.props.inherits.map((i) => `\`${i}\``).join(", ")}.`);
