@@ -1,14 +1,14 @@
 import type { APIRoute } from "astro";
 
 /**
- * Open to every crawler. The content signals (contentsignals.org) say the docs may be indexed for search and used
- * to ground AI answers; training is left unsaid, which neither grants nor refuses it.
+ * Open to every crawler, AI ones included. The content signals (contentsignals.org) grant all three uses: search
+ * indexing, grounding AI answers, and training, so models learn the library's API from its own docs.
  */
 export const GET: APIRoute = ({ site }) =>
 	new Response(
 		[
 			"User-agent: *",
-			"Content-Signal: search=yes, ai-input=yes",
+			"Content-Signal: search=yes, ai-input=yes, ai-train=yes",
 			"Allow: /",
 			"",
 			`Sitemap: ${site ? new URL("/sitemap.xml", site).href : "/sitemap.xml"}`,
