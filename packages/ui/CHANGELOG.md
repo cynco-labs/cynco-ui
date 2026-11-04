@@ -1,8 +1,8 @@
 # @cynco-labs/ui
 
-## 0.2.0
+## 0.1.1
 
-### Minor Changes
+### Patch Changes
 
 - f5a4b8f: One vocabulary across the accounting components.
 
@@ -249,8 +249,6 @@ ago`, `3h ago`, `2d ago`, `3w ago`, `7mo ago`, with `maxUnit` deciding when a he
 
   `AmountInput` now drops a stale draft while rendering rather than in an effect, so an amount changed
   from outside is never painted stale and then corrected.
-
-### Patch Changes
 
 - 295c312: Ship the `cynco-ui` agent skill at `skills/cynco-ui/SKILL.md`, and generate typed props for every component into `registry/props.json` (shown by `cynco-ui docs <Name>`).
 - 67843e8: `Calendar` renders at full size again. Its root had become a size container (`@container`) while also shrinking to its content (`w-fit`), so it measured its own width as zero and collapsed to a 26px strip with the days spilling out. This also affected `DateInputUnix`'s popover. `check:classes` and `cynco-ui check` now fail on that combination (`container-shrink`).

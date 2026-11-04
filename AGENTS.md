@@ -21,6 +21,7 @@ Guidance for coding agents and contributors. Read it before changing anything.
 6. **Accessibility.** Keyboard-operable, visible `focus-visible` rings, controls revealed on hover also take `no-hover:opacity-100` so touch screens show them, `aria-label` on icon-only buttons, status never by colour alone (`StatusChip` pairs a square, glyph and word).
 7. **Documents are black ink.** No colour, tints or filled bars on printed documents; hierarchy from type, spacing and hairlines. They have their own tokens — `text-doc-ink`, `text-doc-ink-muted`, `text-doc-ink-subtle`, `border-doc-rule` (the rule that closes a table), `border-doc-rule-soft` (the hairline), `bg-doc-paper`, `bg-doc-paper-tint` — declared on a plain `:root` and never redefined under `.dark`, because a document is paper in every theme.
 8. **Unique export names** across the whole package (`src/index.ts` re-exports everything).
+9. **Ask before versioning.** Ask the maintainer which bump a changeset gets (patch or minor) before writing it, and confirm the version the "Version Packages" PR proposes before merging it. Changesets releases at the highest bump pending, so one `minor` changeset turns the whole release into a minor; and a published npm version can never be reused.
 
 ## Checks before you finish
 ```bash
