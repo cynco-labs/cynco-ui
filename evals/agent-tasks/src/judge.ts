@@ -55,7 +55,10 @@ export async function judgeTask(
 			};
 		}
 	}
-	if (shown.length === 0) return { labels, scores, costUsd: null };
+	if (shown.length === 0) {
+		await rm(dir, { recursive: true, force: true });
+		return { labels, scores, costUsd: null };
+	}
 
 	const prompt = judgePrompt(task.prompt, shown);
 	assertNoNames(prompt, allLibraryNames(), "judge prompt");
@@ -83,6 +86,8 @@ export async function judgeTask(
 		],
 		{ cwd: dir, timeoutMs: options.timeoutMin * 60_000 },
 	);
+	// The copies only exist for this call; the originals stay in each cell's shots folder.
+	await rm(dir, { recursive: true, force: true });
 	await writeFile(judgePath(record.runId, task.id, trial).replace(/\.json$/, ".raw.json"), result.stdout);
 
 	const output = parseJson(result.stdout);

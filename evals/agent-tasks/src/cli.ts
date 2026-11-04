@@ -1,26 +1,35 @@
 import { existsSync } from "node:fs";
-import { mkdir, rm } from "node:fs/promises";
+import { copyFile, cp, mkdir, readdir, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { join, resolve } from "node:path";
+import { basename, dirname, join, resolve } from "node:path";
 import { parseArgs } from "node:util";
 import { type AgentOptions, agentCommand, agentVersion, runAgent } from "./agent.ts";
 import { judgeTask } from "./judge.ts";
-import { cellDir, cellLabel, judgePath, readRecord, runRecordPath, writeJson } from "./layout.ts";
+import { cellDir, cellLabel, judgePath, readRecord, runDir, runRecordPath, writeJson } from "./layout.ts";
 import { allLibraryNames, LIBRARIES } from "./libraries.ts";
-import { pool } from "./proc.ts";
+import { pool, stopProcessesIn } from "./proc.ts";
 import { writeReport } from "./report.ts";
 import { ensureBases, ensureWorkspace } from "./scaffold.ts";
 import { scoreWorkspace } from "./score.ts";
 import { assertBlind, TASKS } from "./tasks.ts";
-import { LIBRARY_IDS, type LibraryId, type RunKey, type RunRecord, TASK_IDS, type TaskId } from "./types.ts";
+import {
+	type BaseRecord,
+	LIBRARY_IDS,
+	type LibraryId,
+	type RunKey,
+	type RunRecord,
+	TASK_IDS,
+	type TaskId,
+	type WorkspaceRecord,
+} from "./types.ts";
 
-const STAGES = ["scaffold", "agent", "score", "judge", "report", "all"] as const;
+const STAGES = ["scaffold", "agent", "score", "build", "judge", "report", "all", "clean"] as const;
 type Stage = (typeof STAGES)[number];
 
 const USAGE = `node evals/agent-tasks/src/cli.ts <${STAGES.join("|")}> --run <id>
   [--libs ${LIBRARY_IDS.join(",")}] [--tasks ${TASK_IDS.join(",")}] [--trials 1]
   [--model sonnet] [--judge-model opus] [--budget 5] [--timeout-min 25] [--concurrency 2]
-  [--cynco local|npm] [--work-root <dir>] [--force]`;
+  [--cynco local|npm] [--work-root <dir>] [--force] [--keep-workspaces]`;
 
 interface Options {
 	stage: Stage;
@@ -36,6 +45,7 @@ interface Options {
 	cynco: "local" | "npm";
 	workRoot: string;
 	force: boolean;
+	keepWorkspaces: boolean;
 }
 
 function parseOptions(argv: string[]): Options {
@@ -55,6 +65,7 @@ function parseOptions(argv: string[]): Options {
 			cynco: { type: "string", default: "local" },
 			"work-root": { type: "string", default: join(tmpdir(), "projects") },
 			force: { type: "boolean", default: false },
+			"keep-workspaces": { type: "boolean", default: false },
 		},
 	});
 	const stage = STAGES.find((s) => s === positionals[0]);
@@ -76,6 +87,7 @@ function parseOptions(argv: string[]): Options {
 		cynco,
 		workRoot: resolve(values["work-root"]),
 		force: values.force,
+		keepWorkspaces: values["keep-workspaces"],
 	};
 }
 
@@ -126,66 +138,130 @@ async function updateRun(record: RunRecord, patch: Partial<RunRecord>): Promise<
 	return next;
 }
 
+type Bases = Partial<Record<LibraryId, BaseRecord>>;
+
 async function scaffold(o: Options, record: RunRecord): Promise<number> {
-	const bases = await ensureBases(record, o.libraries, o.force);
-	return pool(cellsOf(o), o.concurrency, async (key) => {
-		await ensureWorkspace(key, record, bases, o.force);
-	});
+	await ensureBases(record, o.libraries, o.force);
+	return 0;
 }
 
-async function agent(o: Options, record: RunRecord): Promise<number> {
-	const bases = await ensureBases(record, o.libraries, false);
-	const options: AgentOptions = {
-		command: agentCommand(),
-		model: o.model,
-		budgetUsd: o.budgetUsd,
-		timeoutMin: o.timeoutMin,
-	};
+function agentOptions(o: Options, model: string): AgentOptions {
+	return { command: agentCommand(), model, budgetUsd: o.budgetUsd, timeoutMin: o.timeoutMin };
+}
+
+async function recordAgent(record: RunRecord, o: Options, options: AgentOptions): Promise<void> {
 	await updateRun(record, {
 		agentCmd: options.command.join(" "),
 		cliVersion: await agentVersion(options.command),
 		model: o.model,
 		budgetUsd: o.budgetUsd,
 	});
-	return pool(cellsOf(o), o.concurrency, async (key) => {
-		const out = join(cellDir(key), "agent.json");
-		if (existsSync(out) && !o.force) return;
-		// No agent.json means the agent never ran here or was cut off; either way it starts from a clean copy.
-		const workspace = await ensureWorkspace(key, record, bases, true);
-		await rm(join(cellDir(key), "score.json"), { force: true });
-		await rm(join(cellDir(key), "shots"), { recursive: true, force: true });
-		await rm(judgePath(key.runId, key.task, key.trial), { force: true });
-		const task = TASKS.find((t) => t.id === key.task);
-		if (!task) throw new Error(`Unknown task ${key.task}`);
-		console.log(`[agent] ${cellLabel(key)} started`);
-		const metrics = await runAgent(key, task.prompt, workspace, LIBRARIES[key.library], options);
-		await writeJson(out, metrics);
-		console.log(`[agent] ${cellLabel(key)} done: $${metrics.costUsd?.toFixed(2) ?? "?"}, ${metrics.turns} turns`);
-	});
+}
+
+async function agentCell(
+	key: RunKey,
+	o: Options,
+	record: RunRecord,
+	bases: Bases,
+	options: AgentOptions,
+): Promise<void> {
+	const out = join(cellDir(key), "agent.json");
+	if (existsSync(out) && !o.force) return;
+	// No agent.json means the agent never ran here or was cut off; either way it starts from a clean copy.
+	const workspace = await ensureWorkspace(key, record, bases, true);
+	await rm(join(cellDir(key), "score.json"), { force: true });
+	await rm(join(cellDir(key), "shots"), { recursive: true, force: true });
+	await rm(join(cellDir(key), "src"), { recursive: true, force: true });
+	await rm(judgePath(key.runId, key.task, key.trial), { force: true });
+	const task = TASKS.find((t) => t.id === key.task);
+	if (!task) throw new Error(`Unknown task ${key.task}`);
+	console.log(`[agent] ${cellLabel(key)} started`);
+	const metrics = await runAgent(key, task.prompt, workspace, LIBRARIES[key.library], options);
+	await stopProcessesIn(workspace);
+	await writeJson(out, metrics);
+	console.log(`[agent] ${cellLabel(key)} done: $${metrics.costUsd?.toFixed(2) ?? "?"}, ${metrics.turns} turns`);
+}
+
+async function scoreCell(key: RunKey, o: Options, bases: Bases): Promise<void> {
+	const out = join(cellDir(key), "score.json");
+	if (existsSync(out) && !o.force) return;
+	const workspace = (await readRecord<WorkspaceRecord>(join(cellDir(key), "workspace.json")))?.path;
+	if (!workspace || !existsSync(workspace)) {
+		throw new Error(`[score] ${cellLabel(key)}: no workspace to score; run the agent stage (with --force) first.`);
+	}
+	const shots = join(cellDir(key), "shots");
+	await rm(shots, { recursive: true, force: true });
+	await mkdir(shots, { recursive: true });
+	const result = await scoreWorkspace(workspace, shots, LIBRARIES[key.library], bases[key.library]?.path ?? null);
+	await writeJson(out, result);
+	console.log(`[score] ${cellLabel(key)}: build ${result.build.ok ? "ok" : "failed"}`);
+	if (!o.keepWorkspaces) await archiveWorkspace(cellDir(key), workspace);
+}
+
+/** Keeps what the agent wrote next to its scores and deletes the app, whose node_modules and build fill a disk fast. */
+async function archiveWorkspace(dir: string, workspace: string): Promise<void> {
+	await stopProcessesIn(workspace);
+	// A deletion that was cut off leaves the app without src; the copy taken before it stays.
+	if (existsSync(join(workspace, "src"))) {
+		await rm(join(dir, "src"), { recursive: true, force: true });
+		await cp(join(workspace, "src"), join(dir, "src"), { recursive: true });
+	}
+	if (existsSync(join(workspace, "package.json"))) {
+		await copyFile(join(workspace, "package.json"), join(dir, "package.json"));
+	}
+	await rm(workspace, { recursive: true, force: true });
+}
+
+async function agent(o: Options, record: RunRecord): Promise<number> {
+	const bases = await ensureBases(record, o.libraries, false);
+	const options = agentOptions(o, o.model);
+	await recordAgent(record, o, options);
+	return pool(cellsOf(o), o.concurrency, (key) => agentCell(key, o, record, bases, options));
 }
 
 async function score(o: Options, record: RunRecord): Promise<number> {
 	const bases = await ensureBases(record, o.libraries, false);
+	return pool(cellsOf(o), o.concurrency, (key) => scoreCell(key, o, bases));
+}
+
+/** Scores each cell as soon as its agent finishes, so only `--concurrency` apps exist on disk at once. */
+async function build(o: Options, record: RunRecord): Promise<number> {
+	const bases = await ensureBases(record, o.libraries, o.force);
+	const options = agentOptions(o, o.model);
+	await recordAgent(record, o, options);
 	return pool(cellsOf(o), o.concurrency, async (key) => {
-		const out = join(cellDir(key), "score.json");
-		if (existsSync(out) && !o.force) return;
-		const workspace = await ensureWorkspace(key, record, bases, false);
-		const shots = join(cellDir(key), "shots");
-		await rm(shots, { recursive: true, force: true });
-		await mkdir(shots, { recursive: true });
-		const result = await scoreWorkspace(workspace, shots, LIBRARIES[key.library], bases[key.library]?.path ?? null);
-		await writeJson(out, result);
-		console.log(`[score] ${cellLabel(key)}: build ${result.build.ok ? "ok" : "failed"}`);
+		await agentCell(key, o, record, bases, options);
+		await scoreCell(key, o, bases);
 	});
 }
 
+/**
+ * Deletes a run's apps and bases. A cell whose agent finished keeps its source first; one that was never scored
+ * cannot be scored afterwards, so the agent stage reruns it.
+ */
+async function clean(o: Options): Promise<number> {
+	// Walks what is on disk rather than the flags, so it finds every trial and task the run ever made.
+	const records = (await readdir(runDir(o.runId), { recursive: true })).filter(
+		(path) => basename(path) === "workspace.json" || basename(path) === "base.json",
+	);
+	for (const record of records) {
+		const dir = join(runDir(o.runId), dirname(record));
+		const app = (await readRecord<{ path: string }>(join(dir, basename(record))))?.path;
+		if (!app || !existsSync(app)) continue;
+		if (basename(record) === "workspace.json" && existsSync(join(dir, "agent.json"))) {
+			await archiveWorkspace(dir, app);
+			if (!existsSync(join(dir, "score.json"))) await rm(join(dir, "agent.json"), { force: true });
+		} else {
+			await stopProcessesIn(app);
+			await rm(app, { recursive: true, force: true });
+		}
+	}
+	console.log(`[clean] removed the apps and bases of ${o.runId}`);
+	return 0;
+}
+
 async function judge(o: Options, record: RunRecord): Promise<number> {
-	const options: AgentOptions = {
-		command: agentCommand(),
-		model: o.judgeModel,
-		budgetUsd: o.budgetUsd,
-		timeoutMin: o.timeoutMin,
-	};
+	const options = agentOptions(o, o.judgeModel);
 	await updateRun(record, { judgeModel: o.judgeModel });
 	const pairs = o.tasks.flatMap((task) => Array.from({ length: o.trials }, (_, i) => ({ task, trial: i + 1 })));
 	return pool(pairs, o.concurrency, async ({ task, trial }) => {
@@ -207,10 +283,12 @@ async function main(): Promise<void> {
 	const o = parseOptions(process.argv.slice(2));
 	for (const task of TASKS) assertBlind(task.prompt, allLibraryNames(), `prompt for ${task.id}`);
 	let record = await loadRun(o);
-	const stages: Stage[] = o.stage === "all" ? ["scaffold", "agent", "score", "judge", "report"] : [o.stage];
+	const stages: Stage[] = o.stage === "all" ? ["build", "judge", "report"] : [o.stage];
 	let failures = 0;
 	for (const stage of stages) {
 		if (stage === "scaffold") failures += await scaffold(o, record);
+		if (stage === "build") failures += await build(o, record);
+		if (stage === "clean") failures += await clean(o);
 		if (stage === "agent") failures += await agent(o, record);
 		if (stage === "score") failures += await score(o, record);
 		if (stage === "judge") failures += await judge(o, record);

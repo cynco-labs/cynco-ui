@@ -72,6 +72,43 @@ function killGroup(pid: number | undefined): void {
 	}
 }
 
+/**
+ * Kills anything still running from an app folder. Agents start dev servers in the background, outside the
+ * process group `run` kills, and those servers keep writing into the folder after the agent exits.
+ */
+export async function stopProcessesIn(dir: string): Promise<void> {
+	// Matches on the folder's last two segments because macOS reports /var paths as /private/var.
+	const tail = `/${dir.split("/").filter(Boolean).slice(-2).join("/")}`;
+	await run("pkill", ["-f", `${tail}/`], { cwd: "/", timeoutMs: 10_000 });
+	// `npx vite` runs from the npx cache, so only its working directory names the folder.
+	for (const pid of await pidsWorkingIn(tail)) {
+		try {
+			process.kill(pid, "SIGKILL");
+		} catch {
+			// Already exited.
+		}
+	}
+}
+
+async function pidsWorkingIn(tail: string): Promise<number[]> {
+	let listing: RunResult;
+	try {
+		listing = await run("lsof", ["-d", "cwd", "-Fpn"], { cwd: "/", timeoutMs: 30_000 });
+	} catch {
+		return [];
+	}
+	const pids: number[] = [];
+	let pid = 0;
+	for (const line of listing.stdout.split("\n")) {
+		if (line.startsWith("p")) pid = Number(line.slice(1));
+		else if (line.startsWith("n") && pid !== process.pid) {
+			const path = line.slice(1);
+			if (path.endsWith(tail) || path.includes(`${tail}/`)) pids.push(pid);
+		}
+	}
+	return pids;
+}
+
 export async function runOrThrow(cmd: string, args: string[], options: RunOptions): Promise<RunResult> {
 	const result = await run(cmd, args, options);
 	if (result.code !== 0) {

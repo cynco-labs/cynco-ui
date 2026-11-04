@@ -58,6 +58,11 @@ const METRICS: Metric[] = [
 		digits: 1,
 	})),
 	{ label: "cost (USD)", value: (c) => c.agent?.costUsd ?? null, digits: 2 },
+	{
+		label: "judge overall per $",
+		value: (c) => (c.judge && c.agent?.costUsd ? judgeOverall(c.judge) / c.agent.costUsd : null),
+		digits: 1,
+	},
 	{ label: "turns", value: (c) => c.agent?.turns ?? null, digits: 0 },
 	{ label: "minutes", value: (c) => (c.agent ? c.agent.durationMs / 60_000 : null), digits: 1 },
 	{ label: "input tokens (k)", value: (c) => (c.agent ? c.agent.inputTokens / 1000 : null), digits: 0 },

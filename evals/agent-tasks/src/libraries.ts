@@ -32,6 +32,8 @@ export interface Library {
 	docsCommand: RegExp;
 	/** Paths an agent reads for the library's docs, besides `.claude/skills`. */
 	docsPaths: string[];
+	/** The agent skill the library ships, if any; Claude Code's built-in skills are not doc lookups. */
+	skill: string | null;
 	setup: (ctx: SetupContext) => Step[];
 	/** What the harness adds to a copy of the base to prove one library component renders. */
 	probe: { steps: Step[]; app: string };
@@ -76,6 +78,7 @@ export const LIBRARIES: Record<LibraryId, Library> = {
 		importPattern: /^@cynco-labs\/ui/,
 		docsCommand: /\bcynco-ui\s+(search|docs|list)\b/,
 		docsPaths: ["node_modules/@cynco-labs/ui/"],
+		skill: "cynco-ui",
 		setup: ({ cyncoTarball }) => {
 			// The tarball lives inside the project so a clone keeps working and package.json shows no outside path.
 			const vendored = cyncoTarball ? `vendor/${basename(cyncoTarball)}` : null;
@@ -118,6 +121,7 @@ export const LIBRARIES: Record<LibraryId, Library> = {
 		importPattern: /^@cloudflare\/kumo/,
 		docsCommand: /\bkumo\s+(doc|docs|ls|ai|blocks)\b/,
 		docsPaths: ["node_modules/@cloudflare/kumo/"],
+		skill: null,
 		setup: () => [
 			npmInstall("@cloudflare/kumo", "@phosphor-icons/react"),
 			{
@@ -142,6 +146,7 @@ export const LIBRARIES: Record<LibraryId, Library> = {
 		importPattern: SHADCN_IMPORT,
 		docsCommand: SHADCN_DOCS,
 		docsPaths: ["node_modules/shadcn/", "node_modules/@base-ui/react/"],
+		skill: "shadcn",
 		setup: () => [shadcnInit, skillsAdd("shadcn/ui", "shadcn")],
 		probe: {
 			steps: [],
@@ -160,6 +165,7 @@ export const LIBRARIES: Record<LibraryId, Library> = {
 		importPattern: SHADCN_IMPORT,
 		docsCommand: SHADCN_DOCS,
 		docsPaths: ["node_modules/shadcn/", "node_modules/@base-ui/react/"],
+		skill: "fluid-functionalism",
 		setup: () => [
 			shadcnInit,
 			npx("shadcn@latest", "registry", "add", "@fluid"),

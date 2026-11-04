@@ -129,7 +129,8 @@ const inputTokens = (usage: JsonRecord) =>
 	(num(usage, "cache_read_input_tokens") ?? 0);
 
 function isDocLookup(tool: string, input: JsonRecord, library: Library): boolean {
-	if (tool === "WebFetch" || tool === "WebSearch" || tool === "Skill") return true;
+	if (tool === "WebFetch" || tool === "WebSearch") return true;
+	if (tool === "Skill") return library.skill !== null && str(input, "skill") === library.skill;
 	if (tool === "Bash") return library.docsCommand.test(str(input, "command") ?? "");
 	if (tool === "Read") {
 		const path = str(input, "file_path") ?? "";

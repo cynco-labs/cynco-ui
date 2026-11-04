@@ -36,6 +36,12 @@ pnpm eval report   --run smoke --libs cynco,shadcn --tasks invoices-list
 | `--cynco` | `local` | `local` builds and packs `packages/ui`; `npm` installs the published package |
 | `--work-root` | `$TMPDIR/projects` | Where the apps live, outside this repo |
 | `--force` | off | Redo stages whose output already exists |
+| `--keep-workspaces` | off | Keep each app after scoring instead of deleting it |
+
+`build` (and `all`, which is `build`, `judge`, `report`) scores each app as soon as its agent finishes, copies the agent's `src/` and `package.json` into the cell's
+folder, and deletes the app, so at most `--concurrency` apps sit on disk. Each base is a full `npm install`, and
+agents install more, so a run that keeps every app needs tens of GB. `clean --run <id>` deletes a run's apps and
+bases after saving their source; a cell whose agent finished but was never scored is reset so the agent reruns.
 
 `AGENT_CMD` is split on spaces and defaults to `claude`. `--cynco` and `--work-root` are fixed when a run is
 created; later stages reuse them.
@@ -71,7 +77,7 @@ in the path tells the agent what it is part of.
 
 **Agent.** `costUsd`, `turns` and `durationMs` come from the CLI's result message. `inputTokens` is the total
 prompt tokens including cache reads and writes; `outputTokens` is generated tokens. `toolCalls` counts every
-`tool_use` by name, subagents included. `docLookups` counts WebFetch, WebSearch and Skill calls, Bash calls to
+`tool_use` by name, subagents included. `docLookups` counts WebFetch and WebSearch calls, calls to the library's own skill (not Claude Code's built-in skills), Bash calls to
 the library's docs CLI (`cynco-ui search|docs`, `kumo doc|ls|ai`, `shadcn docs|search|view|info`), and Reads
 under `.claude/skills/` or the library's package in `node_modules`. When the agent times out or crashes before
 its result message, `costUsd` is null and the other figures are summed from the stream.
@@ -121,6 +127,8 @@ separate sections, then a per-task table. With a few trials per cell, read the s
   `kumo` CLI, which the agent can reach. No arm has an MCP server.
 - **Same project instructions.** Each arm's `CLAUDE.md` is one line naming its library and docs URL.
   `--setting-sources project` keeps the operator's own `CLAUDE.md`, plugins and skills out.
+  Claude Code's built-in skills stay available to every arm, and agents do call them (`artifact-design`, `run`),
+  so they shape every arm equally.
 - **Blinding.** At startup the harness refuses any task prompt that names a library or says eval, test, judge,
   benchmark, score, compare, candidate or arena, and refuses an arm's `CLAUDE.md` that names another library.
   Third-party skills are installed unedited, so Fluid's skill mentions shadcn, which it is built on.
