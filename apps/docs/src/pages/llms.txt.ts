@@ -11,6 +11,8 @@ export const GET: APIRoute = ({ site }) => {
 		"",
 		'Install with `pnpm add @cynco-labs/ui @phosphor-icons/react`, then `@import "tailwindcss"; @import "@cynco-labs/ui/theme.css";`. AI components import from `@cynco-labs/ui/ai`.',
 		"",
+		`Everything below in one file: [llms-full.txt](${abs("/llms-full.txt")}), every guide in full plus each component's summary, import and props. The agent skill with the house rules: [skill.md](${abs("/skill.md")}).`,
+		"",
 	];
 	for (const g of GUIDES) {
 		l.push(`## ${g.section}`, "");

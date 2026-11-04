@@ -14,12 +14,13 @@ interface Props {
 	/** Hide the right-hand table of contents and let content use the full width. */
 	wide?: boolean;
 	pager?: boolean;
+	noindex?: boolean;
 }
-const { title, description, current, mdHref, headings = [], wide = false, pager = true } = Astro.props;
+const { title, description, current, mdHref, headings = [], wide = false, pager = true, noindex } = Astro.props;
 const { prev, next } = neighbours(current);
 ---
 
-<Base title={title} description={description} mdHref={mdHref}>
+<Base title={title} description={description} mdHref={mdHref} noindex={noindex}>
 	<a href="#content" class="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[60] focus:rounded-md focus:bg-background focus:px-3 focus:py-2">Skip to content</a>
 	<Header current={current} />
 	<div class="mx-auto flex max-w-[90rem] px-0 lg:px-8">

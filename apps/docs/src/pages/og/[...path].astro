@@ -1,0 +1,168 @@
+---
+/**
+ * The link-preview image of every indexable page, as a 1200×630 HTML frame: the page's own title and description
+ * beside the component's live demo page (/demo/<slug>, the same one the docs preview embeds), in the site's fonts and
+ * dark theme. scripts/build-og.mjs screenshots each frame to /og/<path>.png after `astro build` and deletes the frame,
+ * so these pages never ship.
+ *
+ * The demo sits in an iframe rather than being rendered here so that whatever it portals (an open dialog, a menu, a
+ * popover) stays inside its own document and lands where the demo page puts it, instead of over the copy.
+ */
+import "../../styles/global.css";
+import interUrl from "@cynco-labs/ui/fonts/Inter-Variable.woff2?url";
+import { inlineMd } from "../../lib/inline-md";
+import { type OgPage, ogPages, ogPath } from "../../lib/og";
+
+export function getStaticPaths() {
+	return ogPages().map((p) => ({ params: { path: ogPath(p.href).slice("/og/".length) }, props: p }));
+}
+
+const { href, eyebrow, title, description, stage, width } = Astro.props as OgPage;
+const url = `ui.cynco.io${href === "/" ? "" : href}`;
+// Break camel case where a reader would, so "BankReconciliationYearStrip" wraps instead of overflowing.
+const titleHtml = title.replace(/([a-z])([A-Z])/g, "$1<wbr>$2");
+// Registry copy is inline Markdown (`code`, **bold**); render it as the component pages do, without their <p>.
+const descriptionHtml = inlineMd(description).replace(/^<p>|<\/p>$/g, "");
+---
+
+<!doctype html>
+<html lang="en" class="dark">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="robots" content="noindex" />
+		<title>{title} · preview image</title>
+		<link rel="preload" href={interUrl} as="font" type="font/woff2" crossorigin />
+		<style is:global>
+			html,
+			body {
+				width: 1200px;
+				height: 630px;
+				margin: 0;
+				overflow: hidden;
+			}
+			/* Faint hairline grid, fading out toward the copy so it reads as paper texture, not a pattern. */
+			.og-grid {
+				background-image:
+					linear-gradient(to right, var(--border) 1px, transparent 1px),
+					linear-gradient(to bottom, var(--border) 1px, transparent 1px);
+				background-size: 48px 48px;
+				mask-image: radial-gradient(ellipse 70% 90% at 85% 50%, black 10%, transparent 75%);
+				opacity: 0.55;
+			}
+			.og-fade {
+				mask-image: linear-gradient(to bottom, black 82%, transparent);
+			}
+		</style>
+	</head>
+	<body class="bg-background text-foreground antialiased">
+		<div class="og-grid pointer-events-none absolute inset-0"></div>
+		<main class="relative grid h-[630px] grid-cols-[460px_1fr] gap-12 p-16">
+			<div class="flex min-w-0 flex-col">
+				<p class="font-serif text-og-mark leading-none tracking-[-0.01em] text-foreground">Cynco UI</p>
+				<p class="mt-auto font-mono text-sm uppercase tracking-[0.08em] text-tertiary-foreground">{eyebrow}</p>
+				<h1
+					id="og-title"
+					class="mt-4 text-og-title font-semibold leading-[1.04] tracking-[-0.03em] text-foreground"
+					set:html={titleHtml}
+				/>
+				<p
+					class="mt-5 line-clamp-4 text-og-body leading-[1.45] text-muted-foreground [&_code]:font-mono [&_code]:text-foreground"
+					set:html={descriptionHtml}
+				/>
+				<p class="mt-auto truncate pt-8 font-mono text-og-url text-tertiary-foreground">{url}</p>
+			</div>
+			<div id="og-stage" class="og-fade relative min-w-0 overflow-hidden rounded-xl border border-border bg-card">
+				<iframe
+					id="og-demo"
+					src={`/demo/${stage}?theme=dark`}
+					title={`${title} demo`}
+					scrolling="no"
+					class="absolute left-0 top-0 origin-top-left border-0"
+					style={`width: ${width}px; height: 630px`}
+				></iframe>
+			</div>
+		</main>
+		<script is:inline>
+			// Ready for its screenshot once the demo has loaded, its fonts are in, every island has hydrated (Astro drops
+			// `ssr` from it) and its DOM has gone quiet for 300ms, so chart entry animations have finished; capped at 5s.
+			// Then the title fits to two lines and the demo to the stage. Resolves to what the frame could not show
+			// cleanly, which the build prints, so a bad image is found without opening all of them.
+			const until = (test) =>
+				new Promise((done) => {
+					const tick = () => (test() ? done() : setTimeout(tick, 25));
+					tick();
+				});
+			const quiet = (root) =>
+				new Promise((done) => {
+					let timer = setTimeout(done, 300);
+					new MutationObserver(() => {
+						clearTimeout(timer);
+						timer = setTimeout(done, 300);
+					}).observe(root, { subtree: true, childList: true, attributes: true, characterData: true });
+				});
+
+			const frame = document.getElementById("og-demo");
+			// This script waits on the stylesheet above, so the demo may have finished loading before it runs.
+			const demoLoaded = () =>
+				frame.contentDocument?.readyState === "complete" && frame.contentWindow.location.pathname.startsWith("/demo/");
+			const loaded = new Promise((done) => {
+				if (demoLoaded()) done();
+				else frame.addEventListener("load", done, { once: true });
+			});
+
+			const fitTitle = () => {
+				const title = document.getElementById("og-title");
+				let size = parseFloat(getComputedStyle(title).fontSize);
+				while (size > 34 && title.getBoundingClientRect().height > size * 1.04 * 2 + 1) {
+					size -= 2;
+					title.style.fontSize = `${size}px`;
+				}
+			};
+
+			// Fit the demo to the stage's width (up to 1.6×, so a compact layout reads at preview size). A short demo is
+			// centred; a tall one is cropped like a product shot and fades off the bottom. A demo with something open
+			// over it (a dialog, a menu) keeps the whole stage, since the overlay is laid out against its viewport.
+			const fitDemo = (doc) => {
+				// The stage's own card shows through, rather than the demo page's background.
+				doc.documentElement.style.background = "transparent";
+				doc.body.style.background = "transparent";
+				const stage = document.getElementById("og-stage").getBoundingClientRect();
+				const root = doc.getElementById("demo-root");
+				const w = frame.offsetWidth;
+				const scale = Math.min(1.6, stage.width / w);
+				const full = stage.height / scale;
+				// A portal's wrapper is often zero-height with its popup positioned inside, so look at every descendant.
+				const shows = (e) => [e, ...e.querySelectorAll("*")].some((n) => n.getBoundingClientRect().height > 0);
+				const overlay = [...doc.body.children].some((e) => e !== root && !e.matches("script, style, link") && shows(e));
+				const h = overlay ? full : Math.min(full, root.scrollHeight);
+				frame.style.height = `${h}px`;
+				const y = Math.max(0, (stage.height - h * scale) / 2);
+				frame.style.transform = `translate(${Math.max(0, (stage.width - w * scale) / 2)}px, ${y}px) scale(${scale})`;
+				return { root, overlay };
+			};
+
+			window.ogReady = Promise.race([
+				(async () => {
+					await loaded;
+					const doc = frame.contentDocument;
+					await doc.fonts.ready;
+					await document.fonts.ready;
+					await until(() => !doc.querySelector("astro-island[ssr]"));
+					await quiet(doc.body);
+					return true;
+				})(),
+				new Promise((done) => setTimeout(() => done(false), 5000)),
+			]).then((settled) => {
+				fitTitle();
+				const issues = [];
+				if (!settled) issues.push("still changing after 5s (an endless animation?)");
+				const doc = frame.contentDocument;
+				if (!doc?.getElementById("demo-root")) return [...issues, "demo page did not load"];
+				const { root } = fitDemo(doc);
+				if (root.scrollWidth > root.clientWidth + 1) issues.push(`wider than its ${frame.offsetWidth}px box`);
+				if (!root.textContent.trim() && !root.querySelector("svg, img, canvas")) issues.push("demo is empty");
+				return issues;
+			});
+		</script>
+	</body>
+</html>

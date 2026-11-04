@@ -2,9 +2,15 @@
 import { render } from "astro:content";
 import Docs from "../layouts/Docs.astro";
 import { changelogEntry, guides } from "../lib/guides";
+import { OG_HREFS } from "../lib/og";
 
 export async function getStaticPaths() {
-	return (await guides()).map((g) => ({ params: { guide: g.id }, props: { guide: g } }));
+	const all = await guides();
+	// The nav is the list of pages: it feeds the sidebar, the sitemap and the preview images. A guide left out of it
+	// would build as a page nobody can find, with an og:image that was never rendered.
+	const unlisted = all.filter((g) => !OG_HREFS.has(`/${g.id}`)).map((g) => g.id);
+	if (unlisted.length) throw new Error(`Add these guides to GUIDES in src/lib/nav.ts: ${unlisted.join(", ")}`);
+	return all.map((g) => ({ params: { guide: g.id }, props: { guide: g } }));
 }
 const { guide } = Astro.props;
 const entry = guide.id === "changelog" ? await changelogEntry() : guide;

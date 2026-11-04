@@ -20,6 +20,12 @@
 	/* The home page wordmark, the one size above the library's scale. Nothing else uses these. */
 	--text-hero-sm: 44px;
 	--text-hero: 56px;
+
+	/* The 1200×630 link-preview frames (src/pages/og), sized for a card read at a glance in a feed. */
+	--text-og-mark: 30px;
+	--text-og-title: 60px;
+	--text-og-body: 22px;
+	--text-og-url: 15px;
 }
 
 /* ------------------------------------------------------------------ site chrome */

@@ -17,7 +17,11 @@ export const GUIDES: { section: string; items: NavItem[] }[] = [
 				href: "/installation",
 				description: "Install the package, set up Tailwind or the standalone CSS, fonts, themes and providers.",
 			},
-			{ label: "CLI", href: "/cli", description: "Browse components and their docs from the terminal." },
+			{
+				label: "CLI",
+				href: "/cli",
+				description: "Find components, read their docs, check your code and install the agent skill.",
+			},
 			{ label: "Changelog", href: "/changelog", description: "Release notes for @cynco-labs/ui." },
 		],
 	},

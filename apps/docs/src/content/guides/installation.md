@@ -144,7 +144,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
 The quickest setup is to let your agent do it. **Copy install prompt** on the [home page](/) copies the steps on this page and the house rules as one brief to paste into Claude Code, Cursor or similar. Every component page has a **Copy prompt** button that does the same for that component: import, typed props, a working example and the rules.
 
-For agents that load skills, the package ships one at `node_modules/@cynco-labs/ui/skills/cynco-ui/SKILL.md` (also at [/skill.md](/skill.md)). It teaches the rules (tokens, decimal-string money, the layout primitives, black-ink documents) and points the agent at `npx cynco-ui docs <Name>` for any component's full docs offline.
+For agents that load skills, the package ships one (also at [/skill.md](/skill.md)). Install it with `npx cynco-ui skill`, which copies it to `.claude/skills/cynco-ui/SKILL.md`. Run the command again after you upgrade. The skill teaches the rules (tokens, decimal-string money, the layout primitives, black-ink documents) and points the agent at `npx cynco-ui docs <Name>` for any component's full docs offline.
+
+To check the agent's work, run `npx cynco-ui check`. It fails on theme, type-scale and money-rule violations; see [CLI](/cli#check-your-code).
 
 ## AI components
 
