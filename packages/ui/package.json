@@ -1,6 +1,6 @@
 {
   "name": "@cynco-labs/ui",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Cynco's design system for accounting and ERP interfaces: components, layout primitives, productivity patterns and printable business documents.",
   "type": "module",
   "license": "MIT AND Apache-2.0",
